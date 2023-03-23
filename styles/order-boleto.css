@@ -1,0 +1,23 @@
+.pagbank-boleto {
+	border: 1px solid #e3e3e3;
+    padding: 20px;
+	margin: 20px 0;
+}
+
+.pagbank-boleto .center {
+	text-align: center;
+}
+
+.pagbank-boleto hr {
+	margin: 20px 0;
+	background-color: #e3e3e3;
+}
+
+.pagbank-boleto .boleto-barcode {
+	display: flex;
+	justify-content: center;
+}
+
+.pagbank-boleto .boleto-barcode button {
+	margin-left: 10px;
+}

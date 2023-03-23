@@ -1,0 +1,1 @@
+{"version":1,"defects":{"Tests\\SodiumAdapterTest::testEncrypt":5,"Tests\\SodiumAdapterTest::testDecrypt":3},"times":{"Tests\\SodiumAdapterTest::testEncrypt":0.004,"Tests\\SodiumAdapterTest::testDecrypt":0}}

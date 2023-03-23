@@ -1,0 +1,78 @@
+.pagbank-connect-modal {
+	position: fixed;
+	z-index: 99999;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	background-color: rgb(0,0,0);
+	background-color: rgba(0,0,0,0.4);
+}
+
+.pagbank-connect-modal.hidden {
+	display: none;
+}
+
+.pagbank-connect-modal-close-button {
+	background-color: transparent;
+    border: none;
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+.pagbank-connect-modal-close-button:hover {
+	opacity: 0.8;
+}
+
+.pagbank-connect-modal-wrapper {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+}
+
+.pagbank-connect-modal-content {
+	width: 100%;
+	max-width: 600px;
+	padding: 30px;
+	border-radius: 5px;
+	background-color: #fff;
+	position: relative;
+}
+
+.pagbank-connect-modal-content .fees-table {
+	display: flex;
+	gap: 15px;
+}
+
+.pagbank-connect-modal-content .fees-table a {
+	display: flex;
+    border: 1px solid #e3e3e3;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0px;
+    text-decoration: none;
+    flex-direction: column;
+    justify-content: center;
+	color: #3c434a;
+	flex: 1;
+}
+
+.pagbank-connect-modal-content .fees-table a:hover {
+	background-color: #ececec;
+}
+
+.pagbank-connect-modal-content .fees-table h3 {
+	margin: 10px 0 10px 0;
+	text-align: center;
+}
+
+.pagbank-connect-modal-content .fees-table ul {
+	text-align: center;
+	list-style: none;
+	margin-left: 0;
+}

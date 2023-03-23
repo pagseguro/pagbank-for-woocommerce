@@ -1,0 +1,24 @@
+.pagbank-pix {
+	border: 1px solid #e3e3e3;
+    padding: 20px;
+	margin: 20px 0;
+}
+
+.pagbank-pix img {
+	max-width: 150px;
+	margin: 0 auto;
+}
+
+.pagbank-pix hr {
+	margin: 20px 0;
+	background-color: #e3e3e3;
+}
+
+.pagbank-pix .pix-copy-and-paste {
+	display: flex;
+	justify-content: center;
+}
+
+.pagbank-pix .pix-copy-and-paste button {
+	margin-left: 10px;
+}
