@@ -10,13 +10,14 @@ namespace PagBank_WooCommerce\Gateways;
 use Exception;
 use PagBank_WooCommerce\Presentation\Api;
 use PagBank_WooCommerce\Presentation\Connect;
-use PagBank_WooCommerce\Presentation\WebhookHandler;
+use WC_Order;
 use WC_Payment_Gateway_CC;
 use WC_Payment_Token_CC;
 use WC_Payment_Tokens;
 use WP_Error;
 
 use function PagBank_WooCommerce\Presentation\format_money_cents;
+use function PagBank_WooCommerce\Presentation\get_credit_card_payment_data;
 
 /**
  * Class CreditCardPaymentGateway.
@@ -287,64 +288,24 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		try {
 			$order = wc_get_order( $order_id );
 
-			$billing_cpf  = $order->get_meta( '_billing_cpf' );
-			$billing_cnpj = $order->get_meta( '_billing_cnpj' );
-			$tax_id       = preg_replace( '/[^0-9]/', '', $billing_cpf ? $billing_cpf : $billing_cnpj );
-
-			$data = array(
-				'reference_id'      => $order_id,
-				'amount'            => array(
-					'value'    => format_money_cents( $order->get_total() ),
-					'currency' => $order->get_currency(),
-				),
-				'payment_method'    => array(
-					'type'         => 'CREDIT_CARD',
-					'installments' => 1,
-					'capture'      => true,
-					'holder'       => array(
-						'name'   => $order->get_formatted_billing_full_name(),
-						'tax_id' => $tax_id,
-					),
-				),
-				'notification_urls' => array(
-					WebhookHandler::get_webhook_url(),
-				),
-				'metadata'          => array(
-					'order_id' => $order_id,
-				),
-			);
-
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			if ( ! isset( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) || 'new' === $_POST[ 'wc-' . $this->id . '-payment-token' ] ) {
-				// phpcs:ignore WordPress.Security.NonceVerification.Missing
-				if ( ! isset( $_POST['pagbank_credit_card-encrypted-card'] ) ) {
-					throw new Exception( __( 'Invalid credit card encryption. This should not happen, contact support.', 'pagbank-woocommerce' ) );
-				}
+			$payment_token = isset( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) ? wc_clean( wp_unslash( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) ) : null;
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$encrypted_card = isset( $_POST['pagbank_credit_card-encrypted-card'] ) ? wc_clean( wp_unslash( $_POST['pagbank_credit_card-encrypted-card'] ) ) : null;
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$save_card = isset( $_POST[ 'wc-' . $this->id . '-new-payment-method' ] ) && $_POST[ 'wc-' . $this->id . '-new-payment-method' ] === 'true';
 
-				$data['payment_method']['card'] = array(
-					// phpcs:ignore WordPress.Security.NonceVerification.Missing
-					'encrypted' => wc_clean( wp_unslash( $_POST['pagbank_credit_card-encrypted-card'] ) ),
-				);
-
-				// phpcs:ignore WordPress.Security.NonceVerification.Missing
-				if ( isset( $_POST[ 'wc-' . $this->id . '-new-payment-method' ] ) && $_POST[ 'wc-' . $this->id . '-new-payment-method' ] === 'true' ) {
-					$data['payment_method']['card']['store'] = true;
-				}
-			} else {
-				// phpcs:ignore WordPress.Security.NonceVerification.Missing
-				$token_id = wc_clean( wp_unslash( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) );
-				$token    = WC_Payment_Tokens::get( $token_id );
-
-				$card_id                        = $token->get_token();
-				$data['payment_method']['card'] = array(
-					'id' => $card_id,
-				);
-			}
+			$data = get_credit_card_payment_data(
+				$order,
+				$payment_token,
+				$encrypted_card,
+				$save_card
+			);
 
 			$response = $this->api->create_charge( $data );
 
 			if ( is_wp_error( $response ) ) {
-				wc_add_notice( __( 'Houve um erro no pagamento', 'pagbank-woocommerce' ), 'error' );
+				wc_add_notice( __( 'Houve um erro no pagamento.', 'pagbank-woocommerce' ), 'error' );
 				return;
 			}
 
@@ -354,14 +315,11 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				wc_add_notice( __( 'O pagamento foi recusado pelo PagBank', 'pagbank-woocommerce' ), 'error' );
 				return;
 			} elseif ( $response['status'] !== 'PAID' ) {
-				throw new Exception( __( 'Should not happen.', 'pagbank-woocommerce' ) );
+				throw new Exception( __( 'Invalid order status from PagBank API.', 'pagbank-woocommerce' ) );
 			}
 
 			// Add order details.
-			$order->update_meta_data( '_pagbank_order_id', $response['id'] );
-			$order->update_meta_data( '_pagbank_credit_card_brand', $response['payment_method']['card']['brand'] );
-			$order->update_meta_data( '_pagbank_credit_card_installments', $response['payment_method']['installments'] );
-			$order->save_meta_data();
+			$this->save_order_meta_data( $order, $response );
 
 			$order->payment_complete();
 
@@ -387,6 +345,21 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		} catch ( Exception $e ) {
 			wc_add_notice( $e->getMessage(), 'error' );
 		}
+	}
+
+	/**
+	 * Save order meta data.
+	 *
+	 * @param WC_Order $order Order object.
+	 * @param array    $response Response data.
+	 *
+	 * @return void
+	 */
+	private function save_order_meta_data( WC_Order $order, array $response ) {
+		$order->update_meta_data( '_pagbank_order_id', $response['id'] );
+		$order->update_meta_data( '_pagbank_credit_card_brand', $response['payment_method']['card']['brand'] );
+		$order->update_meta_data( '_pagbank_credit_card_installments', $response['payment_method']['installments'] );
+		$order->save_meta_data();
 	}
 
 	/**

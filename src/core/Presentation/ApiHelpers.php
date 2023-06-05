@@ -8,9 +8,11 @@
 namespace PagBank_WooCommerce\Presentation;
 
 use Carbon\Carbon;
+use Exception;
 use libphonenumber\PhoneNumberType;
 use libphonenumber\PhoneNumberUtil;
 use WC_Order;
+use WC_Payment_Tokens;
 
 /**
  * Get order tax id.
@@ -185,6 +187,69 @@ function get_boleto_payment_api_data( WC_Order $order, int $expiration_in_days )
 
 	if ( $order->get_shipping_address_2() ) {
 		$data['shipping']['complement'] = substr( $order->get_shipping_address_2(), 0, 40 );
+	}
+
+	return $data;
+}
+
+/**
+ * Get Credit Card payment data.
+ *
+ * @param WC_Order $order Order.
+ * @param string   $payment_token Payment token.
+ * @param string   $encrypted_card Encrypted card.
+ * @param bool     $save_card Save card.
+ *
+ * @return array
+ * @throws Exception Throws exception when card is not valid.
+ */
+function get_credit_card_payment_data( WC_Order $order, string $payment_token = null, string $encrypted_card = null, bool $save_card = false ) {
+	$data = array(
+		'reference_id'      => $order->get_id(),
+		'amount'            => array(
+			'value'    => format_money_cents( $order->get_total() ),
+			'currency' => $order->get_currency(),
+		),
+		'payment_method'    => array(
+			'type'         => 'CREDIT_CARD',
+			'installments' => 1,
+			'capture'      => true,
+			'holder'       => array(
+				'name'   => $order->get_formatted_billing_full_name(),
+				'tax_id' => get_order_tax_id( $order ),
+			),
+		),
+		'notification_urls' => array(
+			WebhookHandler::get_webhook_url(),
+		),
+		'metadata'          => array(
+			'order_id' => $order->get_id(),
+		),
+	);
+
+	if ( null === $payment_token || 'new' === $payment_token ) {
+		if ( null === $encrypted_card ) {
+			throw new Exception( __( 'Invalid credit card encryption. This should not happen, contact support.', 'pagbank-woocommerce' ) );
+		}
+
+		$data['payment_method']['card'] = array(
+			'encrypted' => $encrypted_card,
+		);
+
+		if ( $save_card ) {
+			$data['payment_method']['card']['store'] = true;
+		}
+	} else {
+		$token = WC_Payment_Tokens::get( $payment_token );
+
+		if ( ! $token ) {
+			throw new Exception( __( 'Payment token not found.', 'pagbank-woocommerce' ) );
+		}
+
+		$card_id                        = $token->get_token();
+		$data['payment_method']['card'] = array(
+			'id' => $card_id,
+		);
 	}
 
 	return $data;
