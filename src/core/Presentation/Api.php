@@ -2,8 +2,6 @@
 /**
  * The Api class is responsible for making requests to the PagBank Rest API.
  *
- * The CONNECT_APPLICATION_CLIENT_ID and ENCRYPTED_APPLICATION_ACCESS_TOKEN constants comes from the PagBank's application.
- *
  * @package PagBank_WooCommerce\Presentation
  */
 
@@ -17,8 +15,6 @@ use WP_Error;
  * Class Api.
  */
 class Api {
-
-	const ENCRYPTED_APPLICATION_ACCESS_TOKEN = 'd16+IOeXfMUsOs++Yd6Ivacs3B3ixf0d9SsWSZUBk3UEB9r0TkiQkKR5qJjreBaZYXSYwXCoZuoT0eBIqr3VPFQqYGJI6ZGe+f4cqTWTlNlcauvqGtrNxY6pqp0lgVZIEwwCVD7jqy2qUpc/02VQTuxcs2AqgljJvhTJ1SCAFF3BN/jN+2cjhyIeNP+T7kYwyMamCn0tubHyMG75QmPiLrZtGSCsK633wdcD2lYLX9wxhpRoOpbU+CwtRPBvMJIGYGGyi3hULfmQ97UrOCDAKK3BYjt14fa1/9bphoh8TrsUmxGUHz6GdeF9IbnIDNmvF8ixnFFAqv1tlweJDIHnaQ==';
 
 	/**
 	 * The Connect instance.
@@ -106,9 +102,9 @@ class Api {
 	public function get_oauth_url( string $callback_url, string $nonce, string $application_id ): string {
 		$code_challenge = $this->generate_code_challenge();
 
-		set_transient( 'pagbank_oauth_code_verifier', $code_challenge['code_verifier'], MINUTES_ON_SECONDS );
-		set_transient( 'pagbank_oauth_application_id', $application_id, MINUTES_ON_SECONDS );
-		set_transient( 'pagbank_oauth_environment', $application_id, MINUTES_ON_SECONDS );
+		set_transient( 'pagbank_oauth_code_verifier', $code_challenge['code_verifier'], MINUTE_IN_SECONDS );
+		set_transient( 'pagbank_oauth_application_id', $application_id, MINUTE_IN_SECONDS );
+		set_transient( 'pagbank_oauth_environment', $application_id, MINUTE_IN_SECONDS );
 
 		$url = http_build_url(
 			$this->get_oauth_api_url( 'oauth2/authorize' ),
