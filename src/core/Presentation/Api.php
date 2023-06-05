@@ -162,7 +162,7 @@ class Api {
 			return new WP_Error( 'pagbank_oauth_invalid_application_id', __( 'The application ID is invalid.', 'pagbank-woocommerce' ) );
 		}
 
-		$body = wp_json_encode(
+		$body = $this->json_encode(
 			array(
 				'grant_type'    => 'authorization_code',
 				'code'          => $oauth_code,
@@ -193,27 +193,27 @@ class Api {
 			return $response;
 		}
 
-		$code         = wp_remote_retrieve_response_code( $response );
-		$body         = wp_remote_retrieve_body( $response );
-		$decoded_body = json_decode( wp_remote_retrieve_body( $response ), true );
+		$response_code         = wp_remote_retrieve_response_code( $response );
+		$response_body         = wp_remote_retrieve_body( $response );
+		$decoded_response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 
-		$this->log( 'RESPONSE CODE: ' . $code );
-		$this->log( 'RESPONSE BODY: ' . $body );
+		$this->log( 'RESPONSE CODE: ' . $response_code );
+		$this->log( 'RESPONSE BODY: ' . $response_body );
 		$this->log( "REQUEST ENDS\n" );
 
-		if ( 200 !== $code ) {
+		if ( 200 !== $response_code ) {
 			return new WP_Error( 'pagbank_request_error', __( 'Invalid status code.', 'pagbank-woocommerce' ) );
 		}
 
 		return array(
 			'application_id'  => $application_id,
 			'environment'     => $environment,
-			'token_type'      => $decoded_body['token_type'],
-			'access_token'    => $decoded_body['access_token'],
-			'expiration_date' => Carbon::now()->addSeconds( $decoded_body['expires_in'] )->toISOString(),
-			'refresh_token'   => $decoded_body['refresh_token'],
-			'scope'           => $decoded_body['scope'],
-			'account_id'      => $decoded_body['account_id'],
+			'token_type'      => $decoded_response_body['token_type'],
+			'access_token'    => $decoded_response_body['access_token'],
+			'expiration_date' => Carbon::now()->addSeconds( $decoded_response_body['expires_in'] )->toISOString(),
+			'refresh_token'   => $decoded_response_body['refresh_token'],
+			'scope'           => $decoded_response_body['scope'],
+			'account_id'      => $decoded_response_body['account_id'],
 		);
 	}
 
@@ -228,7 +228,7 @@ class Api {
 	public function refresh_access_token( string $refresh_token, string $access_token ) {
 		$url = $this->get_api_url( 'oauth2/refresh' );
 
-		$body = wp_json_encode(
+		$body = $this->json_encode(
 			array(
 				'grant_type'    => 'refresh_token',
 				'refresh_token' => $refresh_token,
@@ -256,25 +256,25 @@ class Api {
 			return $response;
 		}
 
-		$code         = wp_remote_retrieve_response_code( $response );
-		$body         = wp_remote_retrieve_body( $response );
-		$decoded_body = json_decode( wp_remote_retrieve_body( $response ), true );
+		$response_code         = wp_remote_retrieve_response_code( $response );
+		$response_body         = wp_remote_retrieve_body( $response );
+		$decoded_response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 
-		$this->log( 'RESPONSE CODE: ' . $code );
-		$this->log( 'RESPONSE BODY: ' . $body );
+		$this->log( 'RESPONSE CODE: ' . $response_code );
+		$this->log( 'RESPONSE BODY: ' . $response_body );
 		$this->log( "REQUEST ENDS\n" );
 
-		if ( 200 !== $code ) {
+		if ( 200 !== $response_code ) {
 			return new WP_Error( 'pagbank_request_error', __( 'Invalid status code.', 'pagbank-woocommerce' ) );
 		}
 
 		return array(
-			'token_type'      => $decoded_body['token_type'],
-			'access_token'    => $decoded_body['access_token'],
-			'expiration_date' => Carbon::now()->addSeconds( $decoded_body['expires_in'] )->toISOString(),
-			'refresh_token'   => $decoded_body['refresh_token'],
-			'scope'           => $decoded_body['scope'],
-			'account_id'      => $decoded_body['account_id'],
+			'token_type'      => $decoded_response_body['token_type'],
+			'access_token'    => $decoded_response_body['access_token'],
+			'expiration_date' => Carbon::now()->addSeconds( $decoded_response_body['expires_in'] )->toISOString(),
+			'refresh_token'   => $decoded_response_body['refresh_token'],
+			'scope'           => $decoded_response_body['scope'],
+			'account_id'      => $decoded_response_body['account_id'],
 		);
 	}
 
@@ -302,7 +302,7 @@ class Api {
 	public function create_order( $data ) {
 		$url = $this->get_api_url( 'orders' );
 
-		$body = wp_json_encode( $data );
+		$body = $this->json_encode( $data );
 
 		$this->log( 'REQUEST BEGINS' );
 		$this->log( 'REQUEST URL: ' . $url );
@@ -326,19 +326,19 @@ class Api {
 			return $response;
 		}
 
-		$code         = wp_remote_retrieve_response_code( $response );
-		$body         = wp_remote_retrieve_body( $response );
-		$decoded_body = json_decode( wp_remote_retrieve_body( $response ), true );
+		$response_code         = wp_remote_retrieve_response_code( $response );
+		$response_body         = wp_remote_retrieve_body( $response );
+		$decoded_response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 
-		$this->log( 'RESPONSE CODE: ' . $code );
-		$this->log( 'RESPONSE BODY: ' . $body );
+		$this->log( 'RESPONSE CODE: ' . $response_code );
+		$this->log( 'RESPONSE BODY: ' . $response_body );
 		$this->log( "REQUEST ENDS\n" );
 
-		if ( 201 !== $code ) {
-			return new WP_Error( 'pagbank_order_creation_failed', 'PagBank order creation failed', $decoded_body );
+		if ( 201 !== $response_code ) {
+			return new WP_Error( 'pagbank_order_creation_failed', 'PagBank order creation failed', $decoded_response_body );
 		}
 
-		return $decoded_body;
+		return $decoded_response_body;
 	}
 
 	/**
@@ -351,7 +351,7 @@ class Api {
 	public function create_charge( $data ) {
 		$url = $this->get_api_url( 'charges' );
 
-		$body = wp_json_encode( $data );
+		$body = $this->json_encode( $data );
 
 		$this->log( 'REQUEST BEGINS' );
 		$this->log( 'REQUEST URL: ' . $url );
@@ -364,7 +364,7 @@ class Api {
 					'Authorization' => $this->connect->get_access_token(),
 					'Content-Type'  => 'application/json',
 				),
-				'body'    => wp_json_encode( $data ),
+				'body'    => $body,
 			)
 		);
 
@@ -375,19 +375,19 @@ class Api {
 			return $response;
 		}
 
-		$code         = wp_remote_retrieve_response_code( $response );
-		$body         = wp_remote_retrieve_body( $response );
-		$decoded_body = json_decode( wp_remote_retrieve_body( $response ), true );
+		$response_code         = wp_remote_retrieve_response_code( $response );
+		$response_body         = wp_remote_retrieve_body( $response );
+		$decoded_response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 
-		$this->log( 'RESPONSE CODE: ' . $code );
-		$this->log( 'RESPONSE BODY: ' . $body );
+		$this->log( 'RESPONSE CODE: ' . $response_code );
+		$this->log( 'RESPONSE BODY: ' . $response_body );
 		$this->log( "REQUEST ENDS\n" );
 
-		if ( 201 !== $code ) {
-			return new WP_Error( 'pagbank_charge_creation_failed', 'PagBank charge creation failed', $decoded_body );
+		if ( 201 !== $response_code ) {
+			return new WP_Error( 'pagbank_charge_creation_failed', 'PagBank charge creation failed', $decoded_response_body );
 		}
 
-		return $decoded_body;
+		return $decoded_response_body;
 	}
 
 	/**
@@ -401,7 +401,7 @@ class Api {
 	public function refund( string $id, float $amount ) {
 		$url = $this->get_api_url( 'charges/' . $id . '/cancel' );
 
-		$body = wp_json_encode(
+		$body = $this->json_encode(
 			array(
 				'amount' => array(
 					'value' => format_money_cents( $amount ),
@@ -431,19 +431,19 @@ class Api {
 			return $response;
 		}
 
-		$code         = wp_remote_retrieve_response_code( $response );
-		$body         = wp_remote_retrieve_body( $response );
-		$decoded_body = json_decode( wp_remote_retrieve_body( $response ), true );
+		$response_code         = wp_remote_retrieve_response_code( $response );
+		$response_body         = wp_remote_retrieve_body( $response );
+		$decoded_response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 
-		$this->log( 'RESPONSE CODE: ' . $code );
-		$this->log( 'RESPONSE BODY: ' . $body );
+		$this->log( 'RESPONSE CODE: ' . $response_code );
+		$this->log( 'RESPONSE BODY: ' . $response_body );
 		$this->log( "REQUEST ENDS\n" );
 
-		if ( 201 !== $code ) {
-			return new WP_Error( 'pagbank_charge_refund_failed', 'PagBank charge refund failed', $decoded_body );
+		if ( 201 !== $response_code ) {
+			return new WP_Error( 'pagbank_charge_refund_failed', 'PagBank charge refund failed', $decoded_response_body );
 		}
 
-		return $decoded_body;
+		return $decoded_response_body;
 	}
 
 	/**
@@ -455,6 +455,17 @@ class Api {
 		if ( $this->log_id ) {
 			$this->logger->add( $this->log_id, $message );
 		}
+	}
+
+	/**
+	 * Encode data.
+	 *
+	 * @param array $data The data to be encoded.
+	 *
+	 * @return string The encoded data.
+	 */
+	private function json_encode( $data ) {
+		return wp_json_encode( $data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
 	}
 
 }
