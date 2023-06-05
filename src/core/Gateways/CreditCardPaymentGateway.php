@@ -87,7 +87,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				'title'   => __( 'Enable/Disable', 'pagbank-woocommerce' ),
 				'type'    => 'checkbox',
 				'label'   => __( 'Enable credit card', 'pagbank-woocommerce' ),
-				'default' => 'yes',
+				'default' => 'no',
 			),
 			'environment'               => array(
 				'title'       => __( 'Environment', 'pagbank-woocommerce' ),

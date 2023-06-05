@@ -82,7 +82,7 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 				'title'   => __( 'Enable/Disable', 'pagbank-woocommerce' ),
 				'type'    => 'checkbox',
 				'label'   => __( 'Enable Pix', 'pagbank-woocommerce' ),
-				'default' => 'yes',
+				'default' => 'no',
 			),
 			'environment'        => array(
 				'title'       => __( 'Environment', 'pagbank-woocommerce' ),
