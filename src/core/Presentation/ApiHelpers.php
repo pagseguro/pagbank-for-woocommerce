@@ -89,9 +89,9 @@ function get_order_items( WC_Order $order ) {
  */
 function get_pix_payment_api_data( WC_Order $order, int $expiration_in_minutes ) {
 	$data = array(
-		'reference_id' => $order->get_id(),
-		'items'        => array(),
-		'customer'     => array(
+		'reference_id'      => $order->get_id(),
+		'items'             => array(),
+		'customer'          => array(
 			'name'   => $order->get_formatted_billing_full_name(),
 			'email'  => $order->get_billing_email(),
 			'tax_id' => get_order_tax_id( $order ),
@@ -99,7 +99,7 @@ function get_pix_payment_api_data( WC_Order $order, int $expiration_in_minutes )
 				get_phone_number( $order->get_billing_phone() ),
 			),
 		),
-		'shipping'     => array(
+		'shipping'          => array(
 			'address' => array(
 				'street'      => substr( $order->get_shipping_address_1(), 0, 160 ),
 				'number'      => substr( $order->get_meta( '_shipping_number' ), 0, 20 ),
@@ -110,8 +110,8 @@ function get_pix_payment_api_data( WC_Order $order, int $expiration_in_minutes )
 				'postal_code' => preg_replace( '/[^0-9]/', '', $order->get_shipping_postcode() ),
 			),
 		),
-		'items'        => get_order_items( $order ),
-		'qr_codes'     => array(
+		'items'             => get_order_items( $order ),
+		'qr_codes'          => array(
 			array(
 				'amount'          => array(
 					'value' => $order->get_total() * 100,
@@ -119,10 +119,10 @@ function get_pix_payment_api_data( WC_Order $order, int $expiration_in_minutes )
 				'expiration_date' => Carbon::now()->addMinutes( $expiration_in_minutes )->toAtomString(),
 			),
 		),
-		// 'notification_urls' => array(
-		// WebhookHandler::get_webhook_url(),
-		// ),
-		'metadata'     => array(
+		'notification_urls' => array(
+			WebhookHandler::get_webhook_url(),
+		),
+		'metadata'          => array(
 			'order_id' => $order->get_id(),
 		),
 	);
@@ -144,13 +144,13 @@ function get_pix_payment_api_data( WC_Order $order, int $expiration_in_minutes )
  */
 function get_boleto_payment_api_data( WC_Order $order, int $expiration_in_days ) {
 	$data = array(
-		'reference_id'   => $order->get_id(),
-		'amount'         => array(
+		'reference_id'      => $order->get_id(),
+		'amount'            => array(
 			'value'    => format_money_cents( $order->get_total() ),
 			'currency' => $order->get_currency(),
 		),
-		'items'          => get_order_items( $order ),
-		'payment_method' => array(
+		'items'             => get_order_items( $order ),
+		'payment_method'    => array(
 			'type'   => 'BOLETO',
 			'boleto' => array(
 				'due_date'          => Carbon::now()->addDays( $expiration_in_days )->toDateString(),
@@ -175,10 +175,10 @@ function get_boleto_payment_api_data( WC_Order $order, int $expiration_in_days )
 				),
 			),
 		),
-		// 'notification_urls' => array(
-		// WebhookHandler::get_webhook_url(),
-		// ),
-		'metadata'       => array(
+		'notification_urls' => array(
+			WebhookHandler::get_webhook_url(),
+		),
+		'metadata'          => array(
 			'order_id' => $order->get_id(),
 		),
 	);

@@ -292,12 +292,12 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			$tax_id       = preg_replace( '/[^0-9]/', '', $billing_cpf ? $billing_cpf : $billing_cnpj );
 
 			$data = array(
-				'reference_id'   => $order_id,
-				'amount'         => array(
+				'reference_id'      => $order_id,
+				'amount'            => array(
 					'value'    => format_money_cents( $order->get_total() ),
 					'currency' => $order->get_currency(),
 				),
-				'payment_method' => array(
+				'payment_method'    => array(
 					'type'         => 'CREDIT_CARD',
 					'installments' => 1,
 					'capture'      => true,
@@ -306,10 +306,10 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 						'tax_id' => $tax_id,
 					),
 				),
-				// 'notification_urls' => array(
-				// WebhookHandler::get_webhook_url(),
-				// ),
-				'metadata'       => array(
+				'notification_urls' => array(
+					WebhookHandler::get_webhook_url(),
+				),
+				'metadata'          => array(
 					'order_id' => $order_id,
 				),
 			);
