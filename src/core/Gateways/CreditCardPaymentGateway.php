@@ -267,8 +267,6 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 * TODO: validate fields.
 	 */
 	public function validate_fields() {
-		wc_add_notice( __( 'The card was not encrypted. Please contact support.', 'pagbank-woocommerce' ), 'error' );
-
 		// phpcs:ignore WordPress.Security.NonceVerification
 		if ( ! isset( $_POST[ $this->id . '-encrypted-card' ] ) || empty( $_POST[ $this->id . '-encrypted-card' ] ) ) {
 			wc_add_notice( __( 'The card was not encrypted. Please contact support.', 'pagbank-woocommerce' ), 'error' );
