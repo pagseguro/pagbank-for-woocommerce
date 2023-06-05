@@ -7,6 +7,10 @@ import data from "../package.json";
 const exportFileName = `${data.name}-${data.version}.zip`;
 
 const filesToIgnore = [
+	".editorconfig",
+	".vscode",
+	"TODO.md",
+	"commitlint.config.cjs",
 	".git",
 	"build",
 	".husky",
@@ -14,7 +18,7 @@ const filesToIgnore = [
 	"plugins",
 	"scripts",
 	"wp",
-	".eslintrc.js",
+	".eslintrc.cjs",
 	".gitignore",
 	".commitlint.config.js",
 	"composer.json",
@@ -28,6 +32,9 @@ const filesToIgnore = [
 	"tsconfig.node.json",
 	"vite.config.ts",
 	"yarn.lock",
+	"phpcs.xml.dist",
+	"phpunit.xml",
+	"tests",
 ];
 
 const getEntries = (dir: string): string[] => {
