@@ -171,9 +171,7 @@ class Api {
 			)
 		);
 
-		$this->log( 'REQUEST BEGINS' );
-		$this->log( 'REQUEST URL: ' . $url );
-		$this->log( 'REQUEST BODY: ' . $body );
+		$this->log_request_begin( $url, $body );
 
 		$response = wp_remote_post(
 			$url,
@@ -187,8 +185,7 @@ class Api {
 		);
 
 		if ( is_wp_error( $response ) ) {
-			$this->log( 'REQUEST ERROR: ' . $response->get_error_message() );
-			$this->log( "REQUEST ENDS\n" );
+			$this->log_request_error( $response );
 
 			return $response;
 		}
@@ -197,9 +194,7 @@ class Api {
 		$response_body         = wp_remote_retrieve_body( $response );
 		$decoded_response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 
-		$this->log( 'RESPONSE CODE: ' . $response_code );
-		$this->log( 'RESPONSE BODY: ' . $response_body );
-		$this->log( "REQUEST ENDS\n" );
+		$this->log_request_ends( $response_code, $response_body );
 
 		if ( 200 !== $response_code ) {
 			return new WP_Error( 'pagbank_request_error', __( 'Invalid status code.', 'pagbank-woocommerce' ) );
@@ -234,9 +229,7 @@ class Api {
 				'refresh_token' => $refresh_token,
 			)
 		);
-		$this->log( 'REQUEST BEGINS' );
-		$this->log( 'REQUEST URL: ' . $url );
-		$this->log( 'REQUEST BODY: ' . $body );
+		$this->log_request_begin( $url, $body );
 
 		$response = wp_remote_post(
 			$url,
@@ -250,8 +243,7 @@ class Api {
 		);
 
 		if ( is_wp_error( $response ) ) {
-			$this->log( 'REQUEST ERROR: ' . $response->get_error_message() );
-			$this->log( "REQUEST ENDS\n" );
+			$this->log_request_error( $response );
 
 			return $response;
 		}
@@ -260,9 +252,7 @@ class Api {
 		$response_body         = wp_remote_retrieve_body( $response );
 		$decoded_response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 
-		$this->log( 'RESPONSE CODE: ' . $response_code );
-		$this->log( 'RESPONSE BODY: ' . $response_body );
-		$this->log( "REQUEST ENDS\n" );
+		$this->log_request_ends( $response_code, $response_body );
 
 		if ( 200 !== $response_code ) {
 			return new WP_Error( 'pagbank_request_error', __( 'Invalid status code.', 'pagbank-woocommerce' ) );
@@ -304,9 +294,7 @@ class Api {
 
 		$body = $this->json_encode( $data );
 
-		$this->log( 'REQUEST BEGINS' );
-		$this->log( 'REQUEST URL: ' . $url );
-		$this->log( 'REQUEST BODY: ' . $body );
+		$this->log_request_begin( $url, $body );
 
 		$response = wp_remote_post(
 			$url,
@@ -320,8 +308,7 @@ class Api {
 		);
 
 		if ( is_wp_error( $response ) ) {
-			$this->log( 'REQUEST ERROR: ' . $response->get_error_message() );
-			$this->log( "REQUEST ENDS\n" );
+			$this->log_request_error( $response );
 
 			return $response;
 		}
@@ -330,9 +317,7 @@ class Api {
 		$response_body         = wp_remote_retrieve_body( $response );
 		$decoded_response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 
-		$this->log( 'RESPONSE CODE: ' . $response_code );
-		$this->log( 'RESPONSE BODY: ' . $response_body );
-		$this->log( "REQUEST ENDS\n" );
+		$this->log_request_ends( $response_code, $response_body );
 
 		if ( 201 !== $response_code ) {
 			return new WP_Error( 'pagbank_order_creation_failed', 'PagBank order creation failed', $decoded_response_body );
@@ -353,9 +338,7 @@ class Api {
 
 		$body = $this->json_encode( $data );
 
-		$this->log( 'REQUEST BEGINS' );
-		$this->log( 'REQUEST URL: ' . $url );
-		$this->log( 'REQUEST BODY: ' . $body );
+		$this->log_request_begin( $url, $body );
 
 		$response = wp_remote_post(
 			$url,
@@ -369,8 +352,7 @@ class Api {
 		);
 
 		if ( is_wp_error( $response ) ) {
-			$this->log( 'REQUEST ERROR: ' . $response->get_error_message() );
-			$this->log( "REQUEST ENDS\n" );
+			$this->log_request_error( $response );
 
 			return $response;
 		}
@@ -379,9 +361,7 @@ class Api {
 		$response_body         = wp_remote_retrieve_body( $response );
 		$decoded_response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 
-		$this->log( 'RESPONSE CODE: ' . $response_code );
-		$this->log( 'RESPONSE BODY: ' . $response_body );
-		$this->log( "REQUEST ENDS\n" );
+		$this->log_request_ends( $response_code, $response_body );
 
 		if ( 201 !== $response_code ) {
 			return new WP_Error( 'pagbank_charge_creation_failed', 'PagBank charge creation failed', $decoded_response_body );
@@ -409,9 +389,7 @@ class Api {
 			)
 		);
 
-		$this->log( 'REQUEST BEGINS' );
-		$this->log( 'REQUEST URL: ' . $url );
-		$this->log( 'REQUEST BODY: ' . $body );
+		$this->log_request_begin( $url, $body );
 
 		$response = wp_remote_post(
 			$url,
@@ -425,8 +403,7 @@ class Api {
 		);
 
 		if ( is_wp_error( $response ) ) {
-			$this->log( 'REQUEST ERROR: ' . $response->get_error_message() );
-			$this->log( "REQUEST ENDS\n" );
+			$this->log_request_error( $response );
 
 			return $response;
 		}
@@ -435,9 +412,7 @@ class Api {
 		$response_body         = wp_remote_retrieve_body( $response );
 		$decoded_response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 
-		$this->log( 'RESPONSE CODE: ' . $response_code );
-		$this->log( 'RESPONSE BODY: ' . $response_body );
-		$this->log( "REQUEST ENDS\n" );
+		$this->log_request_ends( $response_code, $response_body );
 
 		if ( 201 !== $response_code ) {
 			return new WP_Error( 'pagbank_charge_refund_failed', 'PagBank charge refund failed', $decoded_response_body );
@@ -455,6 +430,46 @@ class Api {
 		if ( $this->log_id ) {
 			$this->logger->add( $this->log_id, $message );
 		}
+	}
+
+	/**
+	 * Log request begin.
+	 *
+	 * @param string $url  The request URL.
+	 * @param string $body The request body.
+	 *
+	 * @return void
+	 */
+	private function log_request_begin( string $url, string $body ): void {
+		$this->log( 'REQUEST BEGINS' );
+		$this->log( 'REQUEST URL: ' . $url );
+		$this->log( 'REQUEST BODY: ' . $body );
+	}
+
+	/**
+	 * Log request error.
+	 *
+	 * @param WP_Error $error The request error.
+	 *
+	 * @return void
+	 */
+	private function log_request_error( WP_Error $error ): void {
+		$this->log( 'REQUEST ERROR: ' . $error->get_error_message() );
+		$this->log( "REQUEST ENDS\n" );
+	}
+
+	/**
+	 * Log request ends.
+	 *
+	 * @param int    $response_code The response code.
+	 * @param string $response_body The response body.
+	 *
+	 * @return void
+	 */
+	private function log_request_ends( int $response_code, string $response_body ): void {
+		$this->log( 'RESPONSE CODE: ' . $response_code );
+		$this->log( 'RESPONSE BODY: ' . $response_body );
+		$this->log( "REQUEST ENDS\n" );
 	}
 
 	/**
