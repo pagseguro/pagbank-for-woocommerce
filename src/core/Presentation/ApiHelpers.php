@@ -21,7 +21,7 @@ use WC_Payment_Tokens;
  *
  * @return string
  */
-function get_order_tax_id( WC_Order $order ) {
+function get_order_tax_id_api_data( WC_Order $order ) {
 	$billing_cpf  = $order->get_meta( '_billing_cpf' );
 	$billing_cnpj = $order->get_meta( '_billing_cnpj' );
 	$tax_id       = preg_replace( '/[^0-9]/', '', $billing_cpf ? $billing_cpf : $billing_cnpj );
@@ -36,7 +36,7 @@ function get_order_tax_id( WC_Order $order ) {
  *
  * @return array
  */
-function get_phone_number( $raw_number ) {
+function get_phone_number_api_data( $raw_number ) {
 	$phone_util   = PhoneNumberUtil::getInstance();
 	$phone_number = $phone_util->parse( $raw_number, 'BR' );
 
@@ -55,7 +55,7 @@ function get_phone_number( $raw_number ) {
  *
  * @return array
  */
-function get_order_items( WC_Order $order ) {
+function get_order_items_api_data( WC_Order $order ) {
 	$items = array();
 
 	if ( 0 < count( $order->get_items() ) ) {
@@ -82,6 +82,93 @@ function get_order_items( WC_Order $order ) {
 }
 
 /**
+ * Get order customer.
+ *
+ * @param WC_Order $order Order.
+ *
+ * @return array
+ */
+function get_order_customer_api_data( WC_Order $order ) {
+	return array(
+		'name'   => $order->get_formatted_billing_full_name(),
+		'email'  => $order->get_billing_email(),
+		'tax_id' => get_order_tax_id_api_data( $order ),
+		'phones' => array(
+			get_phone_number_api_data( $order->get_billing_phone() ),
+		),
+	);
+}
+
+/**
+ * Get order shipping address.
+ *
+ * @param WC_Order $order Order.
+ * @param array    $address Address.
+ *
+ * @return array
+ */
+function get_order_shipping_address_api_data( WC_Order $order, array $address = array() ) {
+	$defaults = array(
+		'street'      => substr( $order->get_shipping_address_1(), 0, 160 ),
+		'number'      => substr( $order->get_meta( '_shipping_number' ), 0, 20 ),
+		'locality'    => substr( $order->get_meta( '_shipping_neighborhood' ), 0, 60 ),
+		'city'        => substr( $order->get_shipping_city(), 0, 90 ),
+		'region_code' => substr( $order->get_shipping_state(), 0, 2 ),
+		'country'     => 'BRA',
+		'postal_code' => preg_replace( '/[^0-9]/', '', $order->get_shipping_postcode() ),
+	);
+
+	if ( $order->get_shipping_address_2() ) {
+		$defaults['complement'] = substr( $order->get_shipping_address_2(), 0, 40 );
+	}
+
+	return wp_parse_args( $address, $defaults );
+}
+
+/**
+ * Get order billing address.
+ *
+ * @param WC_Order $order Order.
+ * @param array    $address Address.
+ *
+ * @return array
+ */
+function get_order_billing_address_api_data( WC_Order $order, array $address = array() ) {
+	$defaults = array(
+		'street'      => substr( $order->get_billing_address_1(), 0, 160 ),
+		'number'      => substr( $order->get_meta( '_billing_number' ), 0, 20 ),
+		'locality'    => substr( $order->get_meta( '_billing_neighborhood' ), 0, 60 ),
+		'city'        => substr( $order->get_billing_city(), 0, 90 ),
+		'region'      => substr( $order->get_billing_state(), 0, 2 ),
+		'region_code' => substr( $order->get_billing_state(), 0, 2 ),
+		'country'     => 'BRA',
+		'postal_code' => preg_replace( '/[^0-9]/', '', $order->get_billing_postcode() ),
+	);
+
+	if ( $order->get_shipping_address_2() ) {
+		$defaults['complement'] = substr( $order->get_billing_address_2(), 0, 40 );
+	}
+
+	return wp_parse_args( $address, $defaults );
+}
+
+/**
+ * Get order metadata.
+ *
+ * @param WC_Order $order Order.
+ * @param array    $metadata Metadata.
+ *
+ * @return array
+ */
+function get_order_metadata_api_data( WC_Order $order, array $metadata = array() ) {
+	$defaults = array(
+		'order_id' => $order->get_id(),
+	);
+
+	return wp_parse_args( $metadata, $defaults );
+}
+
+/**
  * Get pix payment api data.
  *
  * @param WC_Order $order Order.
@@ -92,27 +179,11 @@ function get_order_items( WC_Order $order ) {
 function get_pix_payment_api_data( WC_Order $order, int $expiration_in_minutes ) {
 	$data = array(
 		'reference_id'      => $order->get_id(),
-		'items'             => array(),
-		'customer'          => array(
-			'name'   => $order->get_formatted_billing_full_name(),
-			'email'  => $order->get_billing_email(),
-			'tax_id' => get_order_tax_id( $order ),
-			'phones' => array(
-				get_phone_number( $order->get_billing_phone() ),
-			),
-		),
+		'items'             => get_order_items_api_data( $order ),
+		'customer'          => get_order_customer_api_data( $order ),
 		'shipping'          => array(
-			'address' => array(
-				'street'      => substr( $order->get_shipping_address_1(), 0, 160 ),
-				'number'      => substr( $order->get_meta( '_shipping_number' ), 0, 20 ),
-				'locality'    => substr( $order->get_meta( '_shipping_neighborhood' ), 0, 60 ),
-				'city'        => substr( $order->get_shipping_city(), 0, 90 ),
-				'region_code' => substr( $order->get_shipping_state(), 0, 2 ),
-				'country'     => 'BRA',
-				'postal_code' => preg_replace( '/[^0-9]/', '', $order->get_shipping_postcode() ),
-			),
+			'address' => get_order_shipping_address_api_data( $order ),
 		),
-		'items'             => get_order_items( $order ),
 		'qr_codes'          => array(
 			array(
 				'amount'          => array(
@@ -124,16 +195,24 @@ function get_pix_payment_api_data( WC_Order $order, int $expiration_in_minutes )
 		'notification_urls' => array(
 			WebhookHandler::get_webhook_url(),
 		),
-		'metadata'          => array(
-			'order_id' => $order->get_id(),
-		),
+		'metadata'          => get_order_metadata_api_data( $order ),
 	);
 
-	if ( $order->get_shipping_address_2() ) {
-		$data['shipping']['complement'] = substr( $order->get_shipping_address_2(), 0, 40 );
-	}
-
 	return $data;
+}
+
+/**
+ * Get order amount.
+ *
+ * @param WC_Order $order Order.
+ *
+ * @return array
+ */
+function get_order_amount_api_data( WC_Order $order ) {
+	return array(
+		'value'    => format_money_cents( $order->get_total() ),
+		'currency' => $order->get_currency(),
+	);
 }
 
 /**
@@ -147,47 +226,34 @@ function get_pix_payment_api_data( WC_Order $order, int $expiration_in_minutes )
 function get_boleto_payment_api_data( WC_Order $order, int $expiration_in_days ) {
 	$data = array(
 		'reference_id'      => $order->get_id(),
-		'amount'            => array(
-			'value'    => format_money_cents( $order->get_total() ),
-			'currency' => $order->get_currency(),
+		'items'             => get_order_items_api_data( $order ),
+		'customer'          => get_order_customer_api_data( $order ),
+		'shipping'          => array(
+			'address' => get_order_shipping_address_api_data( $order ),
 		),
-		'items'             => get_order_items( $order ),
+		'amount'            => get_order_amount_api_data( $order ),
 		'payment_method'    => array(
 			'type'   => 'BOLETO',
 			'boleto' => array(
 				'due_date'          => Carbon::now()->addDays( $expiration_in_days )->toDateString(),
 				'instruction_lines' => array(
-					'line_1' => 'Pagamento para ' . get_bloginfo( 'name' ),
-					'line_2' => 'Via PagBank',
+					// translators: %s: blog name.
+					'line_1' => sprintf( __( 'Pagamento para %s', 'pagbank-woocommerce' ), get_bloginfo( 'name' ) ),
+					'line_2' => __( 'Via PagBank', 'pagbank-woocommerce' ),
 				),
 				'holder'            => array(
 					'name'    => $order->get_formatted_billing_full_name(),
-					'tax_id'  => get_order_tax_id( $order ),
+					'tax_id'  => get_order_tax_id_api_data( $order ),
 					'email'   => $order->get_billing_email(),
-					'address' => array(
-						'street'      => substr( $order->get_billing_address_1(), 0, 160 ),
-						'number'      => substr( $order->get_meta( '_billing_number' ), 0, 20 ),
-						'locality'    => substr( $order->get_meta( '_billing_neighborhood' ), 0, 60 ),
-						'city'        => substr( $order->get_billing_city(), 0, 90 ),
-						'region'      => substr( $order->get_billing_state(), 0, 2 ),
-						'region_code' => substr( $order->get_billing_state(), 0, 2 ),
-						'country'     => 'BRA',
-						'postal_code' => preg_replace( '/[^0-9]/', '', $order->get_billing_postcode() ),
-					),
+					'address' => get_order_billing_address_api_data( $order ),
 				),
 			),
 		),
 		'notification_urls' => array(
 			WebhookHandler::get_webhook_url(),
 		),
-		'metadata'          => array(
-			'order_id' => $order->get_id(),
-		),
+		'metadata'          => get_order_metadata_api_data( $order ),
 	);
-
-	if ( $order->get_shipping_address_2() ) {
-		$data['shipping']['complement'] = substr( $order->get_shipping_address_2(), 0, 40 );
-	}
 
 	return $data;
 }
@@ -206,29 +272,33 @@ function get_boleto_payment_api_data( WC_Order $order, int $expiration_in_days )
 function get_credit_card_payment_data( WC_Order $order, string $payment_token = null, string $encrypted_card = null, bool $save_card = false ) {
 	$data = array(
 		'reference_id'      => $order->get_id(),
-		'amount'            => array(
-			'value'    => format_money_cents( $order->get_total() ),
-			'currency' => $order->get_currency(),
+		'items'             => get_order_items_api_data( $order ),
+		'customer'          => get_order_customer_api_data( $order ),
+		'shipping'          => array(
+			'address' => get_order_shipping_address_api_data( $order ),
 		),
+		'amount'            => get_order_amount_api_data( $order ),
 		'payment_method'    => array(
 			'type'         => 'CREDIT_CARD',
 			'installments' => 1,
 			'capture'      => true,
 			'holder'       => array(
 				'name'   => $order->get_formatted_billing_full_name(),
-				'tax_id' => get_order_tax_id( $order ),
+				'tax_id' => get_order_tax_id_api_data( $order ),
 			),
 		),
 		'notification_urls' => array(
 			WebhookHandler::get_webhook_url(),
 		),
-		'metadata'          => array(
-			'order_id' => $order->get_id(),
-		),
+		'metadata'          => get_order_metadata_api_data( $order ),
 	);
 
-	if ( null === $payment_token || 'new' === $payment_token ) {
-		if ( null === $encrypted_card ) {
+	$is_new_credit_card = null === $payment_token || 'new' === $payment_token;
+
+	if ( $is_new_credit_card ) {
+		$is_missing_new_credit_card = null === $encrypted_card || empty( $encrypted_card );
+
+		if ( $is_missing_new_credit_card ) {
 			throw new Exception( __( 'Invalid credit card encryption. This should not happen, contact support.', 'pagbank-woocommerce' ) );
 		}
 
@@ -242,7 +312,7 @@ function get_credit_card_payment_data( WC_Order $order, string $payment_token = 
 	} else {
 		$token = WC_Payment_Tokens::get( $payment_token );
 
-		if ( ! $token ) {
+		if ( null === $token ) {
 			throw new Exception( __( 'Payment token not found.', 'pagbank-woocommerce' ) );
 		}
 
