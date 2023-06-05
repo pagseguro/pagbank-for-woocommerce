@@ -21,12 +21,30 @@ use WP_REST_Response;
 class ConnectAjaxApi {
 
 	/**
+	 * Instance.
+	 *
+	 * @var ConnectAjaxApi
+	 */
+	private static $instance = null;
+
+	/**
 	 * Init.
 	 */
-	public static function init(): void {
-		add_action( 'wp_ajax_pagbank_woocommerce_oauth_status', array( self::class, 'ajax_get_oauth_status' ) );
-		add_action( 'wp_ajax_pagbank_woocommerce_oauth_url', array( self::class, 'ajax_get_oauth_url' ) );
-		add_action( 'wp_ajax_pagbank_woocommerce_oauth_callback', array( self::class, 'ajax_oauth_callback' ) );
+	public function __construct() {
+		add_action( 'wp_ajax_pagbank_woocommerce_oauth_status', array( $this, 'ajax_get_oauth_status' ) );
+		add_action( 'wp_ajax_pagbank_woocommerce_oauth_url', array( $this, 'ajax_get_oauth_url' ) );
+		add_action( 'wp_ajax_pagbank_woocommerce_oauth_callback', array( $this, 'ajax_oauth_callback' ) );
+	}
+
+	/**
+	 * Get instance.
+	 */
+	public static function get_instance() {
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
 	}
 
 	/**

@@ -13,10 +13,28 @@ namespace PagBank_WooCommerce\Presentation;
 class WebhookHandler {
 
 	/**
+	 * Instance.
+	 *
+	 * @var WebhookHandler
+	 */
+	private static $instance = null;
+
+	/**
 	 * Initialize webhook handler.
 	 */
-	public static function init(): void {
-		add_action( 'woocommerce_api_pagbank_woocommerce_handler', array( self::class, 'handle' ) );
+	public function __construct() {
+		add_action( 'woocommerce_api_pagbank_woocommerce_handler', array( $this, 'handle' ) );
+	}
+
+	/**
+	 * Get instance.
+	 */
+	public static function get_instance() {
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
 	}
 
 	/**

@@ -15,11 +15,29 @@ namespace PagBank_WooCommerce\Presentation;
 class PaymentGatewaysFields {
 
 	/**
+	 * Instance.
+	 *
+	 * @var PaymentGatewaysFields
+	 */
+	private static $instance = null;
+
+	/**
 	 * Init.
 	 */
-	public static function init(): void {
-		add_filter( 'woocommerce_generate_currency_html', array( self::class, 'generate_currency_html' ), 10, 4 );
-		add_filter( 'woocommerce_generate_pagbank_connect_html', array( self::class, 'generate_pagbank_connect_html' ), 10, 4 );
+	public function __construct() {
+		add_filter( 'woocommerce_generate_currency_html', array( $this, 'generate_currency_html' ), 10, 4 );
+		add_filter( 'woocommerce_generate_pagbank_connect_html', array( $this, 'generate_pagbank_connect_html' ), 10, 4 );
+	}
+
+	/**
+	 * Get instance.
+	 */
+	public static function get_instance() {
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
 	}
 
 	/**

@@ -28,10 +28,10 @@ define( 'PAGBANK_WOOCOMMERCE_TEMPLATES_PATH', plugin_dir_path( PAGBANK_WOOCOMMER
 		require_once $autoload_filepath;
 	}
 
-	PaymentGatewaysFields::init();
-	PaymentGateways::init();
-	Hooks::init();
-	ConnectAjaxApi::init();
-	WebhookHandler::init();
+	PaymentGatewaysFields::get_instance();
+	PaymentGateways::get_instance();
+	Hooks::get_instance();
+	ConnectAjaxApi::get_instance();
+	WebhookHandler::get_instance();
 
 } )();

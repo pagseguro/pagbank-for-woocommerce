@@ -13,10 +13,21 @@ namespace PagBank_WooCommerce\Presentation;
 class Hooks {
 
 	/**
-	 * Init.
+	 * Instance.
+	 *
+	 * @var Hooks
 	 */
-	public static function init(): void {
+	private static $instance = null;
 
+	/**
+	 * Get instance.
+	 */
+	public static function get_instance() {
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
 	}
 
 }
