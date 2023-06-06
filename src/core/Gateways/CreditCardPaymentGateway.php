@@ -12,7 +12,9 @@ use PagBank_WooCommerce\Presentation\Api;
 use PagBank_WooCommerce\Presentation\Connect;
 use PagBank_WooCommerce\Presentation\PaymentToken;
 use WC_Order;
+use WC_Order_Item_Fee;
 use WC_Payment_Gateway_CC;
+use WC_Payment_Tokens;
 use WP_Error;
 
 use function PagBank_WooCommerce\Presentation\format_money;
@@ -53,6 +55,41 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	private $logs_enabled;
 
 	/**
+	 * Installments enabled.
+	 *
+	 * @var string yes|no.
+	 */
+	private $installments_enabled;
+
+	/**
+	 * Maximum installments.
+	 *
+	 * @var string yes|no.
+	 */
+	private $maximum_installments;
+
+	/**
+	 * Minimum installment value.
+	 *
+	 * @var string Minimum value.
+	 */
+	private $minimum_installment_value;
+
+	/**
+	 * Transfer of interest enabled.
+	 *
+	 * @var string yes|no.
+	 */
+	private $transfer_of_interest_enabled;
+
+	/**
+	 * Maximum installments interest free.
+	 *
+	 * @var string yes|no.
+	 */
+	private $maximum_installments_interest_free;
+
+	/**
 	 * CreditCardPaymentGateway constructor.
 	 */
 	public function __construct() {
@@ -74,6 +111,12 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		$this->logs_enabled = $this->get_option( 'logs_enabled' );
 		$this->connect      = new Connect( $this->environment );
 		$this->api          = new Api( $this->environment, $this->logs_enabled === 'yes' ? $this->id : null );
+
+		$this->installments_enabled               = 'yes' === $this->get_option( 'installments_enabled' );
+		$this->maximum_installments               = (int) $this->get_option( 'maximum_installments' );
+		$this->minimum_installment_value          = $this->get_option( 'minimum_installment_value' );
+		$this->transfer_of_interest_enabled       = 'yes' === $this->get_option( 'transfer_of_interest_enabled' );
+		$this->maximum_installments_interest_free = (int) $this->get_option( 'maximum_installments_interest_free' );
 
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 		add_filter( 'woocommerce_credit_card_form_fields', array( $this, 'credit_card_form_fields' ), 10, 2 );
@@ -238,6 +281,16 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			true
 		);
 
+		wp_enqueue_style(
+			'pagbank-checkout-credit-card',
+			plugins_url( 'styles/checkout-credit-card.css', PAGBANK_WOOCOMMERCE_FILE_PATH ),
+			array(),
+			PAGBANK_WOOCOMMERCE_VERSION,
+			'all'
+		);
+
+		wp_scripts()->add_data( 'pagbank-checkout-credit-card', 'type', 'module' );
+
 		wp_localize_script(
 			'pagbank-checkout-credit-card',
 			'PagBankCheckoutCreditCardVariables',
@@ -252,12 +305,13 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 					'invalid_card_expiry_date' => __( 'Invalid card expiry date.', 'pagbank-woocommerce' ),
 					'invalid_security_code'    => __( 'Invalid card cvc.', 'pagbank-woocommerce' ),
 					'invalid_encrypted_card'   => __( 'Encrypted card input not found', 'pagbank-woocommerce' ),
+					'invalid_card_bin'         => __( 'Invalid card bin.', 'pagbank-woocommerce' ),
 				),
 				'settings'  => array(
-					'installments_enabled'               => $this->get_option( 'installments_enabled' ),
-					'maximum_installments'               => $this->get_option( 'maximum_installments' ),
-					'trasfer_of_interest_enabled'        => $this->get_option( 'trasfer_of_interest_enabled' ),
-					'maximum_installments_interest_free' => $this->get_option( 'maximum_installments_interest_free' ),
+					'installments_enabled'               => $this->installments_enabled,
+					'maximum_installments'               => $this->maximum_installments,
+					'transfer_of_interest_enabled'       => $this->transfer_of_interest_enabled,
+					'maximum_installments_interest_free' => $this->maximum_installments_interest_free,
 				),
 			)
 		);
@@ -269,44 +323,97 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 * Get installments.
 	 */
 	public function get_installments(): void {
-		$installments_enabled               = ( 'yes' === $this->get_option( 'installments_enabled' ) );
-		$transfer_of_interest_enabled       = ( 'yes' === $this->get_option( 'transfer_of_interest_enabled' ) );
-		$maximum_installments               = (int) $this->get_option( 'maximum_installments' );
-		$maximum_installments_interest_free = min( (int) $this->get_option( 'maximum_installments_interest_free' ), $maximum_installments );
+		$nonce                              = isset( $_GET['nonce'] ) ? sanitize_text_field( wp_unslash( $_GET['nonce'] ) ) : null;
+		$maximum_installments               = (int) $this->maximum_installments;
+		$maximum_installments_interest_free = min( (int) $this->maximum_installments_interest_free, $maximum_installments );
 		$card_bin                           = isset( $_GET['card_bin'] ) ? sanitize_text_field( wp_unslash( $_GET['card_bin'] ) ) : null;
+		$payment_token                      = isset( $_GET['payment_token'] ) ? sanitize_text_field( wp_unslash( $_GET['payment_token'] ) ) : null;
 		$amount                             = isset( $_GET['amount'] ) ? (float) sanitize_text_field( wp_unslash( $_GET['amount'] ) ) : null;
 		$amount_in_cents                    = format_money_cents( $amount );
 
-		if ( false === $installments_enabled ) {
+		if ( ! wp_verify_nonce( $nonce, 'pagbank_get_installments' ) ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'Installments is not enabled', 'pagbank-woocommerce' ),
+					'message' => __( 'Invalid nonce', 'pagbank-woocommerce' ),
 				),
 				400
 			);
 			return;
 		}
 
-		if ( false === $transfer_of_interest_enabled ) {
+		if ( false === $this->installments_enabled ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'Transfer of interest is not enabled', 'pagbank-woocommerce' ),
+					'message' => __( 'Installments is not enabled.', 'pagbank-woocommerce' ),
 				),
 				400
 			);
 			return;
 		}
 
-		if ( null === $card_bin || empty( $card_bin ) ) {
+		if ( false === $this->transfer_of_interest_enabled ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'card_bin is required', 'pagbank-woocommerce' ),
+					'message' => __( 'Transfer of interest is not enabled.', 'pagbank-woocommerce' ),
 				),
 				400
 			);
 			return;
 		}
 
+		if ( empty( $card_bin ) && empty( $payment_token ) ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'card_bin or payment_token is required.', 'pagbank-woocommerce' ),
+				),
+				400
+			);
+			return;
+		} elseif ( $card_bin && $payment_token ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'You cannot send card_bin or payment_token at the same time.', 'pagbank-woocommerce' ),
+				),
+				400
+			);
+			return;
+		}
+
+		if ( $payment_token && ! $card_bin ) {
+
+			/**
+			 * Convert to PaymentToken.
+			 *
+			 * @var PaymentToken
+			 */
+			$token = WC_Payment_Tokens::get( $payment_token );
+
+			if ( null === $token || get_current_user_id() !== $token->get_user_id() ) {
+				wp_send_json_error(
+					array(
+						'message' => __( 'Invalid payment token.', 'pagbank-woocommerce' ),
+					),
+					400
+				);
+
+				return;
+			}
+
+			if ( $token->get_type() !== 'PagBank_CC' ) {
+				wp_send_json_error(
+					array(
+						'message' => __( 'Ops, something wrong in the token.', 'pagbank-woocommerce' ),
+					),
+					400
+				);
+
+				return;
+			}
+
+			$card_bin = $token->get_bin();
+		}
+
+		// TODO: cache this API request.
 		$charge_fees = $this->api->charge_fees( $amount_in_cents, $maximum_installments, $maximum_installments_interest_free, $card_bin );
 
 		if ( is_wp_error( $charge_fees ) ) {
@@ -372,6 +479,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		if ( $this->id === $gateway_id ) {
 			$new_fields = array(
 				'encrypted-card-field' => '<input id="' . esc_attr( $this->id ) . '-encrypted-card" type="hidden" name="' . esc_attr( $this->id ) . '-encrypted-card" />',
+				'card-bin-field'       => '<input id="' . esc_attr( $this->id ) . '-card-bin" type="hidden" name="' . esc_attr( $this->id ) . '-card-bin" />',
 				'card-holder-field'    => '<p class="form-row form-row-wide">
 					<label for="' . esc_attr( $this->id ) . '-card-holder">' . esc_html__( 'Card holder', 'pagbank-woocommerce' ) . '&nbsp;<span class="required">*</span></label>
 					<input id="' . esc_attr( $this->id ) . '-card-holder" class="input-text wc-credit-card-form-card-holder" autocomplete="cc-name" autocorrect="no" autocapitalize="no" spellcheck="no" type="text" ' . $this->field_name( 'card-holder' ) . ' />
@@ -403,18 +511,14 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 * Installments fields on checkout.
 	 */
 	public function installments_fields() {
-		echo '<p class="form-row form-row-wide">';
-		woocommerce_form_field(
-			$this->id . '-installments',
+		wc_get_template(
+			'checkout-installments-fields.php',
 			array(
-				'type'     => 'select',
-				'class'    => array( 'pagbank-credit-card-installments form-row-wide' ),
-				'label'    => __( 'Installments', 'pagbank-woocommerce' ),
-				'required' => true,
-				'options'  => array(),
-			)
+				'gateway' => $this,
+			),
+			'woocommerce/pagbank/',
+			PAGBANK_WOOCOMMERCE_TEMPLATES_PATH
 		);
-		echo '</p>';
 	}
 
 	/**
@@ -423,10 +527,65 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 * TODO: validate fields.
 	 */
 	public function validate_fields() {
-		// phpcs:ignore WordPress.Security.NonceVerification
-		if ( ! isset( $_POST[ $this->id . '-encrypted-card' ] ) || empty( $_POST[ $this->id . '-encrypted-card' ] ) ) {
-			wc_add_notice( __( 'The card was not encrypted. Please contact support.', 'pagbank-woocommerce' ), 'error' );
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$payment_token = isset( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) ? wc_clean( wp_unslash( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) ) : null;
+
+		$is_new_credit_card = null === $payment_token || 'new' === $payment_token;
+
+		// Validation for new credit cards.
+		if ( $is_new_credit_card ) {
+			// phpcs:ignore WordPress.Security.NonceVerification
+			$has_encrypted_card = isset( $_POST['pagbank_credit_card-encrypted-card'] ) && ! empty( $_POST['pagbank_credit_card-encrypted-card'] );
+			if ( ! $has_encrypted_card ) {
+				wc_add_notice( __( 'The card was not encrypted. Please contact support.', 'pagbank-woocommerce' ), 'error' );
+				return false;
+			}
+
+			// phpcs:ignore WordPress.Security.NonceVerification
+			$has_card_bin = isset( $_POST['pagbank_credit_card-card-bin'] ) && ! empty( $_POST['pagbank_credit_card-card-bin'] );
+			if ( ! $has_card_bin ) {
+				wc_add_notice( __( 'Missing card bin. Please contact support.', 'pagbank-woocommerce' ), 'error' );
+				return false;
+			}
+
+			// phpcs:ignore WordPress.Security.NonceVerification
+			$card_bin          = wc_clean( wp_unslash( $_POST['pagbank_credit_card-card-bin'] ) );
+			$is_valid_card_bin = strlen( $card_bin ) === 6;
+			if ( ! $is_valid_card_bin ) {
+				wc_add_notice( __( 'Invalid card bin.', 'pagbank-woocommerce' ), 'error' );
+				return false;
+			}
 		}
+
+		// Validation for saved credit cards.
+		if ( ! $is_new_credit_card ) {
+			$token = WC_Payment_Tokens::get( $payment_token );
+
+			$is_token_from_same_user = $token->get_user_id() === get_current_user_id();
+			if ( ! $is_token_from_same_user ) {
+				wc_add_notice( __( 'Payment token not found.', 'pagbank-woocommerce' ), 'error' );
+				return false;
+			}
+		}
+
+		// Validation for installments.
+		if ( $this->installments_enabled ) {
+			// phpcs:ignore WordPress.Security.NonceVerification
+			$has_installments = isset( $_POST['pagbank_credit_card-installments'] ) && ! empty( $_POST['pagbank_credit_card-installments'] );
+			if ( ! $has_installments ) {
+				wc_add_notice( __( 'Missing installments.', 'pagbank-woocommerce' ), 'error' );
+				return false;
+			}
+
+			// phpcs:ignore WordPress.Security.NonceVerification
+			$installments = (int) wc_clean( wp_unslash( $_POST['pagbank_credit_card-installments'] ) );
+			if ( $installments > $this->maximum_installments ) {
+				wc_add_notice( __( 'Invalid installments.', 'pagbank-woocommerce' ), 'error' );
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -447,13 +606,65 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$encrypted_card = isset( $_POST['pagbank_credit_card-encrypted-card'] ) ? wc_clean( wp_unslash( $_POST['pagbank_credit_card-encrypted-card'] ) ) : null;
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$save_card = isset( $_POST[ 'wc-' . $this->id . '-new-payment-method' ] ) && $_POST[ 'wc-' . $this->id . '-new-payment-method' ] === 'true';
+			$card_bin = isset( $_POST['pagbank_credit_card-card-bin'] ) ? wc_clean( wp_unslash( $_POST['pagbank_credit_card-card-bin'] ) ) : null;
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$save_card = $payment_token === 'new' && isset( $_POST[ 'wc-' . $this->id . '-new-payment-method' ] ) && $_POST[ 'wc-' . $this->id . '-new-payment-method' ] === 'true';
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$installments = isset( $_POST['pagbank_credit_card-installments'] ) ? (int) wc_clean( wp_unslash( $_POST['pagbank_credit_card-installments'] ) ) : 1;
+
+			if ( $this->installments_enabled && $this->transfer_of_interest_enabled ) {
+				$amount_in_cents    = format_money_cents( $order->get_total() );
+				$is_new_credit_card = null === $payment_token || 'new' === $payment_token;
+
+				if ( ! $is_new_credit_card ) {
+					/**
+					 * Convert to PaymentToken.
+					 *
+					 * @var PaymentToken
+					 */
+					$token = WC_Payment_Tokens::get( $payment_token );
+
+					if ( $token === null ) {
+						wc_add_notice( __( 'Invalid payment token.', 'pagbank-woocommerce' ), 'error' );
+						return;
+					}
+
+					$card_bin = $token->get_bin();
+				}
+
+				$charge_fees = $this->api->charge_fees( $amount_in_cents, $this->maximum_installments, $this->maximum_installments_interest_free, $card_bin );
+
+				if ( is_wp_error( $charge_fees ) ) {
+					wc_add_notice( __( 'Error getting installments.', 'pagbank-woocommerce' ), 'error' );
+					return;
+				}
+
+				$key                = array_key_first( $charge_fees['payment_methods']['credit_card'] );
+				$installments_plans = $charge_fees['payment_methods']['credit_card'][ $key ]['installment_plans'];
+				$matched_plan       = null;
+
+				foreach ( $installments_plans as $installments_plan ) {
+					if ( $installments_plan['installments'] === $installments ) {
+						$matched_plan = $installments_plan;
+						break;
+					}
+				}
+
+				if ( $matched_plan === null ) {
+					wc_add_notice( __( 'Installment plan not found.', 'pagbank-woocommerce' ) );
+					return;
+				}
+
+				$transfer_of_interest_fee = $matched_plan['amount'];
+			}
 
 			$data = get_credit_card_payment_data(
 				$order,
 				$payment_token,
 				$encrypted_card,
-				$save_card
+				$save_card,
+				$installments,
+				$transfer_of_interest_fee
 			);
 
 			$response = $this->api->create_charge( $data );
@@ -466,32 +677,19 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			if ( $response['status'] === 'IN_ANALYSIS' ) {
 				$order->update_status( 'on-hold', __( 'O PagBank está analisando o risco da transação.', 'pagbank-woocommerce' ) );
 			} elseif ( $response['status'] === 'DECLINED' ) {
-				wc_add_notice( __( 'O pagamento foi recusado pelo PagBank', 'pagbank-woocommerce' ), 'error' );
+				wc_add_notice( __( 'O pagamento foi recusado.', 'pagbank-woocommerce' ), 'error' );
 				return;
 			} elseif ( $response['status'] !== 'PAID' ) {
-				throw new Exception( __( 'Invalid order status from PagBank API.', 'pagbank-woocommerce' ) );
+				wc_add_notice( __( 'Invalid order status from API.', 'pagbank-woocommerce' ), 'error' );
+				return;
 			}
 
-			// Add order details.
 			$this->save_order_meta_data( $order, $response );
 
 			$order->payment_complete();
 
-			// Save credit card.
-			if ( isset( $response['payment_method']['card']['id'] ) ) {
-				$token = new PaymentToken();
-
-				$token->set_holder( $response['payment_method']['card']['holder']['name'] );
-				$token->set_bin( $response['payment_method']['card']['first_digits'] );
-				$token->set_token( $response['payment_method']['card']['id'] );
-				$token->set_card_type( $response['payment_method']['card']['brand'] );
-				$token->set_last4( $response['payment_method']['card']['last_digits'] );
-				$token->set_expiry_month( $response['payment_method']['card']['exp_month'] );
-				$token->set_expiry_year( $response['payment_method']['card']['exp_year'] );
-				$token->set_gateway_id( $this->id );
-				$token->set_user_id( $order->get_user_id() );
-
-				$token->save();
+			if ( $save_card && isset( $response['payment_method']['card']['id'] ) ) {
+				$this->save_credit_card( $order, $response['payment_method']['card'] );
 			}
 
 			return array(
@@ -501,6 +699,28 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		} catch ( Exception $e ) {
 			wc_add_notice( $e->getMessage(), 'error' );
 		}
+	}
+
+	/**
+	 * Save credit card token.
+	 *
+	 * @param WC_Order $order Order object.
+	 * @param array    $data  Credit card data.
+	 */
+	private function save_credit_card( WC_Order $order, array $data ): void {
+		$token = new PaymentToken();
+
+		$token->set_holder( $data['holder']['name'] );
+		$token->set_bin( $data['first_digits'] );
+		$token->set_token( $data['id'] );
+		$token->set_card_type( $data['brand'] );
+		$token->set_last4( $data['last_digits'] );
+		$token->set_expiry_month( $data['exp_month'] );
+		$token->set_expiry_year( $data['exp_year'] );
+		$token->set_gateway_id( $this->id );
+		$token->set_user_id( $order->get_user_id() );
+
+		$token->save();
 	}
 
 	/**
@@ -516,6 +736,21 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		$order->update_meta_data( '_pagbank_credit_card_brand', $response['payment_method']['card']['brand'] );
 		$order->update_meta_data( '_pagbank_credit_card_installments', $response['payment_method']['installments'] );
 		$order->save_meta_data();
+
+		if ( isset( $response['amount']['fees'] ) ) {
+			$interest_fee = new WC_Order_Item_Fee();
+			$amount       = $response['amount']['fees']['buyer']['interest']['total'] / 100;
+
+			$interest_fee->set_name( __( 'Interest', 'pagbank-woocommerce' ) );
+			$interest_fee->set_amount( $amount );
+			$interest_fee->set_tax_class( '' );
+			$interest_fee->set_tax_status( 'none' );
+			$interest_fee->set_total( $amount );
+
+			$order->add_item( $interest_fee );
+			$order->calculate_totals();
+			$order->save();
+		}
 	}
 
 	/**

@@ -265,11 +265,13 @@ function get_boleto_payment_api_data( WC_Order $order, int $expiration_in_days )
  * @param string   $payment_token Payment token.
  * @param string   $encrypted_card Encrypted card.
  * @param bool     $save_card Save card.
+ * @param int      $installments Installments.
+ * @param array    $transfer_of_interest_fee Transfer of interest fee.
  *
  * @return array
  * @throws Exception Throws exception when card is not valid.
  */
-function get_credit_card_payment_data( WC_Order $order, string $payment_token = null, string $encrypted_card = null, bool $save_card = false ) {
+function get_credit_card_payment_data( WC_Order $order, string $payment_token = null, string $encrypted_card = null, bool $save_card = false, int $installments = 1, array $transfer_of_interest_fee = null ) {
 	$data = array(
 		'reference_id'      => $order->get_id(),
 		'items'             => get_order_items_api_data( $order ),
@@ -280,7 +282,7 @@ function get_credit_card_payment_data( WC_Order $order, string $payment_token = 
 		'amount'            => get_order_amount_api_data( $order ),
 		'payment_method'    => array(
 			'type'         => 'CREDIT_CARD',
-			'installments' => 1,
+			'installments' => $installments,
 			'capture'      => true,
 			'holder'       => array(
 				'name'   => $order->get_formatted_billing_full_name(),
@@ -292,6 +294,12 @@ function get_credit_card_payment_data( WC_Order $order, string $payment_token = 
 		),
 		'metadata'          => get_order_metadata_api_data( $order ),
 	);
+
+	if ( null !== $transfer_of_interest_fee ) {
+		$data['amount'] = $transfer_of_interest_fee;
+	} else {
+		$data['amount'] = get_order_amount_api_data( $order );
+	}
 
 	$is_new_credit_card = null === $payment_token || 'new' === $payment_token;
 
@@ -312,7 +320,8 @@ function get_credit_card_payment_data( WC_Order $order, string $payment_token = 
 	} else {
 		$token = WC_Payment_Tokens::get( $payment_token );
 
-		if ( null === $token ) {
+		// TODO: check for user validation.
+		if ( null === $token || $token->get_user_id() !== get_current_user_id() ) {
 			throw new Exception( __( 'Payment token not found.', 'pagbank-woocommerce' ) );
 		}
 
