@@ -130,7 +130,7 @@ class ConnectAjaxApi {
 		$api   = new Api( $environment );
 		$nonce = sanitize_text_field( wp_unslash( $_GET['nonce'] ) );
 
-		$oauth_url = $api->get_oauth_url( self::get_callback_url( $environment ), $nonce, $application_id );
+		$oauth_url = $api->get_oauth_url( self::get_callback_url( $environment ), $environment, $nonce, $application_id );
 
 		wp_send_json(
 			array(
@@ -168,6 +168,10 @@ class ConnectAjaxApi {
 		$oauth_code   = sanitize_text_field( wp_unslash( $_GET['code'] ) );
 		$callback_url = self::get_callback_url( $environment );
 		$data         = $api->get_access_token_from_oauth_code( $callback_url, $oauth_code );
+
+		if ( is_wp_error( $data ) ) {
+			wp_die( esc_html( $data->get_error_message() ) );
+		}
 
 		$connect->save( $data );
 

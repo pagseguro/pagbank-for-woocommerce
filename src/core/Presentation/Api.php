@@ -94,17 +94,18 @@ class Api {
 	 * This will open a new window for the user to authenticate with PagSeguro. The state will contain the encrypted code verifier.
 	 *
 	 * @param string $callback_url The URL to redirect the user to after authentication.
+	 * @param string $environment The environment to use.
 	 * @param string $nonce The nonce to use for the state.
 	 * @param string $application_id The application ID.
 	 *
 	 * @return string The URL to redirect the user to.
 	 */
-	public function get_oauth_url( string $callback_url, string $nonce, string $application_id ): string {
+	public function get_oauth_url( string $callback_url, string $environment, string $nonce, string $application_id ): string {
 		$code_challenge = $this->generate_code_challenge();
 
 		set_transient( 'pagbank_oauth_code_verifier', $code_challenge['code_verifier'], MINUTE_IN_SECONDS );
 		set_transient( 'pagbank_oauth_application_id', $application_id, MINUTE_IN_SECONDS );
-		set_transient( 'pagbank_oauth_environment', $application_id, MINUTE_IN_SECONDS );
+		set_transient( 'pagbank_oauth_environment', $environment, MINUTE_IN_SECONDS );
 
 		$url = http_build_url(
 			$this->get_oauth_api_url( 'oauth2/authorize' ),
