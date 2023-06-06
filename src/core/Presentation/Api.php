@@ -422,6 +422,59 @@ class Api {
 	}
 
 	/**
+	 * Get charge fees.
+	 *
+	 * @param float  $amount                         The charge value.
+	 * @param int    $max_installments             The max installments.
+	 * @param int    $max_installments_no_interest The max installments no interest.
+	 * @param string $credit_card_bin              The credit card bin.
+	 *
+	 * @return array|WP_Error The fees data.
+	 */
+	public function charge_fees( float $amount, int $max_installments, int $max_installments_no_interest, string $credit_card_bin ) {
+		$url = add_query_arg(
+			array(
+				'payment_methods'              => 'CREDIT_CARD',
+				'value'                        => $amount,
+				'max_installments'             => $max_installments,
+				'max_installments_no_interest' => $max_installments_no_interest,
+				'credit_card_bin'              => $credit_card_bin,
+			),
+			$this->get_api_url( 'charges/fees/calculate' )
+		);
+
+		$this->log_request_begin( $url, '' );
+
+		$response = wp_remote_get(
+			$url,
+			array(
+				'headers' => array(
+					'Authorization' => $this->connect->get_access_token(),
+					'Content-Type'  => 'application/json',
+				),
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			$this->log_request_error( $response );
+
+			return $response;
+		}
+
+		$response_code         = wp_remote_retrieve_response_code( $response );
+		$response_body         = wp_remote_retrieve_body( $response );
+		$decoded_response_body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		$this->log_request_ends( $response_code, $response_body );
+
+		if ( 200 !== $response_code ) {
+			return new WP_Error( 'pagbank_charge_calculate_fees_failed', 'PagBank calculate fees failed', $decoded_response_body );
+		}
+
+		return $decoded_response_body;
+	}
+
+	/**
 	 * Log a message.
 	 *
 	 * @param string $message The message to be logged.

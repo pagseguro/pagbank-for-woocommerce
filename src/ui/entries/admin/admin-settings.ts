@@ -34,6 +34,14 @@ document.querySelectorAll("[data-toggle]").forEach((toggleInput) => {
 				toggleTargetElement.removeAttribute("disabled");
 			} else {
 				toggleTargetElement.setAttribute("disabled", "disabled");
+
+				if (
+					toggleTargetElement instanceof HTMLInputElement &&
+					toggleTargetElement.type === "checkbox"
+				) {
+					toggleTargetElement.checked = false;
+					toggleTargetElement.dispatchEvent(new Event("change"));
+				}
 			}
 		});
 	});
