@@ -497,6 +497,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 */
 	public function payment_fields() {
 		if ( ! is_checkout() ) {
+			echo '<p>' . esc_html( __( 'Só é possível adicionar um cartão de crédito através do checkout.', 'pagbank-woocommerce' ) ) . '</p>';
 			return;
 		}
 
@@ -527,6 +528,12 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 * TODO: validate fields.
 	 */
 	public function validate_fields() {
+		// Disable outside checkout.
+		if ( ! is_checkout() ) {
+			wc_add_notice( __( 'Só é possível adicionar um cartão de crédito através do checkout.', 'pagbank-woocommerce' ), 'error' );
+			return;
+		}
+
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$payment_token = isset( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) ? wc_clean( wp_unslash( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) ) : null;
 
@@ -608,7 +615,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$card_bin = isset( $_POST['pagbank_credit_card-card-bin'] ) ? wc_clean( wp_unslash( $_POST['pagbank_credit_card-card-bin'] ) ) : null;
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$save_card = $payment_token === 'new' && isset( $_POST[ 'wc-' . $this->id . '-new-payment-method' ] ) && $_POST[ 'wc-' . $this->id . '-new-payment-method' ] === 'true';
+			$save_card = ( $payment_token === null || $payment_token === 'new' ) && isset( $_POST[ 'wc-' . $this->id . '-new-payment-method' ] ) && $_POST[ 'wc-' . $this->id . '-new-payment-method' ] === 'true';
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$installments = isset( $_POST['pagbank_credit_card-installments'] ) ? (int) wc_clean( wp_unslash( $_POST['pagbank_credit_card-installments'] ) ) : 1;
 
