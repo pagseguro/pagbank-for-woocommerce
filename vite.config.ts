@@ -22,7 +22,7 @@ export default defineConfig({
 		},
 		rollupOptions: {
 			output: {
-				chunkFileNames: "ui/admin/[name].js",
+				chunkFileNames: "ui/shared/[name]-[hash].js",
 			},
 		},
 	},
