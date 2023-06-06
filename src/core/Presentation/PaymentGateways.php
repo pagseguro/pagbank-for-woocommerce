@@ -90,6 +90,8 @@ class PaymentGateways {
 			'all'
 		);
 
+		wp_scripts()->add_data( 'pagbank-woocommerce-admin-settings', 'type', 'module' );
+
 		wp_enqueue_script( 'pagbank-woocommerce-admin-settings' );
 		wp_enqueue_script( 'thickbox' );
 
