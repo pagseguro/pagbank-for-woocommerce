@@ -1,6 +1,6 @@
 {
     "name": "pagbank-woocommerce",
-    "version": "1.0.0",
+    "version": "0.0.2",
     "author": "Elias Júnior <me@eliasjr.dev>",
     "license": "MIT",
     "type": "module",

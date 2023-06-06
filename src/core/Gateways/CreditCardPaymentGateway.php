@@ -271,7 +271,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 * @return void
 	 */
 	public function tokenization_script() {
-		wp_enqueue_script( 'pagbank-sdk', 'https://assets.pagseguro.com.br/checkout-sdk-js/rc/dist/browser/pagseguro.min.js', array(), '1.0.0', true );
+		wp_enqueue_script( 'pagbank-sdk', 'https://assets.pagseguro.com.br/checkout-sdk-js/rc/dist/browser/pagseguro.min.js', array(), PAGBANK_WOOCOMMERCE_VERSION, true );
 
 		wp_enqueue_script(
 			'pagbank-checkout-credit-card',
