@@ -30,6 +30,7 @@ services:
     depends_on:
       - wordpress
     volumes:
+      - wp_data:/var/www/html
       - ./wp:/var/www/html
       - ./:/var/www/html/wp-content/plugins/pagbank-woocommerce
     profiles:
@@ -52,3 +53,4 @@ services:
 
 volumes:
   db_data: {}
+  wp_data: {}
