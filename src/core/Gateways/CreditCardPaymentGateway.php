@@ -164,14 +164,6 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				'default'     => '',
 				'desc_tip'    => true,
 			),
-			'one_click_buy_enabled'              => array(
-				'title'       => __( 'One-click buy', 'pagbank-woocommerce' ),
-				'type'        => 'checkbox',
-				'label'       => __( 'Enable one-click buy', 'pagbank-woocommerce' ),
-				'description' => __( 'This allows users to save their credit cards.', 'pagbank-woocommerce' ),
-				'default'     => 'yes',
-				'desc_tip'    => true,
-			),
 			'installments_enabled'               => array(
 				'title'             => __( 'Installments', 'pagbank-woocommerce' ),
 				'type'              => 'checkbox',
