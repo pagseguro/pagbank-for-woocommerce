@@ -9,6 +9,7 @@ namespace PagBank_WooCommerce\Presentation;
 
 use Carbon\Carbon;
 use WC_Logger;
+use Wilkques\PKCE\Generator;
 use WP_Error;
 
 /**
@@ -272,14 +273,14 @@ class Api {
 	/**
 	 * Generate a code challenge.
 	 *
-	 * TODO: implement random code verifier generation.
-	 *
 	 * @return array The code verifier and the code challenge.
 	 */
 	public function generate_code_challenge() {
+		$pkce = Generator::generate();
+
 		return array(
-			'code_verifier'  => '6388dfc9a5827df1f0e099353337254bed1f9be91076467e0aa393cb',
-			'code_challenge' => 'iXSPnduNRPLhZb4KTq2FdN3SWzWVxn3mcp6oaPRyMOk',
+			'code_verifier'  => $pkce->getCodeVerifier(),
+			'code_challenge' => $pkce->getCodeChallenge(),
 		);
 	}
 
