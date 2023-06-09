@@ -413,9 +413,9 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 					'interest_free'     => $plan['interest_free'],
 					'title'             => $plan['interest_free']
 												// translators: 1: installments, 2: installment value.
-												? sprintf( __( '%1$dx de %2$s sem juros', 'pagbank-woocommerce' ), $plan['installments'], format_money( $plan['installment_value'] / 100 ) )
+												? sprintf( __( '%1$dx of %2$s interest-free', 'pagbank-woocommerce' ), $plan['installments'], format_money( $plan['installment_value'] / 100 ) )
 												// translators: 1: installments, 2: installment value, 3: installment total.
-												: sprintf( __( '%1$dx de %2$s com juros (%3$s)', 'pagbank-woocommerce' ), $plan['installments'], format_money( $plan['installment_value'] / 100 ), format_money( $plan['amount']['value'] / 100 ) ),
+												: sprintf( __( '%1$dx of %2$s with interest (%3$s)', 'pagbank-woocommerce' ), $plan['installments'], format_money( $plan['installment_value'] / 100 ), format_money( $plan['amount']['value'] / 100 ) ),
 					'amount'            => $plan['amount']['value'],
 				);
 			},
@@ -473,7 +473,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 */
 	public function payment_fields() {
 		if ( ! is_checkout() ) {
-			echo '<p>' . esc_html( __( 'Só é possível adicionar um cartão de crédito através do checkout.', 'pagbank-woocommerce' ) ) . '</p>';
+			echo '<p>' . esc_html( __( 'You can only add a credit card during the checkout.', 'pagbank-woocommerce' ) ) . '</p>';
 			return;
 		}
 
@@ -519,7 +519,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	public function validate_fields() {
 		// Disable outside checkout.
 		if ( ! is_checkout() ) {
-			wc_add_notice( __( 'Só é possível adicionar um cartão de crédito através do checkout.', 'pagbank-woocommerce' ), 'error' );
+			wc_add_notice( __( 'You can only add a credit card during the checkout.', 'pagbank-woocommerce' ), 'error' );
 			return;
 		}
 
@@ -677,16 +677,16 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			$response = $this->api->create_order( $data );
 
 			if ( is_wp_error( $response ) ) {
-				wc_add_notice( __( 'Houve um erro no pagamento.', 'pagbank-woocommerce' ), 'error' );
+				wc_add_notice( __( 'There was an error during the payment.', 'pagbank-woocommerce' ), 'error' );
 				return;
 			}
 
 			$charge = $response['charges'][0];
 
 			if ( $charge['status'] === 'IN_ANALYSIS' ) {
-				$order->update_status( 'on-hold', __( 'O PagBank está analisando o risco da transação.', 'pagbank-woocommerce' ) );
+				$order->update_status( 'on-hold', __( 'The PagBank is analyzing the transaction.', 'pagbank-woocommerce' ) );
 			} elseif ( $charge['status'] === 'DECLINED' ) {
-				wc_add_notice( __( 'O pagamento foi recusado.', 'pagbank-woocommerce' ), 'error' );
+				wc_add_notice( __( 'The payment was refused.', 'pagbank-woocommerce' ), 'error' );
 				return;
 			} elseif ( $charge['status'] !== 'PAID' ) {
 				wc_add_notice( __( 'Invalid order status from API.', 'pagbank-woocommerce' ), 'error' );
@@ -773,7 +773,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		$amount = floatval( $amount );
 
 		if ( $amount <= 0 ) {
-			return new WP_Error( 'error', __( 'O valor do reembolso não pode ser zero.', 'pagbank-woocommerce' ) );
+			return new WP_Error( 'error', __( 'The refund value should be bigger than 0.', 'pagbank-woocommerce' ) );
 		}
 
 		$pagbank_order_id = get_post_meta( $order_id, '_pagbank_order_id', true );
@@ -789,9 +789,9 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				return true;
 			}
 
-			return new WP_Error( 'error', __( 'Houve um erro ao tentar realizar o reembolso.', 'pagbank-woocommerce' ) );
+			return new WP_Error( 'error', __( 'There was an error trying to refund.', 'pagbank-woocommerce' ) );
 		} catch ( Exception $ex ) {
-			return new WP_Error( 'error', __( 'Houve um erro ao tentar realizar o reembolso.', 'pagbank-woocommerce' ) );
+			return new WP_Error( 'error', __( 'There was an error trying to refund.', 'pagbank-woocommerce' ) );
 		}
 	}
 

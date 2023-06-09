@@ -154,14 +154,14 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 			$response           = $this->api->create_order( $data );
 
 			if ( is_wp_error( $response ) ) {
-				wc_add_notice( 'Houve um erro no pagamento', 'error' );
+				wc_add_notice( 'There was an error during the payment.', 'error' );
 				return;
 			}
 
 			$charge = $response['charges'][0];
 
 			// Update status to on-hold.
-			$order->update_status( 'on-hold', __( 'Aguardando pagamento via Boleto.', 'pagbank-woocommerce' ) );
+			$order->update_status( 'on-hold', __( 'Waiting Boleto payment.', 'pagbank-woocommerce' ) );
 
 			// Add order details.
 			$this->save_order_meta_data( $order, $charge );
@@ -186,7 +186,7 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 		$amount = floatval( $amount );
 
 		if ( $amount <= 0 ) {
-			return new WP_Error( 'error', __( 'O valor do reembolso não pode ser zero.', 'pagbank-woocommerce' ) );
+			return new WP_Error( 'error', __( 'The refund value should be bigger than 0.', 'pagbank-woocommerce' ) );
 		}
 
 		$pagbank_order_id = get_post_meta( $order_id, '_pagbank_order_id', true );
@@ -202,9 +202,9 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 				return true;
 			}
 
-			return new WP_Error( 'error', __( 'Houve um erro ao tentar realizar o reembolso.', 'pagbank-woocommerce' ) );
+			return new WP_Error( 'error', __( 'There was an error trying to refund.', 'pagbank-woocommerce' ) );
 		} catch ( Exception $ex ) {
-			return new WP_Error( 'error', __( 'Houve um erro ao tentar realizar o reembolso.', 'pagbank-woocommerce' ) );
+			return new WP_Error( 'error', __( 'There was an error trying to refund.', 'pagbank-woocommerce' ) );
 		}
 	}
 
