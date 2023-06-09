@@ -31,56 +31,56 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 *
 	 * @var Api
 	 */
-	private $api;
+	public $api;
 
 	/**
 	 * Api instance.
 	 *
 	 * @var Connect
 	 */
-	private $connect;
+	public $connect;
 
 	/**
 	 * Environment.
 	 *
 	 * @var string
 	 */
-	private $environment;
+	public $environment;
 
 	/**
 	 * Logs enabled.
 	 *
 	 * @var string yes|no.
 	 */
-	private $logs_enabled;
+	public $logs_enabled;
 
 	/**
 	 * Installments enabled.
 	 *
 	 * @var string yes|no.
 	 */
-	private $installments_enabled;
+	public $installments_enabled;
 
 	/**
 	 * Maximum installments.
 	 *
 	 * @var string yes|no.
 	 */
-	private $maximum_installments;
+	public $maximum_installments;
 
 	/**
 	 * Minimum installment value.
 	 *
 	 * @var string Minimum value.
 	 */
-	private $minimum_installment_value;
+	public $minimum_installment_value;
 
 	/**
 	 * Transfer of interest enabled.
 	 *
 	 * @var string yes|no.
 	 */
-	private $transfer_of_interest_enabled;
+	public $transfer_of_interest_enabled;
 
 	/**
 	 * Maximum installments interest free.
@@ -497,21 +497,34 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		$this->saved_payment_methods();
 		$this->form();
 		$this->save_payment_method_checkbox();
-		$this->installments_fields();
+		if ( $this->installments_enabled ) {
+			$this->installments_fields();
+		}
 	}
 
 	/**
 	 * Installments fields on checkout.
 	 */
 	public function installments_fields() {
-		wc_get_template(
-			'checkout-installments-fields.php',
-			array(
-				'gateway' => $this,
-			),
-			'woocommerce/pagbank/',
-			PAGBANK_WOOCOMMERCE_TEMPLATES_PATH
-		);
+		if ( $this->transfer_of_interest_enabled ) {
+			wc_get_template(
+				'checkout-installments-fields-transfer-of-interest.php',
+				array(
+					'gateway' => $this,
+				),
+				'woocommerce/pagbank/',
+				PAGBANK_WOOCOMMERCE_TEMPLATES_PATH
+			);
+		} else {
+			wc_get_template(
+				'checkout-installments-fields-no-interest.php',
+				array(
+					'gateway' => $this,
+				),
+				'woocommerce/pagbank/',
+				PAGBANK_WOOCOMMERCE_TEMPLATES_PATH
+			);
+		}
 	}
 
 	/**
@@ -585,7 +598,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 			// phpcs:ignore WordPress.Security.NonceVerification
 			$installments = (int) wc_clean( wp_unslash( $_POST['pagbank_credit_card-installments'] ) );
-			if ( $installments > $this->maximum_installments ) {
+			if ( $installments > $this->maximum_installments || $installments < 1 ) {
 				wc_add_notice( __( 'Invalid installments.', 'pagbank-woocommerce' ), 'error' );
 				return false;
 			}

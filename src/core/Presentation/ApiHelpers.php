@@ -357,3 +357,33 @@ function get_credit_card_payment_data( WC_Order $order, string $payment_token = 
 
 	return $data;
 }
+
+/**
+ * Get installments plan without interest.
+ *
+ * @param int $value Value in cents.
+ * @param int $installments Installments.
+ * @param int $minimum_installment_value Minimum installment value in cents.
+ */
+function get_installments_plan_no_interest( int $value, int $installments = 1, int $minimum_installment_value = 500 ) {
+	$installments_plan = array();
+	$installment_value = $value / $installments;
+
+	if ( $installment_value < $minimum_installment_value ) {
+		$installments = floor( $value / $minimum_installment_value );
+	}
+
+	for ( $i = 1; $i <= $installments; $i++ ) {
+		$i_value             = floor( $value / $i );
+		$installments_plan[] = array(
+			'installments'      => $i,
+			'installment_value' => $i_value,
+			'interest_free'     => true,
+			// translators: %1$d: installment number, %2$s: installment value.
+			'title'             => sprintf( __( '%1$dx de %2$s sem juros', 'pagbank-woocommerce' ), $i, format_money( $i_value / 100 ) ),
+			'amount'            => $value,
+		);
+	}
+
+	return $installments_plan;
+}

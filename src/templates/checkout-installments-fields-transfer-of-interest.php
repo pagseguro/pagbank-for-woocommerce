@@ -10,7 +10,7 @@
 		<select
 			name="<?php echo $gateway->id; ?>-installments"
 			id="<?php echo $gateway->id; ?>-installments"
-			class="select "
+			class="select"
 			data-amount="<?php echo esc_attr(WC()->cart->get_totals()['total']); ?>"
 			data-nonce="<?php echo esc_attr(wp_create_nonce('pagbank_get_installments'));  ?>"
 			data-url="<?php echo esc_attr('/wc-api/' . $gateway->id . '_installments'); ?>"
