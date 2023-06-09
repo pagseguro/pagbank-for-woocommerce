@@ -151,18 +151,20 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 			$order              = wc_get_order( $order_id );
 			$expiration_in_days = $this->get_option( 'expiration_days' );
 			$data               = get_boleto_payment_api_data( $order, $expiration_in_days );
-			$response           = $this->api->create_charge( $data );
+			$response           = $this->api->create_order( $data );
 
 			if ( is_wp_error( $response ) ) {
 				wc_add_notice( 'Houve um erro no pagamento', 'error' );
 				return;
 			}
 
+			$charge = $response['charges'][0];
+
 			// Update status to on-hold.
 			$order->update_status( 'on-hold', __( 'Aguardando pagamento via Boleto.', 'pagbank-woocommerce' ) );
 
 			// Add order details.
-			$this->save_order_meta_data( $order, $response );
+			$this->save_order_meta_data( $order, $charge );
 
 			return array(
 				'result'   => 'success',
@@ -210,16 +212,16 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 	 * Save order meta data.
 	 *
 	 * @param WC_Order $order Order object.
-	 * @param array    $response Response data.
+	 * @param array    $charge Charge data.
 	 *
 	 * @return void
 	 */
-	private function save_order_meta_data( WC_Order $order, array $response ) {
-		$order->update_meta_data( '_pagbank_order_id', $response['id'] );
-		$order->update_meta_data( '_pagbank_boleto_expiration_date', $response['payment_method']['boleto']['due_date'] );
-		$order->update_meta_data( '_pagbank_boleto_barcode', $response['payment_method']['boleto']['barcode'] );
-		$order->update_meta_data( '_pagbank_boleto_link_pdf', $response['links'][0]['href'] );
-		$order->update_meta_data( '_pagbank_boleto_link_png', $response['links'][1]['href'] );
+	private function save_order_meta_data( WC_Order $order, array $charge ) {
+		$order->update_meta_data( '_pagbank_order_id', $charge['id'] );
+		$order->update_meta_data( '_pagbank_boleto_expiration_date', $charge['payment_method']['boleto']['due_date'] );
+		$order->update_meta_data( '_pagbank_boleto_barcode', $charge['payment_method']['boleto']['barcode'] );
+		$order->update_meta_data( '_pagbank_boleto_link_pdf', $charge['links'][0]['href'] );
+		$order->update_meta_data( '_pagbank_boleto_link_png', $charge['links'][1]['href'] );
 
 		$order->save_meta_data();
 	}

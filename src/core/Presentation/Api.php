@@ -329,50 +329,6 @@ class Api {
 	}
 
 	/**
-	 * Create charge.
-	 *
-	 * @param array $data The charge data.
-	 *
-	 * @return array|WP_Error The charge data.
-	 */
-	public function create_charge( $data ) {
-		$url = $this->get_api_url( 'charges' );
-
-		$body = $this->json_encode( $data );
-
-		$this->log_request_begin( $url, $body );
-
-		$response = wp_remote_post(
-			$url,
-			array(
-				'headers' => array(
-					'Authorization' => $this->connect->get_access_token(),
-					'Content-Type'  => 'application/json',
-				),
-				'body'    => $body,
-			)
-		);
-
-		if ( is_wp_error( $response ) ) {
-			$this->log_request_error( $response );
-
-			return $response;
-		}
-
-		$response_code         = wp_remote_retrieve_response_code( $response );
-		$response_body         = wp_remote_retrieve_body( $response );
-		$decoded_response_body = json_decode( wp_remote_retrieve_body( $response ), true );
-
-		$this->log_request_ends( $response_code, $response_body );
-
-		if ( 201 !== $response_code ) {
-			return new WP_Error( 'pagbank_charge_creation_failed', 'PagBank charge creation failed', $decoded_response_body );
-		}
-
-		return $decoded_response_body;
-	}
-
-	/**
 	 * Refund an order.
 	 *
 	 * @param string $id     The order ID.

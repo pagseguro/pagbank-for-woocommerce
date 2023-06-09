@@ -243,21 +243,28 @@ function get_boleto_payment_api_data( WC_Order $order, int $expiration_in_days )
 		'shipping'          => array(
 			'address' => get_order_shipping_address_api_data( $order ),
 		),
-		'amount'            => get_order_amount_api_data( $order ),
-		'payment_method'    => array(
-			'type'   => 'BOLETO',
-			'boleto' => array(
-				'due_date'          => Carbon::now()->addDays( $expiration_in_days )->toDateString(),
-				'instruction_lines' => array(
-					// translators: %s: blog name.
-					'line_1' => sprintf( __( 'Pagamento para %s', 'pagbank-woocommerce' ), get_bloginfo( 'name' ) ),
-					'line_2' => __( 'Via PagBank', 'pagbank-woocommerce' ),
-				),
-				'holder'            => array(
-					'name'    => $order->get_formatted_billing_full_name(),
-					'tax_id'  => get_order_tax_id_api_data( $order ),
-					'email'   => $order->get_billing_email(),
-					'address' => get_order_billing_address_api_data( $order ),
+		'charges'           => array(
+			array(
+				'reference_id'   => $order->get_id(),
+				// translators: %1$s: order id, %2$s: blog name.
+				'description'    => sprintf( __( 'Pedido %1$s - %2$s', 'pagbank-woocommerce' ), $order->get_id(), get_bloginfo( 'name' ) ),
+				'amount'         => get_order_amount_api_data( $order ),
+				'payment_method' => array(
+					'type'   => 'BOLETO',
+					'boleto' => array(
+						'due_date'          => Carbon::now()->addDays( $expiration_in_days )->toDateString(),
+						'instruction_lines' => array(
+							// translators: %s: blog name.
+							'line_1' => sprintf( __( 'Pagamento para %s', 'pagbank-woocommerce' ), get_bloginfo( 'name' ) ),
+							'line_2' => __( 'Via PagBank', 'pagbank-woocommerce' ),
+						),
+						'holder'            => array(
+							'name'    => $order->get_formatted_billing_full_name(),
+							'tax_id'  => get_order_tax_id_api_data( $order ),
+							'email'   => $order->get_billing_email(),
+							'address' => get_order_billing_address_api_data( $order ),
+						),
+					),
 				),
 			),
 		),
