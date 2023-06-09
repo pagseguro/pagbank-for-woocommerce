@@ -155,6 +155,10 @@ class Connect {
 			return null;
 		}
 
+		if ( $expiration_date->subDays( 30 )->isPast() ) {
+			return $this->refresh_token( $data );
+		}
+
 		return $data;
 	}
 
@@ -167,6 +171,34 @@ class Connect {
 		$data = $this->get_data();
 
 		return $data['access_token'];
+	}
+
+	/**
+	 * Refresh access token.
+	 *
+	 * @param array $data The old token data.
+	 *
+	 * @return array
+	 * @throws Exception If the refresh token fails.
+	 */
+	private function refresh_token( $data ) {
+		$api = new Api(
+			$data['environment']
+		);
+
+		$refresh_token = $api->refresh_access_token(
+			$data['refresh_token'],
+			$data['environment'],
+			$data['application_id']
+		);
+
+		if ( is_wp_error( $refresh_token ) ) {
+			throw new Exception( $refresh_token->get_error_message() );
+		}
+
+		$this->save( $refresh_token );
+
+		return $refresh_token;
 	}
 
 }

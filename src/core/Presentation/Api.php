@@ -218,12 +218,17 @@ class Api {
 	 * Refresh the access token.
 	 *
 	 * @param string $refresh_token The refresh token.
-	 * @param string $access_token The access token.
 	 *
 	 * @return array|WP_Error The access token, the token expiration time (in seconds), the account ID and the refresh token.
 	 */
-	public function refresh_access_token( string $refresh_token, string $access_token ) {
+	public function refresh_access_token( string $refresh_token, string $environment, string $application_id ) {
 		$url = $this->get_api_url( 'oauth2/refresh' );
+
+		$applications = Connect::get_connect_applications( $environment );
+
+		if ( ! $application_id || ! array_key_exists( $application_id, $applications ) ) {
+			return new WP_Error( 'pagbank_oauth_invalid_application_id', __( 'The application ID is invalid.', 'pagbank-woocommerce' ) );
+		}
 
 		$body = $this->json_encode(
 			array(
@@ -237,7 +242,7 @@ class Api {
 			$url,
 			array(
 				'headers' => array(
-					'Authorization' => 'Pub ' . $access_token,
+					'Authorization' => 'Pub ' . $applications[ $application_id ]['access_token'],
 					'Content-Type'  => 'application/json',
 				),
 				'body'    => $body,
@@ -256,11 +261,13 @@ class Api {
 
 		$this->log_request_ends( $response_code, $response_body );
 
-		if ( 200 !== $response_code ) {
+		if ( 201 !== $response_code ) {
 			return new WP_Error( 'pagbank_request_error', __( 'Invalid status code.', 'pagbank-woocommerce' ) );
 		}
 
 		return array(
+			'application_id'  => $application_id,
+			'environment'     => $environment,
 			'token_type'      => $decoded_response_body['token_type'],
 			'access_token'    => $decoded_response_body['access_token'],
 			'expiration_date' => Carbon::now()->addSeconds( $decoded_response_body['expires_in'] )->toISOString(),
