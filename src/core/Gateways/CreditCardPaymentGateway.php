@@ -474,7 +474,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				'card-bin-field'       => '<input id="' . esc_attr( $this->id ) . '-card-bin" type="hidden" name="' . esc_attr( $this->id ) . '-card-bin" />',
 				'card-holder-field'    => '<p class="form-row form-row-wide">
 					<label for="' . esc_attr( $this->id ) . '-card-holder">' . esc_html__( 'Card holder', 'pagbank-woocommerce' ) . '&nbsp;<span class="required">*</span></label>
-					<input id="' . esc_attr( $this->id ) . '-card-holder" class="input-text wc-credit-card-form-card-holder" autocomplete="cc-name" autocorrect="no" autocapitalize="no" spellcheck="no" type="text" ' . $this->field_name( 'card-holder' ) . ' />
+					<input id="' . esc_attr( $this->id ) . '-card-holder" name="' . esc_attr( $this->id ) . '-card-holder" class="input-text wc-credit-card-form-card-holder" autocomplete="cc-name" autocorrect="no" autocapitalize="no" spellcheck="no" type="text" ' . $this->field_name( 'card-holder' ) . ' />
 				</p>',
 			);
 
@@ -533,6 +533,13 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 		// Validation for new credit cards.
 		if ( $is_new_credit_card ) {
+			// phpcs:ignore WordPress.Security.NonceVerification
+			$has_holder = isset( $_POST['pagbank_credit_card-card-holder'] ) && ! empty( $_POST['pagbank_credit_card-card-holder'] );
+			if ( ! $has_holder ) {
+				wc_add_notice( __( 'Missing credit card holder name.', 'pagbank-woocommerce' ), 'error' );
+				return false;
+			}
+
 			// phpcs:ignore WordPress.Security.NonceVerification
 			$has_encrypted_card = isset( $_POST['pagbank_credit_card-encrypted-card'] ) && ! empty( $_POST['pagbank_credit_card-encrypted-card'] );
 			if ( ! $has_encrypted_card ) {
@@ -605,6 +612,8 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$encrypted_card = isset( $_POST['pagbank_credit_card-encrypted-card'] ) ? wc_clean( wp_unslash( $_POST['pagbank_credit_card-encrypted-card'] ) ) : null;
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$card_holder = isset( $_POST['pagbank_credit_card-card-holder'] ) ? wc_clean( wp_unslash( $_POST['pagbank_credit_card-card-holder'] ) ) : null;
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$card_bin = isset( $_POST['pagbank_credit_card-card-bin'] ) ? wc_clean( wp_unslash( $_POST['pagbank_credit_card-card-bin'] ) ) : null;
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$save_card = ( $payment_token === null || $payment_token === 'new' ) && isset( $_POST[ 'wc-' . $this->id . '-new-payment-method' ] ) && $_POST[ 'wc-' . $this->id . '-new-payment-method' ] === 'true';
@@ -628,7 +637,8 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 						return;
 					}
 
-					$card_bin = $token->get_bin();
+					$card_bin    = $token->get_bin();
+					$card_holder = $token->get_holder();
 				}
 
 				$charge_fees = $this->api->charge_fees( $amount_in_cents, $this->maximum_installments, $this->maximum_installments_interest_free, $card_bin );
@@ -661,6 +671,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				$order,
 				$payment_token,
 				$encrypted_card,
+				$card_holder,
 				$save_card,
 				$installments,
 				$transfer_of_interest_fee

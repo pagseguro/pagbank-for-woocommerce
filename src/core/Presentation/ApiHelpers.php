@@ -283,6 +283,7 @@ function get_boleto_payment_api_data( WC_Order $order, int $expiration_in_days )
  * @param WC_Order $order Order.
  * @param string   $payment_token Payment token.
  * @param string   $encrypted_card Encrypted card.
+ * @param string   $card_holder Card holder.
  * @param bool     $save_card Save card.
  * @param int      $installments Installments.
  * @param array    $transfer_of_interest_fee Transfer of interest fee.
@@ -290,7 +291,7 @@ function get_boleto_payment_api_data( WC_Order $order, int $expiration_in_days )
  * @return array
  * @throws Exception Throws exception when card is not valid.
  */
-function get_credit_card_payment_data( WC_Order $order, string $payment_token = null, string $encrypted_card = null, bool $save_card = false, int $installments = 1, array $transfer_of_interest_fee = null ) {
+function get_credit_card_payment_data( WC_Order $order, string $payment_token = null, string $encrypted_card = null, string $card_holder = null, bool $save_card = false, int $installments = 1, array $transfer_of_interest_fee = null ) {
 	$data = array(
 		'reference_id'      => $order->get_id(),
 		'items'             => get_order_items_api_data( $order ),
@@ -309,7 +310,7 @@ function get_credit_card_payment_data( WC_Order $order, string $payment_token = 
 					'installments' => $installments,
 					'capture'      => true,
 					'holder'       => array(
-						'name'   => $order->get_formatted_billing_full_name(),
+						'name'   => $card_holder,
 						'tax_id' => get_order_tax_id_api_data( $order ),
 					),
 				),
