@@ -69,13 +69,6 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	public $maximum_installments;
 
 	/**
-	 * Minimum installment value.
-	 *
-	 * @var string Minimum value.
-	 */
-	public $minimum_installment_value;
-
-	/**
 	 * Transfer of interest enabled.
 	 *
 	 * @var string yes|no.
@@ -114,7 +107,6 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 		$this->installments_enabled               = 'yes' === $this->get_option( 'installments_enabled' );
 		$this->maximum_installments               = (int) $this->get_option( 'maximum_installments' );
-		$this->minimum_installment_value          = $this->get_option( 'minimum_installment_value' );
 		$this->transfer_of_interest_enabled       = 'yes' === $this->get_option( 'transfer_of_interest_enabled' );
 		$this->maximum_installments_interest_free = (int) $this->get_option( 'maximum_installments_interest_free' );
 
@@ -176,7 +168,6 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 						',',
 						array(
 							'#' . $this->get_field_key( 'maximum_installments' ),
-							'#' . $this->get_field_key( 'minimum_installment_value' ),
 							'#' . $this->get_field_key( 'transfer_of_interest_enabled' ),
 						)
 					),
@@ -201,13 +192,6 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 					'11' => '11x',
 					'12' => '12x',
 				),
-				'desc_tip'    => true,
-			),
-			'minimum_installment_value'          => array(
-				'title'       => __( 'Minimum installment value', 'pagbank-woocommerce' ),
-				'type'        => 'currency',
-				'description' => __( 'This will set the minimum installment value.', 'pagbank-woocommerce' ),
-				'default'     => '5',
 				'desc_tip'    => true,
 			),
 			'transfer_of_interest_enabled'       => array(
