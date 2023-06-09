@@ -100,6 +100,18 @@ function get_order_customer_api_data( WC_Order $order ) {
 }
 
 /**
+ * Get the value that is not empty.
+ *
+ * @param string $value1 Value 1.
+ * @param string $value2 Value 2.
+ *
+ * @return string
+ */
+function get_not_empty( string $value1, string $value2 ): string {
+	return ! empty( $value1 ) ? $value1 : $value2;
+}
+
+/**
  * Get order shipping address.
  *
  * @param WC_Order $order Order.
@@ -109,17 +121,17 @@ function get_order_customer_api_data( WC_Order $order ) {
  */
 function get_order_shipping_address_api_data( WC_Order $order, array $address = array() ) {
 	$defaults = array(
-		'street'      => substr( $order->get_shipping_address_1(), 0, 160 ),
-		'number'      => substr( $order->get_meta( '_shipping_number' ), 0, 20 ),
-		'locality'    => substr( $order->get_meta( '_shipping_neighborhood' ), 0, 60 ),
-		'city'        => substr( $order->get_shipping_city(), 0, 90 ),
-		'region_code' => substr( $order->get_shipping_state(), 0, 2 ),
+		'street'      => substr( get_not_empty( $order->get_shipping_address_1(), $order->get_billing_address_1() ), 0, 160 ),
+		'number'      => substr( get_not_empty( $order->get_meta( '_shipping_number' ), $order->get_meta( '_billing_number' ) ), 0, 20 ),
+		'locality'    => substr( get_not_empty( $order->get_meta( '_shipping_neighborhood' ), $order->get_meta( '_billing_neighborhood' ) ), 0, 60 ),
+		'city'        => substr( get_not_empty( $order->get_shipping_city(), $order->get_billing_city() ), 0, 90 ),
+		'region_code' => substr( get_not_empty( $order->get_shipping_state(), $order->get_billing_state() ), 0, 2 ),
 		'country'     => 'BRA',
-		'postal_code' => preg_replace( '/[^0-9]/', '', $order->get_shipping_postcode() ),
+		'postal_code' => preg_replace( '/[^0-9]/', '', get_not_empty( $order->get_shipping_postcode(), $order->get_billing_postcode() ) ),
 	);
 
 	if ( $order->get_shipping_address_2() ) {
-		$defaults['complement'] = substr( $order->get_shipping_address_2(), 0, 40 );
+		$defaults['complement'] = substr( get_not_empty( $order->get_shipping_address_2(), $order->get_billing_address_2() ), 0, 40 );
 	}
 
 	return wp_parse_args( $address, $defaults );
@@ -279,14 +291,21 @@ function get_credit_card_payment_data( WC_Order $order, string $payment_token = 
 		'shipping'          => array(
 			'address' => get_order_shipping_address_api_data( $order ),
 		),
-		'amount'            => get_order_amount_api_data( $order ),
-		'payment_method'    => array(
-			'type'         => 'CREDIT_CARD',
-			'installments' => $installments,
-			'capture'      => true,
-			'holder'       => array(
-				'name'   => $order->get_formatted_billing_full_name(),
-				'tax_id' => get_order_tax_id_api_data( $order ),
+		'charges'           => array(
+			array(
+				'reference_id'   => $order->get_id(),
+				// translators: %1$s: order id, %2$s: blog name.
+				'description'    => sprintf( __( 'Pedido %1$s - %2$s', 'pagbank-woocommerce' ), $order->get_id(), get_bloginfo( 'name' ) ),
+				'amount'         => get_order_amount_api_data( $order ),
+				'payment_method' => array(
+					'type'         => 'CREDIT_CARD',
+					'installments' => $installments,
+					'capture'      => true,
+					'holder'       => array(
+						'name'   => $order->get_formatted_billing_full_name(),
+						'tax_id' => get_order_tax_id_api_data( $order ),
+					),
+				),
 			),
 		),
 		'notification_urls' => array(
@@ -296,9 +315,7 @@ function get_credit_card_payment_data( WC_Order $order, string $payment_token = 
 	);
 
 	if ( null !== $transfer_of_interest_fee ) {
-		$data['amount'] = $transfer_of_interest_fee;
-	} else {
-		$data['amount'] = get_order_amount_api_data( $order );
+		$data['charges'][0]['amount'] = $transfer_of_interest_fee;
 	}
 
 	$is_new_credit_card = null === $payment_token || 'new' === $payment_token;
@@ -310,23 +327,22 @@ function get_credit_card_payment_data( WC_Order $order, string $payment_token = 
 			throw new Exception( __( 'Invalid credit card encryption. This should not happen, contact support.', 'pagbank-woocommerce' ) );
 		}
 
-		$data['payment_method']['card'] = array(
+		$data['charges'][0]['payment_method']['card'] = array(
 			'encrypted' => $encrypted_card,
 		);
 
 		if ( $save_card ) {
-			$data['payment_method']['card']['store'] = true;
+			$data['charges'][0]['payment_method']['card']['store'] = true;
 		}
 	} else {
 		$token = WC_Payment_Tokens::get( $payment_token );
 
-		// TODO: check for user validation.
 		if ( null === $token || $token->get_user_id() !== get_current_user_id() ) {
 			throw new Exception( __( 'Payment token not found.', 'pagbank-woocommerce' ) );
 		}
 
-		$card_id                        = $token->get_token();
-		$data['payment_method']['card'] = array(
+		$card_id                                      = $token->get_token();
+		$data['charges'][0]['payment_method']['card'] = array(
 			'id' => $card_id,
 		);
 	}

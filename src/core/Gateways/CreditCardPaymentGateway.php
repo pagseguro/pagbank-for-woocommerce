@@ -666,29 +666,31 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				$transfer_of_interest_fee
 			);
 
-			$response = $this->api->create_charge( $data );
+			$response = $this->api->create_order( $data );
 
 			if ( is_wp_error( $response ) ) {
 				wc_add_notice( __( 'Houve um erro no pagamento.', 'pagbank-woocommerce' ), 'error' );
 				return;
 			}
 
-			if ( $response['status'] === 'IN_ANALYSIS' ) {
+			$charge = $response['charges'][0];
+
+			if ( $charge['status'] === 'IN_ANALYSIS' ) {
 				$order->update_status( 'on-hold', __( 'O PagBank está analisando o risco da transação.', 'pagbank-woocommerce' ) );
-			} elseif ( $response['status'] === 'DECLINED' ) {
+			} elseif ( $charge['status'] === 'DECLINED' ) {
 				wc_add_notice( __( 'O pagamento foi recusado.', 'pagbank-woocommerce' ), 'error' );
 				return;
-			} elseif ( $response['status'] !== 'PAID' ) {
+			} elseif ( $charge['status'] !== 'PAID' ) {
 				wc_add_notice( __( 'Invalid order status from API.', 'pagbank-woocommerce' ), 'error' );
 				return;
 			}
 
-			$this->save_order_meta_data( $order, $response );
+			$this->save_order_meta_data( $order, $charge );
 
 			$order->payment_complete();
 
-			if ( $save_card && isset( $response['payment_method']['card']['id'] ) ) {
-				$this->save_credit_card( $order, $response['payment_method']['card'] );
+			if ( $save_card && isset( $charge['payment_method']['card']['id'] ) ) {
+				$this->save_credit_card( $order, $charge['payment_method']['card'] );
 			}
 
 			return array(
@@ -726,19 +728,19 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 * Save order meta data.
 	 *
 	 * @param WC_Order $order Order object.
-	 * @param array    $response Response data.
+	 * @param array    $charge Charge data.
 	 *
 	 * @return void
 	 */
-	private function save_order_meta_data( WC_Order $order, array $response ) {
-		$order->update_meta_data( '_pagbank_order_id', $response['id'] );
-		$order->update_meta_data( '_pagbank_credit_card_brand', $response['payment_method']['card']['brand'] );
-		$order->update_meta_data( '_pagbank_credit_card_installments', $response['payment_method']['installments'] );
+	private function save_order_meta_data( WC_Order $order, array $charge ) {
+		$order->update_meta_data( '_pagbank_order_id', $charge['id'] );
+		$order->update_meta_data( '_pagbank_credit_card_brand', $charge['payment_method']['card']['brand'] );
+		$order->update_meta_data( '_pagbank_credit_card_installments', $charge['payment_method']['installments'] );
 		$order->save_meta_data();
 
-		if ( isset( $response['amount']['fees'] ) ) {
+		if ( isset( $charge['amount']['fees'] ) ) {
 			$interest_fee = new WC_Order_Item_Fee();
-			$amount       = $response['amount']['fees']['buyer']['interest']['total'] / 100;
+			$amount       = $charge['amount']['fees']['buyer']['interest']['total'] / 100;
 
 			$interest_fee->set_name( __( 'Interest', 'pagbank-woocommerce' ) );
 			$interest_fee->set_amount( $amount );
