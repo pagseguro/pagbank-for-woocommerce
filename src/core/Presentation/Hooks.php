@@ -7,6 +7,8 @@
 
 namespace PagBank_WooCommerce\Presentation;
 
+use WC_Order;
+
 /**
  * Class Hooks.
  */
@@ -38,6 +40,7 @@ class Hooks {
 		add_filter( 'woocommerce_payment_methods_types', array( $this, 'filter_payment_method_types' ), 10, 1 );
 		add_filter( 'woocommerce_payment_methods_list_item', array( $this, 'filter_payment_methods_list_item' ), 10, 2 );
 		add_filter( 'script_loader_tag', array( $this, 'add_type_attribute' ), 10, 2 );
+		add_filter( 'woocommerce_get_order_item_totals', array( $this, 'filter_woocommerce_get_order_item_totals' ), 10, 2 );
 	}
 
 	/**
@@ -105,6 +108,27 @@ class Hooks {
 		}
 
 		return $tag;
+	}
+
+	/**
+	 * Filter woocommerce_get_order_item_totals.
+	 *
+	 * @param  array    $total_rows Total rows.
+	 * @param  WC_Order $order      Order.
+	 *
+	 * @return array                 Filtered total rows.
+	 */
+	public function filter_woocommerce_get_order_item_totals( $total_rows, WC_Order $order ) {
+		if ( $order->get_payment_method() === 'pagbank_credit_card' ) {
+			$installments                = (int) $order->get_meta( '_pagbank_credit_card_installments' );
+			$installment_value           = $order->get_total() / $installments;
+			$installment_value_formatted = format_money( $installment_value );
+
+			// translators: %d is the number of installments.
+			$total_rows['payment_method']['value'] = sprintf( __( 'Credit card (%1$dx of %2$s)', 'pagbank-woocommerce' ), $installments, $installment_value_formatted );
+		}
+
+		return $total_rows;
 	}
 
 }
