@@ -247,7 +247,7 @@ function get_boleto_payment_api_data( WC_Order $order, int $expiration_in_days )
 			array(
 				'reference_id'   => $order->get_id(),
 				// translators: %1$s: order id, %2$s: blog name.
-				'description'    => sprintf( __( 'Order %1$s - %2$s', 'pagbank-woocommerce' ), $order->get_id(), get_bloginfo( 'name' ) ),
+				'description'    => sprintf( __( 'Pedido %1$s - %2$s', 'pagbank-woocommerce' ), $order->get_id(), get_bloginfo( 'name' ) ),
 				'amount'         => get_order_amount_api_data( $order ),
 				'payment_method' => array(
 					'type'   => 'BOLETO',
@@ -255,7 +255,7 @@ function get_boleto_payment_api_data( WC_Order $order, int $expiration_in_days )
 						'due_date'          => Carbon::now()->addDays( $expiration_in_days )->toDateString(),
 						'instruction_lines' => array(
 							// translators: %s: blog name.
-							'line_1' => sprintf( __( 'Payment to %s', 'pagbank-woocommerce' ), get_bloginfo( 'name' ) ),
+							'line_1' => sprintf( __( 'Pagamento para %s', 'pagbank-woocommerce' ), get_bloginfo( 'name' ) ),
 							'line_2' => __( 'PagBank', 'pagbank-woocommerce' ),
 						),
 						'holder'            => array(
@@ -280,6 +280,8 @@ function get_boleto_payment_api_data( WC_Order $order, int $expiration_in_days )
 /**
  * Get Credit Card payment data.
  *
+ * TODO: probably we don't need some validations here, because it's already validated on validate_fields.
+ *
  * @param WC_Order $order Order.
  * @param string   $payment_token Payment token.
  * @param string   $encrypted_card Encrypted card.
@@ -303,7 +305,7 @@ function get_credit_card_payment_data( WC_Order $order, string $payment_token = 
 			array(
 				'reference_id'   => $order->get_id(),
 				// translators: %1$s: order id, %2$s: blog name.
-				'description'    => sprintf( __( 'Order %1$s - %2$s', 'pagbank-woocommerce' ), $order->get_id(), get_bloginfo( 'name' ) ),
+				'description'    => sprintf( __( 'Pedido %1$s - %2$s', 'pagbank-woocommerce' ), $order->get_id(), get_bloginfo( 'name' ) ),
 				'amount'         => get_order_amount_api_data( $order ),
 				'payment_method' => array(
 					'type'         => 'CREDIT_CARD',
@@ -332,7 +334,7 @@ function get_credit_card_payment_data( WC_Order $order, string $payment_token = 
 		$is_missing_new_credit_card = null === $encrypted_card || empty( $encrypted_card );
 
 		if ( $is_missing_new_credit_card ) {
-			throw new Exception( __( 'Invalid credit card encryption. This should not happen, contact support.', 'pagbank-woocommerce' ) );
+			throw new Exception( __( 'O cartão de crédito criptografado é inválido. Por favor, contate o suporte.', 'pagbank-woocommerce' ) );
 		}
 
 		$data['charges'][0]['payment_method']['card'] = array(
@@ -346,7 +348,7 @@ function get_credit_card_payment_data( WC_Order $order, string $payment_token = 
 		$token = WC_Payment_Tokens::get( $payment_token );
 
 		if ( null === $token || $token->get_user_id() !== get_current_user_id() ) {
-			throw new Exception( __( 'Payment token not found.', 'pagbank-woocommerce' ) );
+			throw new Exception( __( 'O token de pagamento não foi encontrado.', 'pagbank-woocommerce' ) );
 		}
 
 		$card_id                                      = $token->get_token();
@@ -379,8 +381,8 @@ function get_installments_plan_no_interest( int $value, int $installments = 1, i
 			'installments'      => $i,
 			'installment_value' => $i_value,
 			'interest_free'     => true,
-			// translators: %1$d: installment number, %2$s: installment value.
-			'title'             => sprintf( __( '%1$dx of %2$s interest-free', 'pagbank-woocommerce' ), $i, format_money( $i_value / 100 ) ),
+			// translators: 1: installments, 2: installment value.
+			'title'             => sprintf( __( '%1$dx de %2$s sem juros', 'pagbank-woocommerce' ), $i, format_money( $i_value / 100 ) ),
 			'amount'            => $value,
 		);
 	}

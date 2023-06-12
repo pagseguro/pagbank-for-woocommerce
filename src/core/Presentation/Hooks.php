@@ -36,11 +36,19 @@ class Hooks {
 	 * Hooks constructor.
 	 */
 	public function __construct() {
+		add_action( 'init', array( $this, 'load_text_domain' ) );
 		add_filter( 'woocommerce_payment_token_class', array( $this, 'filter_payment_token_class_name' ), 10, 2 );
 		add_filter( 'woocommerce_payment_methods_types', array( $this, 'filter_payment_method_types' ), 10, 1 );
 		add_filter( 'woocommerce_payment_methods_list_item', array( $this, 'filter_payment_methods_list_item' ), 10, 2 );
 		add_filter( 'script_loader_tag', array( $this, 'add_type_attribute' ), 10, 2 );
 		add_filter( 'woocommerce_get_order_item_totals', array( $this, 'filter_woocommerce_get_order_item_totals' ), 10, 2 );
+	}
+
+	/**
+	 * Load text domain.
+	 */
+	public function load_text_domain() {
+		load_plugin_textdomain( 'pagbank-woocommerce', false, dirname( plugin_basename( PAGBANK_WOOCOMMERCE_FILE_PATH ) ) . '/languages' );
 	}
 
 	/**
@@ -67,7 +75,7 @@ class Hooks {
 	 * @return array        Filtered payment method types.
 	 */
 	public function filter_payment_method_types( $types ) {
-		$types['pagbank_cc'] = __( 'Credit card', 'pagbank-woocommerce' );
+		$types['pagbank_cc'] = __( 'Cartão de crédito', 'pagbank-woocommerce' );
 
 		return $types;
 	}
@@ -86,7 +94,7 @@ class Hooks {
 
 		$card_type               = $payment_token->get_card_type();
 		$item['method']['last4'] = $payment_token->get_last4();
-		$item['method']['brand'] = ( ! empty( $card_type ) ? ucfirst( $card_type ) : esc_html__( 'Credit card', 'pagbank-woocommerce' ) );
+		$item['method']['brand'] = ( ! empty( $card_type ) ? ucfirst( $card_type ) : esc_html__( 'Cartão de crédito', 'pagbank-woocommerce' ) );
 		$item['expires']         = $payment_token->get_expiry_month() . '/' . substr( $payment_token->get_expiry_year(), -2 );
 
 		return $item;
@@ -125,7 +133,7 @@ class Hooks {
 			$installment_value_formatted = format_money( $installment_value );
 
 			// translators: %d is the number of installments.
-			$total_rows['payment_method']['value'] = sprintf( __( 'Credit card (%1$dx of %2$s)', 'pagbank-woocommerce' ), $installments, $installment_value_formatted );
+			$total_rows['payment_method']['value'] = sprintf( __( 'Cartão de crédito (%1$dx de %2$s)', 'pagbank-woocommerce' ), $installments, $installment_value_formatted );
 		}
 
 		return $total_rows;

@@ -151,17 +151,17 @@ class Api {
 		delete_transient( 'pagbank_oauth_environment' );
 
 		if ( ! $environment ) {
-			return new WP_Error( 'pagbank_oauth_invalid_environment', __( 'The environment is invalid.', 'pagbank-woocommerce' ) );
+			return new WP_Error( 'pagbank_oauth_invalid_environment', __( 'O ambiente é inválido.', 'pagbank-woocommerce' ) );
 		}
 
 		if ( ! $code_verifier ) {
-			return new WP_Error( 'pagbank_oauth_invalid_code_verifier', __( 'The code verifier is invalid.', 'pagbank-woocommerce' ) );
+			return new WP_Error( 'pagbank_oauth_invalid_code_verifier', __( 'O código de verificação é inválido.', 'pagbank-woocommerce' ) );
 		}
 
 		$applications = Connect::get_connect_applications( $environment );
 
 		if ( ! $application_id || ! array_key_exists( $application_id, $applications ) ) {
-			return new WP_Error( 'pagbank_oauth_invalid_application_id', __( 'The application ID is invalid.', 'pagbank-woocommerce' ) );
+			return new WP_Error( 'pagbank_oauth_invalid_application_id', __( 'ID da aplicação inválida.', 'pagbank-woocommerce' ) );
 		}
 
 		$body = $this->json_encode(
@@ -199,7 +199,7 @@ class Api {
 		$this->log_request_ends( $response_code, $response_body );
 
 		if ( 200 !== $response_code ) {
-			return new WP_Error( 'pagbank_request_error', __( 'Invalid status code.', 'pagbank-woocommerce' ) );
+			return new WP_Error( 'pagbank_request_error', __( 'Status HTTP inválido.', 'pagbank-woocommerce' ) );
 		}
 
 		return array(
@@ -227,7 +227,7 @@ class Api {
 		$applications = Connect::get_connect_applications( $environment );
 
 		if ( ! $application_id || ! array_key_exists( $application_id, $applications ) ) {
-			return new WP_Error( 'pagbank_oauth_invalid_application_id', __( 'The application ID is invalid.', 'pagbank-woocommerce' ) );
+			return new WP_Error( 'pagbank_oauth_invalid_application_id', __( 'O ID da aplicação é inválido.', 'pagbank-woocommerce' ) );
 		}
 
 		$body = $this->json_encode(
@@ -262,7 +262,7 @@ class Api {
 		$this->log_request_ends( $response_code, $response_body );
 
 		if ( 201 !== $response_code ) {
-			return new WP_Error( 'pagbank_request_error', __( 'Invalid status code.', 'pagbank-woocommerce' ) );
+			return new WP_Error( 'pagbank_request_error', __( 'Status HTTP inválido.', 'pagbank-woocommerce' ) );
 		}
 
 		return array(

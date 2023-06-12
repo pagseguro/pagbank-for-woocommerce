@@ -55,7 +55,7 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 	public function __construct() {
 		$this->id                 = 'pagbank_pix';
 		$this->method_title       = __( 'PagBank Pix', 'pagbank-woocommerce' );
-		$this->method_description = __( 'Take Pix payments through PagBank.', 'pagbank-woocommerce' );
+		$this->method_description = __( 'Aceite pagamentos via Pix através do PagBank.', 'pagbank-woocommerce' );
 		$this->description        = $this->get_option( 'description' );
 		$this->has_fields         = ! empty( $this->description );
 
@@ -79,46 +79,45 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 	public function init_form_fields() {
 		$this->form_fields = array(
 			'enabled'            => array(
-				'title'   => __( 'Enable/Disable', 'pagbank-woocommerce' ),
+				'title'   => __( 'Habilitar/Desabilitar', 'pagbank-woocommerce' ),
 				'type'    => 'checkbox',
-				'label'   => __( 'Enable Pix', 'pagbank-woocommerce' ),
+				'label'   => __( 'Habilitar boleto', 'pagbank-woocommerce' ),
 				'default' => 'no',
 			),
 			'environment'        => array(
-				'title'       => __( 'Environment', 'pagbank-woocommerce' ),
+				'title'       => __( 'Ambiente', 'pagbank-woocommerce' ),
 				'type'        => 'select',
-				'description' => __( 'This will set the environment.', 'pagbank-woocommerce' ),
+				'description' => __( 'Isso irá definir o ambiente de testes ou produção.', 'pagbank-woocommerce' ),
 				'default'     => 'sandbox',
 				'options'     => array(
-					'sandbox'    => __( 'Sandbox', 'pagbank-woocommerce' ),
-					'production' => __( 'Production', 'pagbank-woocommerce' ),
+					'sandbox'    => __( 'Ambiente de testes', 'pagbank-woocommerce' ),
+					'production' => __( 'Produção', 'pagbank-woocommerce' ),
 				),
 				'desc_tip'    => true,
 			),
 			'pagbank_connect'    => array(
-				'title'              => __( 'Connnect', 'pagbank-woocommerce' ),
-				'type'               => 'pagbank_connect',
-				'description'        => __( 'Connect to your PagBank account to enable the payment method.', 'pagbank-woocommerce' ),
-				'environment_select' => 'environment',
+				'title'       => __( 'Conta PagBank', 'pagbank-woocommerce' ),
+				'type'        => 'pagbank_connect',
+				'description' => __( 'Conecte a sua conta PagBank para aceitar pagamentos.', 'pagbank-woocommerce' ),
 			),
 			'title'              => array(
-				'title'       => __( 'Title', 'pagbank-woocommerce' ),
+				'title'       => __( 'Título', 'pagbank-woocommerce' ),
 				'type'        => 'text',
-				'description' => __( 'This controls the title which the user sees during checkout.', 'pagbank-woocommerce' ),
-				'default'     => __( 'Pix', 'pagbank-woocommerce' ),
+				'description' => __( 'Isso irá controlar o título que o cliente verá durante o checkout.', 'pagbank-woocommerce' ),
+				'default'     => __( 'Boleto', 'pagbank-woocommerce' ),
 				'desc_tip'    => true,
 			),
 			'description'        => array(
-				'title'       => __( 'Description', 'pagbank-woocommerce' ),
+				'title'       => __( 'Descrição', 'pagbank-woocommerce' ),
 				'type'        => 'textarea',
-				'description' => __( 'This controls the description which the user sees during checkout.', 'pagbank-woocommerce' ),
-				'default'     => __( 'The QR Code will be generated just after place the order.', 'pagbank-woocommerce' ),
+				'description' => __( 'Isso irá controlar a descrição que o cliente verá durante o checkout.', 'pagbank-woocommerce' ),
+				'default'     => __( 'O código Pix será gerado assim que você finalizar o pedido.', 'pagbank-woocommerce' ),
 				'desc_tip'    => true,
 			),
 			'expiration_minutes' => array(
-				'title'             => __( 'Expiration minutes', 'pagbank-woocommerce' ),
+				'title'             => __( 'Expiração em minutos', 'pagbank-woocommerce' ),
 				'type'              => 'number',
-				'description'       => __( 'This controls the days from now that the boleto will expire.', 'pagbank-woocommerce' ),
+				'description'       => __( 'Isso irá controlar o tempo em minutos que o Pix será válido.', 'pagbank-woocommerce' ),
 				'default'           => '15',
 				'desc_tip'          => true,
 				'custom_attributes' => array(
@@ -126,10 +125,10 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 				),
 			),
 			'logs_enabled'       => array(
-				'title'       => __( 'Debug logs', 'pagbank-woocommerce' ),
+				'title'       => __( 'Logs para depuração', 'pagbank-woocommerce' ),
 				'type'        => 'checkbox',
-				'label'       => __( 'Enable debug logs', 'pagbank-woocommerce' ),
-				'description' => __( 'This will enable logs to help debug the plugin in case of support.', 'pagbank-woocommerce' ),
+				'label'       => __( 'Ativar logs', 'pagbank-woocommerce' ),
+				'description' => __( 'Isso irá ativar os logs para depuração para auxiliar em caso de suporte.', 'pagbank-woocommerce' ),
 				'default'     => 'yes',
 				'desc_tip'    => true,
 			),
@@ -153,12 +152,12 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 			$response              = $this->api->create_order( $data );
 
 			if ( is_wp_error( $response ) ) {
-				wc_add_notice( __( 'There is an error in the payment', 'pagbank-woocommerce' ), 'error' );
+				wc_add_notice( __( 'Houve um erro ao processar o pagamento.', 'pagbank-woocommerce' ), 'error' );
 				return;
 			}
 
 			// Update status to on-hold.
-			$order->update_status( 'on-hold', __( 'Waiting Pix payment.', 'pagbank-woocommerce' ) );
+			$order->update_status( 'on-hold', __( 'Aguardando pagamento do Pix.', 'pagbank-woocommerce' ) );
 
 			// Add order details.
 			$this->save_order_meta_data( $order, $response );
@@ -183,7 +182,7 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 		$amount = floatval( $amount );
 
 		if ( $amount <= 0 ) {
-			return new WP_Error( 'error', __( 'The refund value should be bigger than 0.', 'pagbank-woocommerce' ) );
+			return new WP_Error( 'error', __( 'O valor para reembolso deve ser maior que zero', 'pagbank-woocommerce' ) );
 		}
 
 		$pagbank_order_id = get_post_meta( $order_id, '_pagbank_order_id', true );
@@ -199,9 +198,9 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 				return true;
 			}
 
-			return new WP_Error( 'error', __( 'There was an error trying to refund.', 'pagbank-woocommerce' ) );
+			return new WP_Error( 'error', __( 'Houve um erro ao tentar realizar o reembolso.', 'pagbank-woocommerce' ) );
 		} catch ( Exception $ex ) {
-			return new WP_Error( 'error', __( 'There was an error trying to refund.', 'pagbank-woocommerce' ) );
+			return new WP_Error( 'error', __( 'Houve um erro ao tentar realizar o reembolso.', 'pagbank-woocommerce' ) );
 		}
 	}
 

@@ -17,7 +17,8 @@
         "boot:arm64v8": "docker compose -f docker-compose.arm64v8.yml up",
         "test": "./vendor/bin/phpunit",
         "todos": "leasot 'src/**/*.{php,ts,js}'",
-        "prepare": "husky install"
+        "prepare": "husky install",
+        "make:pot": "./scripts/make-pot.sh"
     },
     "devDependencies": {
         "@commitlint/cli": "^17.5.0",
