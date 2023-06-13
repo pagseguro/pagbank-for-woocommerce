@@ -408,6 +408,13 @@ class Api {
 			$this->get_api_url( 'charges/fees/calculate' )
 		);
 
+		$url_hash        = hash( 'sha256', $url );
+		$cached_response = get_transient( 'pagbank_cached_request_' . $url_hash );
+
+		if ( $cached_response ) {
+			return json_decode( $cached_response, true );
+		}
+
 		$this->log_request_begin( $url, '' );
 
 		$response = wp_remote_get(
@@ -435,6 +442,8 @@ class Api {
 		if ( 200 !== $response_code ) {
 			return new WP_Error( 'pagbank_charge_calculate_fees_failed', 'PagBank calculate fees failed', $decoded_response_body );
 		}
+
+		set_transient( 'pagbank_cached_request_' . $url_hash, wp_json_encode( $decoded_response_body ), 5 * MINUTE_IN_SECONDS );
 
 		return $decoded_response_body;
 	}
