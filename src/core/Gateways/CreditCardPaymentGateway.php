@@ -50,35 +50,35 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	/**
 	 * Logs enabled.
 	 *
-	 * @var string yes|no.
+	 * @var bool.
 	 */
 	public $logs_enabled;
 
 	/**
 	 * Installments enabled.
 	 *
-	 * @var string yes|no.
+	 * @var bool
 	 */
 	public $installments_enabled;
 
 	/**
 	 * Maximum installments.
 	 *
-	 * @var string yes|no.
+	 * @var int
 	 */
 	public $maximum_installments;
 
 	/**
 	 * Transfer of interest enabled.
 	 *
-	 * @var string yes|no.
+	 * @var bool
 	 */
 	public $transfer_of_interest_enabled;
 
 	/**
 	 * Maximum installments interest free.
 	 *
-	 * @var string yes|no.
+	 * @var int
 	 */
 	private $maximum_installments_interest_free;
 
@@ -101,9 +101,9 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 		$this->title        = $this->get_option( 'title' );
 		$this->environment  = $this->get_option( 'environment' );
-		$this->logs_enabled = $this->get_option( 'logs_enabled' );
+		$this->logs_enabled = 'yes' === $this->get_option( 'logs_enabled' );
 		$this->connect      = new Connect( $this->environment );
-		$this->api          = new Api( $this->environment, $this->logs_enabled === 'yes' ? $this->id : null );
+		$this->api          = new Api( $this->environment, $this->logs_enabled ? $this->id : null );
 
 		$this->installments_enabled               = 'yes' === $this->get_option( 'installments_enabled' );
 		$this->maximum_installments               = (int) $this->get_option( 'maximum_installments' );

@@ -42,6 +42,12 @@ declare const PagBankCheckoutCreditCardVariables: {
 		invalid_encrypted_card: string;
 		invalid_card_bin: string;
 	};
+	settings: {
+		installments_enabled: boolean;
+		maximum_installments: number;
+		transfer_of_interest_enabled: boolean;
+		maximum_installments_interest_free: number;
+	};
 };
 
 const scrollToNotices = (): void => {
@@ -235,6 +241,13 @@ jQuery("form.checkout").on("checkout_place_order_pagbank_credit_card", () => {
 });
 
 jQuery(document.body).on("updated_checkout", () => {
+	const shouldContinue =
+		PagBankCheckoutCreditCardVariables.settings.installments_enabled &&
+		PagBankCheckoutCreditCardVariables.settings.transfer_of_interest_enabled;
+	if (!shouldContinue) {
+		return;
+	}
+
 	const $container = jQuery("#order_review");
 
 	const installmentsSelect = document.getElementById(
