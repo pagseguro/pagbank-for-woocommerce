@@ -15,7 +15,7 @@
 	</ol>
 	<div class="boleto-barcode">
 		<input type="text" readonly value="<?php echo esc_attr( $boleto_barcode ); ?>" data-select-on-click />
-		<button type="button" class="button" data-copy-clipboard="<?php echo esc_attr( $boleto_barcode ); ?>"><?php _e('Copy barcode', 'pagbank-woocommerce'); ?></button>
+		<button type="button" class="button" data-copy-clipboard="<?php echo esc_attr( $boleto_barcode ); ?>"><?php _e('Copiar', 'pagbank-woocommerce'); ?></button>
 	</div>
 	<hr />
 	<h3><?php _e('Quando o pagamento for concluído', 'pagbank-woocommerce'); ?></h3>

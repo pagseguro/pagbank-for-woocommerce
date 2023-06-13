@@ -14,7 +14,7 @@
 	</ol>
 	<div class="pix-copy-and-paste">
 		<input type="text" readonly value="<?php echo esc_attr( $pix_text ); ?>" data-select-on-click />
-		<button type="button" class="button" data-copy-clipboard="<?php echo esc_attr( $pix_text ); ?>"><?php _e('Copy code', 'pagbank-woocommerce'); ?></button>
+		<button type="button" class="button" data-copy-clipboard="<?php echo esc_attr( $pix_text ); ?>"><?php _e('Copiar', 'pagbank-woocommerce'); ?></button>
 	</div>
 	<hr />
 	<h3><?php _e('Quando o pagamento for concluído', 'pagbank-woocommerce'); ?></h3>
