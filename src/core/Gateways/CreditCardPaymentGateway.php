@@ -267,13 +267,22 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 		wp_scripts()->add_data( 'pagbank-checkout-credit-card', 'type', 'module' );
 
+		$card_public_key = null;
+		$connect_data    = $this->connect->get_data();
+
+		if ( $connect_data ) {
+			$application = $this->connect->get_connect_application( $connect_data['application_id'] );
+
+			if ( $application ) {
+				$card_public_key = $application['card_public_key'];
+			}
+		}
+
 		wp_localize_script(
 			'pagbank-checkout-credit-card',
 			'PagBankCheckoutCreditCardVariables',
 			array(
-				// TODO: use correct public key.
-				'publicKey' => 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAr+ZqgD892U9/HXsa7XqBZUayPquAfh9xx4iwUbTSUAvTlmiXFQNTp0Bvt/5vK2FhMj39qSv1zi2OuBjvW38q1E374nzx6NNBL5JosV0+SDINTlCG0cmigHuBOyWzYmjgca+mtQu4WczCaApNaSuVqgb8u7Bd9GCOL4YJotvV5+81frlSwQXralhwRzGhj/A57CGPgGKiuPT+AOGmykIGEZsSD9RKkyoKIoc0OS8CPIzdBOtTQCIwrLn2FxI83Clcg55W8gkFSOS6rWNbG5qFZWMll6yl02HtunalHmUlRUL66YeGXdMDC2PuRcmZbGO5a/2tbVppW6mfSWG3NPRpgwIDAQAB',
-				'messages'  => array(
+				'messages' => array(
 					'inputs_not_found'         => __( 'Campos não encontrado.', 'pagbank-woocommerce' ),
 					'invalid_public_key'       => __( 'Chave pública inválida.', 'pagbank-woocommerce' ),
 					'invalid_holder_name'      => __( 'Nome do titular do cartão inválido.', 'pagbank-woocommerce' ),
@@ -283,11 +292,12 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 					'invalid_encrypted_card'   => __( 'O cartão de crédito criptografado não foi encontrado.', 'pagbank-woocommerce' ),
 					'invalid_card_bin'         => __( 'O bin do cartão de crédito não foi encontrado.', 'pagbank-woocommerce' ),
 				),
-				'settings'  => array(
+				'settings' => array(
 					'installments_enabled'               => $this->installments_enabled,
 					'maximum_installments'               => $this->maximum_installments,
 					'transfer_of_interest_enabled'       => $this->transfer_of_interest_enabled,
 					'maximum_installments_interest_free' => $this->maximum_installments_interest_free,
+					'card_public_key'                    => $card_public_key,
 				),
 			)
 		);

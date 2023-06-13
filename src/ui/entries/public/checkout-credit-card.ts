@@ -32,7 +32,6 @@ declare const PagSeguro: {
 };
 
 declare const PagBankCheckoutCreditCardVariables: {
-	publicKey: string;
 	messages: {
 		invalid_public_key: string;
 		invalid_holder_name: string;
@@ -47,6 +46,7 @@ declare const PagBankCheckoutCreditCardVariables: {
 		maximum_installments: number;
 		transfer_of_interest_enabled: boolean;
 		maximum_installments_interest_free: number;
+		card_public_key: string;
 	};
 };
 
@@ -189,7 +189,7 @@ jQuery("form.checkout").on("checkout_place_order_pagbank_credit_card", () => {
 		});
 
 		const encryptedCard = PagSeguro.encryptCard({
-			publicKey: PagBankCheckoutCreditCardVariables.publicKey,
+			publicKey: PagBankCheckoutCreditCardVariables.settings.card_public_key,
 			holder: card.holder,
 			number: card.number,
 			expMonth: card.expirationDate.month,
