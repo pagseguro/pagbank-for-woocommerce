@@ -222,6 +222,7 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 		$order->update_meta_data( '_pagbank_boleto_barcode', $charge['payment_method']['boleto']['barcode'] );
 		$order->update_meta_data( '_pagbank_boleto_link_pdf', $charge['links'][0]['href'] );
 		$order->update_meta_data( '_pagbank_boleto_link_png', $charge['links'][1]['href'] );
+		$order->update_meta_data( '_pagbank_environment', $this->environment );
 
 		$order->save_meta_data();
 	}

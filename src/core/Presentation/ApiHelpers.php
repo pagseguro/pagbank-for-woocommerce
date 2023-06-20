@@ -174,7 +174,8 @@ function get_order_billing_address_api_data( WC_Order $order, array $address = a
  */
 function get_order_metadata_api_data( WC_Order $order, array $metadata = array() ) {
 	$defaults = array(
-		'order_id' => $order->get_id(),
+		'order_id'  => $order->get_id(),
+		'signature' => get_order_id_signed( $order->get_id() ),
 	);
 
 	return wp_parse_args( $metadata, $defaults );
@@ -388,4 +389,55 @@ function get_installments_plan_no_interest( int $value, int $installments = 1, i
 	}
 
 	return $installments_plan;
+}
+
+/**
+ * Get a signature pair to validate webhooks.
+ */
+function get_signature_pair() {
+	$stored_keypair = get_option( 'pagbank_stored_keypair' );
+
+	if ( null === $stored_keypair ) {
+		$sign_pair   = sodium_crypto_sign_keypair();
+		$sign_secret = sodium_crypto_sign_secretkey( $sign_pair );
+		$sign_public = sodium_crypto_sign_publickey( $sign_pair );
+
+		update_option( 'pagbank_stored_keypair', base64_encode( $sign_pair ) );
+	} else {
+		$sign_pair   = base64_decode( $stored_keypair );
+		$sign_secret = sodium_crypto_sign_secretkey( $sign_pair );
+		$sign_public = sodium_crypto_sign_publickey( $sign_pair );
+	}
+
+	return array(
+		'sign_pair'   => $sign_pair,
+		'sign_secret' => $sign_secret,
+		'sign_public' => $sign_public,
+	);
+}
+
+/**
+ * Get a signed order id.
+ *
+ * @param string $order_id Order id.
+ */
+function get_order_id_signed( string $order_id ) {
+	$signature_pair = get_signature_pair();
+	$signature      = sodium_crypto_sign_detached( $order_id, $signature_pair['sign_secret'] );
+
+	return base64_encode( $signature );
+}
+
+/**
+ * Validate a signed order id.
+ *
+ * @param string $order_id Order id.
+ * @param string $signature Signature.
+ */
+function validate_order_id_signature( string $order_id, string $signature ) {
+	$signature      = base64_decode( $signature );
+	$signature_pair = get_signature_pair();
+	$message_valid  = sodium_crypto_sign_verify_detached( $signature, $order_id, $signature_pair['sign_public'] );
+
+	return $message_valid;
 }

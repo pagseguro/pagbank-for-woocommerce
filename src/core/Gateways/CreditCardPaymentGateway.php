@@ -754,6 +754,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		$order->update_meta_data( '_pagbank_order_id', $charge['id'] );
 		$order->update_meta_data( '_pagbank_credit_card_brand', $charge['payment_method']['card']['brand'] );
 		$order->update_meta_data( '_pagbank_credit_card_installments', $charge['payment_method']['installments'] );
+		$order->update_meta_data( '_pagbank_environment', $this->environment );
 		$order->save_meta_data();
 
 		if ( isset( $charge['amount']['fees'] ) ) {

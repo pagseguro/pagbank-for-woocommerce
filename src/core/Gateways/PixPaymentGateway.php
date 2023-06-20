@@ -217,6 +217,7 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 		$order->update_meta_data( '_pagbank_pix_expiration_date', $response['qr_codes'][0]['expiration_date'] );
 		$order->update_meta_data( '_pagbank_pix_text', $response['qr_codes'][0]['text'] );
 		$order->update_meta_data( '_pagbank_pix_qr_code', $response['qr_codes'][0]['links'][0]['href'] );
+		$order->update_meta_data( '_pagbank_environment', $this->environment );
 
 		$order->save_meta_data();
 	}
