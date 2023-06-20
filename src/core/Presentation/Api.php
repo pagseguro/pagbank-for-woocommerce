@@ -261,7 +261,7 @@ class Api {
 
 		$this->log_request_ends( $response_code, $response_body );
 
-		if ( 201 !== $response_code ) {
+		if ( 200 !== $response_code ) {
 			return new WP_Error( 'pagbank_request_error', __( 'Status HTTP inválido.', 'pagbank-woocommerce' ) );
 		}
 
