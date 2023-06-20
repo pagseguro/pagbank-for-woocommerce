@@ -158,13 +158,13 @@ class PaymentGatewaysFields {
 						type="button"
 						data-pagbank-connect-nonce="<?php echo esc_attr( wp_create_nonce( 'pagbank_woocommerce_oauth' ) ); ?>"
 						data-pagbank-connect-environment-select="<?php echo esc_attr( $wc_settings->get_field_key( $data['environment_select'] ) ); ?>"
-						data-pagbank-connected-text="<?php esc_attr_e( 'Connect to another PagBank account', 'pagbank-woocommerce' ); ?>"
-						data-pagbank-not-connected-text="<?php esc_attr_e( 'Connect to a PagBank account', 'pagbank-woocommerce' ); ?>"
+						data-pagbank-connected-text="<?php esc_attr_e( 'Conectar a outra conta do PagBank', 'pagbank-woocommerce' ); ?>"
+						data-pagbank-not-connected-text="<?php esc_attr_e( 'Conectar a uma conta do PagBank', 'pagbank-woocommerce' ); ?>"
 						data-pagbank-connect-modal-environment-id="<?php echo esc_attr( $field_key ); ?>-modal-{{environment}}"
-						data-pagbank-loading-text="<?php esc_attr_e( 'Loading...', 'pagbank-woocommerce' ); ?>"
+						data-pagbank-loading-text="<?php esc_attr_e( 'Carregando...', 'pagbank-woocommerce' ); ?>"
 						disabled
 					>
-						<?php esc_html_e( 'Loading...', 'pagbank-woocommerce' ); ?>
+						<?php esc_html_e( 'Carregando...', 'pagbank-woocommerce' ); ?>
 					</button>
 					<?php
 						// phpcs:ignore Standard.Category.SniffName.ErrorCode
