@@ -5,3 +5,4 @@ wp/
 dist/
 build/
 .phpunit.result*
+docs/
