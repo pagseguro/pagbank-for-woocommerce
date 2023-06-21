@@ -126,6 +126,9 @@ class Api {
 			)
 		);
 
+		$this->log( 'OAUTH_URL: ' . $url, 'pagbank_oauth' );
+		$this->log( 'OAUTH CODE VERIFIER: ' . $code_challenge['code_verifier'], 'pagbank_oauth' );
+
 		return $url;
 	}
 
@@ -173,7 +176,7 @@ class Api {
 			)
 		);
 
-		$this->log_request_begin( $url, $body );
+		$this->log_request_begin( $url, $body, 'pagbank_oauth' );
 
 		$response = wp_remote_post(
 			$url,
@@ -187,7 +190,7 @@ class Api {
 		);
 
 		if ( is_wp_error( $response ) ) {
-			$this->log_request_error( $response );
+			$this->log_request_error( $response, 'pagbank_oauth' );
 
 			return $response;
 		}
@@ -196,7 +199,7 @@ class Api {
 		$response_body         = wp_remote_retrieve_body( $response );
 		$decoded_response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 
-		$this->log_request_ends( $response_code, $response_body );
+		$this->log_request_ends( $response_code, $response_body, 'pagbank_oauth' );
 
 		if ( 200 !== $response_code ) {
 			return new WP_Error( 'pagbank_request_error', __( 'Status HTTP inválido.', 'pagbank-woocommerce' ) );
@@ -218,6 +221,8 @@ class Api {
 	 * Refresh the access token.
 	 *
 	 * @param string $refresh_token The refresh token.
+	 * @param string $environment The environment.
+	 * @param string $application_id The application ID.
 	 *
 	 * @return array|WP_Error The access token, the token expiration time (in seconds), the account ID and the refresh token.
 	 */
@@ -236,7 +241,7 @@ class Api {
 				'refresh_token' => $refresh_token,
 			)
 		);
-		$this->log_request_begin( $url, $body );
+		$this->log_request_begin( $url, $body, 'pagbank_oauth' );
 
 		$response = wp_remote_post(
 			$url,
@@ -250,7 +255,7 @@ class Api {
 		);
 
 		if ( is_wp_error( $response ) ) {
-			$this->log_request_error( $response );
+			$this->log_request_error( $response, 'pagbank_oauth' );
 
 			return $response;
 		}
@@ -259,7 +264,7 @@ class Api {
 		$response_body         = wp_remote_retrieve_body( $response );
 		$decoded_response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 
-		$this->log_request_ends( $response_code, $response_body );
+		$this->log_request_ends( $response_code, $response_body, 'pagbank_oauth' );
 
 		if ( 200 !== $response_code ) {
 			return new WP_Error( 'pagbank_request_error', __( 'Status HTTP inválido.', 'pagbank-woocommerce' ) );
@@ -452,10 +457,12 @@ class Api {
 	 * Log a message.
 	 *
 	 * @param string $message The message to be logged.
+	 * @param string $log_id  The log ID.
 	 */
-	private function log( $message ): void {
-		if ( $this->log_id ) {
-			$this->logger->add( $this->log_id, $message );
+	private function log( string $message, string $log_id = null ): void {
+		$id = $log_id ?? $this->log_id;
+		if ( $id ) {
+			$this->logger->add( $id, $message );
 		}
 	}
 
@@ -464,25 +471,27 @@ class Api {
 	 *
 	 * @param string $url  The request URL.
 	 * @param string $body The request body.
+	 * @param string $log_id  The log ID.
 	 *
 	 * @return void
 	 */
-	private function log_request_begin( string $url, string $body ): void {
-		$this->log( 'REQUEST BEGINS' );
-		$this->log( 'REQUEST URL: ' . $url );
-		$this->log( 'REQUEST BODY: ' . $body );
+	private function log_request_begin( string $url, string $body, string $log_id = null ): void {
+		$this->log( 'REQUEST BEGINS', $log_id );
+		$this->log( 'REQUEST URL: ' . $url, $log_id );
+		$this->log( 'REQUEST BODY: ' . $body, $log_id );
 	}
 
 	/**
 	 * Log request error.
 	 *
 	 * @param WP_Error $error The request error.
+	 * @param string   $log_id  The log ID.
 	 *
 	 * @return void
 	 */
-	private function log_request_error( WP_Error $error ): void {
-		$this->log( 'REQUEST ERROR: ' . $error->get_error_message() );
-		$this->log( "REQUEST ENDS\n" );
+	private function log_request_error( WP_Error $error, string $log_id = null ): void {
+		$this->log( 'REQUEST ERROR: ' . $error->get_error_message(), $log_id );
+		$this->log( "REQUEST ENDS\n", $log_id );
 	}
 
 	/**
@@ -490,13 +499,14 @@ class Api {
 	 *
 	 * @param int    $response_code The response code.
 	 * @param string $response_body The response body.
+	 * @param string $log_id  The log ID.
 	 *
 	 * @return void
 	 */
-	private function log_request_ends( int $response_code, string $response_body ): void {
-		$this->log( 'RESPONSE CODE: ' . $response_code );
-		$this->log( 'RESPONSE BODY: ' . $response_body );
-		$this->log( "REQUEST ENDS\n" );
+	private function log_request_ends( int $response_code, string $response_body, string $log_id = null ): void {
+		$this->log( 'RESPONSE CODE: ' . $response_code, $log_id );
+		$this->log( 'RESPONSE BODY: ' . $response_body, $log_id );
+		$this->log( "REQUEST ENDS\n", $log_id );
 	}
 
 	/**
