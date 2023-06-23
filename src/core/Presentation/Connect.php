@@ -41,51 +41,35 @@ class Connect {
 	 */
 	public static function get_connect_applications( string $environment = null ) {
 		$applications = array(
-			'b728b941-dfdd-4b6c-a351-38ce4d3d0e4d' => array(
-				'id'              => 'b728b941-dfdd-4b6c-a351-38ce4d3d0e4d',
+			'fa1553af-5f0c-4ff2-92c3-a0dd8984b6a1' => array(
+				'id'              => 'fa1553af-5f0c-4ff2-92c3-a0dd8984b6a1',
+				'title'           => 'Aplicação de demonstração',
+				'app_name'        => 'WOOCOMMERCE–SANDBOX',
+				'access_token'    => 'qmoSqvkWfyOeT18k7K/6PZgkeNFiS9xxFK+pWlZWYbV4BqqqVCjCDgq3Gp86iyji8sSYc/pNDK5EQUAYfmUMBlNM5hJm9w6sHXXY4XsQAPnO0qbjYyx1CrudhLQTdePwIhPLvuRhLovUzAsN5gPZCMpon8D2Bt/5Jh57fvHdfBRpKthxMPZub785cAXx9SiOfRJ3SAN2SdHJg94XuSaa+9GQD6mPoQZpLpC/XfW5Ub4bZy2IiHUcHysMCUnfY3W9zXBphPLb7NAWDDhKP9ULFkEYgi+bZIDs+5ZTZdAf5eGAbEO9uCdghZoEMI1vWyFn+H3x0MoGvtqCItFqD+CsGA==',
+				'environment'     => 'sandbox',
+				'card_public_key' => 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAr+ZqgD892U9/HXsa7XqBZUayPquAfh9xx4iwUbTSUAvTlmiXFQNTp0Bvt/5vK2FhMj39qSv1zi2OuBjvW38q1E374nzx6NNBL5JosV0+SDINTlCG0cmigHuBOyWzYmjgca+mtQu4WczCaApNaSuVqgb8u7Bd9GCOL4YJotvV5+81frlSwQXralhwRzGhj/A57CGPgGKiuPT+AOGmykIGEZsSD9RKkyoKIoc0OS8CPIzdBOtTQCIwrLn2FxI83Clcg55W8gkFSOS6rWNbG5qFZWMll6yl02HtunalHmUlRUL66YeGXdMDC2PuRcmZbGO5a/2tbVppW6mfSWG3NPRpgwIDAQAB',
+			),
+			'31241905-5426-4f88-a140-4416a2cab404' => array(
+				'id'              => '31241905-5426-4f88-a140-4416a2cab404',
 				'title'           => 'Recebimento em 14 dias',
-				'fee'             => 4.99,
-				'access_token'    => 'd16+IOeXfMUsOs++Yd6Ivacs3B3ixf0d9SsWSZUBk3UEB9r0TkiQkKR5qJjreBaZYXSYwXCoZuoT0eBIqr3VPFQqYGJI6ZGe+f4cqTWTlNlcauvqGtrNxY6pqp0lgVZIEwwCVD7jqy2qUpc/02VQTuxcs2AqgljJvhTJ1SCAFF3BN/jN+2cjhyIeNP+T7kYwyMamCn0tubHyMG75QmPiLrZtGSCsK633wdcD2lYLX9wxhpRoOpbU+CwtRPBvMJIGYGGyi3hULfmQ97UrOCDAKK3BYjt14fa1/9bphoh8TrsUmxGUHz6GdeF9IbnIDNmvF8ixnFFAqv1tlweJDIHnaQ==',
-				'environment'     => 'sandbox',
-				'card_public_key' => 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAr+ZqgD892U9/HXsa7XqBZUayPquAfh9xx4iwUbTSUAvTlmiXFQNTp0Bvt/5vK2FhMj39qSv1zi2OuBjvW38q1E374nzx6NNBL5JosV0+SDINTlCG0cmigHuBOyWzYmjgca+mtQu4WczCaApNaSuVqgb8u7Bd9GCOL4YJotvV5+81frlSwQXralhwRzGhj/A57CGPgGKiuPT+AOGmykIGEZsSD9RKkyoKIoc0OS8CPIzdBOtTQCIwrLn2FxI83Clcg55W8gkFSOS6rWNbG5qFZWMll6yl02HtunalHmUlRUL66YeGXdMDC2PuRcmZbGO5a/2tbVppW6mfSWG3NPRpgwIDAQAB',
-			),
-			'803000c4-a8f4-4588-91e0-a30e70856f2e' => array(
-				'id'              => '803000c4-a8f4-4588-91e0-a30e70856f2e',
-				'title'           => 'Recebimento em 30 dias',
-				'fee'             => 3.99,
-				'access_token'    => 'dnlDomZhDTE2/l3QT1sKVRtVyZoP++HmjBpxoDrytCfjTTS5f1t8C8eeXUUPJJMUB3NTEO0VXWFpU4PGs5QJX8A23B1+rRCqZdTqY3fsfqA9qwkOhDH7dsoWBW5XI+niYaC/yo/nVX51d4AgyA5YGyioL6KDIsPaV0O1xayF6TlxcRtGMbP09Ii9NFvgHJTbVTVebCj9HrpZCyKSfxa/gDiTpzqUbzs6JW3X8sD6dpm7nx6rFTxjJXFK3MmBf8lhaVPEVa0wJ7XJM2RsVufAYiDZApch8ioSH4YMvs1ZWSafmilb/oAoYZFZ3UYx/m8UJmB58aIU2HTmihLLkFhenw==',
-				'environment'     => 'sandbox',
-				'card_public_key' => 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAr+ZqgD892U9/HXsa7XqBZUayPquAfh9xx4iwUbTSUAvTlmiXFQNTp0Bvt/5vK2FhMj39qSv1zi2OuBjvW38q1E374nzx6NNBL5JosV0+SDINTlCG0cmigHuBOyWzYmjgca+mtQu4WczCaApNaSuVqgb8u7Bd9GCOL4YJotvV5+81frlSwQXralhwRzGhj/A57CGPgGKiuPT+AOGmykIGEZsSD9RKkyoKIoc0OS8CPIzdBOtTQCIwrLn2FxI83Clcg55W8gkFSOS6rWNbG5qFZWMll6yl02HtunalHmUlRUL66YeGXdMDC2PuRcmZbGO5a/2tbVppW6mfSWG3NPRpgwIDAQAB',
-			),
-			'48adca1d-8ed0-4318-b4ac-a512e3c7a120' => array(
-				'id'              => '48adca1d-8ed0-4318-b4ac-a512e3c7a120',
-				'title'           => 'Personalizado',
-				'fee'             => null,
-				'access_token'    => 'e1e6vPulLp0XllX/iHAoIoFhZC9VydhyqkEgskibVrb6l7yBo7laYKufOFAx9ndMTkwZF7fDEuO7+3CUykc2FcXhGnMFf1MVXCjSXAFAnlUMWt4kvRhldLB2mRCJjEa6N3dQJDfMw4mV9iyucyRTnDO738AKtcCJLU+PJb0XnPF5m3K0TmAZIOA6jhk5P7PhujE7vW8MfiFXPwsUAwsYhavV3Q1eCGTp/oOSJdvjO67u2l4QNoe6cXJ4TqQSPURUVmcESzFt55s2ubXM/qABOJY+ro8M4EIahsIUj4/rOtykoMQJ2POCmBWkOrxwb0fCrc/mOIP0XiSu1xD45UplGg==',
-				'environment'     => 'sandbox',
-				'card_public_key' => 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAr+ZqgD892U9/HXsa7XqBZUayPquAfh9xx4iwUbTSUAvTlmiXFQNTp0Bvt/5vK2FhMj39qSv1zi2OuBjvW38q1E374nzx6NNBL5JosV0+SDINTlCG0cmigHuBOyWzYmjgca+mtQu4WczCaApNaSuVqgb8u7Bd9GCOL4YJotvV5+81frlSwQXralhwRzGhj/A57CGPgGKiuPT+AOGmykIGEZsSD9RKkyoKIoc0OS8CPIzdBOtTQCIwrLn2FxI83Clcg55W8gkFSOS6rWNbG5qFZWMll6yl02HtunalHmUlRUL66YeGXdMDC2PuRcmZbGO5a/2tbVppW6mfSWG3NPRpgwIDAQAB',
-			),
-			'05c24ebd-1782-4e33-b6ea-acad83757b61' => array(
-				'id'              => '05c24ebd-1782-4e33-b6ea-acad83757b61',
-				'title'           => 'Recebimento em 14 dias',
-				'fee'             => 4.99,
-				'access_token'    => 'CUVxlfafee1sZHmnFAGZR3O8xq9/IDvYEozwkE/MMdb0vY9YimoXwguBJmxNcgSvZWiH9jIXTFZZJuue1BK0VRNaiA0rcUGuba3jS/IU18YRJTx8ku6nqsO0PyHOjg0lVpiZuWTfPqLndQhgroDJ9Siza6Pt94cHH2P0r81igb3c2FMpMqb7nfo+FJ/5Mj/wo4bKB2NDHFDTrpDMVvI49qJIJ3l884sS/SmMnEEaPVd7RDmw5kH013JzUf/+erqCb/q2Vg6ucZNarZsW1CkCREheSXmdm97E7G9xPgLXBXaZE0+4TIilhuikZxkTDkuZn2qlweNxzqv3DjOD6sCNOg==',
+				'app_name'        => 'WOOCOMMERCE–D14',
+				'access_token'    => 'b1GAHR6uf22RrC4KUNB+6eav/3YohEBofInyaIDw9cwVfMolF0HAfP3lS7MEbkcwlYywFbxGEDPTi/k6wjabXjYXaN4hyARRkDKE4hMR4K0BWq0ya96kAnw4tn0xybXt1Nnse5CHUNqOksBlSF+IeJVPrVMSCHzAStbT5VwgwXo2YlFLCfXFRCqca0uhHAUG3es29bPPjjdYY971NSYG+eCMDYCL356sQRbL3fxV0rjNax/A/l5qnTMBAB5Ki5wjB2D1YbIYfktzHEh7HM6OO4r0CG3bMd3/4AngGf3DNShpRogG9p1VZN5hkjxIVrMgUeHAYSvQJOnXFszAmgYjSQ==',
 				'environment'     => 'production',
 				'card_public_key' => 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAq0ZbwmUibTp4qscGcoVLGUAEN6ol/UPqKV6IpfN8Sd9rhvXfk5UiUNCJkb4Eqs+glMrqpU8ZQF0egXlhlvQNnoIzHX0ksqqC5S/JcfTvkdyHMdAJcTYx3hrG5/0ieJxl8YDp0xA8NSveZHxCMq4qzHPLYylxJbhFaOt//rRN54S/Hiu238jJJQKU7adwY+CoxVwYklEG6rB4Qdw3j1MuXWnw2ryZHyGMnPFmI3GlRVja5J2r7UXqI2zZukbrTfF7ATq3iV4oe1Y2MMLqBldpeN4ghEg3l12d1dco7Dz0WpdejNuSsvwQ8agPTpqI+9jvCcJPJSesmT/icWYSgi3xaQIDAQAB',
 			),
-			'f8fabd0d-f5b1-45af-a87f-f7908b64de5b' => array(
-				'id'              => 'f8fabd0d-f5b1-45af-a87f-f7908b64de5b',
+			'c8672afd-abbb-4c47-a95d-7cf9cd4cee76' => array(
+				'id'              => 'c8672afd-abbb-4c47-a95d-7cf9cd4cee76',
 				'title'           => 'Recebimento em 30 dias',
-				'fee'             => 3.99,
-				'access_token'    => 'Y5WQZRFoS2hQNGC4AWnAv6DmsbyE5Qo4W+urTwhbAQU8Y0I5f9G38lqBd05aZlwH4v7O8gxcZ1WzuH3eakLrLnwSz8un+0PHQ0qz7fs4q+Q+IOo4RgizjADhbkbH/qQC5xzv+h3x6eFuX7zOeiVNZAct6Rf94r+B8yT4Rc8neggXHy4K+9of7QMOdKLBYOZZuJyxKK+Wp/HQWyTsKjs0rHThitZnv4Wiy1W8Znwiu+Ey2Ua7JQmLwZ10QtLJs9mr7NUUNcKPmdg//Sch40F1SGKAaFWx00+LBcProHJRmBCWMgXuYXJm1+aFndLb1yyZaABwWbAVGxnnDJKTm9cYwA==',
+				'app_name'        => 'WOOCOMMERCE–D30',
+				'access_token'    => 'g4MGqLlpVGGE+t4C0ReTZQf8URY5D3VWJQySNYYkLnhAw9emaUmxTdxAkIxesgnxrVsK2TfPnGJ0nB43lPEOPHLHPDDoX01117kKwYBDyj7sD3p2yXwRgTdonNcBGvpOlkk3K3mTj6oP6oRNu4IaXR+9X7xtPuQVgOoufZn3CSgHFpmJo9uivoFBG4ntu4pCiYLVG+3c0KhQJxTYVgTFTHeevtbddyALC2DK25Z4Pxz0aGB3PhtV6e7fLiu7uNkaMOEfZ8g3E8hVUmfMJABArXRhgYdjlUogzjh2RLxyJUuLn++ocmF76/hW4zygC2ZNqld10r5d3fb+VzMCeIbzRg==',
 				'environment'     => 'production',
 				'card_public_key' => 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAq0ZbwmUibTp4qscGcoVLGUAEN6ol/UPqKV6IpfN8Sd9rhvXfk5UiUNCJkb4Eqs+glMrqpU8ZQF0egXlhlvQNnoIzHX0ksqqC5S/JcfTvkdyHMdAJcTYx3hrG5/0ieJxl8YDp0xA8NSveZHxCMq4qzHPLYylxJbhFaOt//rRN54S/Hiu238jJJQKU7adwY+CoxVwYklEG6rB4Qdw3j1MuXWnw2ryZHyGMnPFmI3GlRVja5J2r7UXqI2zZukbrTfF7ATq3iV4oe1Y2MMLqBldpeN4ghEg3l12d1dco7Dz0WpdejNuSsvwQ8agPTpqI+9jvCcJPJSesmT/icWYSgi3xaQIDAQAB',
 			),
-			'b8691fc6-83c5-4af8-81f5-91ca99ea018b' => array(
-				'id'              => 'b8691fc6-83c5-4af8-81f5-91ca99ea018b',
+			'f2ad0df4-4e52-4cef-97b2-4fcf1405ab9a' => array(
+				'id'              => 'f2ad0df4-4e52-4cef-97b2-4fcf1405ab9a',
 				'title'           => 'Personalizado',
-				'fee'             => null,
-				'access_token'    => 'LTsrhgS3joAbiK2Xu8m4UnSHAGL+mgWSMp8WY/sU6MgBHnM6dvvuA6egFyqMmiKXMjWQJ3eGVQfiu5XFRm+uGiywKZ/RVam2gT+CcvMMx8un71TM4UcyCQaTWBAO12tMmm+aWPb9iGDAjOrN1MXu9GopZGjywQiPa4U5CNpPFoMibT2roMJIQy7zrl5lFbfaKF78mG6jVMsOHntaxSF3Wv4cv4x3/KZXfSoC3cCO7ii43ZbGZCcHbYCNUuZm6wLP229XqyE1SfnXV7U+GUTUUfdlJ8A1tjUKgpTAGYYbXXE2fXAWl36yVA+Je3gduyv/qxvLnN2FTljJU6+o4f+4Eg==',
+				'app_name'        => 'WOOCOMMERCE–TAXA-NEGOCIADA',
+				'access_token'    => 'kVuwzAYnBsCLL2dMBO8gRIhm01rT0mVkznG4Vgw/jNTa2Pey+Ry/EdsionLcDDxmqvOompJp1RzTqq0ZPu2x+z4x5r0R1RjrS4WZp3dY5nNX1kkValMtgDbSyblF+b/LW7Npx7t60Y5AVOvwT8wnoetRxOwjVJp9rrTt9Mk29QSUnU0iKIGfZ+QFrUDmc9Y3y+wivGmzXCBoh1pFyiXb7WZfo7XSJM1CCFtfEJx3P4rheFWsjol1enVVfrMSfopa19z6EhJ0CEb4xKP9rkqyY0VurXgEFwAmBFQLJ3VHMlOSlUs0QCpP/0xe8a96qzlT/wV2Om2ONWwDFjqKRAdOqw==',
 				'environment'     => 'production',
 				'card_public_key' => 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAq0ZbwmUibTp4qscGcoVLGUAEN6ol/UPqKV6IpfN8Sd9rhvXfk5UiUNCJkb4Eqs+glMrqpU8ZQF0egXlhlvQNnoIzHX0ksqqC5S/JcfTvkdyHMdAJcTYx3hrG5/0ieJxl8YDp0xA8NSveZHxCMq4qzHPLYylxJbhFaOt//rRN54S/Hiu238jJJQKU7adwY+CoxVwYklEG6rB4Qdw3j1MuXWnw2ryZHyGMnPFmI3GlRVja5J2r7UXqI2zZukbrTfF7ATq3iV4oe1Y2MMLqBldpeN4ghEg3l12d1dco7Dz0WpdejNuSsvwQ8agPTpqI+9jvCcJPJSesmT/icWYSgi3xaQIDAQAB',
 			),

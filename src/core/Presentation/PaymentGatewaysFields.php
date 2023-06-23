@@ -138,11 +138,6 @@ class PaymentGatewaysFields {
 												data-connect-nonce="<?php echo esc_attr( wp_create_nonce( 'pagbank_woocommerce_oauth' ) ); ?>"
 											>
 												<h3><?php echo esc_html( $application['title'] ); ?></h3>
-												<ul>
-													<?php if ( null !== $application['fee'] ) : ?>
-														<li>Taxa de juros: <?php echo esc_html( $application['fee'] ); ?>%</li>
-													<?php endif; ?>
-												</ul>
 											</a>
 										<?php endforeach; ?>
 									</div>
