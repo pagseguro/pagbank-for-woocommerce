@@ -260,8 +260,6 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 	/**
 	 * Check if gateway needs setup.
 	 *
-	 * TODO: implement method.
-	 *
 	 * @return bool
 	 */
 	public function needs_setup() {

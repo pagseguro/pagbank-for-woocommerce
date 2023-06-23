@@ -399,7 +399,6 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			$card_bin = $token->get_bin();
 		}
 
-		// TODO: cache this API request.
 		$charge_fees = $this->api->charge_fees( $amount_in_cents, $maximum_installments, $maximum_installments_interest_free, $card_bin );
 
 		if ( is_wp_error( $charge_fees ) ) {
@@ -440,8 +439,6 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	/**
 	 * Handle add payment method form.
 	 *
-	 * TODO: implement method.
-	 *
 	 * @return array Result.
 	 */
 	public function add_payment_method() {
@@ -453,8 +450,6 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 	/**
 	 * Add holder and encrypted card field to the credit card form.
-	 *
-	 * TODO: add a CPF field to include in charge.payment_method.card.holder.tax_id
 	 *
 	 * @param array  $default_fields Default fields.
 	 * @param string $gateway_id     Gateway ID.
@@ -523,8 +518,6 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 	/**
 	 * Validate fields.
-	 *
-	 * TODO: validate fields.
 	 */
 	public function validate_fields() {
 		// Disable outside checkout.
@@ -808,8 +801,6 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 	/**
 	 * Check if gateway needs setup.
-	 *
-	 * TODO: implement method.
 	 *
 	 * @return bool
 	 */

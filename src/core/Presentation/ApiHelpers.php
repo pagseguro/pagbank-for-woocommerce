@@ -281,8 +281,6 @@ function get_boleto_payment_api_data( WC_Order $order, int $expiration_in_days )
 /**
  * Get Credit Card payment data.
  *
- * TODO: probably we don't need some validations here, because it's already validated on validate_fields.
- *
  * @param WC_Order $order Order.
  * @param string   $payment_token Payment token.
  * @param string   $encrypted_card Encrypted card.
