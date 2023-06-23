@@ -42,6 +42,14 @@ class Hooks {
 		add_filter( 'woocommerce_payment_methods_list_item', array( $this, 'filter_payment_methods_list_item' ), 10, 2 );
 		add_filter( 'script_loader_tag', array( $this, 'add_type_attribute' ), 10, 2 );
 		add_filter( 'woocommerce_get_order_item_totals', array( $this, 'filter_woocommerce_get_order_item_totals' ), 10, 2 );
+		add_filter(
+			'plugin_action_links_' . plugin_basename( PAGBANK_WOOCOMMERCE_FILE_PATH ),
+			array(
+				$this,
+				'plugin_action_links',
+			)
+		);
+		add_action( 'init', array( $this, 'filter_gateways_settings' ) );
 	}
 
 	/**
@@ -137,6 +145,53 @@ class Hooks {
 		}
 
 		return $total_rows;
+	}
+
+	/**
+	 * Action links.
+	 *
+	 * @param array $links Action links.
+	 *
+	 * @return array
+	 */
+	public function plugin_action_links( $links ) {
+		$plugin_links = array(
+			'<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&filter=pagbank' ) ) . '">' . __( 'Configurações', 'pagbank-woocommerce' ) . '</a>',
+		);
+
+		return array_merge( $plugin_links, $links );
+	}
+
+	/**
+	 * Filter allowed gateways.
+	 */
+	public function filter_gateways_settings() {
+		if ( isset( $_GET['page'] ) && isset( $_GET['tab'] ) && $_GET['page'] === 'wc-settings' && $_GET['tab'] === 'checkout' && isset( $_GET['filter'] ) && $_GET['filter'] === 'pagbank' ) {
+			add_filter( 'woocommerce_payment_gateways', array( $this, 'filter_allowed_gateways' ) );
+		}
+	}
+
+	/**
+	 * Filter gateways that will be displayed in a custom settings page.
+	 *
+	 * @param  array $load_gateways Gateways.
+	 *
+	 * @return array
+	 */
+	public function filter_allowed_gateways( $load_gateways ) {
+		$allowed_gateways = array(
+			'PagBank_WooCommerce\Gateways\CreditCardPaymentGateway',
+			'PagBank_WooCommerce\Gateways\BoletoPaymentGateway',
+			'PagBank_WooCommerce\Gateways\PixPaymentGateway',
+		);
+
+		foreach ( $load_gateways as $key => $gateway ) {
+			if ( ! in_array( $gateway, $allowed_gateways ) ) {
+				unset( $load_gateways[ $key ] );
+			}
+		}
+
+		return $load_gateways;
 	}
 
 }

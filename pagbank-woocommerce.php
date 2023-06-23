@@ -1,14 +1,18 @@
 <?php
 /**
- * Main plugin file.
+ * Plugin Name: PagBank WooCommerce
+ * Plugin URI: https://github.com/pagseguro/pagbank-woocommerce
+ * Description: Setup credit card payments with one-click buy, boleto and Pix on checkout.
+ * Version: 1.0.0
+ * Author: PagBank
+ * Author URI: https://pagseguro.uol.com.br/
+ * License: GPL-2.0
+ * Requires PHP: 7.2
+ * WC requires at least: 3.9
+ * WC tested up to: 7.5
+ * Text Domain: pagbank-woocommerce
  *
  * @package PagBank_WooCommerce
- *
- * Plugin Name: PagBank WooCommerce
- * Description: Setup credit card payments with one-click buy, boleto and Pix on checkout.
- * Version: 0.0.3
- * Text Domain: pagbank-woocommerce
- * Domain Path: /languages
  */
 
 use PagBank_WooCommerce\Presentation\ConnectAjaxApi;
