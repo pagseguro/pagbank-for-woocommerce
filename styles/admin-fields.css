@@ -18,8 +18,8 @@
 	background-color: transparent;
     border: none;
     position: absolute;
-    right: 15px;
-    top: 15px;
+    right: 0;
+    top: 0;
     font-size: 30px;
     cursor: pointer;
 }
@@ -44,35 +44,76 @@
 	position: relative;
 }
 
-.pagbank-connect-modal-content .fees-table {
-	display: flex;
-	gap: 15px;
+.pagbank-connect-modal p {
+	margin-bottom: 10px !important;
+	margin-top: 0 !important;
 }
 
-.pagbank-connect-modal-content .fees-table a {
-	display: flex;
-    border: 1px solid #e3e3e3;
-    border-radius: 5px;
-    padding: 10px;
-    margin: 10px 0px;
-    text-decoration: none;
-    flex-direction: column;
-    justify-content: center;
-	color: #3c434a;
-	flex: 1;
+.pagbank-connect-modal table {
+	width: 100%;
+	margin: 20px 0;
 }
 
-.pagbank-connect-modal-content .fees-table a:hover {
-	background-color: #ececec;
+.pagbank-connect-modal table,
+.pagbank-connect-modal th,
+.pagbank-connect-modal td {
+	border: 1px solid #e3e3e3;
+	border-collapse: collapse;
 }
 
-.pagbank-connect-modal-content .fees-table h3 {
-	margin: 10px 0 10px 0;
+.pagbank-connect-modal th,
+.pagbank-connect-modal td {
+	padding: 10px;
+}
+
+.pagbank-connect-modal td {
+	text-align: center;
+	padding: 20px 10px;
+}
+
+.pagbank-connect-modal th {
 	text-align: center;
 }
 
-.pagbank-connect-modal-content .fees-table ul {
+.pagbank-connect-modal table ul {
+	list-style: disc;
+	margin-top: 0;
+	margin-left: 20px;
+	font-size: 0.8rem;
+	text-align: left;
+}
+
+.pagbank-connect-modal table a {
+	text-decoration: none;
+    background-color: #1bb99a;
+    display: inline-block;
+    padding: 10px 15px;
+    color: #fff;
+    border-radius: 3px;
+    font-size: 1.2rem;
+    font-weight: 300;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.pagbank-connect-modal table a:hover {
+	background-color: #1a947b;
+}
+
+.pagbank-connect-modal .pagbank-connect-modal-own-condition,
+.pagbank-connect-modal .pagbank-connect-modal-condition-sandbox {
 	text-align: center;
-	list-style: none;
-	margin-left: 0;
+}
+
+.pagbank-connect-modal .pagbank-connect-modal-condition-sandbox a {
+	text-decoration: none;
+    background-color: #1bb99a;
+    display: inline-block;
+    padding: 10px 15px;
+    color: #fff;
+    border-radius: 3px;
+    font-size: 1.2rem;
+    font-weight: 300;
+    margin-left: auto;
+    margin-right: auto;
 }
