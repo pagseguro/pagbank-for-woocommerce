@@ -1,8 +1,6 @@
 <?php
 /**
  * Missing WooCommerce Extra Checkout Fields for Brazil notice
- *
- * // http://wordpress.localhost/wp-admin/update.php?action=install-plugin&plugin=woocommerce-extra-checkout-fields-for-brazil&_wpnonce=9817501c0e
  */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
