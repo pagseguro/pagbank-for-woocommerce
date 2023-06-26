@@ -400,8 +400,10 @@ function get_signature_pair() {
 		$sign_secret = sodium_crypto_sign_secretkey( $sign_pair );
 		$sign_public = sodium_crypto_sign_publickey( $sign_pair );
 
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 		update_option( 'pagbank_stored_keypair', base64_encode( $sign_pair ) );
 	} else {
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 		$sign_pair   = base64_decode( $stored_keypair );
 		$sign_secret = sodium_crypto_sign_secretkey( $sign_pair );
 		$sign_public = sodium_crypto_sign_publickey( $sign_pair );
@@ -423,6 +425,7 @@ function get_order_id_signed( string $order_id ) {
 	$signature_pair = get_signature_pair();
 	$signature      = sodium_crypto_sign_detached( $order_id, $signature_pair['sign_secret'] );
 
+	// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 	return base64_encode( $signature );
 }
 
@@ -433,6 +436,7 @@ function get_order_id_signed( string $order_id ) {
  * @param string $signature Signature.
  */
 function validate_order_id_signature( string $order_id, string $signature ) {
+	// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 	$signature      = base64_decode( $signature );
 	$signature_pair = get_signature_pair();
 	$message_valid  = sodium_crypto_sign_verify_detached( $signature, $order_id, $signature_pair['sign_public'] );

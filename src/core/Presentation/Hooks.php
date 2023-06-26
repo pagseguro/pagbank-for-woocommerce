@@ -170,6 +170,7 @@ class Hooks {
 	 * Filter allowed gateways.
 	 */
 	public function filter_gateways_settings() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_GET['page'] ) && isset( $_GET['tab'] ) && $_GET['page'] === 'wc-settings' && $_GET['tab'] === 'checkout' && isset( $_GET['filter'] ) && $_GET['filter'] === 'pagbank' ) {
 			add_filter( 'woocommerce_payment_gateways', array( $this, 'filter_allowed_gateways' ) );
 		}
@@ -190,7 +191,7 @@ class Hooks {
 		);
 
 		foreach ( $load_gateways as $key => $gateway ) {
-			if ( ! in_array( $gateway, $allowed_gateways ) ) {
+			if ( ! in_array( $gateway, $allowed_gateways, true ) ) {
 				unset( $load_gateways[ $key ] );
 			}
 		}
