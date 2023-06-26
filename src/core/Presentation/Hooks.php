@@ -50,6 +50,10 @@ class Hooks {
 			)
 		);
 		add_action( 'init', array( $this, 'filter_gateways_settings' ) );
+
+		if ( is_admin() ) {
+			add_action( 'admin_notices', array( $this, 'check_for_plugin_dependencies' ) );
+		}
 	}
 
 	/**
@@ -192,6 +196,15 @@ class Hooks {
 		}
 
 		return $load_gateways;
+	}
+
+	/**
+	 * Check for plugin dependencies.
+	 */
+	public function check_for_plugin_dependencies() {
+		if ( ! class_exists( 'Extra_Checkout_Fields_For_Brazil' ) ) {
+			include dirname( PAGBANK_WOOCOMMERCE_FILE_PATH ) . '/src/templates/admin-html-notice-missing-brazilian-market-on-woocommerce.php';
+		}
 	}
 
 }
