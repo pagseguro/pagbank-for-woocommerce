@@ -3104,6 +3104,13 @@ word-wrap@^1.2.3:
   resolved "https://registry.yarnpkg.com/word-wrap/-/word-wrap-1.2.3.tgz#610636f6b1f703891bd34771ccb17fb93b47079c"
   integrity sha512-Hz/mrNwitNRh/HUAtM/VT/5VH+ygD6DV7mYKZAtHOrbs8U7lvPS6xf7EJKMF0uW1KJCl0H701g3ZGus+muE5vQ==
 
+wp-readme-to-markdown@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/wp-readme-to-markdown/-/wp-readme-to-markdown-1.0.1.tgz#6182faf2c745f73c478fcf01791ed1e416ac5879"
+  integrity sha512-5ZmQzhNZIBcTLYhIovyhBXucDD+JUhL7YAqfmLzPudCLFRodSLbsWtoiYREG/Z55TN1Zn+Rko5eKH965m1L8SA==
+  dependencies:
+    minimist "^1.2.0"
+
 wrap-ansi@^7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
