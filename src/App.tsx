@@ -14,7 +14,8 @@ const App: React.FC = () => {
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    const redirectUrl = `https://${url}/wp-admin/plugin-install.php?s=pagbank-woocommerce&tab=search&type=term`
+    const trimmedUrl = url.trim().replace(/\/$/, "");
+    const redirectUrl = `https://${trimmedUrl}/wp-admin/plugin-install.php?s=pagbank-woocommerce&tab=search&type=term`
 
     if(!validateUrl(redirectUrl)) {
       alert('URL inválida')
