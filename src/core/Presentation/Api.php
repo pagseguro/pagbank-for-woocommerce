@@ -176,7 +176,9 @@ class Api {
 			)
 		);
 
-		$this->log_request_begin( $url, $body, 'pagbank_oauth' );
+		if ( defined( 'PAGBANK_LOG_OAUTH_REQUEST' ) && PAGBANK_LOG_OAUTH_REQUEST ) {
+			$this->log_request_begin( $url, $body, 'pagbank_oauth' );
+		}
 
 		$response = wp_remote_post(
 			$url,
@@ -190,7 +192,9 @@ class Api {
 		);
 
 		if ( is_wp_error( $response ) ) {
-			$this->log_request_error( $response, 'pagbank_oauth' );
+			if ( defined( 'PAGBANK_LOG_OAUTH_REQUEST' ) && PAGBANK_LOG_OAUTH_REQUEST ) {
+				$this->log_request_error( $response, 'pagbank_oauth' );
+			}
 
 			return $response;
 		}
@@ -199,7 +203,9 @@ class Api {
 		$response_body         = wp_remote_retrieve_body( $response );
 		$decoded_response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 
-		$this->log_request_ends( $response_code, $response_body, 'pagbank_oauth' );
+		if ( defined( 'PAGBANK_LOG_OAUTH_REQUEST' ) && PAGBANK_LOG_OAUTH_REQUEST ) {
+			$this->log_request_ends( $response_code, $response_body, 'pagbank_oauth' );
+		}
 
 		if ( 200 !== $response_code ) {
 			return new WP_Error( 'pagbank_request_error', __( 'Status HTTP inválido.', 'pagbank-woocommerce' ) );
