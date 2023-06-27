@@ -146,7 +146,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				'title'       => __( 'Título', 'pagbank-woocommerce' ),
 				'type'        => 'text',
 				'description' => __( 'Isso irá controlar o título que o cliente verá durante o checkout.', 'pagbank-woocommerce' ),
-				'default'     => __( 'Boleto', 'pagbank-woocommerce' ),
+				'default'     => __( 'Cartão de crédito', 'pagbank-woocommerce' ),
 				'desc_tip'    => true,
 			),
 			'description'                        => array(
