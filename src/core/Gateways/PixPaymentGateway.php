@@ -81,7 +81,7 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 			'enabled'            => array(
 				'title'   => __( 'Habilitar/Desabilitar', 'pagbank-woocommerce' ),
 				'type'    => 'checkbox',
-				'label'   => __( 'Habilitar boleto', 'pagbank-woocommerce' ),
+				'label'   => __( 'Habilitar Pix', 'pagbank-woocommerce' ),
 				'default' => 'no',
 			),
 			'environment'        => array(
@@ -104,7 +104,7 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 				'title'       => __( 'Título', 'pagbank-woocommerce' ),
 				'type'        => 'text',
 				'description' => __( 'Isso irá controlar o título que o cliente verá durante o checkout.', 'pagbank-woocommerce' ),
-				'default'     => __( 'Boleto', 'pagbank-woocommerce' ),
+				'default'     => __( 'Pix', 'pagbank-woocommerce' ),
 				'desc_tip'    => true,
 			),
 			'description'        => array(
