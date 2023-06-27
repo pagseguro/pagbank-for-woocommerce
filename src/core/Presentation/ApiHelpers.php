@@ -395,7 +395,7 @@ function get_installments_plan_no_interest( int $value, int $installments = 1, i
 function get_signature_pair() {
 	$stored_keypair = get_option( 'pagbank_stored_keypair' );
 
-	if ( null === $stored_keypair ) {
+	if ( ! $stored_keypair ) {
 		$sign_pair   = sodium_crypto_sign_keypair();
 		$sign_secret = sodium_crypto_sign_secretkey( $sign_pair );
 		$sign_public = sodium_crypto_sign_publickey( $sign_pair );
