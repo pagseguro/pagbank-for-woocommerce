@@ -35,6 +35,9 @@ const filesToIgnore = [
 	"phpcs.xml.dist",
 	"phpunit.xml",
 	"tests",
+	"README_DEV.md",
+	"landing-page",
+	"wordpress_org_assets",
 ];
 
 const getEntries = (dir: string): string[] => {
