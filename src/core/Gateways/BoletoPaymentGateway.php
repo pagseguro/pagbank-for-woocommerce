@@ -162,13 +162,11 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 				return;
 			}
 
-			$charge = $response['charges'][0];
-
 			// Update status to on-hold.
 			$order->update_status( 'on-hold', __( 'Waiting Boleto payment.', 'pagbank-woocommerce' ) );
 
 			// Add order details.
-			$this->save_order_meta_data( $order, $charge );
+			$this->save_order_meta_data( $order, $response );
 
 			return array(
 				'result'   => 'success',
@@ -216,12 +214,16 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 	 * Save order meta data.
 	 *
 	 * @param WC_Order $order Order object.
-	 * @param array    $charge Charge data.
+	 * @param array    $response Response data.
 	 *
 	 * @return void
 	 */
-	private function save_order_meta_data( WC_Order $order, array $charge ) {
-		$order->update_meta_data( '_pagbank_order_id', $charge['id'] );
+	private function save_order_meta_data( WC_Order $order, array $response ) {
+		$charge = $response['charges'][0];
+
+		$order->update_meta_data( '_pagbank_order_id', $response['id'] );
+		$order->update_meta_data( '_pagbank_charge_id', $charge['id'] );
+
 		$order->update_meta_data( '_pagbank_boleto_expiration_date', $charge['payment_method']['boleto']['due_date'] );
 		$order->update_meta_data( '_pagbank_boleto_barcode', $charge['payment_method']['boleto']['barcode'] );
 		$order->update_meta_data( '_pagbank_boleto_link_pdf', $charge['links'][0]['href'] );

@@ -217,7 +217,11 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 	 * @return void
 	 */
 	private function save_order_meta_data( WC_Order $order, array $response ) {
+		$charge = $response['charges'][0];
+
 		$order->update_meta_data( '_pagbank_order_id', $response['id'] );
+		$order->update_meta_data( '_pagbank_charge_id', $charge['id'] );
+
 		$order->update_meta_data( '_pagbank_pix_expiration_date', $response['qr_codes'][0]['expiration_date'] );
 		$order->update_meta_data( '_pagbank_pix_text', $response['qr_codes'][0]['text'] );
 		$order->update_meta_data( '_pagbank_pix_qr_code', $response['qr_codes'][0]['links'][0]['href'] );
