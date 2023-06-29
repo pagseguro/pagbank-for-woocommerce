@@ -55,7 +55,7 @@ class Connect {
 				'app_name'        => 'WOOCOMMERCE–D14',
 				'access_token'    => 'b1GAHR6uf22RrC4KUNB+6eav/3YohEBofInyaIDw9cwVfMolF0HAfP3lS7MEbkcwlYywFbxGEDPTi/k6wjabXjYXaN4hyARRkDKE4hMR4K0BWq0ya96kAnw4tn0xybXt1Nnse5CHUNqOksBlSF+IeJVPrVMSCHzAStbT5VwgwXo2YlFLCfXFRCqca0uhHAUG3es29bPPjjdYY971NSYG+eCMDYCL356sQRbL3fxV0rjNax/A/l5qnTMBAB5Ki5wjB2D1YbIYfktzHEh7HM6OO4r0CG3bMd3/4AngGf3DNShpRogG9p1VZN5hkjxIVrMgUeHAYSvQJOnXFszAmgYjSQ==',
 				'environment'     => 'production',
-				'card_public_key' => 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAq0ZbwmUibTp4qscGcoVLGUAEN6ol/UPqKV6IpfN8Sd9rhvXfk5UiUNCJkb4Eqs+glMrqpU8ZQF0egXlhlvQNnoIzHX0ksqqC5S/JcfTvkdyHMdAJcTYx3hrG5/0ieJxl8YDp0xA8NSveZHxCMq4qzHPLYylxJbhFaOt//rRN54S/Hiu238jJJQKU7adwY+CoxVwYklEG6rB4Qdw3j1MuXWnw2ryZHyGMnPFmI3GlRVja5J2r7UXqI2zZukbrTfF7ATq3iV4oe1Y2MMLqBldpeN4ghEg3l12d1dco7Dz0WpdejNuSsvwQ8agPTpqI+9jvCcJPJSesmT/icWYSgi3xaQIDAQAB',
+				'card_public_key' => 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAt39CgIeK/HdPHmPCeAvC90GjMnPQy+iYrT4Ij6u8ghIGGFbP4rlRti3yNFQeDbuxd6EA5v7mkGKR3vU/Sz/ZSTvW+a6Fzki/SAd5gz/QrylzUhf8jbMNnaauRx4v/SAoqww/547Q8J0b77hS7IBX20exZWzSGO9ACAzzlZb2pG0igsmjAc3BugZX6aDf/Cm7b0Wwv0WaBW3lIFAd8jxaHCBGEKYdajGb6ktWmpThwl/WgAQapj0EmipkCSBh1uXaJThx0OB7ON7RaTMu3NGtVMz/x7Cj5GfxsVYVqfyZRaeZRnrZfZ3lEXilWdI3xsqVZpiqgD9u2l4ll0M043D2GwIDAQAB',
 			),
 			'c8672afd-abbb-4c47-a95d-7cf9cd4cee76' => array(
 				'id'              => 'c8672afd-abbb-4c47-a95d-7cf9cd4cee76',
@@ -63,7 +63,7 @@ class Connect {
 				'app_name'        => 'WOOCOMMERCE–D30',
 				'access_token'    => 'g4MGqLlpVGGE+t4C0ReTZQf8URY5D3VWJQySNYYkLnhAw9emaUmxTdxAkIxesgnxrVsK2TfPnGJ0nB43lPEOPHLHPDDoX01117kKwYBDyj7sD3p2yXwRgTdonNcBGvpOlkk3K3mTj6oP6oRNu4IaXR+9X7xtPuQVgOoufZn3CSgHFpmJo9uivoFBG4ntu4pCiYLVG+3c0KhQJxTYVgTFTHeevtbddyALC2DK25Z4Pxz0aGB3PhtV6e7fLiu7uNkaMOEfZ8g3E8hVUmfMJABArXRhgYdjlUogzjh2RLxyJUuLn++ocmF76/hW4zygC2ZNqld10r5d3fb+VzMCeIbzRg==',
 				'environment'     => 'production',
-				'card_public_key' => 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAq0ZbwmUibTp4qscGcoVLGUAEN6ol/UPqKV6IpfN8Sd9rhvXfk5UiUNCJkb4Eqs+glMrqpU8ZQF0egXlhlvQNnoIzHX0ksqqC5S/JcfTvkdyHMdAJcTYx3hrG5/0ieJxl8YDp0xA8NSveZHxCMq4qzHPLYylxJbhFaOt//rRN54S/Hiu238jJJQKU7adwY+CoxVwYklEG6rB4Qdw3j1MuXWnw2ryZHyGMnPFmI3GlRVja5J2r7UXqI2zZukbrTfF7ATq3iV4oe1Y2MMLqBldpeN4ghEg3l12d1dco7Dz0WpdejNuSsvwQ8agPTpqI+9jvCcJPJSesmT/icWYSgi3xaQIDAQAB',
+				'card_public_key' => 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAt39CgIeK/HdPHmPCeAvC90GjMnPQy+iYrT4Ij6u8ghIGGFbP4rlRti3yNFQeDbuxd6EA5v7mkGKR3vU/Sz/ZSTvW+a6Fzki/SAd5gz/QrylzUhf8jbMNnaauRx4v/SAoqww/547Q8J0b77hS7IBX20exZWzSGO9ACAzzlZb2pG0igsmjAc3BugZX6aDf/Cm7b0Wwv0WaBW3lIFAd8jxaHCBGEKYdajGb6ktWmpThwl/WgAQapj0EmipkCSBh1uXaJThx0OB7ON7RaTMu3NGtVMz/x7Cj5GfxsVYVqfyZRaeZRnrZfZ3lEXilWdI3xsqVZpiqgD9u2l4ll0M043D2GwIDAQAB',
 			),
 			'f2ad0df4-4e52-4cef-97b2-4fcf1405ab9a' => array(
 				'id'              => 'f2ad0df4-4e52-4cef-97b2-4fcf1405ab9a',
@@ -71,7 +71,7 @@ class Connect {
 				'app_name'        => 'WOOCOMMERCE–TAXA-NEGOCIADA',
 				'access_token'    => 'kVuwzAYnBsCLL2dMBO8gRIhm01rT0mVkznG4Vgw/jNTa2Pey+Ry/EdsionLcDDxmqvOompJp1RzTqq0ZPu2x+z4x5r0R1RjrS4WZp3dY5nNX1kkValMtgDbSyblF+b/LW7Npx7t60Y5AVOvwT8wnoetRxOwjVJp9rrTt9Mk29QSUnU0iKIGfZ+QFrUDmc9Y3y+wivGmzXCBoh1pFyiXb7WZfo7XSJM1CCFtfEJx3P4rheFWsjol1enVVfrMSfopa19z6EhJ0CEb4xKP9rkqyY0VurXgEFwAmBFQLJ3VHMlOSlUs0QCpP/0xe8a96qzlT/wV2Om2ONWwDFjqKRAdOqw==',
 				'environment'     => 'production',
-				'card_public_key' => 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAq0ZbwmUibTp4qscGcoVLGUAEN6ol/UPqKV6IpfN8Sd9rhvXfk5UiUNCJkb4Eqs+glMrqpU8ZQF0egXlhlvQNnoIzHX0ksqqC5S/JcfTvkdyHMdAJcTYx3hrG5/0ieJxl8YDp0xA8NSveZHxCMq4qzHPLYylxJbhFaOt//rRN54S/Hiu238jJJQKU7adwY+CoxVwYklEG6rB4Qdw3j1MuXWnw2ryZHyGMnPFmI3GlRVja5J2r7UXqI2zZukbrTfF7ATq3iV4oe1Y2MMLqBldpeN4ghEg3l12d1dco7Dz0WpdejNuSsvwQ8agPTpqI+9jvCcJPJSesmT/icWYSgi3xaQIDAQAB',
+				'card_public_key' => 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAt39CgIeK/HdPHmPCeAvC90GjMnPQy+iYrT4Ij6u8ghIGGFbP4rlRti3yNFQeDbuxd6EA5v7mkGKR3vU/Sz/ZSTvW+a6Fzki/SAd5gz/QrylzUhf8jbMNnaauRx4v/SAoqww/547Q8J0b77hS7IBX20exZWzSGO9ACAzzlZb2pG0igsmjAc3BugZX6aDf/Cm7b0Wwv0WaBW3lIFAd8jxaHCBGEKYdajGb6ktWmpThwl/WgAQapj0EmipkCSBh1uXaJThx0OB7ON7RaTMu3NGtVMz/x7Cj5GfxsVYVqfyZRaeZRnrZfZ3lEXilWdI3xsqVZpiqgD9u2l4ll0M043D2GwIDAQAB',
 			),
 		);
 
