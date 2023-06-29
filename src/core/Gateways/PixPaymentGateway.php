@@ -15,6 +15,7 @@ use WC_Payment_Gateway;
 use WP_Error;
 
 use function PagBank_WooCommerce\Presentation\get_pix_payment_api_data;
+use function PagBank_WooCommerce\Presentation\process_order_refund;
 
 /**
  * Class PixPaymentGateway.
@@ -183,29 +184,7 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 	 * @param string $reason   Refund reason.
 	 */
 	public function process_refund( $order_id, $amount = null, $reason = '' ) {
-		$amount = floatval( $amount );
-
-		if ( $amount <= 0 ) {
-			return new WP_Error( 'error', __( 'O valor para reembolso deve ser maior que zero', 'pagbank-woocommerce' ) );
-		}
-
-		$pagbank_order_id = get_post_meta( $order_id, '_pagbank_order_id', true );
-
-		try {
-			$refund = $this->api->refund( $pagbank_order_id, $amount );
-
-			if ( is_wp_error( $refund ) ) {
-				return $refund;
-			}
-
-			if ( $refund['status'] === 'CANCELED' ) {
-				return true;
-			}
-
-			return new WP_Error( 'error', __( 'Houve um erro ao tentar realizar o reembolso.', 'pagbank-woocommerce' ) );
-		} catch ( Exception $ex ) {
-			return new WP_Error( 'error', __( 'Houve um erro ao tentar realizar o reembolso.', 'pagbank-woocommerce' ) );
-		}
+		return process_order_refund( $this->api, $order_id, $amount, $reason );
 	}
 
 	/**

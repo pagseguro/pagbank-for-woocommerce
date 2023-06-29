@@ -349,13 +349,13 @@ class Api {
 	/**
 	 * Refund an order.
 	 *
-	 * @param string $id     The order ID.
+	 * @param string $charge_id     The order ID.
 	 * @param float  $amount The amount to be refunded.
 	 *
 	 * @return array|WP_Error The refund data.
 	 */
-	public function refund( string $id, float $amount ) {
-		$url = $this->get_api_url( 'charges/' . $id . '/cancel' );
+	public function refund( string $charge_id, float $amount ) {
+		$url = $this->get_api_url( 'charges/' . $charge_id . '/cancel' );
 
 		$body = $this->json_encode(
 			array(

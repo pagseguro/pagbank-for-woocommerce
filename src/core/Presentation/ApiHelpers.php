@@ -13,6 +13,7 @@ use libphonenumber\PhoneNumberType;
 use libphonenumber\PhoneNumberUtil;
 use WC_Order;
 use WC_Payment_Tokens;
+use WP_Error;
 
 /**
  * Get order tax id.
@@ -442,4 +443,40 @@ function validate_order_id_signature( string $order_id, string $signature ) {
 	$message_valid  = sodium_crypto_sign_verify_detached( $signature, $order_id, $signature_pair['sign_public'] );
 
 	return $message_valid;
+}
+
+/**
+ * Process order refund.
+ *
+ * @param Api    $api PagBank API.
+ * @param int    $order_id Order id.
+ * @param float  $amount Amount to refund.
+ * @param string $reason Reason to refund.
+ *
+ * @return bool|WP_Error
+ */
+function process_order_refund( Api $api, $order_id, $amount = null, $reason = '' ) {
+	$amount = floatval( $amount );
+
+	if ( $amount <= 0 ) {
+		return new WP_Error( 'error', __( 'O valor para reembolso deve ser maior que zero', 'pagbank-woocommerce' ) );
+	}
+
+	$pagbank_charge_id = get_post_meta( $order_id, '_pagbank_charge_id', true );
+
+	try {
+		$refund = $api->refund( $pagbank_charge_id, $amount );
+
+		if ( is_wp_error( $refund ) ) {
+			return $refund;
+		}
+
+		if ( $refund['status'] === 'CANCELED' ) {
+			return true;
+		}
+
+		return new WP_Error( 'error', __( 'Houve um erro ao tentar realizar o reembolso.', 'pagbank-woocommerce' ) );
+	} catch ( Exception $ex ) {
+		return new WP_Error( 'error', __( 'Houve um erro ao tentar realizar o reembolso.', 'pagbank-woocommerce' ) );
+	}
 }
