@@ -60,7 +60,7 @@ class WebhookHandler {
 	public static function get_webhook_url(): string {
 		$site_url = defined( 'PAGBANK_WEBHOOK_SITE_URL' ) && PAGBANK_WEBHOOK_SITE_URL ? PAGBANK_WEBHOOK_SITE_URL : site_url( '/' );
 
-		return $site_url . '/wc-api/pagbank_woocommerce_handler';
+		return rtrim( $site_url, '/' ) . '/wc-api/pagbank_woocommerce_handler';
 	}
 
 	/**
