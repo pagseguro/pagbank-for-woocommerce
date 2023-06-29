@@ -60,6 +60,10 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 		$this->method_description = __( 'Aceite pagamentos via Boleto através do PagBank.', 'pagbank-woocommerce' );
 		$this->description        = $this->get_option( 'description' );
 		$this->has_fields         = ! empty( $this->description );
+		$this->supports           = array(
+			'products',
+			'refunds',
+		);
 
 		$this->init_form_fields();
 		$this->init_settings();
