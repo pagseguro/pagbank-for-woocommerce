@@ -460,6 +460,50 @@ class Api {
 	}
 
 	/**
+	 * Get public key.
+	 */
+	public function get_public_key() {
+		$url = $this->get_api_url( 'public-keys' );
+
+		$body = $this->json_encode(
+			array(
+				'type' => 'card',
+			)
+		);
+
+		$this->log_request_begin( $url, $body );
+
+		$response = wp_remote_post(
+			$url,
+			array(
+				'headers' => array(
+					'Authorization' => $this->connect->get_access_token(),
+					'Content-Type'  => 'application/json',
+				),
+				'body'    => $body,
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			$this->log_request_error( $response );
+
+			return $response;
+		}
+
+		$response_code         = wp_remote_retrieve_response_code( $response );
+		$response_body         = wp_remote_retrieve_body( $response );
+		$decoded_response_body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		$this->log_request_ends( $response_code, $response_body );
+
+		if ( 200 !== $response_code ) {
+			return new WP_Error( 'pagbank_public_key_failed', 'PagBank get public key failed', $decoded_response_body );
+		}
+
+		return $decoded_response_body;
+	}
+
+	/**
 	 * Log a message.
 	 *
 	 * @param string $message The message to be logged.

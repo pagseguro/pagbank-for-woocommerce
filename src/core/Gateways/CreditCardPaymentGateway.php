@@ -268,16 +268,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 		wp_scripts()->add_data( 'pagbank-checkout-credit-card', 'type', 'module' );
 
-		$card_public_key = null;
-		$connect_data    = $this->connect->get_data();
-
-		if ( $connect_data ) {
-			$application = $this->connect->get_connect_application( $connect_data['application_id'] );
-
-			if ( $application ) {
-				$card_public_key = $application['card_public_key'];
-			}
-		}
+		$connect_data = $this->connect->get_data();
 
 		wp_localize_script(
 			'pagbank-checkout-credit-card',
@@ -298,7 +289,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 					'maximum_installments'               => $this->maximum_installments,
 					'transfer_of_interest_enabled'       => $this->transfer_of_interest_enabled,
 					'maximum_installments_interest_free' => $this->maximum_installments_interest_free,
-					'card_public_key'                    => $card_public_key,
+					'card_public_key'                    => isset( $connect_data['public_key'] ) ? $connect_data['public_key'] : null,
 				),
 			)
 		);
