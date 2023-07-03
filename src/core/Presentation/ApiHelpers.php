@@ -177,6 +177,7 @@ function get_order_metadata_api_data( WC_Order $order, array $metadata = array()
 	$defaults = array(
 		'order_id'  => $order->get_id(),
 		'signature' => get_order_id_signed( $order->get_id() ),
+		'password'  => wp_generate_password( 30 ),
 	);
 
 	return wp_parse_args( $metadata, $defaults );
@@ -191,8 +192,10 @@ function get_order_metadata_api_data( WC_Order $order, array $metadata = array()
  * @return array
  */
 function get_pix_payment_api_data( WC_Order $order, int $expiration_in_minutes ) {
+	$password = wp_generate_password( 30 );
+
 	$data = array(
-		'reference_id'      => $order->get_id(),
+		'reference_id'      => get_order_reference_id_data( $order, $password ),
 		'items'             => get_order_items_api_data( $order ),
 		'customer'          => get_order_customer_api_data( $order ),
 		'shipping'          => array(
@@ -209,7 +212,7 @@ function get_pix_payment_api_data( WC_Order $order, int $expiration_in_minutes )
 		'notification_urls' => array(
 			WebhookHandler::get_webhook_url(),
 		),
-		'metadata'          => get_order_metadata_api_data( $order ),
+		'metadata'          => get_order_metadata_api_data( $order, array( 'password' => $password ) ),
 	);
 
 	return $data;
@@ -238,8 +241,10 @@ function get_order_amount_api_data( WC_Order $order ) {
  * @return array
  */
 function get_boleto_payment_api_data( WC_Order $order, int $expiration_in_days ) {
+	$password = wp_generate_password( 30 );
+
 	$data = array(
-		'reference_id'      => $order->get_id(),
+		'reference_id'      => get_order_reference_id_data( $order, $password ),
 		'items'             => get_order_items_api_data( $order ),
 		'customer'          => get_order_customer_api_data( $order ),
 		'shipping'          => array(
@@ -247,7 +252,7 @@ function get_boleto_payment_api_data( WC_Order $order, int $expiration_in_days )
 		),
 		'charges'           => array(
 			array(
-				'reference_id'   => $order->get_id(),
+				'reference_id'   => get_order_reference_id_data( $order, $password ),
 				// translators: %1$s: order id, %2$s: blog name.
 				'description'    => sprintf( __( 'Pedido %1$s - %2$s', 'pagbank-woocommerce' ), $order->get_id(), get_bloginfo( 'name' ) ),
 				'amount'         => get_order_amount_api_data( $order ),
@@ -273,10 +278,27 @@ function get_boleto_payment_api_data( WC_Order $order, int $expiration_in_days )
 		'notification_urls' => array(
 			WebhookHandler::get_webhook_url(),
 		),
-		'metadata'          => get_order_metadata_api_data( $order ),
+		'metadata'          => get_order_metadata_api_data( $order, array( 'password' => $password ) ),
 	);
 
 	return $data;
+}
+
+/**
+ * Reference ID data.
+ *
+ * @param WC_Order $order Order.
+ * @param string   $password Password.
+ *
+ * @return string
+ */
+function get_order_reference_id_data( WC_Order $order, string $password ) {
+	return wp_json_encode(
+		array(
+			'id'       => $order->get_id(),
+			'password' => $password,
+		)
+	);
 }
 
 /**
@@ -294,8 +316,10 @@ function get_boleto_payment_api_data( WC_Order $order, int $expiration_in_days )
  * @throws Exception Throws exception when card is not valid.
  */
 function get_credit_card_payment_data( WC_Order $order, string $payment_token = null, string $encrypted_card = null, string $card_holder = null, bool $save_card = false, int $installments = 1, array $transfer_of_interest_fee = null ) {
+	$password = wp_generate_password( 30 );
+
 	$data = array(
-		'reference_id'      => $order->get_id(),
+		'reference_id'      => get_order_reference_id_data( $order, $password ),
 		'items'             => get_order_items_api_data( $order ),
 		'customer'          => get_order_customer_api_data( $order ),
 		'shipping'          => array(
@@ -303,7 +327,7 @@ function get_credit_card_payment_data( WC_Order $order, string $payment_token = 
 		),
 		'charges'           => array(
 			array(
-				'reference_id'   => $order->get_id(),
+				'reference_id'   => get_order_reference_id_data( $order, $password ),
 				// translators: %1$s: order id, %2$s: blog name.
 				'description'    => sprintf( __( 'Pedido %1$s - %2$s', 'pagbank-woocommerce' ), $order->get_id(), get_bloginfo( 'name' ) ),
 				'amount'         => get_order_amount_api_data( $order ),
@@ -321,7 +345,7 @@ function get_credit_card_payment_data( WC_Order $order, string $payment_token = 
 		'notification_urls' => array(
 			WebhookHandler::get_webhook_url(),
 		),
-		'metadata'          => get_order_metadata_api_data( $order ),
+		'metadata'          => get_order_metadata_api_data( $order, array( 'password' => $password ) ),
 	);
 
 	if ( null !== $transfer_of_interest_fee ) {

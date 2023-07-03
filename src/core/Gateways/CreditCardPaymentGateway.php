@@ -697,7 +697,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				return;
 			}
 
-			$this->save_order_meta_data( $order, $response );
+			$this->save_order_meta_data( $order, $response, $data );
 
 			$order->payment_complete();
 
@@ -741,14 +741,16 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 *
 	 * @param WC_Order $order Order object.
 	 * @param array    $response Response data.
+	 * @param array    $request Request data.
 	 *
 	 * @return void
 	 */
-	private function save_order_meta_data( WC_Order $order, array $response ) {
+	private function save_order_meta_data( WC_Order $order, array $response, array $request ) {
 		$charge = $response['charges'][0];
 
 		$order->update_meta_data( '_pagbank_order_id', $response['id'] );
 		$order->update_meta_data( '_pagbank_charge_id', $charge['id'] );
+		$order->update_meta_data( '_pagbank_password', $request['metadata']['password'] );
 
 		$order->update_meta_data( '_pagbank_credit_card_brand', $charge['payment_method']['card']['brand'] );
 		$order->update_meta_data( '_pagbank_credit_card_installments', $charge['payment_method']['installments'] );
