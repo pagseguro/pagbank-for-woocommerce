@@ -153,6 +153,8 @@ class WebhookHandler {
 				$order->update_status( 'failed', __( 'O pagamento foi recusado.', 'pagbank-woocommerce' ) );
 			} elseif ( $charge['status'] === 'PAID' ) {
 				$order->payment_complete( $charge['id'] );
+				$order->update_meta_data( '_pagbank_charge_id', $charge['id'] );
+				$order->save_meta_data();
 			}
 
 			$this->log( 'Webhook processed successfully' );
