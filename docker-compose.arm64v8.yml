@@ -16,7 +16,7 @@ services:
       - db
     volumes:
       - ./wp:/var/www/html
-      - ./:/var/www/html/wp-content/plugins/pagbank-woocommerce
+      - ./:/var/www/html/wp-content/plugins/pagbank-for-woocommerce
     ports:
       - 80:80
     environment:
@@ -31,7 +31,7 @@ services:
       - wordpress
     volumes:
       - ./wp:/var/www/html
-      - ./:/var/www/html/wp-content/plugins/pagbank-woocommerce
+      - ./:/var/www/html/wp-content/plugins/pagbank-for-woocommerce
     profiles:
       - donotstart
 
@@ -52,3 +52,4 @@ services:
 
 volumes:
   db_data: {}
+  wp_data: {}

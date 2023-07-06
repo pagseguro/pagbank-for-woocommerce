@@ -4,3 +4,5 @@ node_modules/
 wp/
 dist/
 build/
+.phpunit.result*
+docs/

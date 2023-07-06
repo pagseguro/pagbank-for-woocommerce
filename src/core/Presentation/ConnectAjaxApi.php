@@ -21,12 +21,30 @@ use WP_REST_Response;
 class ConnectAjaxApi {
 
 	/**
+	 * Instance.
+	 *
+	 * @var ConnectAjaxApi
+	 */
+	private static $instance = null;
+
+	/**
 	 * Init.
 	 */
-	public static function init(): void {
-		add_action( 'wp_ajax_pagbank_woocommerce_oauth_status', array( self::class, 'ajax_get_oauth_status' ) );
-		add_action( 'wp_ajax_pagbank_woocommerce_oauth_url', array( self::class, 'ajax_get_oauth_url' ) );
-		add_action( 'wp_ajax_pagbank_woocommerce_oauth_callback', array( self::class, 'ajax_oauth_callback' ) );
+	public function __construct() {
+		add_action( 'wp_ajax_pagbank_woocommerce_oauth_status', array( $this, 'ajax_get_oauth_status' ) );
+		add_action( 'wp_ajax_pagbank_woocommerce_oauth_url', array( $this, 'ajax_get_oauth_url' ) );
+		add_action( 'wp_ajax_pagbank_woocommerce_oauth_callback', array( $this, 'ajax_oauth_callback' ) );
+	}
+
+	/**
+	 * Get instance.
+	 */
+	public static function get_instance() {
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
 	}
 
 	/**
@@ -112,7 +130,7 @@ class ConnectAjaxApi {
 		$api   = new Api( $environment );
 		$nonce = sanitize_text_field( wp_unslash( $_GET['nonce'] ) );
 
-		$oauth_url = $api->get_oauth_url( self::get_callback_url( $environment ), $nonce, $application_id );
+		$oauth_url = $api->get_oauth_url( self::get_callback_url( $environment ), $environment, $nonce, $application_id );
 
 		wp_send_json(
 			array(
@@ -150,6 +168,20 @@ class ConnectAjaxApi {
 		$oauth_code   = sanitize_text_field( wp_unslash( $_GET['code'] ) );
 		$callback_url = self::get_callback_url( $environment );
 		$data         = $api->get_access_token_from_oauth_code( $callback_url, $oauth_code );
+
+		if ( is_wp_error( $data ) ) {
+			wp_die( esc_html( __( 'Erro ao autorizar a aplicação', 'pagbank-for-woocommerce' ) ) );
+			return;
+		}
+
+		$public_key = $api->get_public_key();
+
+		if ( is_wp_error( $public_key ) ) {
+			wp_die( esc_html( __( 'Erro ao obter a public key', 'pagbank-for-woocommerce' ) ) );
+			return;
+		}
+
+		$data['public_key'] = $public_key['public_key'];
 
 		$connect->save( $data );
 

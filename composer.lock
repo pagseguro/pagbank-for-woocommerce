@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "679fd342608d8ccaa50fc36eab6b05c6",
+    "content-hash": "3e52f32cf33d217473beb14633d9fac9",
     "packages": [
         {
             "name": "giggsey/libphonenumber-for-php",
@@ -678,6 +678,49 @@
                 }
             ],
             "time": "2022-06-27T16:58:25+00:00"
+        },
+        {
+            "name": "wilkques/pkce-php",
+            "version": "v2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wilkques/pkce-php.git",
+                "reference": "fa8ecf84371f1df9da561208c3aedbb0866d6456"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/wilkques/pkce-php/zipball/fa8ecf84371f1df9da561208c3aedbb0866d6456",
+                "reference": "fa8ecf84371f1df9da561208c3aedbb0866d6456",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.0|^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "Wilkques\\PKCE\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Wilkques",
+                    "email": "wilkques@gmail.com"
+                }
+            ],
+            "description": "PKCE for PHP",
+            "support": {
+                "issues": "https://github.com/wilkques/pkce-php/issues",
+                "source": "https://github.com/wilkques/pkce-php/tree/v2.0.0"
+            },
+            "time": "2022-05-18T02:56:16+00:00"
         }
     ],
     "packages-dev": [

@@ -1,6 +1,6 @@
 {
-    "name": "pagbank-woocommerce",
-    "version": "1.0.0",
+    "name": "pagbank-for-woocommerce",
+    "version": "1.0.1",
     "author": "Elias Júnior <me@eliasjr.dev>",
     "license": "MIT",
     "type": "module",
@@ -16,7 +16,10 @@
         "boot": "docker compose up",
         "boot:arm64v8": "docker compose -f docker-compose.arm64v8.yml up",
         "test": "./vendor/bin/phpunit",
-        "todos": "leasot 'src/**/*.{php,ts,js}'"
+        "todos": "leasot 'src/**/*.{php,ts,js}'",
+        "prepare": "husky install",
+        "make:pot": "./scripts/make-pot.sh",
+        "generate-md": "wp-readme-to-md --screenshot-url=https://raw.githubusercontent.com/pagseguro/pagbank-for-woocommerce/main/wordpress_org_assets/{screenshot}.png"
     },
     "devDependencies": {
         "@commitlint/cli": "^17.5.0",
@@ -38,7 +41,8 @@
         "leasot": "^13.3.0",
         "prettier": "2.8.8",
         "typescript": "*",
-        "vite": "^4.2.1"
+        "vite": "^4.2.1",
+        "wp-readme-to-markdown": "^1.0.1"
     },
     "dependencies": {
         "@fontsource/roboto": "^5.0.1",

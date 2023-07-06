@@ -1,5 +1,5 @@
 {
-    "name": "pagbank/pagbank-woocommerce",
+    "name": "pagbank/pagbank-for-woocommerce",
     "autoload": {
         "psr-4": {
             "PagBank_WooCommerce\\": "src/core/"
@@ -32,7 +32,8 @@
         "php": ">=7.2 <8",
         "jakeasmith/http_build_url": "^1",
         "giggsey/libphonenumber-for-php": "^8.13",
-        "nesbot/carbon": "^2.66"
+        "nesbot/carbon": "^2.66",
+        "wilkques/pkce-php": "^2.0"
     },
     "config": {
         "allow-plugins": {

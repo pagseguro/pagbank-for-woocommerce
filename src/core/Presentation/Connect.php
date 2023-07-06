@@ -41,46 +41,32 @@ class Connect {
 	 */
 	public static function get_connect_applications( string $environment = null ) {
 		$applications = array(
-			'b728b941-dfdd-4b6c-a351-38ce4d3d0e4d'   => array(
-				'id'           => 'b728b941-dfdd-4b6c-a351-38ce4d3d0e4d',
+			'fa1553af-5f0c-4ff2-92c3-a0dd8984b6a1' => array(
+				'id'           => 'fa1553af-5f0c-4ff2-92c3-a0dd8984b6a1',
+				'title'        => 'Aplicação de demonstração',
+				'app_name'     => 'WOOCOMMERCE–SANDBOX',
+				'access_token' => 'qmoSqvkWfyOeT18k7K/6PZgkeNFiS9xxFK+pWlZWYbV4BqqqVCjCDgq3Gp86iyji8sSYc/pNDK5EQUAYfmUMBlNM5hJm9w6sHXXY4XsQAPnO0qbjYyx1CrudhLQTdePwIhPLvuRhLovUzAsN5gPZCMpon8D2Bt/5Jh57fvHdfBRpKthxMPZub785cAXx9SiOfRJ3SAN2SdHJg94XuSaa+9GQD6mPoQZpLpC/XfW5Ub4bZy2IiHUcHysMCUnfY3W9zXBphPLb7NAWDDhKP9ULFkEYgi+bZIDs+5ZTZdAf5eGAbEO9uCdghZoEMI1vWyFn+H3x0MoGvtqCItFqD+CsGA==',
+				'environment'  => 'sandbox',
+			),
+			'31241905-5426-4f88-a140-4416a2cab404' => array(
+				'id'           => '31241905-5426-4f88-a140-4416a2cab404',
 				'title'        => 'Recebimento em 14 dias',
-				'fee'          => 4.99,
-				'access_token' => 'd16+IOeXfMUsOs++Yd6Ivacs3B3ixf0d9SsWSZUBk3UEB9r0TkiQkKR5qJjreBaZYXSYwXCoZuoT0eBIqr3VPFQqYGJI6ZGe+f4cqTWTlNlcauvqGtrNxY6pqp0lgVZIEwwCVD7jqy2qUpc/02VQTuxcs2AqgljJvhTJ1SCAFF3BN/jN+2cjhyIeNP+T7kYwyMamCn0tubHyMG75QmPiLrZtGSCsK633wdcD2lYLX9wxhpRoOpbU+CwtRPBvMJIGYGGyi3hULfmQ97UrOCDAKK3BYjt14fa1/9bphoh8TrsUmxGUHz6GdeF9IbnIDNmvF8ixnFFAqv1tlweJDIHnaQ==',
-				'environment'  => 'sandbox',
-			),
-			'b728b941-dfdd-4b6c-a351-invalid-1'      => array(
-				'id'           => 'b728b941-dfdd-4b6c-a351-invalid-1',
-				'title'        => 'Recebimento em 30 dias',
-				'fee'          => 3.99,
-				'access_token' => 'd16+IOeXfMUsOs++Yd6Ivacs3B3ixf0d9SsWSZUBk3UEB9r0TkiQkKR5qJjreBaZYXSYwXCoZuoT0eBIqr3VPFQqYGJI6ZGe+f4cqTWTlNlcauvqGtrNxY6pqp0lgVZIEwwCVD7jqy2qUpc/02VQTuxcs2AqgljJvhTJ1SCAFF3BN/jN+2cjhyIeNP+T7kYwyMamCn0tubHyMG75QmPiLrZtGSCsK633wdcD2lYLX9wxhpRoOpbU+CwtRPBvMJIGYGGyi3hULfmQ97UrOCDAKK3BYjt14fa1/9bphoh8TrsUmxGUHz6GdeF9IbnIDNmvF8ixnFFAqv1tlweJDIHnaQ==',
-				'environment'  => 'sandbox',
-			),
-			'b728b941-dfdd-4b6c-a351-invalid-2'      => array(
-				'id'           => 'b728b941-dfdd-4b6c-a351-invalid-2',
-				'title'        => 'Personalizado',
-				'fee'          => null,
-				'access_token' => 'd16+IOeXfMUsOs++Yd6Ivacs3B3ixf0d9SsWSZUBk3UEB9r0TkiQkKR5qJjreBaZYXSYwXCoZuoT0eBIqr3VPFQqYGJI6ZGe+f4cqTWTlNlcauvqGtrNxY6pqp0lgVZIEwwCVD7jqy2qUpc/02VQTuxcs2AqgljJvhTJ1SCAFF3BN/jN+2cjhyIeNP+T7kYwyMamCn0tubHyMG75QmPiLrZtGSCsK633wdcD2lYLX9wxhpRoOpbU+CwtRPBvMJIGYGGyi3hULfmQ97UrOCDAKK3BYjt14fa1/9bphoh8TrsUmxGUHz6GdeF9IbnIDNmvF8ixnFFAqv1tlweJDIHnaQ==',
-				'environment'  => 'sandbox',
-			),
-			'b728b941-dfdd-4b6c-a351-prod-invalid-1' => array(
-				'id'           => 'b728b941-dfdd-4b6c-a351-prod-invalid-1',
-				'title'        => 'Recebimento em 14 dias',
-				'fee'          => 4.99,
-				'access_token' => 'd16+IOeXfMUsOs++Yd6Ivacs3B3ixf0d9SsWSZUBk3UEB9r0TkiQkKR5qJjreBaZYXSYwXCoZuoT0eBIqr3VPFQqYGJI6ZGe+f4cqTWTlNlcauvqGtrNxY6pqp0lgVZIEwwCVD7jqy2qUpc/02VQTuxcs2AqgljJvhTJ1SCAFF3BN/jN+2cjhyIeNP+T7kYwyMamCn0tubHyMG75QmPiLrZtGSCsK633wdcD2lYLX9wxhpRoOpbU+CwtRPBvMJIGYGGyi3hULfmQ97UrOCDAKK3BYjt14fa1/9bphoh8TrsUmxGUHz6GdeF9IbnIDNmvF8ixnFFAqv1tlweJDIHnaQ==',
+				'app_name'     => 'WOOCOMMERCE–D14',
+				'access_token' => 'b1GAHR6uf22RrC4KUNB+6eav/3YohEBofInyaIDw9cwVfMolF0HAfP3lS7MEbkcwlYywFbxGEDPTi/k6wjabXjYXaN4hyARRkDKE4hMR4K0BWq0ya96kAnw4tn0xybXt1Nnse5CHUNqOksBlSF+IeJVPrVMSCHzAStbT5VwgwXo2YlFLCfXFRCqca0uhHAUG3es29bPPjjdYY971NSYG+eCMDYCL356sQRbL3fxV0rjNax/A/l5qnTMBAB5Ki5wjB2D1YbIYfktzHEh7HM6OO4r0CG3bMd3/4AngGf3DNShpRogG9p1VZN5hkjxIVrMgUeHAYSvQJOnXFszAmgYjSQ==',
 				'environment'  => 'production',
 			),
-			'b728b941-dfdd-4b6c-a351-prod-invalid-2' => array(
-				'id'           => 'b728b941-dfdd-4b6c-a351-prod-invalid-2',
+			'c8672afd-abbb-4c47-a95d-7cf9cd4cee76' => array(
+				'id'           => 'c8672afd-abbb-4c47-a95d-7cf9cd4cee76',
 				'title'        => 'Recebimento em 30 dias',
-				'fee'          => 3.99,
-				'access_token' => 'd16+IOeXfMUsOs++Yd6Ivacs3B3ixf0d9SsWSZUBk3UEB9r0TkiQkKR5qJjreBaZYXSYwXCoZuoT0eBIqr3VPFQqYGJI6ZGe+f4cqTWTlNlcauvqGtrNxY6pqp0lgVZIEwwCVD7jqy2qUpc/02VQTuxcs2AqgljJvhTJ1SCAFF3BN/jN+2cjhyIeNP+T7kYwyMamCn0tubHyMG75QmPiLrZtGSCsK633wdcD2lYLX9wxhpRoOpbU+CwtRPBvMJIGYGGyi3hULfmQ97UrOCDAKK3BYjt14fa1/9bphoh8TrsUmxGUHz6GdeF9IbnIDNmvF8ixnFFAqv1tlweJDIHnaQ==',
+				'app_name'     => 'WOOCOMMERCE–D30',
+				'access_token' => 'g4MGqLlpVGGE+t4C0ReTZQf8URY5D3VWJQySNYYkLnhAw9emaUmxTdxAkIxesgnxrVsK2TfPnGJ0nB43lPEOPHLHPDDoX01117kKwYBDyj7sD3p2yXwRgTdonNcBGvpOlkk3K3mTj6oP6oRNu4IaXR+9X7xtPuQVgOoufZn3CSgHFpmJo9uivoFBG4ntu4pCiYLVG+3c0KhQJxTYVgTFTHeevtbddyALC2DK25Z4Pxz0aGB3PhtV6e7fLiu7uNkaMOEfZ8g3E8hVUmfMJABArXRhgYdjlUogzjh2RLxyJUuLn++ocmF76/hW4zygC2ZNqld10r5d3fb+VzMCeIbzRg==',
 				'environment'  => 'production',
 			),
-			'b728b941-dfdd-4b6c-a351-prod-invalid-3' => array(
-				'id'           => 'b728b941-dfdd-4b6c-a351-prod-invalid-3',
+			'f2ad0df4-4e52-4cef-97b2-4fcf1405ab9a' => array(
+				'id'           => 'f2ad0df4-4e52-4cef-97b2-4fcf1405ab9a',
 				'title'        => 'Personalizado',
-				'fee'          => null,
-				'access_token' => 'd16+IOeXfMUsOs++Yd6Ivacs3B3ixf0d9SsWSZUBk3UEB9r0TkiQkKR5qJjreBaZYXSYwXCoZuoT0eBIqr3VPFQqYGJI6ZGe+f4cqTWTlNlcauvqGtrNxY6pqp0lgVZIEwwCVD7jqy2qUpc/02VQTuxcs2AqgljJvhTJ1SCAFF3BN/jN+2cjhyIeNP+T7kYwyMamCn0tubHyMG75QmPiLrZtGSCsK633wdcD2lYLX9wxhpRoOpbU+CwtRPBvMJIGYGGyi3hULfmQ97UrOCDAKK3BYjt14fa1/9bphoh8TrsUmxGUHz6GdeF9IbnIDNmvF8ixnFFAqv1tlweJDIHnaQ==',
+				'app_name'     => 'WOOCOMMERCE–TAXA-NEGOCIADA',
+				'access_token' => 'kVuwzAYnBsCLL2dMBO8gRIhm01rT0mVkznG4Vgw/jNTa2Pey+Ry/EdsionLcDDxmqvOompJp1RzTqq0ZPu2x+z4x5r0R1RjrS4WZp3dY5nNX1kkValMtgDbSyblF+b/LW7Npx7t60Y5AVOvwT8wnoetRxOwjVJp9rrTt9Mk29QSUnU0iKIGfZ+QFrUDmc9Y3y+wivGmzXCBoh1pFyiXb7WZfo7XSJM1CCFtfEJx3P4rheFWsjol1enVVfrMSfopa19z6EhJ0CEb4xKP9rkqyY0VurXgEFwAmBFQLJ3VHMlOSlUs0QCpP/0xe8a96qzlT/wV2Om2ONWwDFjqKRAdOqw==',
 				'environment'  => 'production',
 			),
 		);
@@ -95,6 +81,17 @@ class Connect {
 		}
 
 		return $applications;
+	}
+
+	/**
+	 * Get the connect application by id.
+	 *
+	 * @param string $id The application id.
+	 *
+	 * @return array|null
+	 */
+	public function get_connect_application( string $id ) {
+		return isset( $this->get_connect_applications()[ $id ] ) ? $this->get_connect_applications()[ $id ] : null;
 	}
 
 	/**
@@ -122,11 +119,12 @@ class Connect {
 			'refresh_token'   => '',
 			'scope'           => '',
 			'account_id'      => '',
+			'public_key'      => '',
 		);
 
 		$new_data = wp_parse_args( $data, $default );
 
-		$check_for_emptiness = array( 'application_id', 'environment', 'access_token', 'expiration_date', 'refresh_token', 'scope', 'account_id' );
+		$check_for_emptiness = array( 'application_id', 'environment', 'access_token', 'expiration_date', 'refresh_token', 'scope', 'account_id', 'public_key' );
 
 		foreach ( $check_for_emptiness as $key ) {
 			if ( empty( $new_data[ $key ] ) ) {
@@ -155,6 +153,10 @@ class Connect {
 			return null;
 		}
 
+		if ( $expiration_date->subDays( 30 )->isPast() ) {
+			return $this->refresh_token( $data );
+		}
+
 		return $data;
 	}
 
@@ -167,6 +169,42 @@ class Connect {
 		$data = $this->get_data();
 
 		return $data['access_token'];
+	}
+
+	/**
+	 * Refresh access token.
+	 *
+	 * @param array $data The old token data.
+	 *
+	 * @return array
+	 * @throws Exception If the refresh token fails.
+	 */
+	private function refresh_token( $data ) {
+		$api = new Api(
+			$data['environment']
+		);
+
+		$refresh_token = $api->refresh_access_token(
+			$data['refresh_token'],
+			$data['environment'],
+			$data['application_id']
+		);
+
+		if ( is_wp_error( $refresh_token ) ) {
+			throw new Exception( $refresh_token->get_error_message() );
+		}
+
+		$public_key = $api->get_public_key();
+
+		if ( is_wp_error( $public_key ) ) {
+			throw new Exception( $public_key->get_error_message() );
+		}
+
+		$refresh_token['public_key'] = $public_key['public_key'];
+
+		$this->save( $refresh_token );
+
+		return $refresh_token;
 	}
 
 }

@@ -13,6 +13,13 @@ namespace PagBank_WooCommerce\Presentation;
 class PaymentGateways {
 
 	/**
+	 * Instance.
+	 *
+	 * @var PaymentGateways
+	 */
+	private static $instance = null;
+
+	/**
 	 * Gateway ids.
 	 *
 	 * @var array
@@ -26,9 +33,20 @@ class PaymentGateways {
 	/**
 	 * Init.
 	 */
-	public static function init(): void {
-		add_filter( 'woocommerce_payment_gateways', array( self::class, 'add_gateways' ) );
-		add_action( 'admin_enqueue_scripts', array( self::class, 'admin_enqueue_scripts' ) );
+	public function __construct() {
+		add_filter( 'woocommerce_payment_gateways', array( $this, 'add_gateways' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+	}
+
+	/**
+	 * Get instance.
+	 */
+	public static function get_instance() {
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
 	}
 
 	/**
@@ -63,19 +81,21 @@ class PaymentGateways {
 			return;
 		}
 
-		wp_register_script( 'pagbank-woocommerce-admin-settings', plugins_url( 'dist/admin/admin-settings.js', PAGBANK_WOOCOMMERCE_FILE_PATH ), array(), PAGBANK_WOOCOMMERCE_VERSION, true );
+		wp_register_script( 'pagbank-for-woocommerce-admin-settings', plugins_url( 'dist/admin/admin-settings.js', PAGBANK_WOOCOMMERCE_FILE_PATH ), array(), PAGBANK_WOOCOMMERCE_VERSION, true );
 		wp_register_style(
-			'pagbank-woocommerce-admin-settings',
+			'pagbank-for-woocommerce-admin-settings',
 			plugins_url( 'styles/admin-fields.css', PAGBANK_WOOCOMMERCE_FILE_PATH ),
 			array(),
 			PAGBANK_WOOCOMMERCE_VERSION,
 			'all'
 		);
 
-		wp_enqueue_script( 'pagbank-woocommerce-admin-settings' );
+		wp_scripts()->add_data( 'pagbank-for-woocommerce-admin-settings', 'type', 'module' );
+
+		wp_enqueue_script( 'pagbank-for-woocommerce-admin-settings' );
 		wp_enqueue_script( 'thickbox' );
 
 		wp_enqueue_style( 'thickbox' );
-		wp_enqueue_style( 'pagbank-woocommerce-admin-settings' );
+		wp_enqueue_style( 'pagbank-for-woocommerce-admin-settings' );
 	}
 }

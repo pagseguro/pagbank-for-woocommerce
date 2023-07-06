@@ -1,8 +1,9 @@
 import { defineConfig } from "vite";
 import { resolve } from "path";
+import autoZip from "./plugins/auto-zip";
 
 export default defineConfig({
-	plugins: [],
+	plugins: [autoZip()],
 	build: {
 		lib: {
 			entry: {
@@ -21,7 +22,7 @@ export default defineConfig({
 		},
 		rollupOptions: {
 			output: {
-				chunkFileNames: "ui/admin/[name].js",
+				chunkFileNames: "ui/shared/[name]-[hash].js",
 			},
 		},
 	},
