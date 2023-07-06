@@ -1,4 +1,4 @@
-# PagBank WooCommerce #
+# PagBank for WooCommerce #
 **Contributors:** [eliasjnior](https://profiles.wordpress.org/eliasjnior/)  
 **Tags:** woocommerce, pagseguro, pagbank, payments, ecommerce, e-commerce, store, sales, sell, shop, shopping, cart, checkout  
 **Requires at least:** 5.4  
@@ -71,7 +71,7 @@ Tem alguma dúvida sobre o funcionamento ou está com algum problema técnico re
 
 ### Requirements ###
 
-Para instalar o PagBank WooCommerce, você precisa:
+Para instalar o PagBank for WooCommerce, você precisa:
 
 * WordPress versão 5.4 ou superior (instalado)
 * WooCommerce versão 3.9 ou superior (instalado e ativado)
@@ -83,7 +83,7 @@ Para instalar o PagBank WooCommerce, você precisa:
 
 1. Faça login na administração do WordPress.
 2. Vá em **Plugins > Adicionar novo**.
-3. Procure pelo plugin **pagbank-woocommerce**.
+3. Procure pelo plugin **pagbank-for-woocommerce**.
 4. Clique em **Instalar agora** e aguarde até que o plugin esteja instalado.
 5. Você pode ativar o plugin imediatamente clicando em **Ativar** na página de sucesso. Se você quiser ativá-lo mais tarde, poderá fazê-lo através de **Plugins > Plugins instalados**.
 
@@ -91,7 +91,7 @@ Para instalar o PagBank WooCommerce, você precisa:
 
 Siga os passos abaixo para conectar o plugin à sua conta PagBank:
 
-1. Após ter ativado o plugin PagBank WooCommerce, vá em **WooCommerce > Configurações**.
+1. Após ter ativado o plugin PagBank for WooCommerce, vá em **WooCommerce > Configurações**.
 2. Clique na aba **Pagamentos**.
 3. A lista de métodos de pagamento incluirá três opções de pagamento: PagBank Cartão de Crédito, PagBank Boleto e PagBank Pix.
 4. Clique no método de pagamento que você deseja ativar.
@@ -102,19 +102,19 @@ Siga os passos abaixo para conectar o plugin à sua conta PagBank:
 ## Screenshots ##
 
 ### 1. Pagamento com cartão de crédito salvo. ###
-![Pagamento com cartão de crédito salvo.](https://raw.githubusercontent.com/pagseguro/pagbank-woocommerce/main/wordpress_org_assets/screenshot-1.png)
+![Pagamento com cartão de crédito salvo.](https://raw.githubusercontent.com/pagseguro/pagbank-for-woocommerce/main/wordpress_org_assets/screenshot-1.png)
 
 ### 2. Pagamento com novo cartão de crédito. ###
-![Pagamento com novo cartão de crédito.](https://raw.githubusercontent.com/pagseguro/pagbank-woocommerce/main/wordpress_org_assets/screenshot-2.png)
+![Pagamento com novo cartão de crédito.](https://raw.githubusercontent.com/pagseguro/pagbank-for-woocommerce/main/wordpress_org_assets/screenshot-2.png)
 
 ### 3. Pagamento via Pix. ###
-![Pagamento via Pix.](https://raw.githubusercontent.com/pagseguro/pagbank-woocommerce/main/wordpress_org_assets/screenshot-3.png)
+![Pagamento via Pix.](https://raw.githubusercontent.com/pagseguro/pagbank-for-woocommerce/main/wordpress_org_assets/screenshot-3.png)
 
 ### 4. Pagamento via boleto. ###
-![Pagamento via boleto.](https://raw.githubusercontent.com/pagseguro/pagbank-woocommerce/main/wordpress_org_assets/screenshot-4.png)
+![Pagamento via boleto.](https://raw.githubusercontent.com/pagseguro/pagbank-for-woocommerce/main/wordpress_org_assets/screenshot-4.png)
 
 ### 5. Configurações de pagamentos. ###
-![Configurações de pagamentos.](https://raw.githubusercontent.com/pagseguro/pagbank-woocommerce/main/wordpress_org_assets/screenshot-5.png)
+![Configurações de pagamentos.](https://raw.githubusercontent.com/pagseguro/pagbank-for-woocommerce/main/wordpress_org_assets/screenshot-5.png)
 
 
 ## Changelog ##

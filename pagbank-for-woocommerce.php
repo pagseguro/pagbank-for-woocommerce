@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name: PagBank WooCommerce
- * Plugin URI: https://github.com/pagseguro/pagbank-woocommerce
+ * Plugin Name: PagBank for WooCommerce
+ * Plugin URI: https://github.com/pagseguro/pagbank-for-woocommerce
  * Description: Aceite pagamentos via cartão de crédito, boleto e Pix no checkout do WooCommerce através do PagBank.
  * Version: 1.0.1
  * Author: PagBank
@@ -10,7 +10,7 @@
  * Requires PHP: 7.2
  * WC requires at least: 3.9
  * WC tested up to: 7.8
- * Text Domain: pagbank-woocommerce
+ * Text Domain: pagbank-for-woocommerce
  *
  * @package PagBank_WooCommerce
  */

@@ -15,7 +15,7 @@ docker compose run --rm wordpress-cli wp rewrite structure '/%postname%/'
 docker compose run --rm wordpress-cli wp plugin install woocommerce woocommerce-extra-checkout-fields-for-brazil --activate
 
 # Activate plugin
-docker compose run --rm wordpress-cli wp plugin activate pagbank-woocommerce
+docker compose run --rm wordpress-cli wp plugin activate pagbank-for-woocommerce
 
 # Delete plugins
 docker compose run --rm wordpress-cli wp plugin delete akismet hello

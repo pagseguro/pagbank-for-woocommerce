@@ -1,5 +1,5 @@
 {
-    "name": "pagbank-woocommerce",
+    "name": "pagbank-for-woocommerce",
     "version": "1.0.1",
     "author": "Elias Júnior <me@eliasjr.dev>",
     "license": "MIT",
@@ -19,7 +19,7 @@
         "todos": "leasot 'src/**/*.{php,ts,js}'",
         "prepare": "husky install",
         "make:pot": "./scripts/make-pot.sh",
-        "generate-md": "wp-readme-to-md --screenshot-url=https://raw.githubusercontent.com/pagseguro/pagbank-woocommerce/main/wordpress_org_assets/{screenshot}.png"
+        "generate-md": "wp-readme-to-md --screenshot-url=https://raw.githubusercontent.com/pagseguro/pagbank-for-woocommerce/main/wordpress_org_assets/{screenshot}.png"
     },
     "devDependencies": {
         "@commitlint/cli": "^17.5.0",

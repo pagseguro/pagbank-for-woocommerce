@@ -1,9 +1,9 @@
-# Copyright (C) 2023 
-# This file is distributed under the same license as the PagBank WooCommerce plugin.
+# Copyright (C) 2023
+# This file is distributed under the same license as the PagBank for WooCommerce plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: PagBank WooCommerce 0.0.2\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/pagbank-woocommerce\n"
+"Project-Id-Version: PagBank for WooCommerce 0.0.2\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/pagbank-for-woocommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -12,10 +12,10 @@ msgstr ""
 "POT-Creation-Date: 2023-06-12T22:40:32+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
-"X-Domain: pagbank-woocommerce\n"
+"X-Domain: pagbank-for-woocommerce\n"
 
 #. Plugin Name of the plugin
-msgid "PagBank WooCommerce"
+msgid "PagBank for WooCommerce"
 msgstr ""
 
 #. Description of the plugin

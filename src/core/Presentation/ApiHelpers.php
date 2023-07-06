@@ -254,7 +254,7 @@ function get_boleto_payment_api_data( WC_Order $order, int $expiration_in_days )
 			array(
 				'reference_id'   => get_order_reference_id_data( $order, $password ),
 				// translators: %1$s: order id, %2$s: blog name.
-				'description'    => sprintf( __( 'Pedido %1$s - %2$s', 'pagbank-woocommerce' ), $order->get_id(), get_bloginfo( 'name' ) ),
+				'description'    => sprintf( __( 'Pedido %1$s - %2$s', 'pagbank-for-woocommerce' ), $order->get_id(), get_bloginfo( 'name' ) ),
 				'amount'         => get_order_amount_api_data( $order ),
 				'payment_method' => array(
 					'type'   => 'BOLETO',
@@ -262,8 +262,8 @@ function get_boleto_payment_api_data( WC_Order $order, int $expiration_in_days )
 						'due_date'          => Carbon::now()->addDays( $expiration_in_days )->toDateString(),
 						'instruction_lines' => array(
 							// translators: %s: blog name.
-							'line_1' => sprintf( __( 'Pagamento para %s', 'pagbank-woocommerce' ), get_bloginfo( 'name' ) ),
-							'line_2' => __( 'PagBank', 'pagbank-woocommerce' ),
+							'line_1' => sprintf( __( 'Pagamento para %s', 'pagbank-for-woocommerce' ), get_bloginfo( 'name' ) ),
+							'line_2' => __( 'PagBank', 'pagbank-for-woocommerce' ),
 						),
 						'holder'            => array(
 							'name'    => $order->get_formatted_billing_full_name(),
@@ -329,7 +329,7 @@ function get_credit_card_payment_data( WC_Order $order, string $payment_token = 
 			array(
 				'reference_id'   => get_order_reference_id_data( $order, $password ),
 				// translators: %1$s: order id, %2$s: blog name.
-				'description'    => sprintf( __( 'Pedido %1$s - %2$s', 'pagbank-woocommerce' ), $order->get_id(), get_bloginfo( 'name' ) ),
+				'description'    => sprintf( __( 'Pedido %1$s - %2$s', 'pagbank-for-woocommerce' ), $order->get_id(), get_bloginfo( 'name' ) ),
 				'amount'         => get_order_amount_api_data( $order ),
 				'payment_method' => array(
 					'type'         => 'CREDIT_CARD',
@@ -358,7 +358,7 @@ function get_credit_card_payment_data( WC_Order $order, string $payment_token = 
 		$is_missing_new_credit_card = null === $encrypted_card || empty( $encrypted_card );
 
 		if ( $is_missing_new_credit_card ) {
-			throw new Exception( __( 'O cartão de crédito criptografado é inválido. Por favor, contate o suporte.', 'pagbank-woocommerce' ) );
+			throw new Exception( __( 'O cartão de crédito criptografado é inválido. Por favor, contate o suporte.', 'pagbank-for-woocommerce' ) );
 		}
 
 		$data['charges'][0]['payment_method']['card'] = array(
@@ -372,7 +372,7 @@ function get_credit_card_payment_data( WC_Order $order, string $payment_token = 
 		$token = WC_Payment_Tokens::get( $payment_token );
 
 		if ( null === $token || $token->get_user_id() !== get_current_user_id() ) {
-			throw new Exception( __( 'O token de pagamento não foi encontrado.', 'pagbank-woocommerce' ) );
+			throw new Exception( __( 'O token de pagamento não foi encontrado.', 'pagbank-for-woocommerce' ) );
 		}
 
 		$card_id                                      = $token->get_token();
@@ -406,7 +406,7 @@ function get_installments_plan_no_interest( int $value, int $installments = 1, i
 			'installment_value' => $i_value,
 			'interest_free'     => true,
 			// translators: 1: installments, 2: installment value.
-			'title'             => sprintf( __( '%1$dx de %2$s sem juros', 'pagbank-woocommerce' ), $i, format_money( $i_value / 100 ) ),
+			'title'             => sprintf( __( '%1$dx de %2$s sem juros', 'pagbank-for-woocommerce' ), $i, format_money( $i_value / 100 ) ),
 			'amount'            => $value,
 		);
 	}
@@ -483,7 +483,7 @@ function process_order_refund( Api $api, $order_id, $amount = null, $reason = ''
 	$amount = floatval( $amount );
 
 	if ( $amount <= 0 ) {
-		return new WP_Error( 'error', __( 'O valor para reembolso deve ser maior que zero', 'pagbank-woocommerce' ) );
+		return new WP_Error( 'error', __( 'O valor para reembolso deve ser maior que zero', 'pagbank-for-woocommerce' ) );
 	}
 
 	$pagbank_charge_id = get_post_meta( $order_id, '_pagbank_charge_id', true );
@@ -499,8 +499,8 @@ function process_order_refund( Api $api, $order_id, $amount = null, $reason = ''
 			return true;
 		}
 
-		return new WP_Error( 'error', __( 'Houve um erro ao tentar realizar o reembolso.', 'pagbank-woocommerce' ) );
+		return new WP_Error( 'error', __( 'Houve um erro ao tentar realizar o reembolso.', 'pagbank-for-woocommerce' ) );
 	} catch ( Exception $ex ) {
-		return new WP_Error( 'error', __( 'Houve um erro ao tentar realizar o reembolso.', 'pagbank-woocommerce' ) );
+		return new WP_Error( 'error', __( 'Houve um erro ao tentar realizar o reembolso.', 'pagbank-for-woocommerce' ) );
 	}
 }

@@ -94,7 +94,7 @@ class WebhookHandler {
 				$this->log( 'Webhook validation failed: order_id is empty' );
 				return wp_send_json_error(
 					array(
-						'message' => __( 'Pedido não encontrado.', 'pagbank-woocommerce' ),
+						'message' => __( 'Pedido não encontrado.', 'pagbank-for-woocommerce' ),
 					),
 					400
 				);
@@ -106,7 +106,7 @@ class WebhookHandler {
 				$this->log( 'Webhook validation failed: order not found' );
 				return wp_send_json_error(
 					array(
-						'message' => __( 'Pedido não encontrado.', 'pagbank-woocommerce' ),
+						'message' => __( 'Pedido não encontrado.', 'pagbank-for-woocommerce' ),
 					),
 					400
 				);
@@ -116,7 +116,7 @@ class WebhookHandler {
 				$this->log( 'Webhook validation failed: invalid payment method for order id ' . $order_id );
 				return wp_send_json_error(
 					array(
-						'message' => __( 'Pedido inválido', 'pagbank-woocommerce' ),
+						'message' => __( 'Pedido inválido', 'pagbank-for-woocommerce' ),
 					),
 					400
 				);
@@ -129,7 +129,7 @@ class WebhookHandler {
 				$this->log( 'Webhook validation failed: missing signature for order id ' . $order_id );
 				return wp_send_json_error(
 					array(
-						'message' => __( 'Assinatura não encontrada.', 'pagbank-woocommerce' ),
+						'message' => __( 'Assinatura não encontrada.', 'pagbank-for-woocommerce' ),
 					),
 					400
 				);
@@ -141,16 +141,16 @@ class WebhookHandler {
 				$this->log( 'Webhook validation failed: invalid signature for order id ' . $order_id . ' (' . $signature . ')' );
 				return wp_send_json_error(
 					array(
-						'message' => __( 'Assinatura inválida.', 'pagbank-woocommerce' ),
+						'message' => __( 'Assinatura inválida.', 'pagbank-for-woocommerce' ),
 					),
 					400
 				);
 			}
 
 			if ( $charge['status'] === 'IN_ANALYSIS' ) {
-				$order->update_status( 'on-hold', __( 'O PagBank está analisando a transação.', 'pagbank-woocommerce' ) );
+				$order->update_status( 'on-hold', __( 'O PagBank está analisando a transação.', 'pagbank-for-woocommerce' ) );
 			} elseif ( $charge['status'] === 'DECLINED' ) {
-				$order->update_status( 'failed', __( 'O pagamento foi recusado.', 'pagbank-woocommerce' ) );
+				$order->update_status( 'failed', __( 'O pagamento foi recusado.', 'pagbank-for-woocommerce' ) );
 			} elseif ( $charge['status'] === 'PAID' ) {
 				$order->payment_complete( $charge['id'] );
 				$order->update_meta_data( '_pagbank_charge_id', $charge['id'] );

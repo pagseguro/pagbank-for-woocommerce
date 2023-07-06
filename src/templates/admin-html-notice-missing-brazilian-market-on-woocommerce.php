@@ -22,14 +22,14 @@ if ( function_exists( 'get_plugins' ) ) {
 
 <div class="error">
     <p>
-        <strong><?php esc_html_e( 'PagBank WooCommerce', 'pagbank-woocommerce' ); ?></strong> <?php esc_html_e( 'depende da última versão do Brazilian Market on WooCommerce para funcionar!', 'pagbank-woocommerce' ); ?>
+        <strong><?php esc_html_e( 'PagBank for WooCommerce', 'pagbank-for-woocommerce' ); ?></strong> <?php esc_html_e( 'depende da última versão do Brazilian Market on WooCommerce para funcionar!', 'pagbank-for-woocommerce' ); ?>
     </p>
 
 	<?php if ( $is_installed && current_user_can( 'install_plugins' ) ) : ?>
         <p>
             <a
 				href="<?php echo esc_url( wp_nonce_url( self_admin_url( 'plugins.php?action=activate&plugin=woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php&plugin_status=active' ), 'activate-plugin_woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php' ) ); ?>"
-            	class="button button-primary"><?php esc_html_e( 'Ativar Brazilian Market on WooCommerce', 'pagbank-woocommerce' ); ?></a>
+            	class="button button-primary"><?php esc_html_e( 'Ativar Brazilian Market on WooCommerce', 'pagbank-for-woocommerce' ); ?></a>
         </p>
 	<?php else :
 		if ( current_user_can( 'install_plugins' ) ) {
@@ -39,7 +39,7 @@ if ( function_exists( 'get_plugins' ) ) {
 		}
 		?>
         <p><a href="<?php echo esc_url( $url ); ?>"
-              class="button button-primary"><?php esc_html_e( 'Instalar Brazilian Market on WooCommerce', 'pagbank-woocommerce' ); ?></a>
+              class="button button-primary"><?php esc_html_e( 'Instalar Brazilian Market on WooCommerce', 'pagbank-for-woocommerce' ); ?></a>
         </p>
 	<?php endif; ?>
 </div>

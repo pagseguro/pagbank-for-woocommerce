@@ -170,14 +170,14 @@ class ConnectAjaxApi {
 		$data         = $api->get_access_token_from_oauth_code( $callback_url, $oauth_code );
 
 		if ( is_wp_error( $data ) ) {
-			wp_die( esc_html( __( 'Erro ao autorizar a aplicação', 'pagbank-woocommerce' ) ) );
+			wp_die( esc_html( __( 'Erro ao autorizar a aplicação', 'pagbank-for-woocommerce' ) ) );
 			return;
 		}
 
 		$public_key = $api->get_public_key();
 
 		if ( is_wp_error( $public_key ) ) {
-			wp_die( esc_html( __( 'Erro ao obter a public key', 'pagbank-woocommerce' ) ) );
+			wp_die( esc_html( __( 'Erro ao obter a public key', 'pagbank-for-woocommerce' ) ) );
 			return;
 		}
 

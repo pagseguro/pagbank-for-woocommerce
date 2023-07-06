@@ -88,8 +88,8 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 */
 	public function __construct() {
 		$this->id                 = 'pagbank_credit_card';
-		$this->method_title       = __( 'PagBank Cartão de Crédito', 'pagbank-woocommerce' );
-		$this->method_description = __( 'Aceite pagamentos via cartão de crédito através do PagBank.', 'pagbank-woocommerce' );
+		$this->method_title       = __( 'PagBank Cartão de Crédito', 'pagbank-for-woocommerce' );
+		$this->method_description = __( 'Aceite pagamentos via cartão de crédito através do PagBank.', 'pagbank-for-woocommerce' );
 		$this->has_fields         = true;
 		$this->supports           = array(
 			'products',
@@ -122,46 +122,46 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	public function init_form_fields() {
 		$this->form_fields = array(
 			'enabled'                            => array(
-				'title'   => __( 'Habilitar/Desabilitar', 'pagbank-woocommerce' ),
+				'title'   => __( 'Habilitar/Desabilitar', 'pagbank-for-woocommerce' ),
 				'type'    => 'checkbox',
-				'label'   => __( 'Habilitar cartão de crédito', 'pagbank-woocommerce' ),
+				'label'   => __( 'Habilitar cartão de crédito', 'pagbank-for-woocommerce' ),
 				'default' => 'no',
 			),
 			'environment'                        => array(
-				'title'       => __( 'Ambiente', 'pagbank-woocommerce' ),
+				'title'       => __( 'Ambiente', 'pagbank-for-woocommerce' ),
 				'type'        => 'select',
-				'description' => __( 'Isso irá definir o ambiente de testes ou produção.', 'pagbank-woocommerce' ),
+				'description' => __( 'Isso irá definir o ambiente de testes ou produção.', 'pagbank-for-woocommerce' ),
 				'default'     => 'sandbox',
 				'options'     => array(
-					'sandbox'    => __( 'Ambiente de testes', 'pagbank-woocommerce' ),
-					'production' => __( 'Produção', 'pagbank-woocommerce' ),
+					'sandbox'    => __( 'Ambiente de testes', 'pagbank-for-woocommerce' ),
+					'production' => __( 'Produção', 'pagbank-for-woocommerce' ),
 				),
 				'desc_tip'    => true,
 			),
 			'pagbank_connect'                    => array(
-				'title'       => __( 'Conta PagBank', 'pagbank-woocommerce' ),
+				'title'       => __( 'Conta PagBank', 'pagbank-for-woocommerce' ),
 				'type'        => 'pagbank_connect',
-				'description' => __( 'Conecte a sua conta PagBank para aceitar pagamentos.', 'pagbank-woocommerce' ),
+				'description' => __( 'Conecte a sua conta PagBank para aceitar pagamentos.', 'pagbank-for-woocommerce' ),
 			),
 			'title'                              => array(
-				'title'       => __( 'Título', 'pagbank-woocommerce' ),
+				'title'       => __( 'Título', 'pagbank-for-woocommerce' ),
 				'type'        => 'text',
-				'description' => __( 'Isso irá controlar o título que o cliente verá durante o checkout.', 'pagbank-woocommerce' ),
-				'default'     => __( 'Cartão de crédito', 'pagbank-woocommerce' ),
+				'description' => __( 'Isso irá controlar o título que o cliente verá durante o checkout.', 'pagbank-for-woocommerce' ),
+				'default'     => __( 'Cartão de crédito', 'pagbank-for-woocommerce' ),
 				'desc_tip'    => true,
 			),
 			'description'                        => array(
-				'title'       => __( 'Descrição', 'pagbank-woocommerce' ),
+				'title'       => __( 'Descrição', 'pagbank-for-woocommerce' ),
 				'type'        => 'textarea',
-				'description' => __( 'Isso irá controlar a descrição que o cliente verá durante o checkout.', 'pagbank-woocommerce' ),
-				'default'     => __( 'Escolha um cartão de crédito salvo ou preencha os dados do seu cartão de crédito no formulário abaixo:', 'pagbank-woocommerce' ),
+				'description' => __( 'Isso irá controlar a descrição que o cliente verá durante o checkout.', 'pagbank-for-woocommerce' ),
+				'default'     => __( 'Escolha um cartão de crédito salvo ou preencha os dados do seu cartão de crédito no formulário abaixo:', 'pagbank-for-woocommerce' ),
 				'desc_tip'    => true,
 			),
 			'installments_enabled'               => array(
-				'title'             => __( 'Parcelamento', 'pagbank-woocommerce' ),
+				'title'             => __( 'Parcelamento', 'pagbank-for-woocommerce' ),
 				'type'              => 'checkbox',
-				'label'             => __( 'Ativar parcelamento', 'pagbank-woocommerce' ),
-				'description'       => __( 'Isso irá habilitar o parcelamento durante o checkout.', 'pagbank-woocommerce' ),
+				'label'             => __( 'Ativar parcelamento', 'pagbank-for-woocommerce' ),
+				'description'       => __( 'Isso irá habilitar o parcelamento durante o checkout.', 'pagbank-for-woocommerce' ),
 				'default'           => 'no',
 				'desc_tip'          => true,
 				'custom_attributes' => array(
@@ -175,9 +175,9 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				),
 			),
 			'maximum_installments'               => array(
-				'title'       => __( 'Máximo de parcelas', 'pagbank-woocommerce' ),
+				'title'       => __( 'Máximo de parcelas', 'pagbank-for-woocommerce' ),
 				'type'        => 'select',
-				'description' => __( 'Isso irá definir o número máximo de parcelas durante o checkout.', 'pagbank-woocommerce' ),
+				'description' => __( 'Isso irá definir o número máximo de parcelas durante o checkout.', 'pagbank-for-woocommerce' ),
 				'default'     => '12',
 				'options'     => array(
 					'1'  => '1x',
@@ -196,10 +196,10 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				'desc_tip'    => true,
 			),
 			'transfer_of_interest_enabled'       => array(
-				'title'             => __( 'Repasse de juros', 'pagbank-woocommerce' ),
+				'title'             => __( 'Repasse de juros', 'pagbank-for-woocommerce' ),
 				'type'              => 'checkbox',
-				'label'             => __( 'Ativar repasse de juros', 'pagbank-woocommerce' ),
-				'description'       => __( 'Isso irá ativar o repasse de juros durante o checkout. Por padrão as parcelas serão sem juros. Isso irá liberar a opção de definir a quantidade de parcelas sem juros.', 'pagbank-woocommerce' ),
+				'label'             => __( 'Ativar repasse de juros', 'pagbank-for-woocommerce' ),
+				'description'       => __( 'Isso irá ativar o repasse de juros durante o checkout. Por padrão as parcelas serão sem juros. Isso irá liberar a opção de definir a quantidade de parcelas sem juros.', 'pagbank-for-woocommerce' ),
 				'default'           => 'no',
 				'desc_tip'          => true,
 				'custom_attributes' => array(
@@ -212,9 +212,9 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				),
 			),
 			'maximum_installments_interest_free' => array(
-				'title'       => __( 'Máximo de parcelas sem juros', 'pagbank-woocommerce' ),
+				'title'       => __( 'Máximo de parcelas sem juros', 'pagbank-for-woocommerce' ),
 				'type'        => 'select',
-				'description' => __( 'Isso irá definir a quantidade de parcelas que serão sem juros.', 'pagbank-woocommerce' ),
+				'description' => __( 'Isso irá definir a quantidade de parcelas que serão sem juros.', 'pagbank-for-woocommerce' ),
 				'default'     => '12',
 				'options'     => array(
 					'2'  => '2x',
@@ -232,10 +232,10 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				'desc_tip'    => true,
 			),
 			'logs_enabled'                       => array(
-				'title'       => __( 'Logs para depuração', 'pagbank-woocommerce' ),
+				'title'       => __( 'Logs para depuração', 'pagbank-for-woocommerce' ),
 				'type'        => 'checkbox',
-				'label'       => __( 'Ativar logs', 'pagbank-woocommerce' ),
-				'description' => __( 'Isso irá ativar os logs para depuração para auxiliar em caso de suporte.', 'pagbank-woocommerce' ),
+				'label'       => __( 'Ativar logs', 'pagbank-for-woocommerce' ),
+				'description' => __( 'Isso irá ativar os logs para depuração para auxiliar em caso de suporte.', 'pagbank-for-woocommerce' ),
 				'default'     => 'yes',
 				'desc_tip'    => true,
 			),
@@ -275,14 +275,14 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			'PagBankCheckoutCreditCardVariables',
 			array(
 				'messages' => array(
-					'inputs_not_found'         => __( 'Campos não encontrado.', 'pagbank-woocommerce' ),
-					'invalid_public_key'       => __( 'Chave pública inválida.', 'pagbank-woocommerce' ),
-					'invalid_holder_name'      => __( 'Nome do titular do cartão inválido.', 'pagbank-woocommerce' ),
-					'invalid_card_number'      => __( 'Número do cartão inválido.', 'pagbank-woocommerce' ),
-					'invalid_card_expiry_date' => __( 'Data de expiração do cartão inválida.', 'pagbank-woocommerce' ),
-					'invalid_security_code'    => __( 'Código de segurança do cartão inválido.', 'pagbank-woocommerce' ),
-					'invalid_encrypted_card'   => __( 'O cartão de crédito criptografado não foi encontrado.', 'pagbank-woocommerce' ),
-					'invalid_card_bin'         => __( 'O bin do cartão de crédito não foi encontrado.', 'pagbank-woocommerce' ),
+					'inputs_not_found'         => __( 'Campos não encontrado.', 'pagbank-for-woocommerce' ),
+					'invalid_public_key'       => __( 'Chave pública inválida.', 'pagbank-for-woocommerce' ),
+					'invalid_holder_name'      => __( 'Nome do titular do cartão inválido.', 'pagbank-for-woocommerce' ),
+					'invalid_card_number'      => __( 'Número do cartão inválido.', 'pagbank-for-woocommerce' ),
+					'invalid_card_expiry_date' => __( 'Data de expiração do cartão inválida.', 'pagbank-for-woocommerce' ),
+					'invalid_security_code'    => __( 'Código de segurança do cartão inválido.', 'pagbank-for-woocommerce' ),
+					'invalid_encrypted_card'   => __( 'O cartão de crédito criptografado não foi encontrado.', 'pagbank-for-woocommerce' ),
+					'invalid_card_bin'         => __( 'O bin do cartão de crédito não foi encontrado.', 'pagbank-for-woocommerce' ),
 				),
 				'settings' => array(
 					'installments_enabled'               => $this->installments_enabled,
@@ -312,7 +312,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		if ( ! wp_verify_nonce( $nonce, 'pagbank_get_installments' ) ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'Nonce inválido.', 'pagbank-woocommerce' ),
+					'message' => __( 'Nonce inválido.', 'pagbank-for-woocommerce' ),
 				),
 				400
 			);
@@ -322,7 +322,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		if ( false === $this->installments_enabled ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'O parcelamento não está ativado.', 'pagbank-woocommerce' ),
+					'message' => __( 'O parcelamento não está ativado.', 'pagbank-for-woocommerce' ),
 				),
 				400
 			);
@@ -332,7 +332,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		if ( false === $this->transfer_of_interest_enabled ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'O repasse de juros não está ativado.', 'pagbank-woocommerce' ),
+					'message' => __( 'O repasse de juros não está ativado.', 'pagbank-for-woocommerce' ),
 				),
 				400
 			);
@@ -342,7 +342,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		if ( empty( $card_bin ) && empty( $payment_token ) ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'O "card_bin" ou "payment_token" é obrigatório.', 'pagbank-woocommerce' ),
+					'message' => __( 'O "card_bin" ou "payment_token" é obrigatório.', 'pagbank-for-woocommerce' ),
 				),
 				400
 			);
@@ -350,7 +350,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		} elseif ( $card_bin && $payment_token ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'Você não pode enviar o "card_bin" e o "payment_token" ao mesmo tempo.', 'pagbank-woocommerce' ),
+					'message' => __( 'Você não pode enviar o "card_bin" e o "payment_token" ao mesmo tempo.', 'pagbank-for-woocommerce' ),
 				),
 				400
 			);
@@ -369,7 +369,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			if ( null === $token || get_current_user_id() !== $token->get_user_id() ) {
 				wp_send_json_error(
 					array(
-						'message' => __( 'Token de pagamento inválido.', 'pagbank-woocommerce' ),
+						'message' => __( 'Token de pagamento inválido.', 'pagbank-for-woocommerce' ),
 					),
 					400
 				);
@@ -380,7 +380,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			if ( $token->get_type() !== 'PagBank_CC' ) {
 				wp_send_json_error(
 					array(
-						'message' => __( 'Ops, houve um erro com o token de pagamento.', 'pagbank-woocommerce' ),
+						'message' => __( 'Ops, houve um erro com o token de pagamento.', 'pagbank-for-woocommerce' ),
 					),
 					400
 				);
@@ -414,9 +414,9 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 					'interest_free'     => $plan['interest_free'],
 					'title'             => $plan['interest_free']
 												// translators: 1: installments, 2: installment value.
-												? sprintf( __( '%1$dx de %2$s sem juros', 'pagbank-woocommerce' ), $plan['installments'], format_money( $plan['installment_value'] / 100 ) )
+												? sprintf( __( '%1$dx de %2$s sem juros', 'pagbank-for-woocommerce' ), $plan['installments'], format_money( $plan['installment_value'] / 100 ) )
 												// translators: 1: installments, 2: installment value, 3: installment total.
-												: sprintf( __( '%1$dx de %2$s com juros (%3$s)', 'pagbank-woocommerce' ), $plan['installments'], format_money( $plan['installment_value'] / 100 ), format_money( $plan['amount']['value'] / 100 ) ),
+												: sprintf( __( '%1$dx de %2$s com juros (%3$s)', 'pagbank-for-woocommerce' ), $plan['installments'], format_money( $plan['installment_value'] / 100 ), format_money( $plan['amount']['value'] / 100 ) ),
 					'amount'            => $plan['amount']['value'],
 				);
 			},
@@ -454,7 +454,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				'encrypted-card-field' => '<input id="' . esc_attr( $this->id ) . '-encrypted-card" type="hidden" name="' . esc_attr( $this->id ) . '-encrypted-card" />',
 				'card-bin-field'       => '<input id="' . esc_attr( $this->id ) . '-card-bin" type="hidden" name="' . esc_attr( $this->id ) . '-card-bin" />',
 				'card-holder-field'    => '<p class="form-row form-row-wide">
-					<label for="' . esc_attr( $this->id ) . '-card-holder">' . esc_html__( 'Titular do cartão', 'pagbank-woocommerce' ) . '&nbsp;<span class="required">*</span></label>
+					<label for="' . esc_attr( $this->id ) . '-card-holder">' . esc_html__( 'Titular do cartão', 'pagbank-for-woocommerce' ) . '&nbsp;<span class="required">*</span></label>
 					<input id="' . esc_attr( $this->id ) . '-card-holder" name="' . esc_attr( $this->id ) . '-card-holder" class="input-text wc-credit-card-form-card-holder" autocomplete="cc-name" autocorrect="no" autocapitalize="no" spellcheck="no" type="text" ' . $this->field_name( 'card-holder' ) . ' />
 				</p>',
 			);
@@ -470,7 +470,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 */
 	public function payment_fields() {
 		if ( ! is_checkout() ) {
-			echo '<p>' . esc_html( __( 'Você só pode adicionar um cartão de crédito durante o checkout.', 'pagbank-woocommerce' ) ) . '</p>';
+			echo '<p>' . esc_html( __( 'Você só pode adicionar um cartão de crédito durante o checkout.', 'pagbank-for-woocommerce' ) ) . '</p>';
 			return;
 		}
 
@@ -514,7 +514,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	public function validate_fields() {
 		// Disable outside checkout.
 		if ( ! is_checkout() ) {
-			wc_add_notice( __( 'Você só pode adicionar um cartão de crédito durante o checkout.', 'pagbank-woocommerce' ), 'error' );
+			wc_add_notice( __( 'Você só pode adicionar um cartão de crédito durante o checkout.', 'pagbank-for-woocommerce' ), 'error' );
 			return;
 		}
 
@@ -528,21 +528,21 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			// phpcs:ignore WordPress.Security.NonceVerification
 			$has_holder = isset( $_POST['pagbank_credit_card-card-holder'] ) && ! empty( $_POST['pagbank_credit_card-card-holder'] );
 			if ( ! $has_holder ) {
-				wc_add_notice( __( 'O titular do cartão de crédito é obrigatório.', 'pagbank-woocommerce' ), 'error' );
+				wc_add_notice( __( 'O titular do cartão de crédito é obrigatório.', 'pagbank-for-woocommerce' ), 'error' );
 				return false;
 			}
 
 			// phpcs:ignore WordPress.Security.NonceVerification
 			$has_encrypted_card = isset( $_POST['pagbank_credit_card-encrypted-card'] ) && ! empty( $_POST['pagbank_credit_card-encrypted-card'] );
 			if ( ! $has_encrypted_card ) {
-				wc_add_notice( __( 'O cartão de crédito criptografado não foi identificado. Por favor, contate o suporte.', 'pagbank-woocommerce' ), 'error' );
+				wc_add_notice( __( 'O cartão de crédito criptografado não foi identificado. Por favor, contate o suporte.', 'pagbank-for-woocommerce' ), 'error' );
 				return false;
 			}
 
 			// phpcs:ignore WordPress.Security.NonceVerification
 			$has_card_bin = isset( $_POST['pagbank_credit_card-card-bin'] ) && ! empty( $_POST['pagbank_credit_card-card-bin'] );
 			if ( ! $has_card_bin ) {
-				wc_add_notice( __( 'O bin do cartão de crédito não foi identificado. Por favor, contate o suporte.', 'pagbank-woocommerce' ), 'error' );
+				wc_add_notice( __( 'O bin do cartão de crédito não foi identificado. Por favor, contate o suporte.', 'pagbank-for-woocommerce' ), 'error' );
 				return false;
 			}
 
@@ -550,7 +550,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			$card_bin          = wc_clean( wp_unslash( $_POST['pagbank_credit_card-card-bin'] ) );
 			$is_valid_card_bin = strlen( $card_bin ) === 6;
 			if ( ! $is_valid_card_bin ) {
-				wc_add_notice( __( 'Bin do cartão de crédito inválido. Por favor, contate o suporte.', 'pagbank-woocommerce' ), 'error' );
+				wc_add_notice( __( 'Bin do cartão de crédito inválido. Por favor, contate o suporte.', 'pagbank-for-woocommerce' ), 'error' );
 				return false;
 			}
 		}
@@ -561,7 +561,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 			$is_token_from_same_user = $token->get_user_id() === get_current_user_id();
 			if ( ! $is_token_from_same_user ) {
-				wc_add_notice( __( 'O token de pagamento é inválido.', 'pagbank-woocommerce' ), 'error' );
+				wc_add_notice( __( 'O token de pagamento é inválido.', 'pagbank-for-woocommerce' ), 'error' );
 				return false;
 			}
 		}
@@ -571,14 +571,14 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			// phpcs:ignore WordPress.Security.NonceVerification
 			$has_installments = isset( $_POST['pagbank_credit_card-installments'] ) && ! empty( $_POST['pagbank_credit_card-installments'] );
 			if ( ! $has_installments ) {
-				wc_add_notice( __( 'É necessário selecionar a quantidade de parcelas.', 'pagbank-woocommerce' ), 'error' );
+				wc_add_notice( __( 'É necessário selecionar a quantidade de parcelas.', 'pagbank-for-woocommerce' ), 'error' );
 				return false;
 			}
 
 			// phpcs:ignore WordPress.Security.NonceVerification
 			$installments = (int) wc_clean( wp_unslash( $_POST['pagbank_credit_card-installments'] ) );
 			if ( $installments > $this->maximum_installments || $installments < 1 ) {
-				wc_add_notice( __( 'A quantidade de parcelas é inválida.', 'pagbank-woocommerce' ), 'error' );
+				wc_add_notice( __( 'A quantidade de parcelas é inválida.', 'pagbank-for-woocommerce' ), 'error' );
 				return false;
 			}
 		}
@@ -625,7 +625,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 					$token = WC_Payment_Tokens::get( $payment_token );
 
 					if ( $token === null ) {
-						wc_add_notice( __( 'O token de pagamento é inválido.', 'pagbank-woocommerce' ), 'error' );
+						wc_add_notice( __( 'O token de pagamento é inválido.', 'pagbank-for-woocommerce' ), 'error' );
 						return;
 					}
 
@@ -636,7 +636,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				$charge_fees = $this->api->charge_fees( $amount_in_cents, $this->maximum_installments, $this->maximum_installments_interest_free, $card_bin );
 
 				if ( is_wp_error( $charge_fees ) ) {
-					wc_add_notice( __( 'Erro ao obter o plano de parcelamento.', 'pagbank-woocommerce' ), 'error' );
+					wc_add_notice( __( 'Erro ao obter o plano de parcelamento.', 'pagbank-for-woocommerce' ), 'error' );
 					return;
 				}
 
@@ -652,7 +652,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				}
 
 				if ( $matched_plan === null ) {
-					wc_add_notice( __( 'O plano de parcelamento não foi encontrado.', 'pagbank-woocommerce' ) );
+					wc_add_notice( __( 'O plano de parcelamento não foi encontrado.', 'pagbank-for-woocommerce' ) );
 					return;
 				}
 
@@ -672,19 +672,19 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			$response = $this->api->create_order( $data );
 
 			if ( is_wp_error( $response ) ) {
-				wc_add_notice( __( 'Houve um erro durante o pagamento. Tente novamente.', 'pagbank-woocommerce' ), 'error' );
+				wc_add_notice( __( 'Houve um erro durante o pagamento. Tente novamente.', 'pagbank-for-woocommerce' ), 'error' );
 				return;
 			}
 
 			$charge = $response['charges'][0];
 
 			if ( $charge['status'] === 'IN_ANALYSIS' ) {
-				$order->update_status( 'on-hold', __( 'O PagBank está analisando a transação.', 'pagbank-woocommerce' ) );
+				$order->update_status( 'on-hold', __( 'O PagBank está analisando a transação.', 'pagbank-for-woocommerce' ) );
 			} elseif ( $charge['status'] === 'DECLINED' ) {
-				wc_add_notice( __( 'O pagamento foi recusado.', 'pagbank-woocommerce' ), 'error' );
+				wc_add_notice( __( 'O pagamento foi recusado.', 'pagbank-for-woocommerce' ), 'error' );
 				return;
 			} elseif ( $charge['status'] !== 'PAID' ) {
-				wc_add_notice( __( 'Houve um erro no pagamento. Por favor, entre em contato com o suporte.', 'pagbank-woocommerce' ), 'error' );
+				wc_add_notice( __( 'Houve um erro no pagamento. Por favor, entre em contato com o suporte.', 'pagbank-for-woocommerce' ), 'error' );
 				return;
 			}
 
@@ -752,7 +752,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			$interest_fee = new WC_Order_Item_Fee();
 			$amount       = $charge['amount']['fees']['buyer']['interest']['total'] / 100;
 
-			$interest_fee->set_name( __( 'Parcelamento', 'pagbank-woocommerce' ) );
+			$interest_fee->set_name( __( 'Parcelamento', 'pagbank-for-woocommerce' ) );
 			$interest_fee->set_amount( $amount );
 			$interest_fee->set_tax_class( '' );
 			$interest_fee->set_tax_status( 'none' );
