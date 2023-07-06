@@ -154,17 +154,17 @@ class Api {
 		delete_transient( 'pagbank_oauth_environment' );
 
 		if ( ! $environment ) {
-			return new WP_Error( 'pagbank_oauth_invalid_environment', __( 'O ambiente é inválido.', 'pagbank-woocommerce' ) );
+			return new WP_Error( 'pagbank_oauth_invalid_environment', __( 'O ambiente é inválido.', 'pagbank-for-woocommerce' ) );
 		}
 
 		if ( ! $code_verifier ) {
-			return new WP_Error( 'pagbank_oauth_invalid_code_verifier', __( 'O código de verificação é inválido.', 'pagbank-woocommerce' ) );
+			return new WP_Error( 'pagbank_oauth_invalid_code_verifier', __( 'O código de verificação é inválido.', 'pagbank-for-woocommerce' ) );
 		}
 
 		$applications = Connect::get_connect_applications( $environment );
 
 		if ( ! $application_id || ! array_key_exists( $application_id, $applications ) ) {
-			return new WP_Error( 'pagbank_oauth_invalid_application_id', __( 'ID da aplicação inválida.', 'pagbank-woocommerce' ) );
+			return new WP_Error( 'pagbank_oauth_invalid_application_id', __( 'ID da aplicação inválida.', 'pagbank-for-woocommerce' ) );
 		}
 
 		$body = $this->json_encode(
@@ -176,7 +176,9 @@ class Api {
 			)
 		);
 
-		$this->log_request_begin( $url, $body, 'pagbank_oauth' );
+		if ( defined( 'PAGBANK_LOG_OAUTH_REQUEST' ) && PAGBANK_LOG_OAUTH_REQUEST ) {
+			$this->log_request_begin( $url, $body, 'pagbank_oauth' );
+		}
 
 		$response = wp_remote_post(
 			$url,
@@ -190,7 +192,9 @@ class Api {
 		);
 
 		if ( is_wp_error( $response ) ) {
-			$this->log_request_error( $response, 'pagbank_oauth' );
+			if ( defined( 'PAGBANK_LOG_OAUTH_REQUEST' ) && PAGBANK_LOG_OAUTH_REQUEST ) {
+				$this->log_request_error( $response, 'pagbank_oauth' );
+			}
 
 			return $response;
 		}
@@ -199,10 +203,12 @@ class Api {
 		$response_body         = wp_remote_retrieve_body( $response );
 		$decoded_response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 
-		$this->log_request_ends( $response_code, $response_body, 'pagbank_oauth' );
+		if ( defined( 'PAGBANK_LOG_OAUTH_REQUEST' ) && PAGBANK_LOG_OAUTH_REQUEST ) {
+			$this->log_request_ends( $response_code, $response_body, 'pagbank_oauth' );
+		}
 
 		if ( 200 !== $response_code ) {
-			return new WP_Error( 'pagbank_request_error', __( 'Status HTTP inválido.', 'pagbank-woocommerce' ) );
+			return new WP_Error( 'pagbank_request_error', __( 'Status HTTP inválido.', 'pagbank-for-woocommerce' ) );
 		}
 
 		return array(
@@ -232,7 +238,7 @@ class Api {
 		$applications = Connect::get_connect_applications( $environment );
 
 		if ( ! $application_id || ! array_key_exists( $application_id, $applications ) ) {
-			return new WP_Error( 'pagbank_oauth_invalid_application_id', __( 'O ID da aplicação é inválido.', 'pagbank-woocommerce' ) );
+			return new WP_Error( 'pagbank_oauth_invalid_application_id', __( 'O ID da aplicação é inválido.', 'pagbank-for-woocommerce' ) );
 		}
 
 		$body = $this->json_encode(
@@ -267,7 +273,7 @@ class Api {
 		$this->log_request_ends( $response_code, $response_body, 'pagbank_oauth' );
 
 		if ( 200 !== $response_code ) {
-			return new WP_Error( 'pagbank_request_error', __( 'Status HTTP inválido.', 'pagbank-woocommerce' ) );
+			return new WP_Error( 'pagbank_request_error', __( 'Status HTTP inválido.', 'pagbank-for-woocommerce' ) );
 		}
 
 		return array(
@@ -343,13 +349,13 @@ class Api {
 	/**
 	 * Refund an order.
 	 *
-	 * @param string $id     The order ID.
+	 * @param string $charge_id     The order ID.
 	 * @param float  $amount The amount to be refunded.
 	 *
 	 * @return array|WP_Error The refund data.
 	 */
-	public function refund( string $id, float $amount ) {
-		$url = $this->get_api_url( 'charges/' . $id . '/cancel' );
+	public function refund( string $charge_id, float $amount ) {
+		$url = $this->get_api_url( 'charges/' . $charge_id . '/cancel' );
 
 		$body = $this->json_encode(
 			array(
@@ -449,6 +455,50 @@ class Api {
 		}
 
 		set_transient( 'pagbank_cached_request_' . $url_hash, wp_json_encode( $decoded_response_body ), 5 * MINUTE_IN_SECONDS );
+
+		return $decoded_response_body;
+	}
+
+	/**
+	 * Get public key.
+	 */
+	public function get_public_key() {
+		$url = $this->get_api_url( 'public-keys' );
+
+		$body = $this->json_encode(
+			array(
+				'type' => 'card',
+			)
+		);
+
+		$this->log_request_begin( $url, $body );
+
+		$response = wp_remote_post(
+			$url,
+			array(
+				'headers' => array(
+					'Authorization' => $this->connect->get_access_token(),
+					'Content-Type'  => 'application/json',
+				),
+				'body'    => $body,
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			$this->log_request_error( $response );
+
+			return $response;
+		}
+
+		$response_code         = wp_remote_retrieve_response_code( $response );
+		$response_body         = wp_remote_retrieve_body( $response );
+		$decoded_response_body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		$this->log_request_ends( $response_code, $response_body );
+
+		if ( 200 !== $response_code ) {
+			return new WP_Error( 'pagbank_public_key_failed', 'PagBank get public key failed', $decoded_response_body );
+		}
 
 		return $decoded_response_body;
 	}

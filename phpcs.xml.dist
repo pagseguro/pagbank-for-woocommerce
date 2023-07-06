@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="PagBank WooCommerce Standards">
-	<description>PagBank WooCommerce ruleset.</description>
+<ruleset name="PagBank for WooCommerce Standards">
+	<description>PagBank for WooCommerce ruleset.</description>
 
 	<!-- Configs -->
 	<config name="minimum_supported_wp_version" value="5.3" />
@@ -11,7 +11,7 @@
 
 	<rule ref="WordPress.WP.I18n">
 		<properties>
-			<property name="text_domain" type="array" value="pagbank-woocommerce" />
+			<property name="text_domain" type="array" value="pagbank-for-woocommerce" />
 		</properties>
 	</rule>
 
@@ -39,7 +39,7 @@
 
 	<arg name="extensions" value="php" />
 	<file>src/core</file>
-	<file>pagbank-woocommerce.php</file>
+	<file>pagbank-for-woocommerce.php</file>
 
 	<exclude-pattern>./build/*</exclude-pattern>
 	<exclude-pattern>./dist/*</exclude-pattern>

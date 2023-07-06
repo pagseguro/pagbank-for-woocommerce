@@ -15,6 +15,7 @@ use WC_Payment_Gateway;
 use WP_Error;
 
 use function PagBank_WooCommerce\Presentation\get_boleto_payment_api_data;
+use function PagBank_WooCommerce\Presentation\process_order_refund;
 
 /**
  * Class BoletoPaymentGateway.
@@ -56,10 +57,14 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 	 */
 	public function __construct() {
 		$this->id                 = 'pagbank_boleto';
-		$this->method_title       = __( 'PagBank Boleto', 'pagbank-woocommerce' );
-		$this->method_description = __( 'Aceite pagamentos via Boleto através do PagBank.', 'pagbank-woocommerce' );
+		$this->method_title       = __( 'PagBank Boleto', 'pagbank-for-woocommerce' );
+		$this->method_description = __( 'Aceite pagamentos via Boleto através do PagBank.', 'pagbank-for-woocommerce' );
 		$this->description        = $this->get_option( 'description' );
 		$this->has_fields         = ! empty( $this->description );
+		$this->supports           = array(
+			'products',
+			'refunds',
+		);
 
 		$this->init_form_fields();
 		$this->init_settings();
@@ -81,45 +86,45 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 	public function init_form_fields() {
 		$this->form_fields = array(
 			'enabled'         => array(
-				'title'   => __( 'Habilitar/Desabilitar', 'pagbank-woocommerce' ),
+				'title'   => __( 'Habilitar/Desabilitar', 'pagbank-for-woocommerce' ),
 				'type'    => 'checkbox',
-				'label'   => __( 'Habilitar boleto', 'pagbank-woocommerce' ),
+				'label'   => __( 'Habilitar boleto', 'pagbank-for-woocommerce' ),
 				'default' => 'no',
 			),
 			'environment'     => array(
-				'title'       => __( 'Ambiente', 'pagbank-woocommerce' ),
+				'title'       => __( 'Ambiente', 'pagbank-for-woocommerce' ),
 				'type'        => 'select',
-				'description' => __( 'Isso irá definir o ambiente de testes ou produção.', 'pagbank-woocommerce' ),
+				'description' => __( 'Isso irá definir o ambiente de testes ou produção.', 'pagbank-for-woocommerce' ),
 				'default'     => 'sandbox',
 				'options'     => array(
-					'sandbox'    => __( 'Ambiente de testes', 'pagbank-woocommerce' ),
-					'production' => __( 'Produção', 'pagbank-woocommerce' ),
+					'sandbox'    => __( 'Ambiente de testes', 'pagbank-for-woocommerce' ),
+					'production' => __( 'Produção', 'pagbank-for-woocommerce' ),
 				),
 				'desc_tip'    => true,
 			),
 			'pagbank_connect' => array(
-				'title'       => __( 'Conta PagBank', 'pagbank-woocommerce' ),
+				'title'       => __( 'Conta PagBank', 'pagbank-for-woocommerce' ),
 				'type'        => 'pagbank_connect',
-				'description' => __( 'Conecte a sua conta PagBank para aceitar pagamentos.', 'pagbank-woocommerce' ),
+				'description' => __( 'Conecte a sua conta PagBank para aceitar pagamentos.', 'pagbank-for-woocommerce' ),
 			),
 			'title'           => array(
-				'title'       => __( 'Título', 'pagbank-woocommerce' ),
+				'title'       => __( 'Título', 'pagbank-for-woocommerce' ),
 				'type'        => 'text',
-				'description' => __( 'Isso irá controlar o título que o cliente verá durante o checkout.', 'pagbank-woocommerce' ),
-				'default'     => __( 'Boleto', 'pagbank-woocommerce' ),
+				'description' => __( 'Isso irá controlar o título que o cliente verá durante o checkout.', 'pagbank-for-woocommerce' ),
+				'default'     => __( 'Boleto', 'pagbank-for-woocommerce' ),
 				'desc_tip'    => true,
 			),
 			'description'     => array(
-				'title'       => __( 'Descrição', 'pagbank-woocommerce' ),
+				'title'       => __( 'Descrição', 'pagbank-for-woocommerce' ),
 				'type'        => 'textarea',
-				'description' => __( 'Isso irá controlar a descrição que o cliente verá durante o checkout.', 'pagbank-woocommerce' ),
-				'default'     => __( 'O boleto será gerado assim que você finalizar o pedido.', 'pagbank-woocommerce' ),
+				'description' => __( 'Isso irá controlar a descrição que o cliente verá durante o checkout.', 'pagbank-for-woocommerce' ),
+				'default'     => __( 'O boleto será gerado assim que você finalizar o pedido.', 'pagbank-for-woocommerce' ),
 				'desc_tip'    => true,
 			),
 			'expiration_days' => array(
-				'title'             => __( 'Dias para vencimento', 'pagbank-woocommerce' ),
+				'title'             => __( 'Dias para vencimento', 'pagbank-for-woocommerce' ),
 				'type'              => 'number',
-				'description'       => __( 'Isso irá controlar quantos dias após gerar o boleto ele irá vencer.', 'pagbank-woocommerce' ),
+				'description'       => __( 'Isso irá controlar quantos dias após gerar o boleto ele irá vencer.', 'pagbank-for-woocommerce' ),
 				'default'           => '3',
 				'desc_tip'          => true,
 				'custom_attributes' => array(
@@ -127,10 +132,10 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 				),
 			),
 			'logs_enabled'    => array(
-				'title'       => __( 'Logs para depuração', 'pagbank-woocommerce' ),
+				'title'       => __( 'Logs para depuração', 'pagbank-for-woocommerce' ),
 				'type'        => 'checkbox',
-				'label'       => __( 'Ativar logs', 'pagbank-woocommerce' ),
-				'description' => __( 'Isso irá ativar os logs para depuração para auxiliar em caso de suporte.', 'pagbank-woocommerce' ),
+				'label'       => __( 'Ativar logs', 'pagbank-for-woocommerce' ),
+				'description' => __( 'Isso irá ativar os logs para depuração para auxiliar em caso de suporte.', 'pagbank-for-woocommerce' ),
 				'default'     => 'yes',
 				'desc_tip'    => true,
 			),
@@ -158,13 +163,11 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 				return;
 			}
 
-			$charge = $response['charges'][0];
-
 			// Update status to on-hold.
-			$order->update_status( 'on-hold', __( 'Waiting Boleto payment.', 'pagbank-woocommerce' ) );
+			$order->update_status( 'on-hold', __( 'Waiting Boleto payment.', 'pagbank-for-woocommerce' ) );
 
 			// Add order details.
-			$this->save_order_meta_data( $order, $charge );
+			$this->save_order_meta_data( $order, $response, $data );
 
 			return array(
 				'result'   => 'success',
@@ -183,41 +186,25 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 	 * @param string $reason   Refund reason.
 	 */
 	public function process_refund( $order_id, $amount = null, $reason = '' ) {
-		$amount = floatval( $amount );
-
-		if ( $amount <= 0 ) {
-			return new WP_Error( 'error', __( 'O valor para reembolso deve ser maior que zero', 'pagbank-woocommerce' ) );
-		}
-
-		$pagbank_order_id = get_post_meta( $order_id, '_pagbank_order_id', true );
-
-		try {
-			$refund = $this->api->refund( $pagbank_order_id, $amount );
-
-			if ( is_wp_error( $refund ) ) {
-				return $refund;
-			}
-
-			if ( $refund['status'] === 'CANCELED' ) {
-				return true;
-			}
-
-			return new WP_Error( 'error', __( 'Houve um erro ao tentar realizar o reembolso.', 'pagbank-woocommerce' ) );
-		} catch ( Exception $ex ) {
-			return new WP_Error( 'error', __( 'Houve um erro ao tentar realizar o reembolso.', 'pagbank-woocommerce' ) );
-		}
+		return process_order_refund( $this->api, $order_id, $amount, $reason );
 	}
 
 	/**
 	 * Save order meta data.
 	 *
 	 * @param WC_Order $order Order object.
-	 * @param array    $charge Charge data.
+	 * @param array    $response Response data.
+	 * @param array    $request Request data.
 	 *
 	 * @return void
 	 */
-	private function save_order_meta_data( WC_Order $order, array $charge ) {
-		$order->update_meta_data( '_pagbank_order_id', $charge['id'] );
+	private function save_order_meta_data( WC_Order $order, array $response, array $request ) {
+		$charge = $response['charges'][0];
+
+		$order->update_meta_data( '_pagbank_order_id', $response['id'] );
+		$order->update_meta_data( '_pagbank_charge_id', $charge['id'] );
+		$order->update_meta_data( '_pagbank_password', $request['metadata']['password'] );
+
 		$order->update_meta_data( '_pagbank_boleto_expiration_date', $charge['payment_method']['boleto']['due_date'] );
 		$order->update_meta_data( '_pagbank_boleto_barcode', $charge['payment_method']['boleto']['barcode'] );
 		$order->update_meta_data( '_pagbank_boleto_link_pdf', $charge['links'][0]['href'] );

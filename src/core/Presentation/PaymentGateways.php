@@ -81,21 +81,21 @@ class PaymentGateways {
 			return;
 		}
 
-		wp_register_script( 'pagbank-woocommerce-admin-settings', plugins_url( 'dist/admin/admin-settings.js', PAGBANK_WOOCOMMERCE_FILE_PATH ), array(), PAGBANK_WOOCOMMERCE_VERSION, true );
+		wp_register_script( 'pagbank-for-woocommerce-admin-settings', plugins_url( 'dist/admin/admin-settings.js', PAGBANK_WOOCOMMERCE_FILE_PATH ), array(), PAGBANK_WOOCOMMERCE_VERSION, true );
 		wp_register_style(
-			'pagbank-woocommerce-admin-settings',
+			'pagbank-for-woocommerce-admin-settings',
 			plugins_url( 'styles/admin-fields.css', PAGBANK_WOOCOMMERCE_FILE_PATH ),
 			array(),
 			PAGBANK_WOOCOMMERCE_VERSION,
 			'all'
 		);
 
-		wp_scripts()->add_data( 'pagbank-woocommerce-admin-settings', 'type', 'module' );
+		wp_scripts()->add_data( 'pagbank-for-woocommerce-admin-settings', 'type', 'module' );
 
-		wp_enqueue_script( 'pagbank-woocommerce-admin-settings' );
+		wp_enqueue_script( 'pagbank-for-woocommerce-admin-settings' );
 		wp_enqueue_script( 'thickbox' );
 
 		wp_enqueue_style( 'thickbox' );
-		wp_enqueue_style( 'pagbank-woocommerce-admin-settings' );
+		wp_enqueue_style( 'pagbank-for-woocommerce-admin-settings' );
 	}
 }

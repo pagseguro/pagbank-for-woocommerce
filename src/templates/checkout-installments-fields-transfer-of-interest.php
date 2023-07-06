@@ -4,7 +4,7 @@
 	style="margin-top: 20px;"
 >
 	<label for="<?php echo $gateway->id; ?>-installments" class="">
-		<?php _e('Parcelas', 'pagbank-woocommerce'); ?>&nbsp;<abbr class="required" title="required">*</abbr>
+		<?php _e('Parcelas', 'pagbank-for-woocommerce'); ?>&nbsp;<abbr class="required" title="required">*</abbr>
 	</label>
 	<span class="woocommerce-input-wrapper">
 		<select

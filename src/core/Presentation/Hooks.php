@@ -60,7 +60,7 @@ class Hooks {
 	 * Load text domain.
 	 */
 	public function load_text_domain() {
-		load_plugin_textdomain( 'pagbank-woocommerce', false, dirname( plugin_basename( PAGBANK_WOOCOMMERCE_FILE_PATH ) ) . '/languages' );
+		load_plugin_textdomain( 'pagbank-for-woocommerce', false, dirname( plugin_basename( PAGBANK_WOOCOMMERCE_FILE_PATH ) ) . '/languages' );
 	}
 
 	/**
@@ -87,7 +87,7 @@ class Hooks {
 	 * @return array        Filtered payment method types.
 	 */
 	public function filter_payment_method_types( $types ) {
-		$types['pagbank_cc'] = __( 'Cartão de crédito', 'pagbank-woocommerce' );
+		$types['pagbank_cc'] = __( 'Cartão de crédito', 'pagbank-for-woocommerce' );
 
 		return $types;
 	}
@@ -106,7 +106,7 @@ class Hooks {
 
 		$card_type               = $payment_token->get_card_type();
 		$item['method']['last4'] = $payment_token->get_last4();
-		$item['method']['brand'] = ( ! empty( $card_type ) ? ucfirst( $card_type ) : esc_html__( 'Cartão de crédito', 'pagbank-woocommerce' ) );
+		$item['method']['brand'] = ( ! empty( $card_type ) ? ucfirst( $card_type ) : esc_html__( 'Cartão de crédito', 'pagbank-for-woocommerce' ) );
 		$item['expires']         = $payment_token->get_expiry_month() . '/' . substr( $payment_token->get_expiry_year(), -2 );
 
 		return $item;
@@ -145,7 +145,7 @@ class Hooks {
 			$installment_value_formatted = format_money( $installment_value );
 
 			// translators: %d is the number of installments.
-			$total_rows['payment_method']['value'] = sprintf( __( 'Cartão de crédito (%1$dx de %2$s)', 'pagbank-woocommerce' ), $installments, $installment_value_formatted );
+			$total_rows['payment_method']['value'] = sprintf( __( 'Cartão de crédito (%1$dx de %2$s)', 'pagbank-for-woocommerce' ), $installments, $installment_value_formatted );
 		}
 
 		return $total_rows;
@@ -160,7 +160,7 @@ class Hooks {
 	 */
 	public function plugin_action_links( $links ) {
 		$plugin_links = array(
-			'<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&filter=pagbank' ) ) . '">' . __( 'Configurações', 'pagbank-woocommerce' ) . '</a>',
+			'<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&filter=pagbank' ) ) . '">' . __( 'Configurações', 'pagbank-for-woocommerce' ) . '</a>',
 		);
 
 		return array_merge( $plugin_links, $links );

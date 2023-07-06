@@ -1,10 +1,10 @@
-=== PagBank WooCommerce ===
+=== PagBank for WooCommerce ===
 Contributors: eliasjnior
 Tags: woocommerce, pagseguro, pagbank, payments, ecommerce, e-commerce, store, sales, sell, shop, shopping, cart, checkout
 Requires at least: 5.4
 Tested up to: 6.2
 Requires PHP: 7.2
-Stable tag: 2.0.4
+Stable tag: 1.0.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -71,7 +71,7 @@ Tem alguma dúvida sobre o funcionamento ou está com algum problema técnico re
 
 = Requirements =
 
-Para instalar o PagBank WooCommerce, você precisa:
+Para instalar o PagBank for WooCommerce, você precisa:
 
 * WordPress versão 5.4 ou superior (instalado)
 * WooCommerce versão 3.9 ou superior (instalado e ativado)
@@ -83,7 +83,7 @@ Para instalar o PagBank WooCommerce, você precisa:
 
 1. Faça login na administração do WordPress.
 2. Vá em **Plugins > Adicionar novo**.
-3. Procure pelo plugin **pagbank-woocommerce**.
+3. Procure pelo plugin **pagbank-for-woocommerce**.
 4. Clique em **Instalar agora** e aguarde até que o plugin esteja instalado.
 5. Você pode ativar o plugin imediatamente clicando em **Ativar** na página de sucesso. Se você quiser ativá-lo mais tarde, poderá fazê-lo através de **Plugins > Plugins instalados**.
 
@@ -91,7 +91,7 @@ Para instalar o PagBank WooCommerce, você precisa:
 
 Siga os passos abaixo para conectar o plugin à sua conta PagBank:
 
-1. Após ter ativado o plugin PagBank WooCommerce, vá em **WooCommerce > Configurações**.
+1. Após ter ativado o plugin PagBank for WooCommerce, vá em **WooCommerce > Configurações**.
 2. Clique na aba **Pagamentos**.
 3. A lista de métodos de pagamento incluirá três opções de pagamento: PagBank Cartão de Crédito, PagBank Boleto e PagBank Pix.
 4. Clique no método de pagamento que você deseja ativar.
@@ -111,3 +111,6 @@ Siga os passos abaixo para conectar o plugin à sua conta PagBank:
 
 = 1.0.0 - 2023-06-26 =
 * Release inicial.
+
+= 1.0.1 - 2023-06-27 =
+* Adicionado novos logs para tratamento de webhooks.

@@ -1,4 +1,4 @@
-# PagBank WooCommerce
+# PagBank for WooCommerce
 
 ## Start the project
 

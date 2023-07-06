@@ -104,7 +104,7 @@ class PaymentGatewaysFields {
 			array(
 				'gateway'     => $this,
 				'field_html'  => $field_html,
-				'key'         => $key,
+				'field_key'   => $field_key,
 				'data'        => $data,
 				'wc_settings' => $wc_settings,
 			),

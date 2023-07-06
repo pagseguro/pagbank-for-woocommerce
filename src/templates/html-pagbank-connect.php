@@ -30,7 +30,7 @@
 								data-connect-application-environment="sandbox"
 								data-connect-nonce="<?php echo esc_attr( $nonce ); ?>"
 							>
-								<?php _e('Continuar', 'pagbank-woocommerce'); ?>
+								<?php _e('Continuar', 'pagbank-for-woocommerce'); ?>
 							</a>
 						</div>
 					</div>
@@ -68,7 +68,7 @@
 											data-connect-application-environment="production"
 											data-connect-nonce="<?php echo esc_attr( $nonce ); ?>"
 										>
-											<?php _e('Escolher este', 'pagbank-woocommerce'); ?>
+											<?php _e('Escolher este', 'pagbank-for-woocommerce'); ?>
 										</a>
 									</td>
 									<td>
@@ -85,7 +85,7 @@
 											data-connect-application-environment="production"
 											data-connect-nonce="<?php echo esc_attr( $nonce ); ?>"
 										>
-											<?php _e('Escolher este', 'pagbank-woocommerce'); ?>
+											<?php _e('Escolher este', 'pagbank-for-woocommerce'); ?>
 										</a>
 									</td>
 								</tr>
@@ -99,7 +99,7 @@
 								data-connect-application-environment="production"
 								data-connect-nonce="<?php echo esc_attr( $nonce ); ?>"
 							>
-								<?php _e('Já negociei minha própria condição comercial com o PagBank', 'pagbank-woocommerce'); ?>
+								<?php _e('Já negociei minha própria condição comercial com o PagBank', 'pagbank-for-woocommerce'); ?>
 							</a>
 						</div>
 					</div>
@@ -113,13 +113,13 @@
 				type="button"
 				data-pagbank-connect-nonce="<?php echo esc_attr( wp_create_nonce( 'pagbank_woocommerce_oauth' ) ); ?>"
 				data-pagbank-connect-environment-select="<?php echo esc_attr( $wc_settings->get_field_key( $data['environment_select'] ) ); ?>"
-				data-pagbank-connected-text="<?php esc_attr_e( 'Conectar a outra conta do PagBank', 'pagbank-woocommerce' ); ?>"
-				data-pagbank-not-connected-text="<?php esc_attr_e( 'Conectar a uma conta do PagBank', 'pagbank-woocommerce' ); ?>"
+				data-pagbank-connected-text="<?php esc_attr_e( 'Conectar a outra conta do PagBank', 'pagbank-for-woocommerce' ); ?>"
+				data-pagbank-not-connected-text="<?php esc_attr_e( 'Conectar a uma conta do PagBank', 'pagbank-for-woocommerce' ); ?>"
 				data-pagbank-connect-modal-environment-id="<?php echo esc_attr( $field_key ); ?>-modal-{{environment}}"
-				data-pagbank-loading-text="<?php esc_attr_e( 'Carregando...', 'pagbank-woocommerce' ); ?>"
+				data-pagbank-loading-text="<?php esc_attr_e( 'Carregando...', 'pagbank-for-woocommerce' ); ?>"
 				disabled
 			>
-				<?php esc_html_e( 'Carregando...', 'pagbank-woocommerce' ); ?>
+				<?php esc_html_e( 'Carregando...', 'pagbank-for-woocommerce' ); ?>
 			</button>
 			<?php
 				// phpcs:ignore Standard.Category.SniffName.ErrorCode
