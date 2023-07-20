@@ -201,33 +201,40 @@ document.querySelectorAll("[data-connect-application-id]").forEach((connectButto
 
 	connectButton.addEventListener("click", (event) => {
 		event.preventDefault();
+		const target = event.target as HTMLButtonElement;
 
 		(async () => {
-			const { data } = await axios.get(woocommerce_admin.ajax_url, {
-				params: {
-					action: "pagbank_woocommerce_oauth_url",
-					id: applicationId,
-					nonce,
-					environment,
-				},
-			});
+			try {
+				target.classList.add("disabled");
+				target.setAttribute("disabled", "disabled");
 
-			const oauthWindow = window.open(data.oauth_url);
+				const { data } = await axios.get(woocommerce_admin.ajax_url, {
+					params: {
+						action: "pagbank_woocommerce_oauth_url",
+						id: applicationId,
+						nonce,
+						environment,
+					},
+				});
 
-			console.log("oauthWindow", oauthWindow);
+				const oauthWindow = window.open(data.oauth_url);
 
-			if (oauthWindow != null) {
-				const timer = setInterval(() => {
-					if (oauthWindow.closed) {
-						clearInterval(timer);
-						window.dispatchEvent(new Event("update_pagbank_connect_oauth_status"));
-					}
-				}, 500);
-			} else {
-				alert(
-					"Parece que seu navegador bloqueou a janela de autenticação. Por favor, desbloqueie e tente novamente."
-				);
-			}
+				if (oauthWindow != null) {
+					const timer = setInterval(() => {
+						if (oauthWindow.closed) {
+							clearInterval(timer);
+							window.dispatchEvent(new Event("update_pagbank_connect_oauth_status"));
+						}
+					}, 500);
+				} else {
+					alert(
+						"Parece que seu navegador bloqueou a janela de autenticação. Por favor, desbloqueie e tente novamente."
+					);
+				}
+			} catch (error) {}
+
+			target.classList.remove("disabled");
+			target.removeAttribute("disabled");
 		})();
 	});
 });
