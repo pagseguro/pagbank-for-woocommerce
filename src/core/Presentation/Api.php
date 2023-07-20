@@ -461,8 +461,12 @@ class Api {
 
 	/**
 	 * Get public key.
+	 *
+	 * @param string $access_token The access token.
+	 *
+	 * @return array|WP_Error The public key data.
 	 */
-	public function get_public_key() {
+	public function get_public_key( string $access_token = null ) {
 		$url = $this->get_api_url( 'public-keys' );
 
 		$body = $this->json_encode(
@@ -477,7 +481,7 @@ class Api {
 			$url,
 			array(
 				'headers' => array(
-					'Authorization' => $this->connect->get_access_token(),
+					'Authorization' => $access_token ?? $this->connect->get_access_token(),
 					'Content-Type'  => 'application/json',
 				),
 				'body'    => $body,
