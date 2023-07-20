@@ -214,6 +214,8 @@ document.querySelectorAll("[data-connect-application-id]").forEach((connectButto
 
 			const oauthWindow = window.open(data.oauth_url);
 
+			console.log("oauthWindow", oauthWindow);
+
 			if (oauthWindow != null) {
 				const timer = setInterval(() => {
 					if (oauthWindow.closed) {
@@ -221,6 +223,10 @@ document.querySelectorAll("[data-connect-application-id]").forEach((connectButto
 						window.dispatchEvent(new Event("update_pagbank_connect_oauth_status"));
 					}
 				}, 500);
+			} else {
+				alert(
+					"Parece que seu navegador bloqueou a janela de autenticação. Por favor, desbloqueie e tente novamente."
+				);
 			}
 		})();
 	});
