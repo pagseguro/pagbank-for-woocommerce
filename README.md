@@ -4,7 +4,7 @@
 **Requires at least:** 5.4  
 **Tested up to:** 6.2  
 **Requires PHP:** 7.2  
-**Stable tag:** 1.0.1  
+**Stable tag:** 1.0.2  
 **License:** GPLv2  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -124,3 +124,9 @@ Siga os passos abaixo para conectar o plugin à sua conta PagBank:
 
 ### 1.0.1 - 2023-06-27 ###
 * Adicionado novos logs para tratamento de webhooks.
+
+### 1.0.2 - 2023-07-20 ###
+* Adicionado suporte ao WooCommerce 7.9.
+* Adicionado obrigatoriedade do bairro durante o checkout.
+* Adicionado melhorias nos logs.
+* Correção de bugs durante a conexão da conta PagBank.
