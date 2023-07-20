@@ -231,7 +231,9 @@ document.querySelectorAll("[data-connect-application-id]").forEach((connectButto
 						"Parece que seu navegador bloqueou a janela de autenticação. Por favor, desbloqueie e tente novamente."
 					);
 				}
-			} catch (error) {}
+			} catch (error) {
+				alert("Houve um erro na conexão. Por favor, tente novamente.");
+			}
 
 			target.classList.remove("disabled");
 			target.removeAttribute("disabled");
