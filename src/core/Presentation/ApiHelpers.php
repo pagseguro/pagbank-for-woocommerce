@@ -135,7 +135,13 @@ function get_order_shipping_address_api_data( WC_Order $order, array $address = 
 		$defaults['complement'] = substr( get_not_empty( $order->get_shipping_address_2(), $order->get_billing_address_2() ), 0, 40 );
 	}
 
-	return wp_parse_args( $address, $defaults );
+	$data = wp_parse_args( $address, $defaults );
+
+	if ( empty( $data['locality'] ) ) {
+		$data['locality'] = 'N/A';
+	}
+
+	return $data;
 }
 
 /**
@@ -162,7 +168,13 @@ function get_order_billing_address_api_data( WC_Order $order, array $address = a
 		$defaults['complement'] = substr( $order->get_billing_address_2(), 0, 40 );
 	}
 
-	return wp_parse_args( $address, $defaults );
+	$data = wp_parse_args( $address, $defaults );
+
+	if ( empty( $data['locality'] ) ) {
+		$data['locality'] = 'N/A';
+	}
+
+	return $data;
 }
 
 /**
