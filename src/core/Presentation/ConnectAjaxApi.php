@@ -174,7 +174,7 @@ class ConnectAjaxApi {
 			return;
 		}
 
-		$public_key = $api->get_public_key();
+		$public_key = $api->get_public_key( $data['access_token'] );
 
 		if ( is_wp_error( $public_key ) ) {
 			wp_die( esc_html( __( 'Erro ao obter a public key', 'pagbank-for-woocommerce' ) ) );

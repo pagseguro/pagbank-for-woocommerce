@@ -194,7 +194,7 @@ class Connect {
 			throw new Exception( $refresh_token->get_error_message() );
 		}
 
-		$public_key = $api->get_public_key();
+		$public_key = $api->get_public_key( $refresh_token['access_token'] );
 
 		if ( is_wp_error( $public_key ) ) {
 			throw new Exception( $public_key->get_error_message() );

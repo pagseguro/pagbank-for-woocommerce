@@ -104,9 +104,9 @@ class Api {
 	public function get_oauth_url( string $callback_url, string $environment, string $nonce, string $application_id ): string {
 		$code_challenge = $this->generate_code_challenge();
 
-		set_transient( 'pagbank_oauth_code_verifier', $code_challenge['code_verifier'], MINUTE_IN_SECONDS );
-		set_transient( 'pagbank_oauth_application_id', $application_id, MINUTE_IN_SECONDS );
-		set_transient( 'pagbank_oauth_environment', $environment, MINUTE_IN_SECONDS );
+		set_transient( 'pagbank_oauth_code_verifier', $code_challenge['code_verifier'], 15 * MINUTE_IN_SECONDS );
+		set_transient( 'pagbank_oauth_application_id', $application_id, 15 * MINUTE_IN_SECONDS );
+		set_transient( 'pagbank_oauth_environment', $environment, 15 * MINUTE_IN_SECONDS );
 
 		$url = http_build_url(
 			$this->get_oauth_api_url( 'oauth2/authorize' ),
@@ -454,15 +454,19 @@ class Api {
 			return new WP_Error( 'pagbank_charge_calculate_fees_failed', 'PagBank calculate fees failed', $decoded_response_body );
 		}
 
-		set_transient( 'pagbank_cached_request_' . $url_hash, wp_json_encode( $decoded_response_body ), 5 * MINUTE_IN_SECONDS );
+		set_transient( 'pagbank_cached_request_' . $url_hash, wp_json_encode( $decoded_response_body ), 15 * MINUTE_IN_SECONDS );
 
 		return $decoded_response_body;
 	}
 
 	/**
 	 * Get public key.
+	 *
+	 * @param string $access_token The access token.
+	 *
+	 * @return array|WP_Error The public key data.
 	 */
-	public function get_public_key() {
+	public function get_public_key( string $access_token = null ) {
 		$url = $this->get_api_url( 'public-keys' );
 
 		$body = $this->json_encode(
@@ -471,13 +475,13 @@ class Api {
 			)
 		);
 
-		$this->log_request_begin( $url, $body );
+		$this->log_request_begin( $url, $body, 'pagbank_oauth' );
 
 		$response = wp_remote_post(
 			$url,
 			array(
 				'headers' => array(
-					'Authorization' => $this->connect->get_access_token(),
+					'Authorization' => $access_token ?? $this->connect->get_access_token(),
 					'Content-Type'  => 'application/json',
 				),
 				'body'    => $body,
@@ -485,7 +489,7 @@ class Api {
 		);
 
 		if ( is_wp_error( $response ) ) {
-			$this->log_request_error( $response );
+			$this->log_request_error( $response, 'pagbank_oauth' );
 
 			return $response;
 		}
@@ -494,7 +498,7 @@ class Api {
 		$response_body         = wp_remote_retrieve_body( $response );
 		$decoded_response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 
-		$this->log_request_ends( $response_code, $response_body );
+		$this->log_request_ends( $response_code, $response_body, 'pagbank_oauth' );
 
 		if ( 200 !== $response_code ) {
 			return new WP_Error( 'pagbank_public_key_failed', 'PagBank get public key failed', $decoded_response_body );

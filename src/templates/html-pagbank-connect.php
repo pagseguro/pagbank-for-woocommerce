@@ -24,14 +24,14 @@
 						<p>Você está em modo de testes, portanto nenhuma taxa será aplicada. Clique no botão abaixo para continuar.</p>
 
 						<div class="pagbank-connect-modal-condition-sandbox">
-							<a
-								href="#"
+							<button
+								type="button"
 								data-connect-application-id="fa1553af-5f0c-4ff2-92c3-a0dd8984b6a1"
 								data-connect-application-environment="sandbox"
 								data-connect-nonce="<?php echo esc_attr( $nonce ); ?>"
 							>
 								<?php _e('Continuar', 'pagbank-for-woocommerce'); ?>
-							</a>
+							</button>
 						</div>
 					</div>
 				</div>
@@ -62,14 +62,14 @@
 											<li>R$ 2,99 no boleto com recebimento em D2</li>
 											<li>Antecipe o recebimento quando quiser por +2,99%</li>
 										</ul>
-										<a
-											href="#"
+										<button
+											type="button"
 											data-connect-application-id="31241905-5426-4f88-a140-4416a2cab404"
 											data-connect-application-environment="production"
 											data-connect-nonce="<?php echo esc_attr( $nonce ); ?>"
 										>
 											<?php _e('Escolher este', 'pagbank-for-woocommerce'); ?>
-										</a>
+										</button>
 									</td>
 									<td>
 										<ul>
@@ -79,28 +79,28 @@
 											<li>R$ 2,99 no boleto com recebimento em D2</li>
 											<li>Antecipe o recebimento quando quiser por +2,99%</li>
 										</ul>
-										<a
-											href="#"
+										<button
+											type="button"
 											data-connect-application-id="c8672afd-abbb-4c47-a95d-7cf9cd4cee76"
 											data-connect-application-environment="production"
 											data-connect-nonce="<?php echo esc_attr( $nonce ); ?>"
 										>
 											<?php _e('Escolher este', 'pagbank-for-woocommerce'); ?>
-										</a>
+										</button>
 									</td>
 								</tr>
 							</tbody>
 						</table>
 
 						<div class="pagbank-connect-modal-own-condition">
-							<a
-								href="#"
+							<button
+								type="button"
 								data-connect-application-id="f2ad0df4-4e52-4cef-97b2-4fcf1405ab9a"
 								data-connect-application-environment="production"
 								data-connect-nonce="<?php echo esc_attr( $nonce ); ?>"
 							>
 								<?php _e('Já negociei minha própria condição comercial com o PagBank', 'pagbank-for-woocommerce'); ?>
-							</a>
+							</button>
 						</div>
 					</div>
 				</div>

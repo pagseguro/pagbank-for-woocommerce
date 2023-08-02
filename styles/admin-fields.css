@@ -83,7 +83,7 @@
 	text-align: left;
 }
 
-.pagbank-connect-modal table a {
+.pagbank-connect-modal table button {
 	text-decoration: none;
     background-color: #1bb99a;
     display: inline-block;
@@ -94,10 +94,17 @@
     font-weight: 300;
     margin-left: auto;
     margin-right: auto;
+	border: none;
+	cursor: pointer;
 }
 
-.pagbank-connect-modal table a:hover {
+.pagbank-connect-modal table button:hover:not(:disabled) {
 	background-color: #1a947b;
+}
+
+.pagbank-connect-modal table button:disabled {
+	opacity: 0.6;
+	cursor: auto;
 }
 
 .pagbank-connect-modal .pagbank-connect-modal-own-condition,
@@ -105,7 +112,23 @@
 	text-align: center;
 }
 
-.pagbank-connect-modal .pagbank-connect-modal-condition-sandbox a {
+.pagbank-connect-modal .pagbank-connect-modal-own-condition button {
+	border: none;
+    background-color: transparent;
+    color: #1bb99a;
+    cursor: pointer;
+}
+
+.pagbank-connect-modal .pagbank-connect-modal-own-condition button:hover:not(:disabled) {
+	color: #1a947b;
+}
+
+.pagbank-connect-modal .pagbank-connect-modal-own-condition button:disabled {
+	cursor: auto;
+	opacity: 0.6;
+}
+
+.pagbank-connect-modal .pagbank-connect-modal-condition-sandbox button {
 	text-decoration: none;
     background-color: #1bb99a;
     display: inline-block;
@@ -116,4 +139,15 @@
     font-weight: 300;
     margin-left: auto;
     margin-right: auto;
+	border: none;
+	cursor: pointer;
+}
+
+.pagbank-connect-modal .pagbank-connect-modal-condition-sandbox button:hover:not(:disabled) {
+	background-color: #1a947b;
+}
+
+.pagbank-connect-modal .pagbank-connect-modal-condition-sandbox button:disabled {
+	cursor: auto;
+	opacity: 0.6;
 }
