@@ -22,7 +22,7 @@ use PagBank_WooCommerce\Presentation\PaymentGatewaysFields;
 use PagBank_WooCommerce\Presentation\WebhookHandler;
 
 define( 'PAGBANK_WOOCOMMERCE_FILE_PATH', __FILE__ );
-define( 'PAGBANK_WOOCOMMERCE_VERSION', '1.0.2' );
+define( 'PAGBANK_WOOCOMMERCE_VERSION', '1.0.3' );
 define( 'PAGBANK_WOOCOMMERCE_TEMPLATES_PATH', plugin_dir_path( PAGBANK_WOOCOMMERCE_FILE_PATH ) . 'src/templates/' );
 
 ( function () {
