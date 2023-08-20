@@ -15,7 +15,6 @@ use WC_Order;
 use WC_Order_Item_Fee;
 use WC_Payment_Gateway_CC;
 use WC_Payment_Tokens;
-use WP_Error;
 
 use function PagBank_WooCommerce\Presentation\format_money;
 use function PagBank_WooCommerce\Presentation\format_money_cents;
