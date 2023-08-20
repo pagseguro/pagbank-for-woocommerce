@@ -2,7 +2,7 @@
 Contributors: eliasjnior
 Tags: woocommerce, pagseguro, pagbank, payments, ecommerce, e-commerce, store, sales, sell, shop, shopping, cart, checkout
 Requires at least: 5.4
-Tested up to: 6.2
+Tested up to: 6.3
 Requires PHP: 7.2
 Stable tag: 1.0.3
 License: GPLv2
