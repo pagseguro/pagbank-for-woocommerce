@@ -265,7 +265,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			'all'
 		);
 
-		wp_scripts()->add_data( 'pagbank-checkout-credit-card', 'type', 'module' );
+		wp_scripts()->add_data( 'pagbank-checkout-credit-card', 'pagbank_script', true );
 
 		$connect_data = $this->connect->get_data();
 

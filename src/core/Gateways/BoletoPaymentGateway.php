@@ -315,7 +315,7 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 			true
 		);
 
-		wp_scripts()->add_data( 'pagbank-order-boleto', 'type', 'module' );
+		wp_scripts()->add_data( 'pagbank-order-boleto', 'pagbank_script', true );
 	}
 
 }
