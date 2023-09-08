@@ -128,6 +128,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 		add_action( 'woocommerce_api_' . $this->id . '_installments', array( $this, 'get_installments' ) );
 		add_action( 'woocommerce_scheduled_subscription_payment_' . $this->id, array( $this, 'scheduled_subscription_payment' ), 10, 2 );
+		add_filter( 'woocommerce_get_customer_payment_tokens', array( $this, 'filter_customer_tokens' ), 10, 3 );
 	}
 
 	/**
@@ -452,6 +453,36 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			'result'   => 'failure',
 			'redirect' => wc_get_endpoint_url( 'payment-methods' ),
 		);
+	}
+
+	/**
+	 * Filter customer tokens.
+	 *
+	 * @param array  $tokens Customer tokens.
+	 * @param int    $customer_id Customer ID.
+	 * @param string $gateway_id Gateway ID.
+	 *
+	 * @return array The filtered tokens.
+	 */
+	public function filter_customer_tokens( $tokens, $customer_id, $gateway_id ) {
+		if ( $gateway_id !== $this->id ) {
+			return $tokens;
+		}
+
+		$connect_data = $this->connect->get_data();
+
+		if ( ! $connect_data ) {
+			return array();
+		}
+
+		$tokens = array_filter(
+			$tokens,
+			function ( $token ) use ( $connect_data ) {
+				return $token->get_connect_account_id() === $connect_data['account_id'];
+			}
+		);
+
+		return $tokens;
 	}
 
 	/**
@@ -829,7 +860,8 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 * @return PaymentToken
 	 */
 	private function save_credit_card( WC_Order $order, array $data, bool $attach_user_id = true ): PaymentToken {
-		$token = new PaymentToken();
+		$token        = new PaymentToken();
+		$connect_data = $this->connect->get_data();
 
 		$token->set_holder( $data['holder']['name'] );
 		$token->set_bin( $data['first_digits'] );
@@ -839,6 +871,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		$token->set_expiry_month( $data['exp_month'] );
 		$token->set_expiry_year( $data['exp_year'] );
 		$token->set_gateway_id( $this->id );
+		$token->set_connect_account_id( $connect_data['account_id'] );
 
 		if ( $attach_user_id ) {
 			$token->set_user_id( $order->get_user_id() );
