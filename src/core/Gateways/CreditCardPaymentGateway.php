@@ -477,6 +477,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 * @since 2.6.0
 	 */
 	public function form() {
+		$cart_contains_subscription = $this->cart_contains_subscription();
 		wp_enqueue_script( 'wc-credit-card-form' );
 
 		$fields = array();
@@ -503,6 +504,10 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			'card-bin-field'       => '<input id="' . esc_attr( $this->id ) . '-card-bin" type="hidden" name="' . esc_attr( $this->id ) . '-card-bin" />',
 		);
 
+		if ( ! $cart_contains_subscription ) {
+			$default_fields['cart-cvc-field'] = $cvc_field;
+		}
+
 		$fields = wp_parse_args( $fields, apply_filters( 'woocommerce_credit_card_form_fields', $default_fields, $this->id ) );
 		?>
 
@@ -518,8 +523,9 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		</fieldset>
 		<?php
 
-		// TODO: hide this field according to the cart selected.
-		echo '<fieldset style="padding: 0;">' . $cvc_field . '</fieldset>'; // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
+		if ( $cart_contains_subscription ) {
+			echo '<fieldset style="padding: 0;">' . $cvc_field . '</fieldset>'; // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
+		}
 	}
 
 	/**
@@ -774,10 +780,10 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			}
 
 			if ( ( $save_card || $order_contains_subscription ) && isset( $charge['payment_method']['card']['id'] ) ) {
-				$payment_token = $this->save_credit_card( $order, $charge['payment_method']['card'], $save_card ); // Attach user only when it's saving card for the user.
+				$card_payment_token = $this->save_credit_card( $order, $charge['payment_method']['card'], $save_card ); // Attach user only when it's saving card for the user.
 			}
 
-			$this->save_order_meta_data( $order, $response, $data, $payment_token );
+			$this->save_order_meta_data( $order, $response, $data, $card_payment_token );
 
 			$order->payment_complete();
 
