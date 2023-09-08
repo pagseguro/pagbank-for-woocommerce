@@ -418,6 +418,38 @@ function get_credit_card_payment_data( WC_Order $order, string $payment_token = 
 }
 
 /**
+ * Get Credit Card payment data when order has a empty value subscription.
+ *
+ * @param WC_Order $order Order.
+ * @param string   $payment_token Payment token.
+ * @param string   $encrypted_card Encrypted card.
+ * @param string   $card_holder Card holder.
+ * @param bool     $save_card Save card.
+ * @param string   $cvv CVV.
+ * @param bool     $is_subscription Is subscription.
+ * @param int      $installments Installments.
+ * @param array    $transfer_of_interest_fee Transfer of interest fee.
+ *
+ * @return array
+ * @throws Exception Throws exception when card is not valid.
+ */
+function get_credit_card_payment_data_for_empty_value_subscription( WC_Order $order, string $payment_token = null, string $encrypted_card = null, string $card_holder = null, bool $save_card = false, string $cvv = null, bool $is_subscription = false, int $installments = 1, array $transfer_of_interest_fee = null ) {
+	$data = get_credit_card_payment_data( $order, $payment_token, $encrypted_card, $card_holder, $save_card, $cvv, $is_subscription, $installments, $transfer_of_interest_fee );
+
+	$data['items'] = array(
+		array(
+			'name'        => __( 'Assinatura', 'pagbank-for-woocommerce' ),
+			'unit_amount' => format_money_cents( 1 ),
+			'quantity'    => 1,
+		),
+	);
+
+	$data['charges'][0]['amount']['value'] = format_money_cents( 1 );
+
+	return $data;
+}
+
+/**
  * Get Credit Card renewal payment data.
  *
  * @param WC_Order     $renewal_order Renewal order.

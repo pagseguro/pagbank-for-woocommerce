@@ -20,7 +20,9 @@ use WC_Subscriptions_Manager;
 
 use function PagBank_WooCommerce\Presentation\format_money;
 use function PagBank_WooCommerce\Presentation\format_money_cents;
+use function PagBank_WooCommerce\Presentation\format_money_from_cents;
 use function PagBank_WooCommerce\Presentation\get_credit_card_payment_data;
+use function PagBank_WooCommerce\Presentation\get_credit_card_payment_data_for_empty_value_subscription;
 use function PagBank_WooCommerce\Presentation\get_credit_card_renewal_payment_data;
 use function PagBank_WooCommerce\Presentation\process_order_refund;
 
@@ -748,7 +750,19 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				$transfer_of_interest_fee = $matched_plan['amount'];
 			}
 
-			$data = get_credit_card_payment_data(
+			$is_empty_order_with_subscription = $order_contains_subscription && format_money_cents( $order->get_total() ) === 0;
+
+			$data = $is_empty_order_with_subscription ? get_credit_card_payment_data_for_empty_value_subscription(
+				$order,
+				$payment_token,
+				$encrypted_card,
+				$card_holder,
+				$order_contains_subscription ? true : $save_card, // Force save card when it's subscription.
+				$cvc,
+				$order_contains_subscription,
+				$installments,
+				$transfer_of_interest_fee
+			) : get_credit_card_payment_data(
 				$order,
 				$payment_token,
 				$encrypted_card,
@@ -768,6 +782,15 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			}
 
 			$charge = $response['charges'][0];
+
+			if ( $is_empty_order_with_subscription ) {
+				$refund_response = $this->api->refund( $charge['id'], format_money_from_cents( $charge['amount']['value'] ) );
+
+				if ( is_wp_error( $refund_response ) ) {
+					wc_add_notice( __( 'Houve um erro durante o reembolso da cobrança inicial. Contate o administrador.', 'pagbank-for-woocommerce' ), 'error' );
+					return;
+				}
+			}
 
 			if ( $charge['status'] === 'IN_ANALYSIS' ) {
 				$order->update_status( 'on-hold', __( 'O PagBank está analisando a transação.', 'pagbank-for-woocommerce' ) );
