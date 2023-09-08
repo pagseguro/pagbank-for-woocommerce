@@ -483,7 +483,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		$fields = array();
 
 		$cvc_field = '<p class="form-row form-row-wide">
-			<label for="' . esc_attr( $this->id ) . '-card-cvc">' . esc_html__( 'Card code', 'pagbank-for-woocommerce' ) . '&nbsp;<span class="required">*</span></label>
+			<label for="' . esc_attr( $this->id ) . '-card-cvc">' . esc_html__( 'Código de segurança', 'pagbank-for-woocommerce' ) . '&nbsp;<span class="required">*</span></label>
 			<input id="' . esc_attr( $this->id ) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" inputmode="numeric" autocomplete="off" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" maxlength="4" placeholder="' . esc_attr__( 'CVC', 'pagbank-for-woocommerce' ) . '" name="' . esc_attr( $this->id . '-card-cvc' ) . '" />
 		</p>';
 
@@ -493,11 +493,11 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				<input id="' . esc_attr( $this->id ) . '-card-holder" name="' . esc_attr( $this->id ) . '-card-holder" class="input-text wc-credit-card-form-card-holder" autocomplete="cc-name" autocorrect="no" autocapitalize="no" spellcheck="no" type="text" name="' . esc_attr( $this->id . '-card-holder' ) . '" style="font-size: 1.41575em;" />
 			</p>',
 			'card-number-field'    => '<p class="form-row form-row-wide">
-				<label for="' . esc_attr( $this->id ) . '-card-number">' . esc_html__( 'Card number', 'pagbank-for-woocommerce' ) . '&nbsp;<span class="required">*</span></label>
+				<label for="' . esc_attr( $this->id ) . '-card-number">' . esc_html__( 'Número do cartão', 'pagbank-for-woocommerce' ) . '&nbsp;<span class="required">*</span></label>
 				<input id="' . esc_attr( $this->id ) . '-card-number" class="input-text wc-credit-card-form-card-number" inputmode="numeric" autocomplete="cc-number" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" placeholder="&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull;" />
 			</p>',
 			'card-expiry-field'    => '<p class="form-row form-row-wide">
-				<label for="' . esc_attr( $this->id ) . '-card-expiry">' . esc_html__( 'Expiry (MM/YY)', 'pagbank-for-woocommerce' ) . '&nbsp;<span class="required">*</span></label>
+				<label for="' . esc_attr( $this->id ) . '-card-expiry">' . esc_html__( 'Data de validade (MM/YY)', 'pagbank-for-woocommerce' ) . '&nbsp;<span class="required">*</span></label>
 				<input id="' . esc_attr( $this->id ) . '-card-expiry" class="input-text wc-credit-card-form-card-expiry" inputmode="numeric" autocomplete="cc-exp" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" placeholder="' . esc_attr__( 'MM / YY', 'pagbank-for-woocommerce' ) . '" />
 			</p>',
 			'encrypted-card-field' => '<input id="' . esc_attr( $this->id ) . '-encrypted-card" type="hidden" name="' . esc_attr( $this->id ) . '-encrypted-card" />',
