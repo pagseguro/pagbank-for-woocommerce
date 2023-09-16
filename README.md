@@ -131,5 +131,7 @@ Siga os passos abaixo para conectar o plugin à sua conta PagBank:
 * Adicionado melhorias nos logs.
 * Correção de bugs durante a conexão da conta PagBank.
 
-### 1.0.3 - 2023-08-02 ###
+### 1.0.3 - 2023-08-16 ###
 * Aumentado tempo de timeout para conexão com o PagBank.
+* Adicionado suporte ao WooCommerce Subscriptions com cobranças automáticas.
+* Corrigido pequenos bugs.
