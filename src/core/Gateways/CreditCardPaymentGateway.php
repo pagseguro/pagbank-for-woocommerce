@@ -232,6 +232,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				'description' => __( 'Isso irá definir a quantidade de parcelas que serão sem juros.', 'pagbank-for-woocommerce' ),
 				'default'     => '12',
 				'options'     => array(
+					'0'  => '1x',
 					'2'  => '2x',
 					'3'  => '3x',
 					'4'  => '4x',
