@@ -180,9 +180,10 @@ class Api {
 			$this->log_request_begin( $url, $body, 'pagbank_oauth' );
 		}
 
-		$response = wp_remote_post(
+		$response = $this->request(
 			$url,
 			array(
+				'method'  => 'POST',
 				'headers' => array(
 					'Authorization' => 'Pub ' . $applications[ $application_id ]['access_token'],
 					'Content-Type'  => 'application/json',
@@ -249,9 +250,10 @@ class Api {
 		);
 		$this->log_request_begin( $url, $body, 'pagbank_oauth' );
 
-		$response = wp_remote_post(
+		$response = $this->request(
 			$url,
 			array(
+				'method'  => 'POST',
 				'headers' => array(
 					'Authorization' => 'Pub ' . $applications[ $application_id ]['access_token'],
 					'Content-Type'  => 'application/json',
@@ -316,9 +318,10 @@ class Api {
 
 		$this->log_request_begin( $url, $body );
 
-		$response = wp_remote_post(
+		$response = $this->request(
 			$url,
 			array(
+				'method'  => 'POST',
 				'headers' => array(
 					'Authorization' => $this->connect->get_access_token(),
 					'Content-Type'  => 'application/json',
@@ -367,9 +370,10 @@ class Api {
 
 		$this->log_request_begin( $url, $body );
 
-		$response = wp_remote_post(
+		$response = $this->request(
 			$url,
 			array(
+				'method'  => 'POST',
 				'headers' => array(
 					'Authorization' => $this->connect->get_access_token(),
 					'Content-Type'  => 'application/json',
@@ -428,14 +432,17 @@ class Api {
 
 		$this->log_request_begin( $url, '' );
 
-		$response = wp_remote_get(
+		$args = array(
+			'method'  => 'GET',
+			'headers' => array(
+				'Authorization' => $this->connect->get_access_token(),
+				'Content-Type'  => 'application/json',
+			),
+		);
+
+		$response = $this->request(
 			$url,
-			array(
-				'headers' => array(
-					'Authorization' => $this->connect->get_access_token(),
-					'Content-Type'  => 'application/json',
-				),
-			)
+			$args
 		);
 
 		if ( is_wp_error( $response ) ) {
@@ -477,9 +484,10 @@ class Api {
 
 		$this->log_request_begin( $url, $body, 'pagbank_oauth' );
 
-		$response = wp_remote_post(
+		$response = $this->request(
 			$url,
 			array(
+				'method'  => 'POST',
 				'headers' => array(
 					'Authorization' => $access_token ?? $this->connect->get_access_token(),
 					'Content-Type'  => 'application/json',
@@ -572,6 +580,21 @@ class Api {
 	 */
 	private function json_encode( $data ) {
 		return wp_json_encode( $data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+	}
+
+	/**
+	 * Request API.
+	 *
+	 * @param string $url  The request URL.
+	 * @param array  $args The request args.
+	 */
+	private function request( string $url, array $args = array() ) {
+		$default_args = array(
+			'timeout' => 15, // timeout in seconds.
+		);
+		$request_args = wp_parse_args( $args, $default_args );
+
+		return wp_remote_request( $url, $request_args );
 	}
 
 }

@@ -15,11 +15,15 @@ use WC_Order;
 use WC_Order_Item_Fee;
 use WC_Payment_Gateway_CC;
 use WC_Payment_Tokens;
-use WP_Error;
+use WC_Subscriptions_Cart;
+use WC_Subscriptions_Manager;
 
 use function PagBank_WooCommerce\Presentation\format_money;
 use function PagBank_WooCommerce\Presentation\format_money_cents;
+use function PagBank_WooCommerce\Presentation\format_money_from_cents;
 use function PagBank_WooCommerce\Presentation\get_credit_card_payment_data;
+use function PagBank_WooCommerce\Presentation\get_credit_card_payment_data_for_empty_value_subscription;
+use function PagBank_WooCommerce\Presentation\get_credit_card_renewal_payment_data;
 use function PagBank_WooCommerce\Presentation\process_order_refund;
 
 /**
@@ -95,6 +99,16 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			'products',
 			'tokenization',
 			'refunds',
+			'subscriptions',
+			'subscription_cancellation',
+			'subscription_suspension',
+			'subscription_reactivation',
+			'subscription_amount_changes',
+			'subscription_date_changes',
+			'subscription_payment_method_change',
+			'subscription_payment_method_change_customer',
+			'subscription_payment_method_change_admin',
+			'multiple_subscriptions',
 		);
 
 		$this->init_form_fields();
@@ -112,8 +126,9 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		$this->maximum_installments_interest_free = (int) $this->get_option( 'maximum_installments_interest_free' );
 
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
-		add_filter( 'woocommerce_credit_card_form_fields', array( $this, 'credit_card_form_fields' ), 10, 2 );
 		add_action( 'woocommerce_api_' . $this->id . '_installments', array( $this, 'get_installments' ) );
+		add_action( 'woocommerce_scheduled_subscription_payment_' . $this->id, array( $this, 'scheduled_subscription_payment' ), 10, 2 );
+		add_filter( 'woocommerce_get_customer_payment_tokens', array( $this, 'filter_customer_tokens' ), 10, 3 );
 	}
 
 	/**
@@ -217,6 +232,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				'description' => __( 'Isso irá definir a quantidade de parcelas que serão sem juros.', 'pagbank-for-woocommerce' ),
 				'default'     => '12',
 				'options'     => array(
+					'0'  => '1x',
 					'2'  => '2x',
 					'3'  => '3x',
 					'4'  => '4x',
@@ -266,7 +282,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			'all'
 		);
 
-		wp_scripts()->add_data( 'pagbank-checkout-credit-card', 'type', 'module' );
+		wp_scripts()->add_data( 'pagbank-checkout-credit-card', 'pagbank_script', true );
 
 		$connect_data = $this->connect->get_data();
 
@@ -441,28 +457,33 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	}
 
 	/**
-	 * Add holder and encrypted card field to the credit card form.
+	 * Filter customer tokens.
 	 *
-	 * @param array  $default_fields Default fields.
-	 * @param string $gateway_id     Gateway ID.
+	 * @param array  $tokens Customer tokens.
+	 * @param int    $customer_id Customer ID.
+	 * @param string $gateway_id Gateway ID.
 	 *
-	 * @return array Fields filtered.
+	 * @return array The filtered tokens.
 	 */
-	public function credit_card_form_fields( $default_fields, $gateway_id ) {
-		if ( $this->id === $gateway_id ) {
-			$new_fields = array(
-				'encrypted-card-field' => '<input id="' . esc_attr( $this->id ) . '-encrypted-card" type="hidden" name="' . esc_attr( $this->id ) . '-encrypted-card" />',
-				'card-bin-field'       => '<input id="' . esc_attr( $this->id ) . '-card-bin" type="hidden" name="' . esc_attr( $this->id ) . '-card-bin" />',
-				'card-holder-field'    => '<p class="form-row form-row-wide">
-					<label for="' . esc_attr( $this->id ) . '-card-holder">' . esc_html__( 'Titular do cartão', 'pagbank-for-woocommerce' ) . '&nbsp;<span class="required">*</span></label>
-					<input id="' . esc_attr( $this->id ) . '-card-holder" name="' . esc_attr( $this->id ) . '-card-holder" class="input-text wc-credit-card-form-card-holder" autocomplete="cc-name" autocorrect="no" autocapitalize="no" spellcheck="no" type="text" ' . $this->field_name( 'card-holder' ) . ' />
-				</p>',
-			);
-
-			return array_merge( $new_fields, $default_fields );
+	public function filter_customer_tokens( $tokens, $customer_id, $gateway_id ) {
+		if ( $gateway_id !== $this->id ) {
+			return $tokens;
 		}
 
-		return $default_fields;
+		$connect_data = $this->connect->get_data();
+
+		if ( ! $connect_data ) {
+			return array();
+		}
+
+		$tokens = array_filter(
+			$tokens,
+			function ( $token ) use ( $connect_data ) {
+				return $token->get_connect_account_id() === $connect_data['account_id'];
+			}
+		);
+
+		return $tokens;
 	}
 
 	/**
@@ -480,6 +501,64 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		$this->save_payment_method_checkbox();
 		if ( $this->installments_enabled ) {
 			$this->installments_fields();
+			$this->installments_fields_warning();
+		}
+	}
+
+	/**
+	 * Outputs fields for entering credit card information.
+	 *
+	 * @since 2.6.0
+	 */
+	public function form() {
+		$cart_contains_subscription = $this->cart_contains_subscription();
+		wp_enqueue_script( 'wc-credit-card-form' );
+
+		$fields = array();
+
+		$cvc_field = '<p class="form-row form-row-wide">
+			<label for="' . esc_attr( $this->id ) . '-card-cvc">' . esc_html__( 'Código de segurança', 'pagbank-for-woocommerce' ) . '&nbsp;<span class="required">*</span></label>
+			<input id="' . esc_attr( $this->id ) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" inputmode="numeric" autocomplete="off" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" maxlength="4" placeholder="' . esc_attr__( 'CVC', 'pagbank-for-woocommerce' ) . '" name="' . esc_attr( $this->id . '-card-cvc' ) . '" />
+		</p>';
+
+		$default_fields = array(
+			'card-holder-field'    => '<p class="form-row form-row-wide">
+				<label for="' . esc_attr( $this->id ) . '-card-holder">' . esc_html__( 'Titular do cartão', 'pagbank-for-woocommerce' ) . '&nbsp;<span class="required">*</span></label>
+				<input id="' . esc_attr( $this->id ) . '-card-holder" name="' . esc_attr( $this->id ) . '-card-holder" class="input-text wc-credit-card-form-card-holder" autocomplete="cc-name" autocorrect="no" autocapitalize="no" spellcheck="no" type="text" name="' . esc_attr( $this->id . '-card-holder' ) . '" style="font-size: 1.41575em;" />
+			</p>',
+			'card-number-field'    => '<p class="form-row form-row-wide">
+				<label for="' . esc_attr( $this->id ) . '-card-number">' . esc_html__( 'Número do cartão', 'pagbank-for-woocommerce' ) . '&nbsp;<span class="required">*</span></label>
+				<input id="' . esc_attr( $this->id ) . '-card-number" class="input-text wc-credit-card-form-card-number" inputmode="numeric" autocomplete="cc-number" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" placeholder="&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull;" />
+			</p>',
+			'card-expiry-field'    => '<p class="form-row form-row-wide">
+				<label for="' . esc_attr( $this->id ) . '-card-expiry">' . esc_html__( 'Data de validade (MM/YY)', 'pagbank-for-woocommerce' ) . '&nbsp;<span class="required">*</span></label>
+				<input id="' . esc_attr( $this->id ) . '-card-expiry" class="input-text wc-credit-card-form-card-expiry" inputmode="numeric" autocomplete="cc-exp" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" placeholder="' . esc_attr__( 'MM / YY', 'pagbank-for-woocommerce' ) . '" />
+			</p>',
+			'encrypted-card-field' => '<input id="' . esc_attr( $this->id ) . '-encrypted-card" type="hidden" name="' . esc_attr( $this->id ) . '-encrypted-card" />',
+			'card-bin-field'       => '<input id="' . esc_attr( $this->id ) . '-card-bin" type="hidden" name="' . esc_attr( $this->id ) . '-card-bin" />',
+		);
+
+		if ( ! $cart_contains_subscription ) {
+			$default_fields['cart-cvc-field'] = $cvc_field;
+		}
+
+		$fields = wp_parse_args( $fields, apply_filters( 'woocommerce_credit_card_form_fields', $default_fields, $this->id ) );
+		?>
+
+		<fieldset id="wc-<?php echo esc_attr( $this->id ); ?>-cc-form" class='wc-credit-card-form wc-payment-form'>
+			<?php do_action( 'woocommerce_credit_card_form_start', $this->id ); ?>
+			<?php
+			foreach ( $fields as $field ) {
+				echo $field; // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
+			}
+			?>
+			<?php do_action( 'woocommerce_credit_card_form_end', $this->id ); ?>
+			<div class="clear"></div>
+		</fieldset>
+		<?php
+
+		if ( $cart_contains_subscription ) {
+			echo '<fieldset style="padding: 0;">' . $cvc_field . '</fieldset>'; // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
 		}
 	}
 
@@ -509,6 +588,15 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	}
 
 	/**
+	 * Installments fields warning.
+	 */
+	public function installments_fields_warning() {
+		if ( $this->cart_contains_subscription() ) {
+			echo '<small>' . esc_html( 'O parcelamento ocorrerá somente para o pagamento inicial. As cobranças subsquentes não haverá parcelamento.' ) . '</small>';
+		}
+	}
+
+	/**
 	 * Validate fields.
 	 */
 	public function validate_fields() {
@@ -518,10 +606,22 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			return;
 		}
 
+		$cart_contains_subscriptions = $this->cart_contains_subscription();
+
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$payment_token = isset( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) ? wc_clean( wp_unslash( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) ) : null;
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$cvc = $cart_contains_subscriptions && isset( $_POST['pagbank_credit_card-card-cvc'] ) ? wc_clean( wp_unslash( $_POST['pagbank_credit_card-card-cvc'] ) ) : null;
 
 		$is_new_credit_card = null === $payment_token || 'new' === $payment_token;
+
+		// Validate for subscriptions.
+		if ( $cart_contains_subscriptions ) {
+			if ( ! $cvc ) {
+				wc_add_notice( __( 'O código de segurança do cartão é necessário para assinaturas.', 'pagbank-for-woocommerce' ), 'error' );
+				return false;
+			}
+		}
 
 		// Validation for new credit cards.
 		if ( $is_new_credit_card ) {
@@ -587,6 +687,26 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	}
 
 	/**
+	 * Check if order contains a subscription.
+	 *
+	 * @param WC_Order $order Order.
+	 *
+	 * @return bool
+	 */
+	public function order_contains_subscription( WC_Order $order ) {
+		return function_exists( 'wcs_order_contains_subscription' ) && wcs_order_contains_subscription( $order );
+	}
+
+	/**
+	 * Check if cart contains a subscription.
+	 *
+	 * @return bool
+	 */
+	public function cart_contains_subscription() {
+		return class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription();
+	}
+
+	/**
 	 * Process order payment.
 	 *
 	 * @param int $order_id Order ID.
@@ -597,7 +717,8 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 */
 	public function process_payment( $order_id ) {
 		try {
-			$order = wc_get_order( $order_id );
+			$order                       = wc_get_order( $order_id );
+			$order_contains_subscription = $this->order_contains_subscription( $order );
 
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$payment_token = isset( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) ? wc_clean( wp_unslash( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) ) : null;
@@ -610,7 +731,9 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$save_card = ( $payment_token === null || $payment_token === 'new' ) && isset( $_POST[ 'wc-' . $this->id . '-new-payment-method' ] ) && $_POST[ 'wc-' . $this->id . '-new-payment-method' ] === 'true';
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$installments = isset( $_POST['pagbank_credit_card-installments'] ) ? (int) wc_clean( wp_unslash( $_POST['pagbank_credit_card-installments'] ) ) : 1;
+			$installments = $order_contains_subscription ? 1 : ( isset( $_POST['pagbank_credit_card-installments'] ) ? (int) wc_clean( wp_unslash( $_POST['pagbank_credit_card-installments'] ) ) : 1 );
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$cvc = $order_contains_subscription && isset( $_POST['pagbank_credit_card-card-cvc'] ) ? wc_clean( wp_unslash( $_POST['pagbank_credit_card-card-cvc'] ) ) : null;
 
 			if ( $this->installments_enabled && $this->transfer_of_interest_enabled ) {
 				$amount_in_cents    = format_money_cents( $order->get_total() );
@@ -659,12 +782,26 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				$transfer_of_interest_fee = $matched_plan['amount'];
 			}
 
-			$data = get_credit_card_payment_data(
+			$is_empty_order_with_subscription = $order_contains_subscription && format_money_cents( $order->get_total() ) === 0;
+
+			$data = $is_empty_order_with_subscription ? get_credit_card_payment_data_for_empty_value_subscription(
 				$order,
 				$payment_token,
 				$encrypted_card,
 				$card_holder,
-				$save_card,
+				$order_contains_subscription ? true : $save_card, // Force save card when it's subscription.
+				$cvc,
+				$order_contains_subscription,
+				$installments,
+				$transfer_of_interest_fee
+			) : get_credit_card_payment_data(
+				$order,
+				$payment_token,
+				$encrypted_card,
+				$card_holder,
+				$order_contains_subscription ? true : $save_card, // Force save card when it's subscription.
+				$cvc,
+				$order_contains_subscription,
 				$installments,
 				$transfer_of_interest_fee
 			);
@@ -678,6 +815,15 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 			$charge = $response['charges'][0];
 
+			if ( $is_empty_order_with_subscription ) {
+				$refund_response = $this->api->refund( $charge['id'], format_money_from_cents( $charge['amount']['value'] ) );
+
+				if ( is_wp_error( $refund_response ) ) {
+					wc_add_notice( __( 'Houve um erro durante o reembolso da cobrança inicial. Contate o administrador.', 'pagbank-for-woocommerce' ), 'error' );
+					return;
+				}
+			}
+
 			if ( $charge['status'] === 'IN_ANALYSIS' ) {
 				$order->update_status( 'on-hold', __( 'O PagBank está analisando a transação.', 'pagbank-for-woocommerce' ) );
 			} elseif ( $charge['status'] === 'DECLINED' ) {
@@ -688,13 +834,13 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				return;
 			}
 
-			$this->save_order_meta_data( $order, $response, $data );
+			if ( ( $save_card || $order_contains_subscription ) && isset( $charge['payment_method']['card']['id'] ) ) {
+				$card_payment_token = $this->save_credit_card( $order, $charge['payment_method']['card'], $save_card ); // Attach user only when it's saving card for the user.
+			}
+
+			$this->save_order_meta_data( $order, $response, $data, $card_payment_token );
 
 			$order->payment_complete();
-
-			if ( $save_card && isset( $charge['payment_method']['card']['id'] ) ) {
-				$this->save_credit_card( $order, $charge['payment_method']['card'] );
-			}
 
 			return array(
 				'result'   => 'success',
@@ -710,9 +856,13 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 *
 	 * @param WC_Order $order Order object.
 	 * @param array    $data  Credit card data.
+	 * @param bool     $attach_user_id  Attach user ID.
+	 *
+	 * @return PaymentToken
 	 */
-	private function save_credit_card( WC_Order $order, array $data ): void {
-		$token = new PaymentToken();
+	private function save_credit_card( WC_Order $order, array $data, bool $attach_user_id = true ): PaymentToken {
+		$token        = new PaymentToken();
+		$connect_data = $this->connect->get_data();
 
 		$token->set_holder( $data['holder']['name'] );
 		$token->set_bin( $data['first_digits'] );
@@ -722,21 +872,28 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		$token->set_expiry_month( $data['exp_month'] );
 		$token->set_expiry_year( $data['exp_year'] );
 		$token->set_gateway_id( $this->id );
-		$token->set_user_id( $order->get_user_id() );
+		$token->set_connect_account_id( $connect_data['account_id'] );
+
+		if ( $attach_user_id ) {
+			$token->set_user_id( $order->get_user_id() );
+		}
 
 		$token->save();
+
+		return $token;
 	}
 
 	/**
 	 * Save order meta data.
 	 *
-	 * @param WC_Order $order Order object.
-	 * @param array    $response Response data.
-	 * @param array    $request Request data.
+	 * @param WC_Order          $order Order object.
+	 * @param array             $response Response data.
+	 * @param array             $request Request data.
+	 * @param PaymentToken|null $payment_token Payment token.
 	 *
 	 * @return void
 	 */
-	private function save_order_meta_data( WC_Order $order, array $response, array $request ) {
+	private function save_order_meta_data( WC_Order $order, array $response, array $request, ?PaymentToken $payment_token ) {
 		$charge = $response['charges'][0];
 
 		$order->update_meta_data( '_pagbank_order_id', $response['id'] );
@@ -746,6 +903,17 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		$order->update_meta_data( '_pagbank_credit_card_brand', $charge['payment_method']['card']['brand'] );
 		$order->update_meta_data( '_pagbank_credit_card_installments', $charge['payment_method']['installments'] );
 		$order->update_meta_data( '_pagbank_environment', $this->environment );
+
+		if ( $payment_token && function_exists( 'wcs_get_subscriptions_for_order' ) ) {
+			$subscriptions = wcs_get_subscriptions_for_order( $order );
+
+			foreach ( $subscriptions as $subscription ) {
+				$subscription->update_meta_data( '_pagbank_payment_token_id', $payment_token->get_id() );
+
+				$subscription->save();
+			}
+		}
+
 		$order->save_meta_data();
 
 		if ( isset( $charge['amount']['fees'] ) ) {
@@ -810,6 +978,59 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Process recurring payment.
+	 *
+	 * @param string   $amount Amount.
+	 * @param WC_Order $renewal_order Renewal order.
+	 *
+	 * @return void
+	 *
+	 * @throws Exception When an error occurs.
+	 */
+	public function scheduled_subscription_payment( string $amount, WC_Order $renewal_order ) {
+		try {
+			$payment_token = $renewal_order->get_meta( '_pagbank_payment_token_id' );
+			$token         = WC_Payment_Tokens::get( $payment_token );
+
+			if ( ! $payment_token || ! $token ) {
+				throw new Exception( 'Token de pagamento não encontrado.' );
+			}
+
+			$data = get_credit_card_renewal_payment_data(
+				$renewal_order,
+				$token,
+				$amount
+			);
+
+			$response = $this->api->create_order( $data );
+
+			if ( is_wp_error( $response ) ) {
+				throw new Exception( 'Houve um erro no pagamento da renovação.' );
+			}
+
+			$charge = $response['charges'][0];
+
+			if ( $charge['status'] === 'IN_ANALYSIS' ) {
+				$renewal_order->update_status( 'on-hold', __( 'O PagBank está analisando a transação.', 'pagbank-for-woocommerce' ) );
+			} elseif ( $charge['status'] === 'DECLINED' ) {
+				wc_add_notice( __( 'O pagamento foi recusado.', 'pagbank-for-woocommerce' ), 'error' );
+				return;
+			} elseif ( $charge['status'] !== 'PAID' ) {
+				wc_add_notice( __( 'Houve um erro no pagamento. Por favor, entre em contato com o suporte.', 'pagbank-for-woocommerce' ), 'error' );
+				return;
+			}
+
+			$this->save_order_meta_data( $renewal_order, $response, $data, null );
+
+			$renewal_order->payment_complete();
+
+			WC_Subscriptions_Manager::process_subscription_payments_on_order( $renewal_order );
+		} catch ( Exception $ex ) {
+			WC_Subscriptions_Manager::process_subscription_payment_failure_on_order( $renewal_order );
+		}
 	}
 
 }

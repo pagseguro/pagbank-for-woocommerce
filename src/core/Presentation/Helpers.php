@@ -19,6 +19,17 @@ function format_money_cents( $value ) {
 }
 
 /**
+ * Format money from cents.
+ *
+ * @param int $value Value.
+ *
+ * @return float
+ */
+function format_money_from_cents( $value ) {
+	return (float) ( $value / 100 );
+}
+
+/**
  * Format money to string.
  *
  * @param float $value Value.

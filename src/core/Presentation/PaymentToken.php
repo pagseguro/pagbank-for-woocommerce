@@ -27,12 +27,13 @@ class PaymentToken extends WC_Payment_Token {
 	 * @var array
 	 */
 	protected $extra_data = array(
-		'bin'          => '',
-		'holder'       => '',
-		'last4'        => '',
-		'expiry_year'  => '',
-		'expiry_month' => '',
-		'card_type'    => '',
+		'bin'                => '',
+		'holder'             => '',
+		'last4'              => '',
+		'expiry_year'        => '',
+		'expiry_month'       => '',
+		'card_type'          => '',
+		'connect_account_id' => '',
 	);
 
 	/**
@@ -232,5 +233,25 @@ class PaymentToken extends WC_Payment_Token {
 	 */
 	public function set_last4( $last4 ) {
 		$this->set_prop( 'last4', $last4 );
+	}
+
+	/**
+	 * Returns the account connect id.
+	 *
+	 * @since  2.6.0
+	 * @param  string $context What the value is for. Valid values are view and edit.
+	 * @return string Last 4 digits
+	 */
+	public function get_connect_account_id( $context = 'view' ) {
+		return $this->get_prop( 'connect_account_id', $context );
+	}
+
+	/**
+	 * Set the account connect id.
+	 *
+	 * @param string $connect_account_id Credit card account connect id.
+	 */
+	public function set_connect_account_id( $connect_account_id ) {
+		$this->set_prop( 'connect_account_id', $connect_account_id );
 	}
 }

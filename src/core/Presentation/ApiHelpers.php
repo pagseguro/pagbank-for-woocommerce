@@ -321,13 +321,15 @@ function get_order_reference_id_data( WC_Order $order, string $password ) {
  * @param string   $encrypted_card Encrypted card.
  * @param string   $card_holder Card holder.
  * @param bool     $save_card Save card.
+ * @param string   $cvv CVV.
+ * @param bool     $is_subscription Is subscription.
  * @param int      $installments Installments.
  * @param array    $transfer_of_interest_fee Transfer of interest fee.
  *
  * @return array
  * @throws Exception Throws exception when card is not valid.
  */
-function get_credit_card_payment_data( WC_Order $order, string $payment_token = null, string $encrypted_card = null, string $card_holder = null, bool $save_card = false, int $installments = 1, array $transfer_of_interest_fee = null ) {
+function get_credit_card_payment_data( WC_Order $order, string $payment_token = null, string $encrypted_card = null, string $card_holder = null, bool $save_card = false, string $cvv = null, bool $is_subscription = false, int $installments = 1, array $transfer_of_interest_fee = null ) {
 	$password = wp_generate_password( 30 );
 
 	$data = array(
@@ -348,7 +350,6 @@ function get_credit_card_payment_data( WC_Order $order, string $payment_token = 
 					'installments' => $installments,
 					'capture'      => true,
 					'holder'       => array(
-						'name'   => $card_holder,
 						'tax_id' => get_order_tax_id_api_data( $order ),
 					),
 				),
@@ -359,6 +360,10 @@ function get_credit_card_payment_data( WC_Order $order, string $payment_token = 
 		),
 		'metadata'          => get_order_metadata_api_data( $order, array( 'password' => $password ) ),
 	);
+
+	if ( $card_holder ) {
+		$data['charges'][0]['payment_method']['holder']['name'] = $card_holder;
+	}
 
 	if ( null !== $transfer_of_interest_fee ) {
 		$data['charges'][0]['amount'] = $transfer_of_interest_fee;
@@ -381,6 +386,11 @@ function get_credit_card_payment_data( WC_Order $order, string $payment_token = 
 			$data['charges'][0]['payment_method']['card']['store'] = true;
 		}
 	} else {
+		/**
+		 * The payment token.
+		 *
+		 * @var PaymentToken
+		 */
 		$token = WC_Payment_Tokens::get( $payment_token );
 
 		if ( null === $token || $token->get_user_id() !== get_current_user_id() ) {
@@ -391,7 +401,104 @@ function get_credit_card_payment_data( WC_Order $order, string $payment_token = 
 		$data['charges'][0]['payment_method']['card'] = array(
 			'id' => $card_id,
 		);
+		$data['charges'][0]['payment_method']['holder']['name'] = $token->get_holder();
 	}
+
+	if ( $cvv ) {
+		$data['charges'][0]['payment_method']['card']['cvv'] = $cvv;
+	}
+
+	if ( $is_subscription ) {
+		$data['charges'][0]['recurring'] = array(
+			'type' => 'INITIAL',
+		);
+	}
+
+	return $data;
+}
+
+/**
+ * Get Credit Card payment data when order has a empty value subscription.
+ *
+ * @param WC_Order $order Order.
+ * @param string   $payment_token Payment token.
+ * @param string   $encrypted_card Encrypted card.
+ * @param string   $card_holder Card holder.
+ * @param bool     $save_card Save card.
+ * @param string   $cvv CVV.
+ * @param bool     $is_subscription Is subscription.
+ * @param int      $installments Installments.
+ * @param array    $transfer_of_interest_fee Transfer of interest fee.
+ *
+ * @return array
+ * @throws Exception Throws exception when card is not valid.
+ */
+function get_credit_card_payment_data_for_empty_value_subscription( WC_Order $order, string $payment_token = null, string $encrypted_card = null, string $card_holder = null, bool $save_card = false, string $cvv = null, bool $is_subscription = false, int $installments = 1, array $transfer_of_interest_fee = null ) {
+	$data = get_credit_card_payment_data( $order, $payment_token, $encrypted_card, $card_holder, $save_card, $cvv, $is_subscription, $installments, $transfer_of_interest_fee );
+
+	$data['items'] = array(
+		array(
+			'name'        => __( 'Assinatura', 'pagbank-for-woocommerce' ),
+			'unit_amount' => format_money_cents( 1 ),
+			'quantity'    => 1,
+		),
+	);
+
+	$data['charges'][0]['amount']['value'] = format_money_cents( 1 );
+
+	return $data;
+}
+
+/**
+ * Get Credit Card renewal payment data.
+ *
+ * @param WC_Order     $renewal_order Renewal order.
+ * @param PaymentToken $payment_token Payment token.
+ * @param float        $amount Amount.
+ *
+ * @return array
+ */
+function get_credit_card_renewal_payment_data( WC_Order $renewal_order, PaymentToken $payment_token, float $amount ) {
+	$password = wp_generate_password( 30 );
+
+	$data = array(
+		'reference_id'      => get_order_reference_id_data( $renewal_order, $password ),
+		'items'             => get_order_items_api_data( $renewal_order ),
+		'customer'          => get_order_customer_api_data( $renewal_order ),
+		'shipping'          => array(
+			'address' => get_order_shipping_address_api_data( $renewal_order ),
+		),
+		'charges'           => array(
+			array(
+				'reference_id'   => get_order_reference_id_data( $renewal_order, $password ),
+				// translators: %1$s: order id, %2$s: blog name.
+				'description'    => sprintf( __( 'Pedido %1$s - %2$s', 'pagbank-for-woocommerce' ), $renewal_order->get_id(), get_bloginfo( 'name' ) ),
+				'amount'         => array(
+					'value'    => format_money_cents( $amount ),
+					'currency' => $renewal_order->get_currency(),
+				),
+				'payment_method' => array(
+					'type'         => 'CREDIT_CARD',
+					'installments' => 1,
+					'capture'      => true,
+					'card'         => array(
+						'id' => $payment_token->get_token(),
+					),
+					'holder'       => array(
+						'name'   => $payment_token->get_holder(),
+						'tax_id' => get_order_tax_id_api_data( $renewal_order ),
+					),
+				),
+				'recurring'      => array(
+					'type' => 'SUBSEQUENT',
+				),
+			),
+		),
+		'notification_urls' => array(
+			WebhookHandler::get_webhook_url(),
+		),
+		'metadata'          => get_order_metadata_api_data( $renewal_order, array( 'password' => $password ) ),
+	);
 
 	return $data;
 }

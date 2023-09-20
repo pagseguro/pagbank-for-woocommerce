@@ -116,7 +116,9 @@ jQuery("form.checkout").on("checkout_place_order_pagbank_credit_card", () => {
 			cardExpiryInput == null ||
 			cardCvcInput == null
 		) {
-			throw new Error("Inputs not found");
+			throw new Error(
+				"Não foi possível encontrar os campos do cartão de crédito. Entre em contato com nosso suporte."
+			);
 		}
 
 		const convertTwoDigitsYearToFourDigits = (year: string): string => {
@@ -241,165 +243,182 @@ jQuery("form.checkout").on("checkout_place_order_pagbank_credit_card", () => {
 });
 
 jQuery(document.body).on("updated_checkout", () => {
-	const shouldContinue =
-		PagBankCheckoutCreditCardVariables.settings.installments_enabled &&
-		PagBankCheckoutCreditCardVariables.settings.transfer_of_interest_enabled;
-	if (!shouldContinue) {
-		return;
-	}
-
-	const $container = jQuery("#order_review");
-
-	const installmentsSelect = document.getElementById(
-		"pagbank_credit_card-installments"
-	) as HTMLSelectElement;
-
-	const cardNumberInput = document.getElementById(
-		"pagbank_credit_card-card-number"
-	) as HTMLInputElement;
-
-	if (installmentsSelect === null) {
-		throw new Error("Installments select not found");
-	}
-
-	if (cardNumberInput === null) {
-		throw new Error("Card number input not found");
-	}
-
-	const nonce = installmentsSelect.getAttribute("data-nonce");
-	const amount = installmentsSelect.getAttribute("data-amount");
-	const url = installmentsSelect.getAttribute("data-url");
-
-	if (nonce === null || amount === null || url === null) {
-		throw new Error("Invalid nonce, amount or url");
-	}
-
-	const paymentTokensInputs = document.querySelectorAll(
-		"[name=wc-pagbank_credit_card-payment-token]"
-	);
-
-	const setContainerLoading = (state: boolean): void => {
-		if (state) {
-			$container.addClass("processing").block({
-				message: null,
-				overlayCSS: {
-					background: "#fff",
-					opacity: 0.6,
-				},
-			});
-		} else {
-			$container.removeClass("processing").unblock();
-		}
-	};
-
-	const setInstallments = (
-		plans: Array<{
-			installments: number;
-			installment_value: number;
-			interest_free: number;
-			title: string;
-			amount: number;
-		}>
-	): void => {
-		installmentsSelect.innerHTML = "";
-
-		plans.forEach((plan) => {
-			installmentsSelect.appendChild(
-				new Option(plan.title, plan.installments.toString(), plan.installments === 1)
-			);
-		});
-
-		installmentsSelect.removeAttribute("disabled");
-	};
-
-	type GetInstallmentsDto =
-		| {
-				type: "card_bin";
-				nonce: string;
-				amount: string;
-				cardBin: string;
-		  }
-		| {
-				type: "payment_token";
-				nonce: string;
-				amount: string;
-				paymentToken: string;
-		  };
-
-	const getInstallments = async (data: GetInstallmentsDto): Promise<void> => {
-		setContainerLoading(true);
-
-		try {
-			const { data: result } = await axios.get<{
-				success: boolean;
-				data: Array<{
-					installments: number;
-					installment_value: number;
-					interest_free: number;
-					title: string;
-					amount: number;
-				}>;
-			}>(url, {
-				params: {
-					nonce: data.nonce,
-					amount: data.amount,
-					card_bin: data.type === "card_bin" ? data.cardBin : undefined,
-					payment_token: data.type === "payment_token" ? data.paymentToken : undefined,
-				},
-			});
-			setInstallments(result.data);
-		} catch (error) {
-			alert("Unknown error");
+	try {
+		const shouldContinue =
+			PagBankCheckoutCreditCardVariables.settings.installments_enabled &&
+			PagBankCheckoutCreditCardVariables.settings.transfer_of_interest_enabled;
+		if (!shouldContinue) {
+			return;
 		}
 
-		setContainerLoading(false);
-	};
+		const $container = jQuery("#order_review");
 
-	const handleChangePaymentToken = async (paymentToken: string): Promise<void> => {
-		installmentsSelect.innerHTML = "";
-		installmentsSelect.setAttribute("disabled", "disabled");
-		if (paymentToken === "new") {
-			const cardBin = cardNumberInput.value.replace(/\s/g, "").substring(0, 6);
-			if (cardBin !== null && cardBin.length === 6) {
-				getInstallments({
-					type: "card_bin",
-					nonce,
-					amount,
-					cardBin,
-				});
-			}
-		} else {
-			getInstallments({
-				type: "payment_token",
-				nonce,
-				amount,
-				paymentToken,
-			});
-		}
-	};
+		const installmentsSelect = document.getElementById(
+			"pagbank_credit_card-installments"
+		) as HTMLSelectElement;
 
-	paymentTokensInputs.forEach((paymentTokenInput) => {
-		paymentTokenInput.addEventListener("change", (event) => {
-			const target = event.target as HTMLInputElement;
-			if (target.checked) {
-				handleChangePaymentToken(target.value);
-			}
-		});
-	});
-
-	const init = (): void => {
-		const selectedPaymentToken = document.querySelector(
-			"[name=wc-pagbank_credit_card-payment-token]:checked"
+		const cardNumberInput = document.getElementById(
+			"pagbank_credit_card-card-number"
 		) as HTMLInputElement;
 
-		handleChangePaymentToken(
-			selectedPaymentToken === null ? "new" : selectedPaymentToken.value
+		if (installmentsSelect === null) {
+			throw new Error("Installments select not found");
+		}
+
+		if (cardNumberInput === null) {
+			throw new Error("Card number input not found");
+		}
+
+		const nonce = installmentsSelect.getAttribute("data-nonce");
+		const amount = installmentsSelect.getAttribute("data-amount");
+		const url = installmentsSelect.getAttribute("data-url");
+
+		if (nonce === null || amount === null || url === null) {
+			throw new Error("Invalid nonce, amount or url");
+		}
+
+		const paymentTokensInputs = document.querySelectorAll(
+			"[name=wc-pagbank_credit_card-payment-token]"
 		);
 
-		cardNumberInput.addEventListener("change", () => {
-			handleChangePaymentToken("new");
-		});
-	};
+		const setContainerLoading = (state: boolean): void => {
+			if (state) {
+				$container.addClass("processing").block({
+					message: null,
+					overlayCSS: {
+						background: "#fff",
+						opacity: 0.6,
+					},
+				});
+			} else {
+				$container.removeClass("processing").unblock();
+			}
+		};
 
-	init();
+		const setInstallments = (
+			plans: Array<{
+				installments: number;
+				installment_value: number;
+				interest_free: number;
+				title: string;
+				amount: number;
+			}>
+		): void => {
+			installmentsSelect.innerHTML = "";
+
+			plans.forEach((plan) => {
+				installmentsSelect.appendChild(
+					new Option(plan.title, plan.installments.toString(), plan.installments === 1)
+				);
+			});
+
+			installmentsSelect.removeAttribute("disabled");
+		};
+
+		type GetInstallmentsDto =
+			| {
+					type: "card_bin";
+					nonce: string;
+					amount: string;
+					cardBin: string;
+			  }
+			| {
+					type: "payment_token";
+					nonce: string;
+					amount: string;
+					paymentToken: string;
+			  };
+
+		const getInstallments = async (data: GetInstallmentsDto): Promise<void> => {
+			setContainerLoading(true);
+
+			try {
+				const { data: result } = await axios.get<{
+					success: boolean;
+					data: Array<{
+						installments: number;
+						installment_value: number;
+						interest_free: number;
+						title: string;
+						amount: number;
+					}>;
+				}>(url, {
+					params: {
+						nonce: data.nonce,
+						amount: data.amount,
+						card_bin: data.type === "card_bin" ? data.cardBin : undefined,
+						payment_token:
+							data.type === "payment_token" ? data.paymentToken : undefined,
+					},
+				});
+				setInstallments(result.data);
+			} catch (error) {
+				const cardNumberInput = document.getElementById(
+					"pagbank_credit_card-card-number"
+				) as HTMLInputElement | null;
+
+				if (cardNumberInput != null) {
+					cardNumberInput.value = "";
+				}
+
+				submitCheckoutError("Não foi possível calcular as parcelas. Tente novamente.");
+			} finally {
+				setContainerLoading(false);
+			}
+		};
+
+		const handleChangePaymentToken = async (paymentToken: string): Promise<void> => {
+			installmentsSelect.innerHTML = "";
+			installmentsSelect.setAttribute("disabled", "disabled");
+			if (paymentToken === "new") {
+				const cardBin = cardNumberInput.value.replace(/\s/g, "").substring(0, 6);
+				if (cardBin !== null && cardBin.length === 6) {
+					getInstallments({
+						type: "card_bin",
+						nonce,
+						amount,
+						cardBin,
+					});
+				}
+			} else {
+				getInstallments({
+					type: "payment_token",
+					nonce,
+					amount,
+					paymentToken,
+				});
+			}
+		};
+
+		paymentTokensInputs.forEach((paymentTokenInput) => {
+			paymentTokenInput.addEventListener("change", (event) => {
+				const target = event.target as HTMLInputElement;
+				if (target.checked) {
+					handleChangePaymentToken(target.value);
+				}
+			});
+		});
+
+		const init = (): void => {
+			const selectedPaymentToken = document.querySelector(
+				"[name=wc-pagbank_credit_card-payment-token]:checked"
+			) as HTMLInputElement;
+
+			handleChangePaymentToken(
+				selectedPaymentToken === null ? "new" : selectedPaymentToken.value
+			);
+
+			cardNumberInput.addEventListener("change", () => {
+				handleChangePaymentToken("new");
+			});
+		};
+
+		init();
+	} catch (error) {
+		if (error instanceof Error) {
+			submitCheckoutError(error.message);
+		} else {
+			submitCheckoutError("Unknown error");
+		}
+	}
 });

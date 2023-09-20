@@ -40,7 +40,7 @@ class Hooks {
 		add_filter( 'woocommerce_payment_token_class', array( $this, 'filter_payment_token_class_name' ), 10, 2 );
 		add_filter( 'woocommerce_payment_methods_types', array( $this, 'filter_payment_method_types' ), 10, 1 );
 		add_filter( 'woocommerce_payment_methods_list_item', array( $this, 'filter_payment_methods_list_item' ), 10, 2 );
-		add_filter( 'script_loader_tag', array( $this, 'add_type_attribute' ), 10, 2 );
+		add_filter( 'script_loader_tag', array( $this, 'add_type_attribute' ), 100, 3 );
 		add_filter( 'woocommerce_get_order_item_totals', array( $this, 'filter_woocommerce_get_order_item_totals' ), 10, 2 );
 		add_filter(
 			'plugin_action_links_' . plugin_basename( PAGBANK_WOOCOMMERCE_FILE_PATH ),
@@ -117,14 +117,16 @@ class Hooks {
 	 *
 	 * @param  string $tag    Script tag.
 	 * @param  string $handle Script handle.
+	 * @param  string $src    Script source.
 	 *
 	 * @return string         Filtered script tag.
 	 */
-	public function add_type_attribute( $tag, $handle ) {
-		$type = wp_scripts()->get_data( $handle, 'type' );
+	public function add_type_attribute( $tag, $handle, $src ) {
+		$type = wp_scripts()->get_data( $handle, 'pagbank_script' );
 
-		if ( $type ) {
-			$tag = str_replace( 'src', 'type="' . esc_attr( $type ) . '" src', $tag );
+		if ( $type === true ) {
+			// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+			$tag = '<script src="' . esc_url( $src ) . '" type="module"></script>';
 		}
 
 		return $tag;
