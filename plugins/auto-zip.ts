@@ -7,6 +7,7 @@ import data from "../package.json";
 const exportFileName = `${data.name}-${data.version}.zip`;
 
 const filesToIgnore = [
+	"wordpress.ini",
 	".editorconfig",
 	".vscode",
 	"TODO.md",

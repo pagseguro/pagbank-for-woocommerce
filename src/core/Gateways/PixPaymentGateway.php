@@ -286,7 +286,8 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 		}
 
 		$order_id               = get_query_var( 'order-received' );
-		$payment_method         = get_post_meta( $order_id, '_payment_method', true );
+		$order                  = wc_get_order( $order_id );
+		$payment_method         = $order->get_meta( '_payment_method' );
 		$is_order_paid_with_pix = $this->id === $payment_method;
 
 		if ( ! $is_order_paid_with_pix ) {
