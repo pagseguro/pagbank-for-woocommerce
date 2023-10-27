@@ -42,11 +42,7 @@ if ( ! function_exists( 'is_woocommerce_activated' ) ) {
 	 * @return bool
 	 */
 	function is_woocommerce_activated() {
-		if ( class_exists( 'woocommerce' ) ) {
-			return true;
-		} else {
-			return false;
-		}
+		return in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true );
 	}
 }
 
