@@ -605,7 +605,8 @@ function process_order_refund( Api $api, $order_id, $amount = null, $reason = ''
 		return new WP_Error( 'error', __( 'O valor para reembolso deve ser maior que zero', 'pagbank-for-woocommerce' ) );
 	}
 
-	$pagbank_charge_id = get_post_meta( $order_id, '_pagbank_charge_id', true );
+	$order             = wc_get_order( $order_id );
+	$pagbank_charge_id = $order->get_meta( '_pagbank_charge_id' );
 
 	try {
 		$refund = $api->refund( $pagbank_charge_id, $amount );

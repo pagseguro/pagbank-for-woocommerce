@@ -17,6 +17,7 @@ services:
     volumes:
       - ./wp:/var/www/html
       - ./:/var/www/html/wp-content/plugins/pagbank-for-woocommerce
+      - ./wordpress.ini:/usr/local/etc/php/conf.d/wordpress.ini
     ports:
       - 80:80
     environment:
