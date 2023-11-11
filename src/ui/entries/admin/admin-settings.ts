@@ -69,17 +69,17 @@ document
 	.querySelectorAll("[data-pagbank-connect-environment-select]")
 	.forEach((pagBankConnectButton) => {
 		const environmentModalId = pagBankConnectButton.getAttribute(
-			"data-pagbank-connect-modal-environment-id"
+			"data-pagbank-connect-modal-environment-id",
 		);
 
 		if (environmentModalId === null) {
 			throw new Error(
-				"Missing data-pagbank-connect-modal-production-id or data-pagbank-connect-modal-sandbox-id attribute"
+				"Missing data-pagbank-connect-modal-production-id or data-pagbank-connect-modal-sandbox-id attribute",
 			);
 		}
 
 		const environmentSelectData = pagBankConnectButton.getAttribute(
-			"data-pagbank-connect-environment-select"
+			"data-pagbank-connect-environment-select",
 		);
 
 		if (environmentSelectData === null) {
@@ -87,7 +87,7 @@ document
 		}
 
 		const environmentSelect = document.getElementById(
-			environmentSelectData
+			environmentSelectData,
 		) as HTMLSelectElement | null;
 
 		if (environmentSelect === null) {
@@ -136,7 +136,7 @@ document
 			pagBankConnectButton.classList.remove("button-primary");
 			pagBankConnectButton.setAttribute("disabled", "disabled");
 			pagBankConnectButton.textContent = pagBankConnectButton.getAttribute(
-				"data-pagbank-loading-text"
+				"data-pagbank-loading-text",
 			);
 		};
 
@@ -144,7 +144,7 @@ document
 			pagBankConnectButton.removeAttribute("disabled");
 			pagBankConnectButton.classList.add("button-primary");
 			pagBankConnectButton.textContent = pagBankConnectButton.getAttribute(
-				"data-pagbank-not-connected-text"
+				"data-pagbank-not-connected-text",
 			);
 		};
 
@@ -152,7 +152,7 @@ document
 			pagBankConnectButton.removeAttribute("disabled");
 			pagBankConnectButton.classList.remove("button-primary");
 			pagBankConnectButton.textContent = pagBankConnectButton.getAttribute(
-				"data-pagbank-connected-text"
+				"data-pagbank-connected-text",
 			);
 		};
 
@@ -228,7 +228,7 @@ document.querySelectorAll("[data-connect-application-id]").forEach((connectButto
 					}, 500);
 				} else {
 					alert(
-						"Parece que seu navegador bloqueou a janela de autenticação. Por favor, desbloqueie e tente novamente."
+						"Parece que seu navegador bloqueou a janela de autenticação. Por favor, desbloqueie e tente novamente.",
 					);
 				}
 			} catch (error) {

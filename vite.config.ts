@@ -1,5 +1,6 @@
-import { defineConfig } from "vite";
 import { resolve } from "path";
+import { defineConfig } from "vite";
+
 import autoZip from "./plugins/auto-zip";
 
 export default defineConfig({
@@ -9,12 +10,12 @@ export default defineConfig({
 			entry: {
 				"admin/admin-settings": resolve(
 					__dirname,
-					"src/ui/entries/admin/admin-settings.ts"
+					"src/ui/entries/admin/admin-settings.ts",
 				),
 				"public/order": resolve(__dirname, "src/ui/entries/public/order.ts"),
 				"public/checkout-credit-card": resolve(
 					__dirname,
-					"src/ui/entries/public/checkout-credit-card.ts"
+					"src/ui/entries/public/checkout-credit-card.ts",
 				),
 			},
 			name: "[name]",
