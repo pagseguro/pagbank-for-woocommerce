@@ -47,7 +47,7 @@
     "dependencies": {
         "@fontsource/roboto": "^5.0.1",
         "autonumeric": "^4.9.0",
-        "axios": "^1.4.0",
+        "axios": "^1.6.0",
         "card-validator": "^8.1.1",
         "date-fns": "^2.30.0",
         "eslint": "^8.41.0",
