@@ -5,7 +5,9 @@
   "license": "MIT",
   "scripts": {
     "setup": "./scripts/initial-setup.sh",
-    "build": "composer install --no-dev && tsc && vite build",
+    "prebuild": "composer install --no-dev",
+    "build": "tsc && vite build",
+    "postbuild": "composer install",
     "dev": "composer install && tsc && vite build --watch",
     "lint": "concurrently \"bun lint:core\" \"bun lint:ui\"",
     "lint:core": "./vendor/bin/phpcs",
