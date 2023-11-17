@@ -7,6 +7,10 @@
 
 namespace PagBank_WooCommerce\Presentation;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use Carbon\Carbon;
 use WC_Logger;
 use Wilkques\PKCE\Generator;

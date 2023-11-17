@@ -13,7 +13,9 @@
 
 namespace PagBank_WooCommerce\Presentation;
 
-use WP_REST_Response;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Class ConnectAjaxApi.
@@ -73,8 +75,7 @@ class ConnectAjaxApi {
 			wp_die();
 		}
 
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		if ( ! isset( $_GET['nonce'] ) || ! wp_verify_nonce( wp_unslash( $_GET['nonce'] ), 'pagbank_woocommerce_oauth' ) ) {
+		if ( ! isset( $_GET['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['nonce'] ) ), 'pagbank_woocommerce_oauth' ) ) {
 			wp_die( 'Invalid nonce' );
 		}
 
@@ -114,8 +115,7 @@ class ConnectAjaxApi {
 			wp_die();
 		}
 
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		if ( ! isset( $_GET['nonce'] ) || ! wp_verify_nonce( wp_unslash( $_GET['nonce'] ), 'pagbank_woocommerce_oauth' ) ) {
+		if ( ! isset( $_GET['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['nonce'] ) ), 'pagbank_woocommerce_oauth' ) ) {
 			wp_die( 'Invalid nonce' );
 		}
 
@@ -151,8 +151,7 @@ class ConnectAjaxApi {
 			wp_die();
 		}
 
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		if ( ! isset( $_GET['state'] ) || ! wp_verify_nonce( wp_unslash( $_GET['state'] ), 'pagbank_woocommerce_oauth' ) ) {
+		if ( ! isset( $_GET['state'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['state'] ) ), 'pagbank_woocommerce_oauth' ) ) {
 			wp_die( 'Invalid nonce' );
 		}
 

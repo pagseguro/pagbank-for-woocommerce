@@ -7,12 +7,15 @@
 
 namespace PagBank_WooCommerce\Gateways;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use Exception;
 use PagBank_WooCommerce\Presentation\Api;
 use PagBank_WooCommerce\Presentation\Connect;
 use WC_Order;
 use WC_Payment_Gateway;
-use WP_Error;
 
 use function PagBank_WooCommerce\Presentation\get_pix_payment_api_data;
 use function PagBank_WooCommerce\Presentation\process_order_refund;

@@ -15,6 +15,10 @@
  * @package PagBank_WooCommerce
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use PagBank_WooCommerce\Presentation\ConnectAjaxApi;
 use PagBank_WooCommerce\Presentation\Hooks;
