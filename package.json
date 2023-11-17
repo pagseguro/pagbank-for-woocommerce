@@ -3,6 +3,7 @@
   "version": "1.0.5",
   "author": "Elias Júnior <me@eliasjr.dev>",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "setup": "./scripts/initial-setup.sh",
     "prebuild": "composer install --no-dev",
