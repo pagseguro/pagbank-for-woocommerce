@@ -5,10 +5,8 @@
   "license": "MIT",
   "scripts": {
     "setup": "./scripts/initial-setup.sh",
-    "build": "concurrently \"yarn build:ui\"",
-    "build:ui": "tsc && vite build",
-    "dev": "concurrently \"yarn dev:ui\"",
-    "dev:ui": "tsc && vite build --watch",
+    "build": "composer install --no-dev && tsc && vite build",
+    "dev": "composer install && tsc && vite build --watch",
     "lint": "concurrently \"bun lint:core\" \"bun lint:ui\"",
     "lint:core": "./vendor/bin/phpcs",
     "lint:ui": "eslint --ext .ts,.tsx,.js,.jsx src/ vite.config.ts plugins",
