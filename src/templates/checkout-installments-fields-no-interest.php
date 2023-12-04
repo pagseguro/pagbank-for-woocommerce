@@ -12,16 +12,16 @@ $installments_plan = get_installments_plan_no_interest($cart_total, $gateway->ma
 ?>
 <p
 	class="form-row pagbank-credit-card-installments form-row-wide validate-required"
-	id="<?php echo $gateway->id; ?>-installments_field"
+	id="<?php echo esc_attr($gateway->id); ?>-installments_field"
 	style="margin-top: 20px;"
 >
-	<label for="<?php echo $gateway->id; ?>-installments" class="">
+	<label for="<?php echo esc_attr($gateway->id); ?>-installments" class="">
 		<?php esc_html_e('Parcelas', 'pagbank-for-woocommerce'); ?>&nbsp;<abbr class="required" title="required">*</abbr>
 	</label>
 	<span class="woocommerce-input-wrapper">
 		<select
-			name="<?php echo $gateway->id; ?>-installments"
-			id="<?php echo $gateway->id; ?>-installments"
+			name="<?php echo esc_attr($gateway->id); ?>-installments"
+			id="<?php echo esc_attr($gateway->id); ?>-installments"
 			class="select"
 		>
 			<?php foreach($installments_plan as $plan): ?>

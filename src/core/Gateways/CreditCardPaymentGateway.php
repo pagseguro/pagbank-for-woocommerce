@@ -29,6 +29,7 @@ use function PagBank_WooCommerce\Presentation\get_credit_card_payment_data;
 use function PagBank_WooCommerce\Presentation\get_credit_card_payment_data_for_empty_value_subscription;
 use function PagBank_WooCommerce\Presentation\get_credit_card_renewal_payment_data;
 use function PagBank_WooCommerce\Presentation\process_order_refund;
+use function PagBank_WooCommerce\Presentation\sanitize_checkout_field;
 
 /**
  * Class CreditCardPaymentGateway.
@@ -553,8 +554,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			<?php do_action( 'woocommerce_credit_card_form_start', $this->id ); ?>
 			<?php
 			foreach ( $fields as $field ) {
-				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $field is a HTML.
-				echo $field;
+				echo sanitize_checkout_field($field);
 			}
 			?>
 			<?php do_action( 'woocommerce_credit_card_form_end', $this->id ); ?>

@@ -75,3 +75,37 @@ function decode_text( string $text ) {
 	// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 	return base64_decode( $text );
 }
+
+function sanitize_checkout_field( string $html ) {
+	return wp_kses(
+		html_entity_decode( $html ?? '' ),
+		array(
+			'fieldset' => array(
+				"id" => array(),
+				"class" => array(),
+			),
+			'span'   => array(
+				"id" => array(),
+			),
+			'p'      => array(
+				"class" => array(),
+			),
+			'input'  => array(
+				"id" => array(),
+				"name" => array(),
+				"class" => array(),
+				"autocomplete" => array(),
+				"autocorrect" => array(),
+				"autocapitalize" => array(),
+				"spellcheck" => array(),
+				"type" => array(),
+				"name" => array(),
+				"style" => array(),
+			),
+			'label'  => array(
+				"for" => array(),
+			),
+			'span'   => array(),
+		)
+	);
+}
