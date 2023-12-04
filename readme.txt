@@ -69,6 +69,10 @@ Tem alguma dúvida sobre o funcionamento ou está com algum problema técnico re
 
 == Installation ==
 
+= Scripts =
+
+Para que os métodos de pagamento tenham o correto funcionamento, durante o checkout será inicializado remotamente um Javascript externo do SDK do PagBank, que será responsável para criptografar o cartão de crédito e manter os dados dos usuários seguros.
+
 = Requirements =
 
 Para instalar o PagBank for WooCommerce, você precisa:
