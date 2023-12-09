@@ -138,3 +138,4 @@ Siga os passos abaixo para conectar o plugin à sua conta PagBank:
 
 = 1.0.6 - 2023-12-04 =
 * Ajustes para aprovação do plugin pelo time do WordPress.
+* Corrigido erro na geração do Pix.
