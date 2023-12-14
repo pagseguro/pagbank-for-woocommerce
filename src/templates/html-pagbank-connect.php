@@ -1,4 +1,8 @@
 <?php
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+
 	use PagBank_WooCommerce\Presentation\Connect;
 
 	$applications = Connect::get_connect_applications();
@@ -8,8 +12,6 @@
 	<th scope="row" class="titledesc">
 		<label for="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?>
 		<?php
-			// phpcs:ignore Standard.Category.SniffName.ErrorCode
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo $wc_settings->get_tooltip_html( $data );
 		?>
 		</label>
@@ -30,7 +32,7 @@
 								data-connect-application-environment="sandbox"
 								data-connect-nonce="<?php echo esc_attr( $nonce ); ?>"
 							>
-								<?php _e('Continuar', 'pagbank-for-woocommerce'); ?>
+								<?php esc_html_e('Continuar', 'pagbank-for-woocommerce'); ?>
 							</button>
 						</div>
 					</div>
@@ -68,7 +70,7 @@
 											data-connect-application-environment="production"
 											data-connect-nonce="<?php echo esc_attr( $nonce ); ?>"
 										>
-											<?php _e('Escolher este', 'pagbank-for-woocommerce'); ?>
+											<?php esc_html_e('Escolher este', 'pagbank-for-woocommerce'); ?>
 										</button>
 									</td>
 									<td>
@@ -85,7 +87,7 @@
 											data-connect-application-environment="production"
 											data-connect-nonce="<?php echo esc_attr( $nonce ); ?>"
 										>
-											<?php _e('Escolher este', 'pagbank-for-woocommerce'); ?>
+											<?php esc_html_e('Escolher este', 'pagbank-for-woocommerce'); ?>
 										</button>
 									</td>
 								</tr>
@@ -99,7 +101,7 @@
 								data-connect-application-environment="production"
 								data-connect-nonce="<?php echo esc_attr( $nonce ); ?>"
 							>
-								<?php _e('Já negociei minha própria condição comercial com o PagBank', 'pagbank-for-woocommerce'); ?>
+								<?php esc_html_e('Já negociei minha própria condição comercial com o PagBank', 'pagbank-for-woocommerce'); ?>
 							</button>
 						</div>
 					</div>
@@ -122,8 +124,6 @@
 				<?php esc_html_e( 'Carregando...', 'pagbank-for-woocommerce' ); ?>
 			</button>
 			<?php
-				// phpcs:ignore Standard.Category.SniffName.ErrorCode
-				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo $wc_settings->get_description_html( $data );
 			?>
 		</fieldset>

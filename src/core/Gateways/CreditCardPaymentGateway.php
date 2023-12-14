@@ -7,6 +7,10 @@
 
 namespace PagBank_WooCommerce\Gateways;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use Exception;
 use PagBank_WooCommerce\Presentation\Api;
 use PagBank_WooCommerce\Presentation\Connect;
@@ -549,7 +553,8 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			<?php do_action( 'woocommerce_credit_card_form_start', $this->id ); ?>
 			<?php
 			foreach ( $fields as $field ) {
-				echo $field; // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $field is a HTML.
+				echo $field;
 			}
 			?>
 			<?php do_action( 'woocommerce_credit_card_form_end', $this->id ); ?>
@@ -558,7 +563,8 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		<?php
 
 		if ( $cart_contains_subscription ) {
-			echo '<fieldset style="padding: 0;">' . $cvc_field . '</fieldset>'; // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $cvc_field is a HTML.
+			echo '<fieldset style="padding: 0;">' . $cvc_field . '</fieldset>';
 		}
 	}
 
@@ -610,6 +616,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$payment_token = isset( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) ? wc_clean( wp_unslash( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) ) : null;
+
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$cvc = $cart_contains_subscriptions && isset( $_POST['pagbank_credit_card-card-cvc'] ) ? wc_clean( wp_unslash( $_POST['pagbank_credit_card-card-cvc'] ) ) : null;
 
@@ -625,28 +632,28 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 		// Validation for new credit cards.
 		if ( $is_new_credit_card ) {
-			// phpcs:ignore WordPress.Security.NonceVerification
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$has_holder = isset( $_POST['pagbank_credit_card-card-holder'] ) && ! empty( $_POST['pagbank_credit_card-card-holder'] );
 			if ( ! $has_holder ) {
 				wc_add_notice( __( 'O titular do cartão de crédito é obrigatório.', 'pagbank-for-woocommerce' ), 'error' );
 				return false;
 			}
 
-			// phpcs:ignore WordPress.Security.NonceVerification
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$has_encrypted_card = isset( $_POST['pagbank_credit_card-encrypted-card'] ) && ! empty( $_POST['pagbank_credit_card-encrypted-card'] );
 			if ( ! $has_encrypted_card ) {
 				wc_add_notice( __( 'O cartão de crédito criptografado não foi identificado. Por favor, contate o suporte.', 'pagbank-for-woocommerce' ), 'error' );
 				return false;
 			}
 
-			// phpcs:ignore WordPress.Security.NonceVerification
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$has_card_bin = isset( $_POST['pagbank_credit_card-card-bin'] ) && ! empty( $_POST['pagbank_credit_card-card-bin'] );
 			if ( ! $has_card_bin ) {
 				wc_add_notice( __( 'O bin do cartão de crédito não foi identificado. Por favor, contate o suporte.', 'pagbank-for-woocommerce' ), 'error' );
 				return false;
 			}
 
-			// phpcs:ignore WordPress.Security.NonceVerification
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$card_bin          = wc_clean( wp_unslash( $_POST['pagbank_credit_card-card-bin'] ) );
 			$is_valid_card_bin = strlen( $card_bin ) === 6;
 			if ( ! $is_valid_card_bin ) {
@@ -668,14 +675,14 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 		// Validation for installments.
 		if ( $this->installments_enabled ) {
-			// phpcs:ignore WordPress.Security.NonceVerification
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$has_installments = isset( $_POST['pagbank_credit_card-installments'] ) && ! empty( $_POST['pagbank_credit_card-installments'] );
 			if ( ! $has_installments ) {
 				wc_add_notice( __( 'É necessário selecionar a quantidade de parcelas.', 'pagbank-for-woocommerce' ), 'error' );
 				return false;
 			}
 
-			// phpcs:ignore WordPress.Security.NonceVerification
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$installments = (int) wc_clean( wp_unslash( $_POST['pagbank_credit_card-installments'] ) );
 			if ( $installments > $this->maximum_installments || $installments < 1 ) {
 				wc_add_notice( __( 'A quantidade de parcelas é inválida.', 'pagbank-for-woocommerce' ), 'error' );

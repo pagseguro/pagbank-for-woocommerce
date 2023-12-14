@@ -7,6 +7,10 @@
 
 namespace PagBank_WooCommerce\Gateways;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use Exception;
 use PagBank_WooCommerce\Presentation\Api;
 use PagBank_WooCommerce\Presentation\Connect;

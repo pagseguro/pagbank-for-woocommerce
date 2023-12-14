@@ -2,6 +2,7 @@ import axios from "axios";
 import cardValidator from "card-validator";
 import first from "lodash/first";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const jQuery: any;
 
 type PagBankCardEncryptedErrors =
@@ -52,7 +53,7 @@ declare const PagBankCheckoutCreditCardVariables: {
 
 const scrollToNotices = (): void => {
 	let scrollElement = jQuery(
-		".woocommerce-NoticeGroup-updateOrderReview, .woocommerce-NoticeGroup-checkout"
+		".woocommerce-NoticeGroup-updateOrderReview, .woocommerce-NoticeGroup-checkout",
 	);
 
 	const hasScrollElements = scrollElement.length > 0;
@@ -76,7 +77,7 @@ const submitCheckoutError = (errorMessage: string): void => {
 			errorMessage +
 			"</li>" +
 			"</ul>" +
-			"</div>"
+			"</div>",
 	); // eslint-disable-line max-len
 	$checkoutForm.removeClass("processing").unblock();
 	$checkoutForm.find(".input-text, select, input:checkbox").trigger("validate").trigger("blur");
@@ -89,7 +90,7 @@ const submitCheckoutError = (errorMessage: string): void => {
 // eslint-disable-next-line no-undef
 jQuery("form.checkout").on("checkout_place_order_pagbank_credit_card", () => {
 	const selectedPaymentToken = document.querySelector(
-		"[name=wc-pagbank_credit_card-payment-token]:checked"
+		"[name=wc-pagbank_credit_card-payment-token]:checked",
 	) as HTMLInputElement;
 
 	if (selectedPaymentToken !== null && selectedPaymentToken.value !== "new") {
@@ -98,16 +99,16 @@ jQuery("form.checkout").on("checkout_place_order_pagbank_credit_card", () => {
 
 	try {
 		const cardHolderInput = document.getElementById(
-			"pagbank_credit_card-card-holder"
+			"pagbank_credit_card-card-holder",
 		) as HTMLInputElement | null;
 		const cardNumberInput = document.getElementById(
-			"pagbank_credit_card-card-number"
+			"pagbank_credit_card-card-number",
 		) as HTMLInputElement | null;
 		const cardExpiryInput = document.getElementById(
-			"pagbank_credit_card-card-expiry"
+			"pagbank_credit_card-card-expiry",
 		) as HTMLInputElement | null;
 		const cardCvcInput = document.getElementById(
-			"pagbank_credit_card-card-cvc"
+			"pagbank_credit_card-card-cvc",
 		) as HTMLInputElement | null;
 
 		if (
@@ -117,7 +118,7 @@ jQuery("form.checkout").on("checkout_place_order_pagbank_credit_card", () => {
 			cardCvcInput == null
 		) {
 			throw new Error(
-				"Não foi possível encontrar os campos do cartão de crédito. Entre em contato com nosso suporte."
+				"Não foi possível encontrar os campos do cartão de crédito. Entre em contato com nosso suporte.",
 			);
 		}
 
@@ -161,7 +162,7 @@ jQuery("form.checkout").on("checkout_place_order_pagbank_credit_card", () => {
 			const cardExpirationDateValidation = cardValidator.expirationDate(expiryDate);
 			if (!cardExpirationDateValidation.isValid) {
 				throw new Error(
-					PagBankCheckoutCreditCardVariables.messages.invalid_card_expiry_date
+					PagBankCheckoutCreditCardVariables.messages.invalid_card_expiry_date,
 				);
 			}
 
@@ -176,7 +177,7 @@ jQuery("form.checkout").on("checkout_place_order_pagbank_credit_card", () => {
 				expirationDate: {
 					month: cardExpirationDateValidation.month as string,
 					year: convertTwoDigitsYearToFourDigits(
-						cardExpirationDateValidation.year as string
+						cardExpirationDateValidation.year as string,
 					),
 				},
 				cvc: cvc.trim(),
@@ -218,11 +219,11 @@ jQuery("form.checkout").on("checkout_place_order_pagbank_credit_card", () => {
 		}
 
 		const encryptedCardInput = document.getElementById(
-			"pagbank_credit_card-encrypted-card"
+			"pagbank_credit_card-encrypted-card",
 		) as HTMLInputElement | null;
 
 		const cardBinInput = document.getElementById(
-			"pagbank_credit_card-card-bin"
+			"pagbank_credit_card-card-bin",
 		) as HTMLInputElement | null;
 
 		if (encryptedCardInput == null) {
@@ -235,8 +236,10 @@ jQuery("form.checkout").on("checkout_place_order_pagbank_credit_card", () => {
 		cardBinInput.value = card.number.substring(0, 6);
 
 		return true;
-	} catch (error: any) {
-		submitCheckoutError(error.message);
+	} catch (error: unknown) {
+		if (error instanceof Error) {
+			submitCheckoutError(error.message);
+		}
 
 		return false;
 	}
@@ -254,11 +257,11 @@ jQuery(document.body).on("updated_checkout", () => {
 		const $container = jQuery("#order_review");
 
 		const installmentsSelect = document.getElementById(
-			"pagbank_credit_card-installments"
+			"pagbank_credit_card-installments",
 		) as HTMLSelectElement;
 
 		const cardNumberInput = document.getElementById(
-			"pagbank_credit_card-card-number"
+			"pagbank_credit_card-card-number",
 		) as HTMLInputElement;
 
 		if (installmentsSelect === null) {
@@ -278,7 +281,7 @@ jQuery(document.body).on("updated_checkout", () => {
 		}
 
 		const paymentTokensInputs = document.querySelectorAll(
-			"[name=wc-pagbank_credit_card-payment-token]"
+			"[name=wc-pagbank_credit_card-payment-token]",
 		);
 
 		const setContainerLoading = (state: boolean): void => {
@@ -302,13 +305,13 @@ jQuery(document.body).on("updated_checkout", () => {
 				interest_free: number;
 				title: string;
 				amount: number;
-			}>
+			}>,
 		): void => {
 			installmentsSelect.innerHTML = "";
 
 			plans.forEach((plan) => {
 				installmentsSelect.appendChild(
-					new Option(plan.title, plan.installments.toString(), plan.installments === 1)
+					new Option(plan.title, plan.installments.toString(), plan.installments === 1),
 				);
 			});
 
@@ -354,7 +357,7 @@ jQuery(document.body).on("updated_checkout", () => {
 				setInstallments(result.data);
 			} catch (error) {
 				const cardNumberInput = document.getElementById(
-					"pagbank_credit_card-card-number"
+					"pagbank_credit_card-card-number",
 				) as HTMLInputElement | null;
 
 				if (cardNumberInput != null) {
@@ -401,11 +404,11 @@ jQuery(document.body).on("updated_checkout", () => {
 
 		const init = (): void => {
 			const selectedPaymentToken = document.querySelector(
-				"[name=wc-pagbank_credit_card-payment-token]:checked"
+				"[name=wc-pagbank_credit_card-payment-token]:checked",
 			) as HTMLInputElement;
 
 			handleChangePaymentToken(
-				selectedPaymentToken === null ? "new" : selectedPaymentToken.value
+				selectedPaymentToken === null ? "new" : selectedPaymentToken.value,
 			);
 
 			cardNumberInput.addEventListener("change", () => {

@@ -7,6 +7,10 @@
 
 namespace PagBank_WooCommerce\Presentation;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use WC_Payment_Token;
 
 /**

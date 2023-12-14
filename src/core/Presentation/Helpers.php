@@ -7,6 +7,10 @@
 
 namespace PagBank_WooCommerce\Presentation;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Format money to cents.
  *
@@ -46,4 +50,28 @@ function format_money( float $value ): string {
 	$price = sprintf( $price_format, $currency_symbol, number_format( $value, $decimals, $decimal_separator, $thousand_separator ) );
 
 	return html_entity_decode( $price );
+}
+
+/**
+ * Base64 encode text.
+ *
+ * @param string $text Text.
+ *
+ * @return string
+ */
+function encode_text( string $text ) {
+	// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+	return base64_encode( $text );
+}
+
+/**
+ * Base64 decode text.
+ *
+ * @param string $text Text.
+ *
+ * @return string
+ */
+function decode_text( string $text ) {
+	// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
+	return base64_decode( $text );
 }

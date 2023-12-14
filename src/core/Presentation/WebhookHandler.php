@@ -7,6 +7,10 @@
 
 namespace PagBank_WooCommerce\Presentation;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use Exception;
 use WC_Logger;
 
@@ -112,7 +116,7 @@ class WebhookHandler {
 				);
 			}
 
-			if ( ! in_array( $order->get_payment_method(), array( 'pagbank_credit_card', 'pagbank_boleto', 'pagbank_pix' ) ) ) {
+			if ( ! in_array( $order->get_payment_method(), array( 'pagbank_credit_card', 'pagbank_boleto', 'pagbank_pix' ), true ) ) {
 				$this->log( 'Webhook validation failed: invalid payment method for order id ' . $order_id );
 				return wp_send_json_error(
 					array(

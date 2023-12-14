@@ -22,7 +22,7 @@
         /* Alias */
         "baseUrl": ".",
         "paths": {
-            "@/*": ["src/ui/*"]
+            "@/*": ["src/*"]
         }
     },
     "include": ["src", "plugins", "vite.config.ts"]

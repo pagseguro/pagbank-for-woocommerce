@@ -1,7 +1,8 @@
-import { type PluginOption } from "vite";
+import Fs from "fs";
 import JSZip from "jszip";
 import Path from "path";
-import Fs from "fs";
+import { type PluginOption } from "vite";
+
 import data from "../package.json";
 
 const exportFileName = `${data.name}-${data.version}.zip`;
@@ -19,7 +20,7 @@ const filesToIgnore = [
 	"plugins",
 	"scripts",
 	"wp",
-	".eslintrc.cjs",
+	".eslintrc.js",
 	".gitignore",
 	".commitlint.config.js",
 	"composer.json",
@@ -33,6 +34,7 @@ const filesToIgnore = [
 	"tsconfig.node.json",
 	"vite.config.ts",
 	"yarn.lock",
+	"bun.lockb",
 	"phpcs.xml.dist",
 	"phpunit.xml",
 	"tests",
@@ -82,6 +84,7 @@ const autoZip = (): PluginOption => {
 
 					if (folder == null) {
 						reject(new Error("Could not create folder"));
+
 						return;
 					}
 
@@ -91,7 +94,7 @@ const autoZip = (): PluginOption => {
 
 						// Check if should ignore the file
 						const shouldIgnore = filesToIgnore.some((ignore) =>
-							filePath.startsWith(ignore)
+							filePath.startsWith(ignore),
 						);
 
 						if (!shouldIgnore) {

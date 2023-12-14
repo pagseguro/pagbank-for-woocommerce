@@ -4,7 +4,7 @@ Tags: woocommerce, pagseguro, pagbank, payments, ecommerce, e-commerce, store, s
 Requires at least: 5.4
 Tested up to: 6.3
 Requires PHP: 7.2
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -69,6 +69,10 @@ Tem alguma dúvida sobre o funcionamento ou está com algum problema técnico re
 
 == Installation ==
 
+= Scripts =
+
+Para que os métodos de pagamento tenham o correto funcionamento, durante o checkout será inicializado remotamente um Javascript externo do SDK do PagBank, que será responsável para criptografar o cartão de crédito e manter os dados dos usuários seguros.
+
 = Requirements =
 
 Para instalar o PagBank for WooCommerce, você precisa:
@@ -128,3 +132,6 @@ Siga os passos abaixo para conectar o plugin à sua conta PagBank:
 
 = 1.0.4 - 2023-10-26 =
 * Adicionado suporte ao WooCommerce HPOS.
+
+= 1.0.5 - 2023-11-17 =
+* Corrigido bugs durante a instalação.

@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 use function PagBank_WooCommerce\Presentation\format_money_cents;
 use function PagBank_WooCommerce\Presentation\get_installments_plan_no_interest;
 
@@ -12,7 +16,7 @@ $installments_plan = get_installments_plan_no_interest($cart_total, $gateway->ma
 	style="margin-top: 20px;"
 >
 	<label for="<?php echo $gateway->id; ?>-installments" class="">
-		<?php _e('Parcelas', 'pagbank-for-woocommerce'); ?>&nbsp;<abbr class="required" title="required">*</abbr>
+		<?php esc_html_e('Parcelas', 'pagbank-for-woocommerce'); ?>&nbsp;<abbr class="required" title="required">*</abbr>
 	</label>
 	<span class="woocommerce-input-wrapper">
 		<select
