@@ -10,7 +10,7 @@
 		<li><?php esc_html_e('Escaneie o código de barras', 'pagbank-for-woocommerce') ;?></li>
 	</ol>
 	<div class="center">
-		<a class="button" target="_blank" href="<?php echo esc_url_raw(sanitize_text_field($boleto_link_pdf)); ?>"><?php esc_html_e('Download boleto', 'pagbank-for-woocommerce'); ?></a>
+		<a class="button" target="_blank" href="<?php echo esc_url(sanitize_text_field($boleto_link_pdf)); ?>"><?php esc_html_e('Download boleto', 'pagbank-for-woocommerce'); ?></a>
 	</div>
 	<hr />
 	<h3><?php esc_html_e('Opção 2: copie o código de barras', 'pagbank-for-woocommerce'); ?></h3>

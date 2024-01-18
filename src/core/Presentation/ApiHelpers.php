@@ -220,7 +220,7 @@ function get_pix_payment_api_data( WC_Order $order, int $expiration_in_minutes )
 		'qr_codes'          => array(
 			array(
 				'amount'          => array(
-					'value' => $order->get_total() * 100,
+					'value' => format_money_cents( $order->get_total() ),
 				),
 				'expiration_date' => Carbon::now()->addMinutes( $expiration_in_minutes )->toAtomString(),
 			),

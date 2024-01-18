@@ -3,7 +3,7 @@
  * Plugin Name: PagBank for WooCommerce
  * Plugin URI: https://github.com/pagseguro/pagbank-for-woocommerce
  * Description: Aceite pagamentos via cartão de crédito, boleto e Pix no checkout do WooCommerce através do PagBank.
- * Version: 1.0.5
+ * Version: 1.0.6
  * Author: PagBank
  * Author URI: https://pagseguro.uol.com.br/
  * License: GPL-2.0
@@ -26,8 +26,10 @@ use PagBank_WooCommerce\Presentation\PaymentGateways;
 use PagBank_WooCommerce\Presentation\PaymentGatewaysFields;
 use PagBank_WooCommerce\Presentation\WebhookHandler;
 
+use function PagBank_WooCommerce\Presentation\is_woocommerce_activated;
+
 define( 'PAGBANK_WOOCOMMERCE_FILE_PATH', __FILE__ );
-define( 'PAGBANK_WOOCOMMERCE_VERSION', '1.0.5' );
+define( 'PAGBANK_WOOCOMMERCE_VERSION', '1.0.6' );
 define( 'PAGBANK_WOOCOMMERCE_TEMPLATES_PATH', plugin_dir_path( PAGBANK_WOOCOMMERCE_FILE_PATH ) . 'src/templates/' );
 
 add_action(
@@ -38,17 +40,6 @@ add_action(
 		}
 	}
 );
-
-if ( ! function_exists( 'is_woocommerce_activated' ) ) {
-	/**
-	 * Check if WooCommerce is activated.
-	 *
-	 * @return bool
-	 */
-	function is_woocommerce_activated() {
-		return class_exists( 'WooCommerce' ) || in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true );
-	}
-}
 
 ( function () {
 	$autoload_filepath = __DIR__ . '/vendor/autoload.php';
