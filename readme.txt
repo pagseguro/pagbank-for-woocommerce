@@ -145,3 +145,4 @@ Siga os passos abaixo para conectar o plugin à sua conta PagBank:
 = 1.0.7 - 2024-23-01 =
 * Ajustado warnings em modo de depuração do WordPress.
 * Alterado título do método de pagamento dentro da visualização do pedido no dashboard.
+* Adicionado mensagens de validação na configuração dos métodos de pagamento.
