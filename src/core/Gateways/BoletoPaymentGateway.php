@@ -147,6 +147,23 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 	}
 
 	/**
+	 * Get payment method title.
+	 *
+	 * @return string The title.
+	 */
+	public function get_title() {
+		if (is_admin()) {
+			$screen = get_current_screen();
+
+			if($screen->id === 'woocommerce_page_wc-orders') {
+				return $this->method_title;
+			}
+		}
+
+		return apply_filters('woocommerce_gateway_title', $this->title, $this->id);
+	}
+
+	/**
 	 * Process order payment.
 	 *
 	 * @param int $order_id Order ID.
@@ -297,7 +314,7 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 
 		$order_id                  = get_query_var( 'order-received' );
 		$order                     = wc_get_order( $order_id );
-		$payment_method            = $order->get_meta( '_payment_method' );
+		$payment_method			   = $order->get_payment_method();
 		$is_order_paid_with_boleto = $this->id === $payment_method;
 
 		if ( ! $is_order_paid_with_boleto ) {
