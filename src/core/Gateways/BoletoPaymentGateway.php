@@ -367,11 +367,7 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 
 		$order_id                  = get_query_var( 'order-received' );
 		$order                     = wc_get_order( $order_id );
-<<<<<<< HEAD
 		$payment_method            = $order->get_payment_method();
-=======
-		$payment_method			   = $order->get_payment_method();
->>>>>>> 89b8326 (feat: change internal payment method title)
 		$is_order_paid_with_boleto = $this->id === $payment_method;
 
 		if ( ! $is_order_paid_with_boleto ) {
