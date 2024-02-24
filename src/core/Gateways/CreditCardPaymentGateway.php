@@ -869,6 +869,23 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 			$order->payment_complete();
 
+			$charge_id = $charge['id'];
+
+			if( $this->environment === 'production' ) {
+				$order->add_order_note(
+					sprintf(
+						/* translators: 1: charge ID, 2: payment method, 3: installments, 4: card brand, 5: card last 4 digits. */
+						__( '<ul><li><b>Cobrança:</b> %1$s.</li><li><b>Parcelas:</b> %2$d.</li><li><b>Bandeira do cartão:</b> %3$s.</li><li><b>Últimos 4 dígitos do cartão:</b> %4$s.</li><li><a href="%5$s" target="_blank" rel="noreferrer">Visualizar pagamento no PagBank</a></li>', 'pagbank-for-woocommerce' ),
+						$charge['id'],
+						$charge['payment_method']['installments'],
+						$charge['payment_method']['card']['brand'],
+						$charge['payment_method']['card']['last_digits'],
+						str_replace( "CHAR_", "", "https://minhaconta.pagseguro.uol.com.br/transacao/detalhes/$charge_id" ),
+					),
+					false,
+				);
+			}
+
 			return array(
 				'result'   => 'success',
 				'redirect' => $this->get_return_url( $order ),

@@ -89,8 +89,8 @@ class WebhookHandler {
 			$input     = file_get_contents( 'php://input' );
 			$payload   = json_decode( $input, true );
 			$reference = isset( $payload['reference_id'] ) ? json_decode( $payload['reference_id'], true ) : null;
-			$order_id  = $reference['id'];
-			$signature = $reference['password'];
+			$order_id  = isset( $reference['id'] ) ? $reference['id'] : null;
+			$signature = isset( $reference['password'] ) ? $reference['password'] : null;
 
 			$this->log( 'Webhook received: ' . $input );
 
@@ -159,6 +159,8 @@ class WebhookHandler {
 				$order->payment_complete( $charge['id'] );
 				$order->update_meta_data( '_pagbank_charge_id', $charge['id'] );
 				$order->save_meta_data();
+			} elseif( $charge['status'] === 'CANCELED' ) {
+				$order->update_status( 'refunded', __( 'O pagamento foi reembolsado através do PagBank.', 'pagbank-for-woocommerce' ) );
 			}
 
 			$this->log( 'Webhook processed successfully' );
