@@ -2,7 +2,7 @@
 **Contributors:** [eliasjnior](https://profiles.wordpress.org/eliasjnior/)  
 **Tags:** woocommerce, pagseguro, pagbank, payments, ecommerce, e-commerce, store, sales, sell, shop, shopping, cart, checkout  
 **Requires at least:** 5.4  
-**Tested up to:** 6.3  
+**Tested up to:** 6.4  
 **Requires PHP:** 7.2  
 **Stable tag:** 1.1.0  
 **License:** GPLv2  
@@ -156,3 +156,7 @@ Siga os passos abaixo para conectar o plugin à sua conta PagBank:
 * Ajustado warnings em modo de depuração do WordPress.
 * Alterado título do método de pagamento dentro da visualização do pedido no dashboard.
 * Adicionado mensagens de validação na configuração dos métodos de pagamento.
+
+### 1.1.0 - 2024-24-02 ###
+* Corrigido processamento de webhooks.
+* Adicionado suporte para novas versões do WooCommerce e WordPress.
