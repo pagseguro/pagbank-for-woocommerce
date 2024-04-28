@@ -1,6 +1,6 @@
 === PagBank for WooCommerce ===
 Contributors: eliasjnior
-Tags: woocommerce, pagseguro, pagbank, payments, ecommerce, e-commerce, store, sales, sell, shop, shopping, cart, checkout
+Tags: woocommerce, pagseguro, pagbank, pagamento, brasil
 Requires at least: 5.4
 Tested up to: 6.4
 Requires PHP: 7.2
