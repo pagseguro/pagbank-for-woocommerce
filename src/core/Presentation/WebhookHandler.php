@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Exception;
 use WC_Logger;
+use WooCommerce;
 
 /**
  * Class WebhookHandler.
@@ -63,9 +64,11 @@ class WebhookHandler {
 	 * Get webhook url.
 	 */
 	public static function get_webhook_url(): string {
-		$site_url = defined( 'PAGBANK_WEBHOOK_SITE_URL' ) && PAGBANK_WEBHOOK_SITE_URL ? PAGBANK_WEBHOOK_SITE_URL : site_url( '/' );
+		if(defined( 'PAGBANK_WEBHOOK_SITE_URL' ) && PAGBANK_WEBHOOK_SITE_URL) {
+			return PAGBANK_WEBHOOK_SITE_URL . '/wc-api/pagbank_woocommerce_handler';
+		}
 
-		return rtrim( $site_url, '/' ) . '/wc-api/pagbank_woocommerce_handler';
+		return WooCommerce::instance()->api_request_url( 'pagbank_woocommerce_handler' );
 	}
 
 	/**
