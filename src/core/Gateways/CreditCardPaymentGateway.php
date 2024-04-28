@@ -21,6 +21,7 @@ use WC_Payment_Gateway_CC;
 use WC_Payment_Tokens;
 use WC_Subscriptions_Cart;
 use WC_Subscriptions_Manager;
+use WooCommerce;
 
 use function PagBank_WooCommerce\Presentation\format_money;
 use function PagBank_WooCommerce\Presentation\format_money_cents;
@@ -731,6 +732,15 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 */
 	public function cart_contains_subscription() {
 		return class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription();
+	}
+
+	/**
+	 * Get API installments URL.
+	 *
+	 * @return string API installments URL.
+	 */
+	public function get_api_installments_url() {
+		return WooCommerce::instance()->api_request_url( $this->id . '_installments' );
 	}
 
 	/**

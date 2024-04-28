@@ -153,3 +153,5 @@ Siga os passos abaixo para conectar o plugin à sua conta PagBank:
 
 = 1.1.1 - 2024-28-04 =
 * Corrigido URL de webhook inválida para instalações que utilizam o WordPress em subpastas.
+* Adicionado suporte a novas versão do WordPress
+* Corrigido URL de API de parcelamento.

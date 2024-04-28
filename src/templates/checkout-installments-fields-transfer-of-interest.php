@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			class="select"
 			data-amount="<?php echo esc_attr(WC()->cart->get_totals()['total']); ?>"
 			data-nonce="<?php echo esc_attr(wp_create_nonce('pagbank_get_installments'));  ?>"
-			data-url="<?php echo esc_attr('/wc-api/' . $gateway->id . '_installments'); ?>"
+			data-url="<?php echo esc_attr($gateway->get_api_installments_url()); ?>"
 			disabled="disabled"
 		></select>
 	</span>
