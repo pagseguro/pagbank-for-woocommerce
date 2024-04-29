@@ -2,9 +2,9 @@
 Contributors: eliasjnior
 Tags: woocommerce, pagseguro, pagbank, payments, ecommerce, e-commerce, store, sales, sell, shop, shopping, cart, checkout
 Requires at least: 5.4
-Tested up to: 6.3
+Tested up to: 6.4
 Requires PHP: 7.2
-Stable tag: 1.0.6
+Stable tag: 1.1.0
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -15,6 +15,8 @@ Aceite pagamentos via cartão de crédito, boleto e Pix no checkout do WooCommer
 O PagBank é uma empresa do grupo UOL.
 
 Ele é pioneiro e líder no mercado brasileiro de meios de pagamento online, e possui um portfólio completo para o seu negócio.
+
+[Clique aqui](https://pagseguro.uol.com.br/campanhas/contato/?parceiro=woocommerce) para entrar em contato com o nosso time comercial para mais informações e negociações.
 
 = Recursos =
 
@@ -51,7 +53,7 @@ Principais Recursos:
 * Reembolso online total ou parcial
 * Consolidação de status (cancelamento e confirmação de pagamento automática)
 
-**Atenção:** Para o funcionamento do PIX corretamente é necessário que você tenha uma chave Pix cadastrada na sua conta PagBank. Quer saber como cadastrar a chave PIX? [Consulte nosso artigo: Como fazer um cadastro de Chave Pix no PagBank?](https://faq.pagseguro.uol.com.br/duvida/como-fazer-um-cadastro-de-chave-pix-no-pagbank/1089#rmcl).
+**Atenção:** Para o funcionamento do PIX corretamente é necessário que você tenha uma chave Pix cadastrada na sua conta PagBank. Quer saber como cadastrar a chave PIX? [Consulte nosso artigo: Como fazer um cadastro de Chave Pix no PagBank?](https://faq.pagbank.com.br/duvida/como-cadastrar-uma-chave-pix-no-pagbank/1089).
 
 = Boleto Bancário =
 
@@ -139,3 +141,12 @@ Siga os passos abaixo para conectar o plugin à sua conta PagBank:
 = 1.0.6 - 2023-12-04 =
 * Ajustes para aprovação do plugin pelo time do WordPress.
 * Corrigido erro na geração do Pix.
+
+= 1.0.7 - 2024-23-01 =
+* Ajustado warnings em modo de depuração do WordPress.
+* Alterado título do método de pagamento dentro da visualização do pedido no dashboard.
+* Adicionado mensagens de validação na configuração dos métodos de pagamento.
+
+= 1.1.0 - 2024-24-02 =
+* Corrigido processamento de webhooks.
+* Adicionado suporte para novas versões do WooCommerce e WordPress.

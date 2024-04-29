@@ -98,9 +98,6 @@ function get_order_customer_api_data( WC_Order $order ) {
 		'name'   => $order->get_formatted_billing_full_name(),
 		'email'  => $order->get_billing_email(),
 		'tax_id' => get_order_tax_id_api_data( $order ),
-		'phones' => array(
-			get_phone_number_api_data( $order->get_billing_phone() ),
-		),
 	);
 }
 

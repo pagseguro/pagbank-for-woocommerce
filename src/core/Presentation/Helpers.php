@@ -76,40 +76,52 @@ function decode_text( string $text ) {
 	return base64_decode( $text );
 }
 
+/**
+ * Sanitize checkout field.
+ *
+ * @param string $html The HTML content.
+ *
+ * @return string Sanitized HTML content.
+ */
 function sanitize_checkout_field( string $html ) {
 	return wp_kses(
 		html_entity_decode( $html ?? '' ),
 		array(
 			'fieldset' => array(
-				"id" => array(),
-				"class" => array(),
+				'id'    => array(),
+				'class' => array(),
 			),
-			'span'   => array(
-				"id" => array(),
+			'span'     => array(
+				'id' => array(),
 			),
-			'p'      => array(
-				"class" => array(),
+			'p'        => array(
+				'class' => array(),
 			),
-			'input'  => array(
-				"id" => array(),
-				"name" => array(),
-				"class" => array(),
-				"autocomplete" => array(),
-				"autocorrect" => array(),
-				"autocapitalize" => array(),
-				"spellcheck" => array(),
-				"type" => array(),
-				"name" => array(),
-				"style" => array(),
+			'input'    => array(
+				'id'             => array(),
+				'name'           => array(),
+				'class'          => array(),
+				'autocomplete'   => array(),
+				'autocorrect'    => array(),
+				'autocapitalize' => array(),
+				'spellcheck'     => array(),
+				'type'           => array(),
+				'name'           => array(),
+				'style'          => array(),
 			),
-			'label'  => array(
-				"for" => array(),
+			'label'    => array(
+				'for' => array(),
 			),
-			'span'   => array(),
+			'span'     => array(),
 		)
 	);
 }
 
+/**
+ * Check if WooCommerce is activated.
+ *
+ * @return bool If WooCommerce is activated.
+ */
 function is_woocommerce_activated() {
 	return class_exists( 'WooCommerce' ) || in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true );
 }

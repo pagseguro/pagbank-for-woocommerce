@@ -1,15 +1,15 @@
-# Copyright (C) 2023 PagBank
+# Copyright (C) 2024 PagBank
 # This file is distributed under the GPL-2.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: PagBank for WooCommerce 1.0.6\n"
+"Project-Id-Version: PagBank for WooCommerce 1.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/pagbank-for-woocommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-12-04T16:56:20+00:00\n"
+"POT-Creation-Date: 2024-01-23T21:25:39+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: pagbank-for-woocommerce\n"
@@ -36,17 +36,17 @@ msgstr ""
 msgid "https://pagseguro.uol.com.br/"
 msgstr ""
 
-#: src/core/Gateways/BoletoPaymentGateway.php:64
+#: src/core/Gateways/BoletoPaymentGateway.php:62
 msgid "PagBank Boleto"
 msgstr ""
 
-#: src/core/Gateways/BoletoPaymentGateway.php:65
+#: src/core/Gateways/BoletoPaymentGateway.php:63
 msgid "Aceite pagamentos via Boleto através do PagBank."
 msgstr ""
 
 #: src/core/Gateways/BoletoPaymentGateway.php:93
-#: src/core/Gateways/CreditCardPaymentGateway.php:144
-#: src/core/Gateways/PixPaymentGateway.php:90
+#: src/core/Gateways/CreditCardPaymentGateway.php:148
+#: src/core/Gateways/PixPaymentGateway.php:92
 msgid "Habilitar/Desabilitar"
 msgstr ""
 
@@ -55,50 +55,50 @@ msgid "Habilitar boleto"
 msgstr ""
 
 #: src/core/Gateways/BoletoPaymentGateway.php:99
-#: src/core/Gateways/CreditCardPaymentGateway.php:150
-#: src/core/Gateways/PixPaymentGateway.php:96
+#: src/core/Gateways/CreditCardPaymentGateway.php:154
+#: src/core/Gateways/PixPaymentGateway.php:98
 msgid "Ambiente"
 msgstr ""
 
 #: src/core/Gateways/BoletoPaymentGateway.php:101
-#: src/core/Gateways/CreditCardPaymentGateway.php:152
-#: src/core/Gateways/PixPaymentGateway.php:98
+#: src/core/Gateways/CreditCardPaymentGateway.php:156
+#: src/core/Gateways/PixPaymentGateway.php:100
 msgid "Isso irá definir o ambiente de testes ou produção."
 msgstr ""
 
 #: src/core/Gateways/BoletoPaymentGateway.php:104
-#: src/core/Gateways/CreditCardPaymentGateway.php:155
-#: src/core/Gateways/PixPaymentGateway.php:101
+#: src/core/Gateways/CreditCardPaymentGateway.php:159
+#: src/core/Gateways/PixPaymentGateway.php:103
 msgid "Ambiente de testes"
 msgstr ""
 
 #: src/core/Gateways/BoletoPaymentGateway.php:105
-#: src/core/Gateways/CreditCardPaymentGateway.php:156
-#: src/core/Gateways/PixPaymentGateway.php:102
+#: src/core/Gateways/CreditCardPaymentGateway.php:160
+#: src/core/Gateways/PixPaymentGateway.php:104
 msgid "Produção"
 msgstr ""
 
 #: src/core/Gateways/BoletoPaymentGateway.php:110
-#: src/core/Gateways/CreditCardPaymentGateway.php:161
-#: src/core/Gateways/PixPaymentGateway.php:107
+#: src/core/Gateways/CreditCardPaymentGateway.php:165
+#: src/core/Gateways/PixPaymentGateway.php:109
 msgid "Conta PagBank"
 msgstr ""
 
 #: src/core/Gateways/BoletoPaymentGateway.php:112
-#: src/core/Gateways/CreditCardPaymentGateway.php:163
-#: src/core/Gateways/PixPaymentGateway.php:109
+#: src/core/Gateways/CreditCardPaymentGateway.php:167
+#: src/core/Gateways/PixPaymentGateway.php:111
 msgid "Conecte a sua conta PagBank para aceitar pagamentos."
 msgstr ""
 
 #: src/core/Gateways/BoletoPaymentGateway.php:115
-#: src/core/Gateways/CreditCardPaymentGateway.php:166
-#: src/core/Gateways/PixPaymentGateway.php:112
+#: src/core/Gateways/CreditCardPaymentGateway.php:170
+#: src/core/Gateways/PixPaymentGateway.php:114
 msgid "Título"
 msgstr ""
 
 #: src/core/Gateways/BoletoPaymentGateway.php:117
-#: src/core/Gateways/CreditCardPaymentGateway.php:168
-#: src/core/Gateways/PixPaymentGateway.php:114
+#: src/core/Gateways/CreditCardPaymentGateway.php:172
+#: src/core/Gateways/PixPaymentGateway.php:116
 msgid "Isso irá controlar o título que o cliente verá durante o checkout."
 msgstr ""
 
@@ -107,14 +107,14 @@ msgid "Boleto"
 msgstr ""
 
 #: src/core/Gateways/BoletoPaymentGateway.php:122
-#: src/core/Gateways/CreditCardPaymentGateway.php:173
-#: src/core/Gateways/PixPaymentGateway.php:119
+#: src/core/Gateways/CreditCardPaymentGateway.php:177
+#: src/core/Gateways/PixPaymentGateway.php:121
 msgid "Descrição"
 msgstr ""
 
 #: src/core/Gateways/BoletoPaymentGateway.php:124
-#: src/core/Gateways/CreditCardPaymentGateway.php:175
-#: src/core/Gateways/PixPaymentGateway.php:121
+#: src/core/Gateways/CreditCardPaymentGateway.php:179
+#: src/core/Gateways/PixPaymentGateway.php:123
 msgid "Isso irá controlar a descrição que o cliente verá durante o checkout."
 msgstr ""
 
@@ -131,253 +131,277 @@ msgid "Isso irá controlar quantos dias após gerar o boleto ele irá vencer."
 msgstr ""
 
 #: src/core/Gateways/BoletoPaymentGateway.php:139
-#: src/core/Gateways/CreditCardPaymentGateway.php:255
-#: src/core/Gateways/PixPaymentGateway.php:136
+#: src/core/Gateways/CreditCardPaymentGateway.php:259
+#: src/core/Gateways/PixPaymentGateway.php:138
 msgid "Logs para depuração"
 msgstr ""
 
 #: src/core/Gateways/BoletoPaymentGateway.php:141
-#: src/core/Gateways/CreditCardPaymentGateway.php:257
-#: src/core/Gateways/PixPaymentGateway.php:138
+#: src/core/Gateways/CreditCardPaymentGateway.php:261
+#: src/core/Gateways/PixPaymentGateway.php:140
 msgid "Ativar logs"
 msgstr ""
 
 #: src/core/Gateways/BoletoPaymentGateway.php:142
-#: src/core/Gateways/CreditCardPaymentGateway.php:258
-#: src/core/Gateways/PixPaymentGateway.php:139
+#: src/core/Gateways/CreditCardPaymentGateway.php:262
+#: src/core/Gateways/PixPaymentGateway.php:141
 msgid "Isso irá ativar os logs para depuração para auxiliar em caso de suporte."
 msgstr ""
 
-#: src/core/Gateways/BoletoPaymentGateway.php:171
+#: src/core/Gateways/BoletoPaymentGateway.php:188
 msgid "Waiting Boleto payment."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:99
+#: src/core/Gateways/BoletoPaymentGateway.php:319
+#: src/core/Gateways/CreditCardPaymentGateway.php:1023
+#: src/core/Gateways/PixPaymentGateway.php:313
+msgid "- O método de pagamento está desabilitado."
+msgstr ""
+
+#: src/core/Gateways/BoletoPaymentGateway.php:323
+#: src/core/Gateways/CreditCardPaymentGateway.php:1027
+#: src/core/Gateways/PixPaymentGateway.php:317
+msgid "- A sua conta PagBank não está conectada."
+msgstr ""
+
+#: src/core/Gateways/BoletoPaymentGateway.php:327
+#: src/core/Gateways/CreditCardPaymentGateway.php:1031
+#: src/core/Gateways/PixPaymentGateway.php:321
+msgid "- A moeda da loja não é BRL."
+msgstr ""
+
+#: src/core/Gateways/BoletoPaymentGateway.php:331
+#: src/core/Gateways/CreditCardPaymentGateway.php:1035
+#: src/core/Gateways/PixPaymentGateway.php:325
+msgid "Alguns errors podem estar impedindo o método de pagamento de ser exibido durante o checkout:"
+msgstr ""
+
+#: src/core/Gateways/CreditCardPaymentGateway.php:101
 msgid "PagBank Cartão de Crédito"
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:100
+#: src/core/Gateways/CreditCardPaymentGateway.php:102
 msgid "Aceite pagamentos via cartão de crédito através do PagBank."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:146
+#: src/core/Gateways/CreditCardPaymentGateway.php:150
 msgid "Habilitar cartão de crédito"
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:169
+#: src/core/Gateways/CreditCardPaymentGateway.php:173
 #: src/core/Presentation/Hooks.php:94
 #: src/core/Presentation/Hooks.php:113
 msgid "Cartão de crédito"
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:176
+#: src/core/Gateways/CreditCardPaymentGateway.php:180
 msgid "Escolha um cartão de crédito salvo ou preencha os dados do seu cartão de crédito no formulário abaixo:"
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:180
-#: src/core/Gateways/CreditCardPaymentGateway.php:930
+#: src/core/Gateways/CreditCardPaymentGateway.php:184
+#: src/core/Gateways/CreditCardPaymentGateway.php:950
 msgid "Parcelamento"
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:182
+#: src/core/Gateways/CreditCardPaymentGateway.php:186
 msgid "Ativar parcelamento"
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:183
+#: src/core/Gateways/CreditCardPaymentGateway.php:187
 msgid "Isso irá habilitar o parcelamento durante o checkout."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:197
+#: src/core/Gateways/CreditCardPaymentGateway.php:201
 msgid "Máximo de parcelas"
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:199
+#: src/core/Gateways/CreditCardPaymentGateway.php:203
 msgid "Isso irá definir o número máximo de parcelas durante o checkout."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:218
+#: src/core/Gateways/CreditCardPaymentGateway.php:222
 msgid "Repasse de juros"
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:220
+#: src/core/Gateways/CreditCardPaymentGateway.php:224
 msgid "Ativar repasse de juros"
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:221
+#: src/core/Gateways/CreditCardPaymentGateway.php:225
 msgid "Isso irá ativar o repasse de juros durante o checkout. Por padrão as parcelas serão sem juros. Isso irá liberar a opção de definir a quantidade de parcelas sem juros."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:234
+#: src/core/Gateways/CreditCardPaymentGateway.php:238
 msgid "Máximo de parcelas sem juros"
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:236
+#: src/core/Gateways/CreditCardPaymentGateway.php:240
 msgid "Isso irá definir a quantidade de parcelas que serão sem juros."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:298
+#: src/core/Gateways/CreditCardPaymentGateway.php:319
 msgid "Campos não encontrado."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:299
+#: src/core/Gateways/CreditCardPaymentGateway.php:320
 msgid "Chave pública inválida."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:300
+#: src/core/Gateways/CreditCardPaymentGateway.php:321
 msgid "Nome do titular do cartão inválido."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:301
+#: src/core/Gateways/CreditCardPaymentGateway.php:322
 msgid "Número do cartão inválido."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:302
+#: src/core/Gateways/CreditCardPaymentGateway.php:323
 msgid "Data de expiração do cartão inválida."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:303
+#: src/core/Gateways/CreditCardPaymentGateway.php:324
 msgid "Código de segurança do cartão inválido."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:304
+#: src/core/Gateways/CreditCardPaymentGateway.php:325
 msgid "O cartão de crédito criptografado não foi encontrado."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:305
+#: src/core/Gateways/CreditCardPaymentGateway.php:326
 msgid "O bin do cartão de crédito não foi encontrado."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:335
+#: src/core/Gateways/CreditCardPaymentGateway.php:356
 msgid "Nonce inválido."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:345
+#: src/core/Gateways/CreditCardPaymentGateway.php:366
 msgid "O parcelamento não está ativado."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:355
+#: src/core/Gateways/CreditCardPaymentGateway.php:376
 msgid "O repasse de juros não está ativado."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:365
+#: src/core/Gateways/CreditCardPaymentGateway.php:386
 msgid "O \"card_bin\" ou \"payment_token\" é obrigatório."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:373
+#: src/core/Gateways/CreditCardPaymentGateway.php:394
 msgid "Você não pode enviar o \"card_bin\" e o \"payment_token\" ao mesmo tempo."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:392
+#: src/core/Gateways/CreditCardPaymentGateway.php:413
 msgid "Token de pagamento inválido."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:403
+#: src/core/Gateways/CreditCardPaymentGateway.php:424
 msgid "Ops, houve um erro com o token de pagamento."
 msgstr ""
 
 #. translators: 1: installments, 2: installment value.
-#: src/core/Gateways/CreditCardPaymentGateway.php:437
+#: src/core/Gateways/CreditCardPaymentGateway.php:458
 #: src/core/Presentation/ApiHelpers.php:532
 msgid "%1$dx de %2$s sem juros"
 msgstr ""
 
 #. translators: 1: installments, 2: installment value, 3: installment total.
-#: src/core/Gateways/CreditCardPaymentGateway.php:439
+#: src/core/Gateways/CreditCardPaymentGateway.php:460
 msgid "%1$dx de %2$s com juros (%3$s)"
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:498
-#: src/core/Gateways/CreditCardPaymentGateway.php:611
+#: src/core/Gateways/CreditCardPaymentGateway.php:519
+#: src/core/Gateways/CreditCardPaymentGateway.php:631
 msgid "Você só pode adicionar um cartão de crédito durante o checkout."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:524
+#: src/core/Gateways/CreditCardPaymentGateway.php:545
 msgid "Código de segurança"
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:525
+#: src/core/Gateways/CreditCardPaymentGateway.php:546
 msgid "CVC"
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:530
+#: src/core/Gateways/CreditCardPaymentGateway.php:551
 msgid "Titular do cartão"
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:534
+#: src/core/Gateways/CreditCardPaymentGateway.php:555
 msgid "Número do cartão"
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:538
+#: src/core/Gateways/CreditCardPaymentGateway.php:559
 msgid "Data de validade (MM/YY)"
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:539
+#: src/core/Gateways/CreditCardPaymentGateway.php:560
 msgid "MM / YY"
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:628
+#: src/core/Gateways/CreditCardPaymentGateway.php:648
 msgid "O código de segurança do cartão é necessário para assinaturas."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:638
+#: src/core/Gateways/CreditCardPaymentGateway.php:658
 msgid "O titular do cartão de crédito é obrigatório."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:645
+#: src/core/Gateways/CreditCardPaymentGateway.php:665
 msgid "O cartão de crédito criptografado não foi identificado. Por favor, contate o suporte."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:652
+#: src/core/Gateways/CreditCardPaymentGateway.php:672
 msgid "O bin do cartão de crédito não foi identificado. Por favor, contate o suporte."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:660
+#: src/core/Gateways/CreditCardPaymentGateway.php:680
 msgid "Bin do cartão de crédito inválido. Por favor, contate o suporte."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:671
-#: src/core/Gateways/CreditCardPaymentGateway.php:758
+#: src/core/Gateways/CreditCardPaymentGateway.php:691
+#: src/core/Gateways/CreditCardPaymentGateway.php:778
 msgid "O token de pagamento é inválido."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:681
+#: src/core/Gateways/CreditCardPaymentGateway.php:701
 msgid "É necessário selecionar a quantidade de parcelas."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:688
+#: src/core/Gateways/CreditCardPaymentGateway.php:708
 msgid "A quantidade de parcelas é inválida."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:769
+#: src/core/Gateways/CreditCardPaymentGateway.php:789
 msgid "Erro ao obter o plano de parcelamento."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:785
+#: src/core/Gateways/CreditCardPaymentGateway.php:805
 msgid "O plano de parcelamento não foi encontrado."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:819
+#: src/core/Gateways/CreditCardPaymentGateway.php:839
 msgid "Houve um erro durante o pagamento. Tente novamente."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:829
+#: src/core/Gateways/CreditCardPaymentGateway.php:849
 msgid "Houve um erro durante o reembolso da cobrança inicial. Contate o administrador."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:835
-#: src/core/Gateways/CreditCardPaymentGateway.php:1024
+#: src/core/Gateways/CreditCardPaymentGateway.php:855
+#: src/core/Gateways/CreditCardPaymentGateway.php:1095
 #: src/core/Presentation/WebhookHandler.php:155
 msgid "O PagBank está analisando a transação."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:837
-#: src/core/Gateways/CreditCardPaymentGateway.php:1026
+#: src/core/Gateways/CreditCardPaymentGateway.php:857
+#: src/core/Gateways/CreditCardPaymentGateway.php:1097
 #: src/core/Presentation/WebhookHandler.php:157
 msgid "O pagamento foi recusado."
 msgstr ""
 
-#: src/core/Gateways/CreditCardPaymentGateway.php:840
-#: src/core/Gateways/CreditCardPaymentGateway.php:1029
+#: src/core/Gateways/CreditCardPaymentGateway.php:860
+#: src/core/Gateways/CreditCardPaymentGateway.php:1100
 msgid "Houve um erro no pagamento. Por favor, entre em contato com o suporte."
 msgstr ""
 
@@ -389,31 +413,31 @@ msgstr ""
 msgid "Aceite pagamentos via Pix através do PagBank."
 msgstr ""
 
-#: src/core/Gateways/PixPaymentGateway.php:92
+#: src/core/Gateways/PixPaymentGateway.php:94
 msgid "Habilitar Pix"
 msgstr ""
 
-#: src/core/Gateways/PixPaymentGateway.php:115
+#: src/core/Gateways/PixPaymentGateway.php:117
 msgid "Pix"
 msgstr ""
 
-#: src/core/Gateways/PixPaymentGateway.php:122
+#: src/core/Gateways/PixPaymentGateway.php:124
 msgid "O código Pix será gerado assim que você finalizar o pedido."
 msgstr ""
 
-#: src/core/Gateways/PixPaymentGateway.php:126
+#: src/core/Gateways/PixPaymentGateway.php:128
 msgid "Expiração em minutos"
 msgstr ""
 
-#: src/core/Gateways/PixPaymentGateway.php:128
+#: src/core/Gateways/PixPaymentGateway.php:130
 msgid "Isso irá controlar o tempo em minutos que o Pix será válido."
 msgstr ""
 
-#: src/core/Gateways/PixPaymentGateway.php:163
+#: src/core/Gateways/PixPaymentGateway.php:182
 msgid "Houve um erro ao processar o pagamento."
 msgstr ""
 
-#: src/core/Gateways/PixPaymentGateway.php:168
+#: src/core/Gateways/PixPaymentGateway.php:187
 msgid "Aguardando pagamento do Pix."
 msgstr ""
 

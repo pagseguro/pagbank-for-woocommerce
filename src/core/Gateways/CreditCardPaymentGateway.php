@@ -134,6 +134,8 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		add_action( 'woocommerce_api_' . $this->id . '_installments', array( $this, 'get_installments' ) );
 		add_action( 'woocommerce_scheduled_subscription_payment_' . $this->id, array( $this, 'scheduled_subscription_payment' ), 10, 2 );
 		add_filter( 'woocommerce_get_customer_payment_tokens', array( $this, 'filter_customer_tokens' ), 10, 3 );
+
+		$this->is_available_validation();
 	}
 
 	/**
@@ -261,6 +263,23 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				'desc_tip'    => true,
 			),
 		);
+	}
+
+	/**
+	 * Get payment method title.
+	 *
+	 * @return string The title.
+	 */
+	public function get_title() {
+		if ( is_admin() ) {
+			$screen = get_current_screen();
+
+			if ( $screen->id === 'woocommerce_page_wc-orders' ) {
+				return $this->method_title;
+			}
+		}
+
+		return apply_filters( 'woocommerce_gateway_title', $this->title, $this->id );
 	}
 
 	/**
@@ -554,7 +573,8 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			<?php do_action( 'woocommerce_credit_card_form_start', $this->id ); ?>
 			<?php
 			foreach ( $fields as $field ) {
-				echo sanitize_checkout_field($field);
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- XSS ok.
+				echo sanitize_checkout_field( $field );
 			}
 			?>
 			<?php do_action( 'woocommerce_credit_card_form_end', $this->id ); ?>
@@ -849,6 +869,23 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 			$order->payment_complete();
 
+			$charge_id = $charge['id'];
+
+			if( $this->environment === 'production' ) {
+				$order->add_order_note(
+					sprintf(
+						/* translators: 1: charge ID, 2: payment method, 3: installments, 4: card brand, 5: card last 4 digits. */
+						__( '<ul><li><b>Cobrança:</b> %1$s.</li><li><b>Parcelas:</b> %2$d.</li><li><b>Bandeira do cartão:</b> %3$s.</li><li><b>Últimos 4 dígitos do cartão:</b> %4$s.</li><li><a href="%5$s" target="_blank" rel="noreferrer">Visualizar pagamento no PagBank</a></li>', 'pagbank-for-woocommerce' ),
+						$charge['id'],
+						$charge['payment_method']['installments'],
+						$charge['payment_method']['card']['brand'],
+						$charge['payment_method']['card']['last_digits'],
+						str_replace( "CHAR_", "", "https://minhaconta.pagseguro.uol.com.br/transacao/detalhes/$charge_id" ),
+					),
+					false,
+				);
+			}
+
 			return array(
 				'result'   => 'success',
 				'redirect' => $this->get_return_url( $order ),
@@ -985,6 +1022,58 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Add errors in case of some validation error that will appear during the checkout.
+	 *
+	 * @return void
+	 */
+	public function is_available_validation() {
+		$is_enabled            = ( 'yes' === $this->enabled );
+		$is_connected          = ! ! $this->connect->get_data();
+		$is_brazilian_currency = get_woocommerce_currency() === 'BRL';
+
+		$errors = array();
+
+		if ( ! $is_enabled ) {
+			$errors[] = __( '- O método de pagamento está desabilitado.', 'pagbank-for-woocommerce' );
+		}
+
+		if ( ! $is_connected ) {
+			$errors[] = __( '- A sua conta PagBank não está conectada.', 'pagbank-for-woocommerce' );
+		}
+
+		if ( ! $is_brazilian_currency ) {
+			$errors[] = __( '- A moeda da loja não é BRL.', 'pagbank-for-woocommerce' );
+		}
+
+		if ( $errors ) {
+			array_unshift( $errors, __( 'Alguns errors podem estar impedindo o método de pagamento de ser exibido durante o checkout:', 'pagbank-for-woocommerce' ) );
+
+			$this->add_error( implode( '<br />', $errors ) );
+		}
+	}
+
+	/**
+	 * Generate HTML settings HTML with errors.
+	 *
+	 * @param array $form_fields The form fields to display.
+	 * @param bool  $echo Should echo or return.
+	 *
+	 * @return string If $echo = false, return the HTML content.
+	 */
+	public function generate_settings_html( $form_fields = array(), $echo = true ) {
+		ob_start();
+		$this->display_errors();
+		$html = ob_get_clean();
+
+		if ( $echo ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- XSS ok.
+			echo $html . parent::generate_settings_html( $form_fields, $echo );
+		} else {
+			return $html . parent::generate_settings_html( $form_fields, $echo );
+		}
 	}
 
 	/**

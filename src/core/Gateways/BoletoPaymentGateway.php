@@ -54,8 +54,6 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 	 */
 	private $logs_enabled;
 
-
-
 	/**
 	 * BoletoPaymentGateway constructor.
 	 */
@@ -82,6 +80,8 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 		add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'thankyou_page' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
+
+		$this->is_available_validation();
 	}
 
 	/**
@@ -144,6 +144,23 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 				'desc_tip'    => true,
 			),
 		);
+	}
+
+	/**
+	 * Get payment method title.
+	 *
+	 * @return string The title.
+	 */
+	public function get_title() {
+		if ( is_admin() ) {
+			$screen = get_current_screen();
+
+			if ( $screen->id === 'woocommerce_page_wc-orders' ) {
+				return $this->method_title;
+			}
+		}
+
+		return apply_filters( 'woocommerce_gateway_title', $this->title, $this->id );
 	}
 
 	/**
@@ -265,7 +282,8 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 	 * @return bool
 	 */
 	public function is_available() {
-		$is_available = ( 'yes' === $this->enabled );
+		$is_enabled   = ( 'yes' === $this->enabled );
+		$is_available = $is_enabled;
 
 		if ( ! $is_available ) {
 			return false;
@@ -286,6 +304,58 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 	}
 
 	/**
+	 * Add errors in case of some validation error that will appear during the checkout.
+	 *
+	 * @return void
+	 */
+	public function is_available_validation() {
+		$is_enabled            = ( 'yes' === $this->enabled );
+		$is_connected          = ! ! $this->connect->get_data();
+		$is_brazilian_currency = get_woocommerce_currency() === 'BRL';
+
+		$errors = array();
+
+		if ( ! $is_enabled ) {
+			$errors[] = __( '- O método de pagamento está desabilitado.', 'pagbank-for-woocommerce' );
+		}
+
+		if ( ! $is_connected ) {
+			$errors[] = __( '- A sua conta PagBank não está conectada.', 'pagbank-for-woocommerce' );
+		}
+
+		if ( ! $is_brazilian_currency ) {
+			$errors[] = __( '- A moeda da loja não é BRL.', 'pagbank-for-woocommerce' );
+		}
+
+		if ( $errors ) {
+			array_unshift( $errors, __( 'Alguns errors podem estar impedindo o método de pagamento de ser exibido durante o checkout:', 'pagbank-for-woocommerce' ) );
+
+			$this->add_error( implode( '<br />', $errors ) );
+		}
+	}
+
+	/**
+	 * Generate HTML settings HTML with errors.
+	 *
+	 * @param array $form_fields The form fields to display.
+	 * @param bool  $echo Should echo or return.
+	 *
+	 * @return string If $echo = false, return the HTML content.
+	 */
+	public function generate_settings_html( $form_fields = array(), $echo = true ) {
+		ob_start();
+		$this->display_errors();
+		$html = ob_get_clean();
+
+		if ( $echo ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- XSS ok.
+			echo $html . parent::generate_settings_html( $form_fields, $echo );
+		} else {
+			return $html . parent::generate_settings_html( $form_fields, $echo );
+		}
+	}
+
+	/**
 	 * Enqueue scripts.
 	 */
 	public function enqueue_styles() {
@@ -297,7 +367,7 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 
 		$order_id                  = get_query_var( 'order-received' );
 		$order                     = wc_get_order( $order_id );
-		$payment_method            = $order->get_meta( '_payment_method' );
+		$payment_method            = $order->get_payment_method();
 		$is_order_paid_with_boleto = $this->id === $payment_method;
 
 		if ( ! $is_order_paid_with_boleto ) {
