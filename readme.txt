@@ -1,10 +1,10 @@
 === PagBank for WooCommerce ===
 Contributors: eliasjnior
-Tags: woocommerce, pagseguro, pagbank, payments, ecommerce, e-commerce, store, sales, sell, shop, shopping, cart, checkout
+Tags: woocommerce, pagseguro, pagbank, pagamento, brasil
 Requires at least: 5.4
-Tested up to: 6.4
+Tested up to: 6.5
 Requires PHP: 7.2
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -150,3 +150,8 @@ Siga os passos abaixo para conectar o plugin à sua conta PagBank:
 = 1.1.0 - 2024-24-02 =
 * Corrigido processamento de webhooks.
 * Adicionado suporte para novas versões do WooCommerce e WordPress.
+
+= 1.1.1 - 2024-28-04 =
+* Corrigido URL de webhook inválida para instalações que utilizam o WordPress em subpastas.
+* Adicionado suporte a novas versão do WordPress
+* Corrigido URL de API de parcelamento.

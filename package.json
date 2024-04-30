@@ -1,6 +1,6 @@
 {
   "name": "pagbank-for-woocommerce",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "Elias Júnior <me@eliasjr.dev>",
   "license": "MIT",
   "type": "module",
@@ -10,7 +10,7 @@
     "build": "tsc && vite build",
     "postbuild": "composer install",
     "dev": "composer install && tsc && vite build --watch",
-    "lint": "concurrently \"bun lint:core\" \"bun lint:ui\"",
+    "lint": "concurrently \"pnpm lint:core\" \"pnpm lint:ui\"",
     "lint:core": "./vendor/bin/phpcs",
     "lint:ui": "eslint --ext .ts,.tsx,.js,.jsx src/ vite.config.ts plugins",
     "boot": "docker compose up",
