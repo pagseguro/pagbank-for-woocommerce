@@ -2,9 +2,9 @@
 **Contributors:** [eliasjnior](https://profiles.wordpress.org/eliasjnior/)  
 **Tags:** woocommerce, pagseguro, pagbank, pagamento, brasil  
 **Requires at least:** 5.4  
-**Tested up to:** 6.4  
+**Tested up to:** 6.5  
 **Requires PHP:** 7.2  
-**Stable tag:** 1.1.1  
+**Stable tag:** 1.1.2  
 **License:** GPLv2  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -163,3 +163,8 @@ Siga os passos abaixo para conectar o plugin à sua conta PagBank:
 
 ### 1.1.1 - 2024-28-04 ###
 * Corrigido URL de webhook inválida para instalações que utilizam o WordPress em subpastas.
+* Adicionado suporte a novas versão do WordPress
+* Corrigido URL de API de parcelamento.
+
+### 1.1.2 - 2024-06-06 ###
+* Corrigido erro de validação para cartões American Express.
