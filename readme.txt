@@ -4,7 +4,7 @@ Tags: woocommerce, pagseguro, pagbank, pagamento, brasil
 Requires at least: 5.4
 Tested up to: 6.5
 Requires PHP: 7.2
-Stable tag: 1.1.2
+Stable tag: 1.2.0
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -158,3 +158,6 @@ Siga os passos abaixo para conectar o plugin à sua conta PagBank:
 
 = 1.1.2 - 2024-06-06 =
 * Corrigido erro de validação para cartões American Express.
+
+= 1.2.0 - 2024-06-10 =
+* Adicionado suporte para marketplace Dokan e WCFM.
