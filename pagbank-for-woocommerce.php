@@ -20,6 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
+use PagBank_WooCommerce\Marketplace\WcfmIntegration;
 use PagBank_WooCommerce\Presentation\ConnectAjaxApi;
 use PagBank_WooCommerce\Presentation\Hooks;
 use PagBank_WooCommerce\Presentation\PaymentGateways;
@@ -57,5 +58,6 @@ add_action(
 	Hooks::get_instance();
 	ConnectAjaxApi::get_instance();
 	WebhookHandler::get_instance();
+	WcfmIntegration::get_instance();
 
 } )();

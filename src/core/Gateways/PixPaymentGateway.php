@@ -16,6 +16,7 @@ use PagBank_WooCommerce\Presentation\Api;
 use PagBank_WooCommerce\Presentation\Connect;
 use WC_Order;
 use WC_Payment_Gateway;
+use WP_Error;
 
 use function PagBank_WooCommerce\Presentation\get_pix_payment_api_data;
 use function PagBank_WooCommerce\Presentation\process_order_refund;
@@ -175,7 +176,7 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 		try {
 			$order                 = wc_get_order( $order_id );
 			$expiration_in_minutes = $this->get_option( 'expiration_minutes' );
-			$data                  = get_pix_payment_api_data( $order, $expiration_in_minutes );
+			$data                  = get_pix_payment_api_data( $this, $order, $expiration_in_minutes );
 			$response              = $this->api->create_order( $data );
 
 			if ( is_wp_error( $response ) ) {
@@ -206,7 +207,18 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 	 * @param string $reason   Refund reason.
 	 */
 	public function process_refund( $order_id, $amount = null, $reason = '' ) {
-		return process_order_refund( $this->api, $order_id, $amount, $reason );
+		$order = wc_get_order( $order_id );
+		$should_process_order_refund = apply_filters( 'pagbank_should_process_order_refund', true, $order );
+
+		if( is_wp_error( $should_process_order_refund ) ) {
+			return $should_process_order_refund;
+		}
+
+		if( $should_process_order_refund === true ) {
+			return process_order_refund( $this->api, $order, $amount, $reason );
+		}
+
+		return new WP_Error( 'error', __( 'Houve um erro desconhecido ao tentar realizar o reembolso.', 'pagbank-for-woocommerce' ) );
 	}
 
 	/**

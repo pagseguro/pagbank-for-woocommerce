@@ -15,6 +15,9 @@ use Carbon\Carbon;
 use Exception;
 use libphonenumber\PhoneNumberType;
 use libphonenumber\PhoneNumberUtil;
+use PagBank_WooCommerce\Gateways\BoletoPaymentGateway;
+use PagBank_WooCommerce\Gateways\CreditCardPaymentGateway;
+use PagBank_WooCommerce\Gateways\PixPaymentGateway;
 use WC_Order;
 use WC_Payment_Tokens;
 use WP_Error;
@@ -204,7 +207,7 @@ function get_order_metadata_api_data( WC_Order $order, array $metadata = array()
  *
  * @return array
  */
-function get_pix_payment_api_data( WC_Order $order, int $expiration_in_minutes ) {
+function get_pix_payment_api_data( PixPaymentGateway $gateway, WC_Order $order, int $expiration_in_minutes ) {
 	$password = wp_generate_password( 30 );
 
 	$data = array(
@@ -228,7 +231,7 @@ function get_pix_payment_api_data( WC_Order $order, int $expiration_in_minutes )
 		'metadata'          => get_order_metadata_api_data( $order, array( 'password' => $password ) ),
 	);
 
-	return $data;
+	return apply_filters('pagbank_pix_payment_data', $data, $order, $gateway);
 }
 
 /**
@@ -253,7 +256,7 @@ function get_order_amount_api_data( WC_Order $order ) {
  *
  * @return array
  */
-function get_boleto_payment_api_data( WC_Order $order, int $expiration_in_days ) {
+function get_boleto_payment_api_data( BoletoPaymentGateway $gateway, WC_Order $order, int $expiration_in_days ) {
 	$password = wp_generate_password( 30 );
 
 	$data = array(
@@ -294,7 +297,7 @@ function get_boleto_payment_api_data( WC_Order $order, int $expiration_in_days )
 		'metadata'          => get_order_metadata_api_data( $order, array( 'password' => $password ) ),
 	);
 
-	return $data;
+	return apply_filters('pagbank_boleto_payment_data', $data, $order, $gateway);
 }
 
 /**
@@ -330,7 +333,7 @@ function get_order_reference_id_data( WC_Order $order, string $password ) {
  * @return array
  * @throws Exception Throws exception when card is not valid.
  */
-function get_credit_card_payment_data( WC_Order $order, string $payment_token = null, string $encrypted_card = null, string $card_holder = null, bool $save_card = false, string $cvv = null, bool $is_subscription = false, int $installments = 1, array $transfer_of_interest_fee = null ) {
+function get_credit_card_payment_data( CreditCardPaymentGateway $gateway, WC_Order $order, string $payment_token = null, string $encrypted_card = null, string $card_holder = null, bool $save_card = false, string $cvv = null, bool $is_subscription = false, int $installments = 1, array $transfer_of_interest_fee = null ) {
 	$password = wp_generate_password( 30 );
 
 	$data = array(
@@ -415,7 +418,7 @@ function get_credit_card_payment_data( WC_Order $order, string $payment_token = 
 		);
 	}
 
-	return $data;
+	return apply_filters('pagbank_credit_card_payment_data', $data, $order, $gateway);
 }
 
 /**
@@ -434,8 +437,8 @@ function get_credit_card_payment_data( WC_Order $order, string $payment_token = 
  * @return array
  * @throws Exception Throws exception when card is not valid.
  */
-function get_credit_card_payment_data_for_empty_value_subscription( WC_Order $order, string $payment_token = null, string $encrypted_card = null, string $card_holder = null, bool $save_card = false, string $cvv = null, bool $is_subscription = false, int $installments = 1, array $transfer_of_interest_fee = null ) {
-	$data = get_credit_card_payment_data( $order, $payment_token, $encrypted_card, $card_holder, $save_card, $cvv, $is_subscription, $installments, $transfer_of_interest_fee );
+function get_credit_card_payment_data_for_empty_value_subscription( CreditCardPaymentGateway $gateway, WC_Order $order, string $payment_token = null, string $encrypted_card = null, string $card_holder = null, bool $save_card = false, string $cvv = null, bool $is_subscription = false, int $installments = 1, array $transfer_of_interest_fee = null ) {
+	$data = get_credit_card_payment_data( $gateway, $order, $payment_token, $encrypted_card, $card_holder, $save_card, $cvv, $is_subscription, $installments, $transfer_of_interest_fee );
 
 	$data['items'] = array(
 		array(
@@ -501,7 +504,7 @@ function get_credit_card_renewal_payment_data( WC_Order $renewal_order, PaymentT
 		'metadata'          => get_order_metadata_api_data( $renewal_order, array( 'password' => $password ) ),
 	);
 
-	return $data;
+	return apply_filters('pagbank_credit_card_payment_data', $data, $renewal_order);
 }
 
 /**
@@ -595,14 +598,13 @@ function validate_order_id_signature( string $order_id, string $signature ) {
  *
  * @return bool|WP_Error
  */
-function process_order_refund( Api $api, $order_id, $amount = null, $reason = '' ) {
+function process_order_refund( Api $api, WC_Order $order, $amount = null, $reason = '' ) {
 	$amount = floatval( $amount );
 
 	if ( $amount <= 0 ) {
 		return new WP_Error( 'error', __( 'O valor para reembolso deve ser maior que zero', 'pagbank-for-woocommerce' ) );
 	}
 
-	$order             = wc_get_order( $order_id );
 	$pagbank_charge_id = $order->get_meta( '_pagbank_charge_id' );
 
 	try {

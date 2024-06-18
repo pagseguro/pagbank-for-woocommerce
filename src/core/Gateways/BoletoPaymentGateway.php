@@ -176,7 +176,7 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 		try {
 			$order              = wc_get_order( $order_id );
 			$expiration_in_days = $this->get_option( 'expiration_days' );
-			$data               = get_boleto_payment_api_data( $order, $expiration_in_days );
+			$data               = get_boleto_payment_api_data( $this, $order, $expiration_in_days );
 			$response           = $this->api->create_order( $data );
 
 			if ( is_wp_error( $response ) ) {
@@ -207,7 +207,18 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 	 * @param string $reason   Refund reason.
 	 */
 	public function process_refund( $order_id, $amount = null, $reason = '' ) {
-		return process_order_refund( $this->api, $order_id, $amount, $reason );
+		$order = wc_get_order( $order_id );
+		$should_process_order_refund = apply_filters( 'pagbank_should_process_order_refund', true, $order );
+
+		if( is_wp_error( $should_process_order_refund ) ) {
+			return $should_process_order_refund;
+		}
+
+		if( $should_process_order_refund === true ) {
+			return process_order_refund( $this->api, $order, $amount, $reason );
+		}
+
+		return new WP_Error( 'error', __( 'Houve um erro desconhecido ao tentar realizar o reembolso.', 'pagbank-for-woocommerce' ) );
 	}
 
 	/**

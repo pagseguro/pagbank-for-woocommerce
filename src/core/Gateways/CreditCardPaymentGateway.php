@@ -22,6 +22,7 @@ use WC_Payment_Tokens;
 use WC_Subscriptions_Cart;
 use WC_Subscriptions_Manager;
 use WooCommerce;
+use WP_Error;
 
 use function PagBank_WooCommerce\Presentation\format_money;
 use function PagBank_WooCommerce\Presentation\format_money_cents;
@@ -822,6 +823,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			$is_empty_order_with_subscription = $order_contains_subscription && format_money_cents( $order->get_total() ) === 0;
 
 			$data = $is_empty_order_with_subscription ? get_credit_card_payment_data_for_empty_value_subscription(
+				$this,
 				$order,
 				$payment_token,
 				$encrypted_card,
@@ -832,6 +834,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				$installments,
 				$transfer_of_interest_fee
 			) : get_credit_card_payment_data(
+				$this,
 				$order,
 				$payment_token,
 				$encrypted_card,
@@ -878,6 +881,10 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			$this->save_order_meta_data( $order, $response, $data, $card_payment_token );
 
 			$order->payment_complete();
+
+			if( $charge['status'] === 'PAID' ) {
+				do_action( 'pagbank_order_completed', $order );
+			}
 
 			$charge_id = $charge['id'];
 
@@ -994,7 +1001,18 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 * @param string $reason   Refund reason.
 	 */
 	public function process_refund( $order_id, $amount = null, $reason = '' ) {
-		return process_order_refund( $this->api, $order_id, $amount, $reason );
+		$order = wc_get_order( $order_id );
+		$should_process_order_refund = apply_filters( 'pagbank_should_process_order_refund', true, $order );
+
+		if( is_wp_error( $should_process_order_refund ) ) {
+			return $should_process_order_refund;
+		}
+
+		if( $should_process_order_refund === true ) {
+			return process_order_refund( $this->api, $order, $amount, $reason );
+		}
+
+		return new WP_Error( 'error', __( 'Houve um erro desconhecido ao tentar realizar o reembolso.', 'pagbank-for-woocommerce' ) );
 	}
 
 	/**
