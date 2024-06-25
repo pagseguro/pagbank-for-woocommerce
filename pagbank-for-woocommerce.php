@@ -22,12 +22,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use PagBank_WooCommerce\Marketplace\WcfmIntegration;
 use PagBank_WooCommerce\Presentation\ConnectAjaxApi;
+use PagBank_WooCommerce\Presentation\Helpers;
 use PagBank_WooCommerce\Presentation\Hooks;
 use PagBank_WooCommerce\Presentation\PaymentGateways;
 use PagBank_WooCommerce\Presentation\PaymentGatewaysFields;
 use PagBank_WooCommerce\Presentation\WebhookHandler;
-
-use function PagBank_WooCommerce\Presentation\is_woocommerce_activated;
 
 define( 'PAGBANK_WOOCOMMERCE_FILE_PATH', __FILE__ );
 define( 'PAGBANK_WOOCOMMERCE_VERSION', '1.2.0' );
@@ -35,7 +34,7 @@ define( 'PAGBANK_WOOCOMMERCE_TEMPLATES_PATH', plugin_dir_path( PAGBANK_WOOCOMMER
 
 add_action(
 	'before_woocommerce_init',
-	function() {
+	function () {
 		if ( class_exists( FeaturesUtil::class ) ) {
 			FeaturesUtil::declare_compatibility( 'custom_order_tables', PAGBANK_WOOCOMMERCE_FILE_PATH, true );
 		}
@@ -49,7 +48,7 @@ add_action(
 		require_once $autoload_filepath;
 	}
 
-	if ( ! is_woocommerce_activated() ) {
+	if ( ! Helpers::is_woocommerce_activated() ) {
 		return;
 	}
 
@@ -59,5 +58,4 @@ add_action(
 	ConnectAjaxApi::get_instance();
 	WebhookHandler::get_instance();
 	WcfmIntegration::get_instance();
-
 } )();

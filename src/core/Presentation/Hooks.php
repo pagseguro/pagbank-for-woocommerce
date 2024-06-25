@@ -213,5 +213,4 @@ class Hooks {
 			include dirname( PAGBANK_WOOCOMMERCE_FILE_PATH ) . '/src/templates/admin-html-notice-missing-brazilian-market-on-woocommerce.php';
 		}
 	}
-
 }

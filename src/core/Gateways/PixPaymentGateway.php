@@ -13,13 +13,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Exception;
 use PagBank_WooCommerce\Presentation\Api;
+use PagBank_WooCommerce\Presentation\ApiHelpers;
 use PagBank_WooCommerce\Presentation\Connect;
 use WC_Order;
 use WC_Payment_Gateway;
 use WP_Error;
-
-use function PagBank_WooCommerce\Presentation\get_pix_payment_api_data;
-use function PagBank_WooCommerce\Presentation\process_order_refund;
 
 /**
  * Class PixPaymentGateway.
@@ -176,7 +174,7 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 		try {
 			$order                 = wc_get_order( $order_id );
 			$expiration_in_minutes = $this->get_option( 'expiration_minutes' );
-			$data                  = get_pix_payment_api_data( $this, $order, $expiration_in_minutes );
+			$data                  = ApiHelpers::get_pix_payment_api_data( $this, $order, $expiration_in_minutes );
 			$response              = $this->api->create_order( $data );
 
 			if ( is_wp_error( $response ) ) {
@@ -207,15 +205,15 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 	 * @param string $reason   Refund reason.
 	 */
 	public function process_refund( $order_id, $amount = null, $reason = '' ) {
-		$order = wc_get_order( $order_id );
+		$order                       = wc_get_order( $order_id );
 		$should_process_order_refund = apply_filters( 'pagbank_should_process_order_refund', true, $order );
 
-		if( is_wp_error( $should_process_order_refund ) ) {
+		if ( is_wp_error( $should_process_order_refund ) ) {
 			return $should_process_order_refund;
 		}
 
-		if( $should_process_order_refund === true ) {
-			return process_order_refund( $this->api, $order, $amount, $reason );
+		if ( $should_process_order_refund === true ) {
+			return ApiHelpers::process_order_refund( $this->api, $order, $amount, $reason );
 		}
 
 		return new WP_Error( 'error', __( 'Houve um erro desconhecido ao tentar realizar o reembolso.', 'pagbank-for-woocommerce' ) );
@@ -269,7 +267,6 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 			'woocommerce/pagbank/',
 			PAGBANK_WOOCOMMERCE_TEMPLATES_PATH
 		);
-
 	}
 
 	/**
@@ -278,7 +275,7 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 	 * @return bool
 	 */
 	public function needs_setup() {
-		$is_connected = ! ! $this->connect->get_data();
+		$is_connected = (bool) $this->connect->get_data();
 
 		return ! $is_connected;
 	}
@@ -299,7 +296,7 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 			return false;
 		}
 
-		$is_connected          = ! ! $this->connect->get_data();
+		$is_connected          = (bool) $this->connect->get_data();
 		$is_brazilian_currency = get_woocommerce_currency() === 'BRL';
 
 		if ( ! $is_connected || ! $is_brazilian_currency ) {
@@ -316,7 +313,7 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 	 */
 	public function is_available_validation() {
 		$is_enabled            = ( 'yes' === $this->enabled );
-		$is_connected          = ! ! $this->connect->get_data();
+		$is_connected          = (bool) $this->connect->get_data();
 		$is_brazilian_currency = get_woocommerce_currency() === 'BRL';
 
 		$errors = array();
@@ -344,20 +341,20 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 	 * Generate HTML settings HTML with errors.
 	 *
 	 * @param array $form_fields The form fields to display.
-	 * @param bool  $echo Should echo or return.
+	 * @param bool  $echo_output Should echo or return.
 	 *
 	 * @return string If $echo = false, return the HTML content.
 	 */
-	public function generate_settings_html( $form_fields = array(), $echo = true ) {
+	public function generate_settings_html( $form_fields = array(), $echo_output = true ) {
 		ob_start();
 		$this->display_errors();
 		$html = ob_get_clean();
 
-		if ( $echo ) {
+		if ( $echo_output ) {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- XSS ok.
-			echo $html . parent::generate_settings_html( $form_fields, $echo );
+			echo $html . parent::generate_settings_html( $form_fields, $echo_output );
 		} else {
-			return $html . parent::generate_settings_html( $form_fields, $echo );
+			return $html . parent::generate_settings_html( $form_fields, $echo_output );
 		}
 	}
 
@@ -396,5 +393,4 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 			true
 		);
 	}
-
 }

@@ -600,5 +600,4 @@ class Api {
 
 		return wp_remote_request( $url, $request_args );
 	}
-
 }

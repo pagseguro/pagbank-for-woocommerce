@@ -78,7 +78,7 @@ class Connect {
 		if ( $environment ) {
 			return array_filter(
 				$applications,
-				function( $item ) use ( $environment ) {
+				function ( $item ) use ( $environment ) {
 					return $item['environment'] === $environment;
 				}
 			);
@@ -132,7 +132,7 @@ class Connect {
 
 		foreach ( $check_for_emptiness as $key ) {
 			if ( empty( $new_data[ $key ] ) ) {
-				throw new Exception( 'The key ' . $key . ' is empty.' );
+				throw new Exception( esc_html( 'The key ' . $key . ' is empty.' ) );
 			}
 		}
 
@@ -195,13 +195,13 @@ class Connect {
 		);
 
 		if ( is_wp_error( $refresh_token ) ) {
-			throw new Exception( $refresh_token->get_error_message() );
+			throw new Exception( esc_html( $refresh_token->get_error_message() ) );
 		}
 
 		$public_key = $api->get_public_key( $refresh_token['access_token'] );
 
 		if ( is_wp_error( $public_key ) ) {
-			throw new Exception( $public_key->get_error_message() );
+			throw new Exception( esc_html( $public_key->get_error_message() ) );
 		}
 
 		$refresh_token['public_key'] = $public_key['public_key'];
@@ -210,5 +210,4 @@ class Connect {
 
 		return $refresh_token;
 	}
-
 }

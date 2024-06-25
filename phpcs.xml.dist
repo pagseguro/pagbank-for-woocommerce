@@ -22,7 +22,6 @@
 	<rule ref="WordPress">
 		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase" />
 		<exclude name="WordPress.Files.FileName.InvalidClassFileName" />
-		<exclude name="WordPress.PHP.DisallowShortTernary" />
 		<exclude name="WordPress.PHP.YodaConditions.NotYoda" />
 	</rule>
 
