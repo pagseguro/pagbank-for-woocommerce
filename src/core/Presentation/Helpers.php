@@ -129,4 +129,13 @@ class Helpers {
 		return class_exists( 'WooCommerce' ) || in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true );
 	}
 
+	/**
+	 * Check if WCFM is activated.
+	 *
+	 * @return bool If WCFM is activated.
+	 */
+	public static function is_wcfm_activated() {
+		return class_exists( 'WCFM' ) || in_array( 'wc-frontend-manager/wc_frontend_manager.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true );
+	}
+
 }

@@ -57,5 +57,8 @@ add_action(
 	Hooks::get_instance();
 	ConnectAjaxApi::get_instance();
 	WebhookHandler::get_instance();
-	WcfmIntegration::get_instance();
+
+	if ( Helpers::is_wcfm_activated() ) {
+		WcfmIntegration::get_instance();
+	}
 } )();
