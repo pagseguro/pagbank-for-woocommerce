@@ -148,7 +148,7 @@ class Hooks {
 		if ( $order->get_payment_method() === 'pagbank_credit_card' ) {
 			$installments                = (int) $order->get_meta( '_pagbank_credit_card_installments' );
 			$installment_value           = $order->get_total() / $installments;
-			$installment_value_formatted = format_money( $installment_value );
+			$installment_value_formatted = Helpers::format_money( $installment_value );
 
 			// translators: %d is the number of installments.
 			$total_rows['payment_method']['value'] = sprintf( __( 'Cartão de crédito (%1$dx de %2$s)', 'pagbank-for-woocommerce' ), $installments, $installment_value_formatted );

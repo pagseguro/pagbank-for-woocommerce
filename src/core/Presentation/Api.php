@@ -367,7 +367,7 @@ class Api {
 		$body = $this->json_encode(
 			array(
 				'amount' => array(
-					'value' => format_money_cents( $amount ),
+					'value' => Helpers::format_money_cents( $amount ),
 				),
 			)
 		);

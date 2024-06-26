@@ -569,7 +569,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			<?php
 			foreach ( $fields as $field ) {
 				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- XSS ok.
-				echo sanitize_text_field( $field );
+				echo $field;
 			}
 			?>
 			<?php do_action( 'woocommerce_credit_card_form_end', $this->id ); ?>
