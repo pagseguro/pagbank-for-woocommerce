@@ -2,7 +2,7 @@
 Contributors: eliasjnior
 Tags: woocommerce, pagseguro, pagbank, pagamento, brasil
 Requires at least: 5.4
-Tested up to: 6.5
+Tested up to: 6.6
 Requires PHP: 7.4
 Stable tag: 1.2.0
 License: GPLv2
@@ -104,6 +104,14 @@ Siga os passos abaixo para conectar o plugin à sua conta PagBank:
 5. Clique no botão **Conectar ao PagBank** para associar a sua conta. Assim que você conectar ela em qualquer método de pagamento, ela conectará todos os outros métodos de pagamento na mesma conta, porém não ativará o método de pagamento automaticamente.
 6. Depois que você conectar a sua conta PagBank, configure as outras opções de cada método, como parcelamento e prazo para pagamento.
 7. Clique em **Salvar alterações**.
+
+= Split de pagamento =
+
+O plugin disponibiliza suporte ao split de pagamento para marketplace. Para cada lojista cadastrado na sua loja, é necessário [acessar a conta](https://minhaconta.pagbank.com.br) através do navegador e navegar até *Vendas > Identificador para Marketplace*.
+
+Com o identificador em mãos, navegue até a conta do lojista e clique no menu *Gerenciador da loja*, e depois em *Configurações > Pagamento*, deve ser preenchido o identificador da conta no campo correspondente.
+
+Caso o lojista não possua o identificador da conta preenchido, os produtos cadastrado por esse lojista não estarão disponíveis durante o checkout.
 
 == Screenshots ==
 
