@@ -120,6 +120,8 @@ Caso o lojista não possua o identificador da conta preenchido, os produtos cada
 3. Pagamento via Pix.
 4. Pagamento via boleto.
 5. Configurações de pagamentos.
+6. Configuração do identificador do cliente no marketplace.
+7. Histórico de pagamentos para o lojista no marketplace.
 
 == Changelog ==
 
