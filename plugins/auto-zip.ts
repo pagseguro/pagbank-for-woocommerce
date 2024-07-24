@@ -20,7 +20,7 @@ const filesToIgnore = [
 	"plugins",
 	"scripts",
 	"wp",
-	".eslintrc.js",
+	".eslintrc.cjs",
 	".gitignore",
 	".commitlint.config.js",
 	"composer.json",
