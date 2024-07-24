@@ -36,7 +36,7 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 	 *
 	 * @var Connect
 	 */
-	private $connect;
+	public $connect;
 
 	/**
 	 * Environment.
