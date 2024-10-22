@@ -187,5 +187,4 @@ class ConnectAjaxApi {
 		echo '<script>window.close();</script>';
 		wp_die();
 	}
-
 }

@@ -118,5 +118,4 @@ class PaymentGatewaysFields {
 
 		return ob_get_clean();
 	}
-
 }

@@ -13,7 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Exception;
 use PagBank_WooCommerce\Presentation\Api;
+use PagBank_WooCommerce\Presentation\ApiHelpers;
 use PagBank_WooCommerce\Presentation\Connect;
+use PagBank_WooCommerce\Presentation\Helpers;
 use PagBank_WooCommerce\Presentation\PaymentToken;
 use WC_Order;
 use WC_Order_Item_Fee;
@@ -22,15 +24,7 @@ use WC_Payment_Tokens;
 use WC_Subscriptions_Cart;
 use WC_Subscriptions_Manager;
 use WooCommerce;
-
-use function PagBank_WooCommerce\Presentation\format_money;
-use function PagBank_WooCommerce\Presentation\format_money_cents;
-use function PagBank_WooCommerce\Presentation\format_money_from_cents;
-use function PagBank_WooCommerce\Presentation\get_credit_card_payment_data;
-use function PagBank_WooCommerce\Presentation\get_credit_card_payment_data_for_empty_value_subscription;
-use function PagBank_WooCommerce\Presentation\get_credit_card_renewal_payment_data;
-use function PagBank_WooCommerce\Presentation\process_order_refund;
-use function PagBank_WooCommerce\Presentation\sanitize_checkout_field;
+use WP_Error;
 
 /**
  * Class CreditCardPaymentGateway.
@@ -348,7 +342,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		$card_bin                           = isset( $_GET['card_bin'] ) ? sanitize_text_field( wp_unslash( $_GET['card_bin'] ) ) : null;
 		$payment_token                      = isset( $_GET['payment_token'] ) ? sanitize_text_field( wp_unslash( $_GET['payment_token'] ) ) : null;
 		$amount                             = isset( $_GET['amount'] ) ? (float) sanitize_text_field( wp_unslash( $_GET['amount'] ) ) : null;
-		$amount_in_cents                    = format_money_cents( $amount );
+		$amount_in_cents                    = Helpers::format_money_cents( $amount );
 
 		if ( ! wp_verify_nonce( $nonce, 'pagbank_get_installments' ) ) {
 			wp_send_json_error(
@@ -448,16 +442,16 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		$installments_plans = $charge_fees['payment_methods']['credit_card'][ $key ]['installment_plans'];
 
 		$mapped_installments = array_map(
-			function( $plan ) {
+			function ( $plan ) {
 				return array(
 					'installments'      => $plan['installments'],
 					'installment_value' => $plan['installment_value'],
 					'interest_free'     => $plan['interest_free'],
 					'title'             => $plan['interest_free']
 												// translators: 1: installments, 2: installment value.
-												? sprintf( __( '%1$dx de %2$s sem juros', 'pagbank-for-woocommerce' ), $plan['installments'], format_money( $plan['installment_value'] / 100 ) )
+												? sprintf( __( '%1$dx de %2$s sem juros', 'pagbank-for-woocommerce' ), $plan['installments'], Helpers::format_money( $plan['installment_value'] / 100 ) )
 												// translators: 1: installments, 2: installment value, 3: installment total.
-												: sprintf( __( '%1$dx de %2$s com juros (%3$s)', 'pagbank-for-woocommerce' ), $plan['installments'], format_money( $plan['installment_value'] / 100 ), format_money( $plan['amount']['value'] / 100 ) ),
+												: sprintf( __( '%1$dx de %2$s com juros (%3$s)', 'pagbank-for-woocommerce' ), $plan['installments'], Helpers::format_money( $plan['installment_value'] / 100 ), Helpers::format_money( $plan['amount']['value'] / 100 ) ),
 					'amount'            => $plan['amount']['value'],
 				);
 			},
@@ -575,7 +569,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			<?php
 			foreach ( $fields as $field ) {
 				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- XSS ok.
-				echo sanitize_checkout_field( $field );
+				echo $field;
 			}
 			?>
 			<?php do_action( 'woocommerce_credit_card_form_end', $this->id ); ?>
@@ -773,7 +767,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			$cvc = $order_contains_subscription && isset( $_POST['pagbank_credit_card-card-cvc'] ) ? wc_clean( wp_unslash( $_POST['pagbank_credit_card-card-cvc'] ) ) : null;
 
 			if ( $this->installments_enabled && $this->transfer_of_interest_enabled ) {
-				$amount_in_cents    = format_money_cents( $order->get_total() );
+				$amount_in_cents    = Helpers::format_money_cents( $order->get_total() );
 				$is_new_credit_card = null === $payment_token || 'new' === $payment_token;
 
 				if ( ! $is_new_credit_card ) {
@@ -819,9 +813,10 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				$transfer_of_interest_fee = $matched_plan['amount'];
 			}
 
-			$is_empty_order_with_subscription = $order_contains_subscription && format_money_cents( $order->get_total() ) === 0;
+			$is_empty_order_with_subscription = $order_contains_subscription && Helpers::format_money_cents( $order->get_total() ) === 0;
 
-			$data = $is_empty_order_with_subscription ? get_credit_card_payment_data_for_empty_value_subscription(
+			$data = $is_empty_order_with_subscription ? ApiHelpers::get_credit_card_payment_data_for_empty_value_subscription(
+				$this,
 				$order,
 				$payment_token,
 				$encrypted_card,
@@ -831,7 +826,8 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				$order_contains_subscription,
 				$installments,
 				$transfer_of_interest_fee
-			) : get_credit_card_payment_data(
+			) : ApiHelpers::get_credit_card_payment_data(
+				$this,
 				$order,
 				$payment_token,
 				$encrypted_card,
@@ -853,7 +849,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			$charge = $response['charges'][0];
 
 			if ( $is_empty_order_with_subscription ) {
-				$refund_response = $this->api->refund( $charge['id'], format_money_from_cents( $charge['amount']['value'] ) );
+				$refund_response = $this->api->refund( $charge['id'], Helpers::format_money_from_cents( $charge['amount']['value'] ) );
 
 				if ( is_wp_error( $refund_response ) ) {
 					wc_add_notice( __( 'Houve um erro durante o reembolso da cobrança inicial. Contate o administrador.', 'pagbank-for-woocommerce' ), 'error' );
@@ -879,9 +875,13 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 			$order->payment_complete();
 
+			if ( $charge['status'] === 'PAID' ) {
+				do_action( 'pagbank_order_completed', $order );
+			}
+
 			$charge_id = $charge['id'];
 
-			if( $this->environment === 'production' ) {
+			if ( $this->environment === 'production' ) {
 				$order->add_order_note(
 					sprintf(
 						/* translators: 1: charge ID, 2: payment method, 3: installments, 4: card brand, 5: card last 4 digits. */
@@ -890,9 +890,9 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 						$charge['payment_method']['installments'],
 						$charge['payment_method']['card']['brand'],
 						$charge['payment_method']['card']['last_digits'],
-						str_replace( "CHAR_", "", "https://minhaconta.pagseguro.uol.com.br/transacao/detalhes/$charge_id" ),
+						str_replace( 'CHAR_', '', "https://minhaconta.pagseguro.uol.com.br/transacao/detalhes/$charge_id" )
 					),
-					false,
+					false
 				);
 			}
 
@@ -994,7 +994,18 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 * @param string $reason   Refund reason.
 	 */
 	public function process_refund( $order_id, $amount = null, $reason = '' ) {
-		return process_order_refund( $this->api, $order_id, $amount, $reason );
+		$order                       = wc_get_order( $order_id );
+		$should_process_order_refund = apply_filters( 'pagbank_should_process_order_refund', true, $order );
+
+		if ( is_wp_error( $should_process_order_refund ) ) {
+			return $should_process_order_refund;
+		}
+
+		if ( $should_process_order_refund === true ) {
+			return ApiHelpers::process_order_refund( $this->api, $order, $amount, $reason );
+		}
+
+		return new WP_Error( 'error', __( 'Houve um erro desconhecido ao tentar realizar o reembolso.', 'pagbank-for-woocommerce' ) );
 	}
 
 	/**
@@ -1003,7 +1014,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 * @return bool
 	 */
 	public function needs_setup() {
-		$is_connected = ! ! $this->connect->get_data();
+		$is_connected = (bool) $this->connect->get_data();
 
 		return ! $is_connected;
 	}
@@ -1024,7 +1035,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			return false;
 		}
 
-		$is_connected          = ! ! $this->connect->get_data();
+		$is_connected          = (bool) $this->connect->get_data();
 		$is_brazilian_currency = get_woocommerce_currency() === 'BRL';
 
 		if ( ! $is_connected || ! $is_brazilian_currency ) {
@@ -1041,7 +1052,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 */
 	public function is_available_validation() {
 		$is_enabled            = ( 'yes' === $this->enabled );
-		$is_connected          = ! ! $this->connect->get_data();
+		$is_connected          = (bool) $this->connect->get_data();
 		$is_brazilian_currency = get_woocommerce_currency() === 'BRL';
 
 		$errors = array();
@@ -1069,20 +1080,20 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 * Generate HTML settings HTML with errors.
 	 *
 	 * @param array $form_fields The form fields to display.
-	 * @param bool  $echo Should echo or return.
+	 * @param bool  $echo_output Should echo or return.
 	 *
-	 * @return string If $echo = false, return the HTML content.
+	 * @return string If $echo_output = false, return the HTML content.
 	 */
-	public function generate_settings_html( $form_fields = array(), $echo = true ) {
+	public function generate_settings_html( $form_fields = array(), $echo_output = true ) {
 		ob_start();
 		$this->display_errors();
 		$html = ob_get_clean();
 
-		if ( $echo ) {
+		if ( $echo_output ) {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- XSS ok.
-			echo $html . parent::generate_settings_html( $form_fields, $echo );
+			echo $html . parent::generate_settings_html( $form_fields, $echo_output );
 		} else {
-			return $html . parent::generate_settings_html( $form_fields, $echo );
+			return $html . parent::generate_settings_html( $form_fields, $echo_output );
 		}
 	}
 
@@ -1105,7 +1116,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				throw new Exception( 'Token de pagamento não encontrado.' );
 			}
 
-			$data = get_credit_card_renewal_payment_data(
+			$data = ApiHelpers::get_credit_card_renewal_payment_data(
 				$renewal_order,
 				$token,
 				$amount
@@ -1138,5 +1149,4 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			WC_Subscriptions_Manager::process_subscription_payment_failure_on_order( $renewal_order );
 		}
 	}
-
 }

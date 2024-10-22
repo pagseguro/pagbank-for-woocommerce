@@ -64,7 +64,7 @@ class WebhookHandler {
 	 * Get webhook url.
 	 */
 	public static function get_webhook_url(): string {
-		if(defined( 'PAGBANK_WEBHOOK_SITE_URL' ) && PAGBANK_WEBHOOK_SITE_URL) {
+		if ( defined( 'PAGBANK_WEBHOOK_SITE_URL' ) && PAGBANK_WEBHOOK_SITE_URL ) {
 			return PAGBANK_WEBHOOK_SITE_URL . '/wc-api/pagbank_woocommerce_handler';
 		}
 
@@ -156,14 +156,23 @@ class WebhookHandler {
 
 			if ( $charge['status'] === 'IN_ANALYSIS' ) {
 				$order->update_status( 'on-hold', __( 'O PagBank está analisando a transação.', 'pagbank-for-woocommerce' ) );
+
+				// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- Default order status.
+				do_action( 'pagbank_order_on-hold', $order );
 			} elseif ( $charge['status'] === 'DECLINED' ) {
 				$order->update_status( 'failed', __( 'O pagamento foi recusado.', 'pagbank-for-woocommerce' ) );
+
+				do_action( 'pagbank_order_failed', $order );
 			} elseif ( $charge['status'] === 'PAID' ) {
 				$order->payment_complete( $charge['id'] );
 				$order->update_meta_data( '_pagbank_charge_id', $charge['id'] );
 				$order->save_meta_data();
-			} elseif( $charge['status'] === 'CANCELED' ) {
+
+				do_action( 'pagbank_order_completed', $order );
+			} elseif ( $charge['status'] === 'CANCELED' ) {
 				$order->update_status( 'refunded', __( 'O pagamento foi reembolsado através do PagBank.', 'pagbank-for-woocommerce' ) );
+
+				do_action( 'pagbank_order_cancelled', $order );
 			}
 
 			$this->log( 'Webhook processed successfully' );
@@ -185,5 +194,4 @@ class WebhookHandler {
 
 		wp_die();
 	}
-
 }

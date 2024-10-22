@@ -367,7 +367,7 @@ class Api {
 		$body = $this->json_encode(
 			array(
 				'amount' => array(
-					'value' => format_money_cents( $amount ),
+					'value' => Helpers::format_money_cents( $amount ),
 				),
 			)
 		);
@@ -600,5 +600,4 @@ class Api {
 
 		return wp_remote_request( $url, $request_args );
 	}
-
 }
