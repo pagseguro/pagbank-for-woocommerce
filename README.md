@@ -2,9 +2,9 @@
 **Contributors:** [eliasjnior](https://profiles.wordpress.org/eliasjnior/)  
 **Tags:** woocommerce, pagseguro, pagbank, pagamento, brasil  
 **Requires at least:** 5.4  
-**Tested up to:** 6.6  
+**Tested up to:** 6.7  
 **Requires PHP:** 7.4  
-**Stable tag:** 1.2.0  
+**Stable tag:** 1.2.1  
 **License:** GPLv2  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -130,6 +130,12 @@ Caso o lojista não possua o identificador da conta preenchido, os produtos cada
 ### 5. Configurações de pagamentos. ###
 ![Configurações de pagamentos.](https://raw.githubusercontent.com/pagseguro/pagbank-for-woocommerce/main/wordpress_org_assets/screenshot-5.png)
 
+### 6. Configuração do identificador do cliente no marketplace. ###
+![Configuração do identificador do cliente no marketplace.](https://raw.githubusercontent.com/pagseguro/pagbank-for-woocommerce/main/wordpress_org_assets/screenshot-6.png)
+
+### 7. Histórico de pagamentos para o lojista no marketplace. ###
+![Histórico de pagamentos para o lojista no marketplace.](https://raw.githubusercontent.com/pagseguro/pagbank-for-woocommerce/main/wordpress_org_assets/screenshot-7.png)
+
 
 ## Changelog ##
 
@@ -179,3 +185,6 @@ Caso o lojista não possua o identificador da conta preenchido, os produtos cada
 
 ### 1.2.0 - 2024-06-10 ###
 * Adicionado suporte para marketplace Dokan e WCFM.
+
+### 1.2.1 - 2024-11-10 ###
+* Adicionado suporte ao WordPress 6.7 e WooCommerce 9.3.
