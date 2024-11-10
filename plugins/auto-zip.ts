@@ -8,6 +8,7 @@ import data from "../package.json";
 const exportFileName = `${data.name}-${data.version}.zip`;
 
 const filesToIgnore = [
+	".idea",
 	"wordpress.ini",
 	".editorconfig",
 	".vscode",
