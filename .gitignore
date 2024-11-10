@@ -6,3 +6,4 @@ dist/
 build/
 .phpunit.result*
 docs/
+.idea
