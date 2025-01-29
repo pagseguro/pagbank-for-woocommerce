@@ -600,5 +600,4 @@ class ApiHelpers {
 			return new WP_Error( 'error', __( 'Houve um erro ao tentar realizar o reembolso.', 'pagbank-for-woocommerce' ) );
 		}
 	}
-
 }
