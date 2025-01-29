@@ -13,6 +13,7 @@
         "dev": "composer install && tsc && vite build --watch",
         "lint": "concurrently \"pnpm lint:core\" \"pnpm lint:ui\"",
         "lint:core": "./vendor/bin/phpcs",
+        "lint:fix:core": "./vendor/bin/phpcbf",
         "lint:ui": "eslint --ext .ts,.tsx,.js,.jsx src/ vite.config.ts plugins",
         "boot": "docker compose up",
         "boot:arm64v8": "docker compose -f docker-compose.arm64v8.yml up",
