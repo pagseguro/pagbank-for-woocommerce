@@ -511,7 +511,7 @@ class ApiHelpers {
 		$installment_value = $value / $installments;
 
 		if ( $installment_value < $minimum_installment_value ) {
-			$installments = floor( $value / $minimum_installment_value );
+			$installments = max( 1, floor( $value / $minimum_installment_value ) );
 		}
 
 		for ( $i = 1; $i <= $installments; $i++ ) {
