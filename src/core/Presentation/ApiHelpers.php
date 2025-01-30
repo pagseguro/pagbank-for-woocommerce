@@ -13,8 +13,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Carbon\Carbon;
 use Exception;
-use libphonenumber\PhoneNumberType;
-use libphonenumber\PhoneNumberUtil;
 use PagBank_WooCommerce\Gateways\BoletoPaymentGateway;
 use PagBank_WooCommerce\Gateways\CreditCardPaymentGateway;
 use PagBank_WooCommerce\Gateways\PixPaymentGateway;
@@ -37,9 +35,9 @@ class ApiHelpers {
 	 * @return string
 	 */
 	private static function get_order_tax_id_api_data( WC_Order $order ) {
-		$billing_cpf  = $order->get_meta( '_billing_cpf' );
-		$billing_cnpj = $order->get_meta( '_billing_cnpj' );
-		$tax_id       = preg_replace( '/[^0-9]/', '', $billing_cpf ? $billing_cpf : $billing_cnpj );
+		$billing_peson_type = intval( $order->get_meta( '_billing_persontype' ) );
+
+		$tax_id = preg_replace( '/[^0-9]/', '', $billing_peson_type === 1 ? $order->get_meta( '_billing_cpf' ) : $order->get_meta( '_billing_cnpj' ) );
 
 		return $tax_id;
 	}
@@ -85,8 +83,12 @@ class ApiHelpers {
 	 * @return array
 	 */
 	private static function get_order_customer_api_data( WC_Order $order ) {
+		$billing_person_type = intval( $order->get_meta( '_billing_persontype' ) );
+		$company_name        = $billing_person_type === 2 || $billing_person_type === 3 ? $order->get_billing_company() : null;
+		$name                = $company_name ? $company_name : $order->get_formatted_billing_full_name();
+
 		return array(
-			'name'   => $order->get_formatted_billing_full_name(),
+			'name'   => $name,
 			'email'  => $order->get_billing_email(),
 			'tax_id' => self::get_order_tax_id_api_data( $order ),
 		);
