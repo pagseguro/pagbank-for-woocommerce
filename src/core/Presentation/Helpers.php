@@ -137,4 +137,13 @@ class Helpers {
 	public static function is_wcfm_activated() {
 		return class_exists( 'WCFM' ) || in_array( 'wc-frontend-manager/wc_frontend_manager.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true );
 	}
+
+	/**
+	 * Check if the store is localhost.
+	 *
+	 * @return bool If is localhost.
+	 */
+	public static function is_localhost() {
+		return wp_parse_url( get_site_url() )['host'] === 'localhost';
+	}
 }
