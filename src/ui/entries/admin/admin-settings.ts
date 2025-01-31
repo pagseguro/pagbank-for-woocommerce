@@ -132,7 +132,7 @@ document
 		};
 
 		pagBankConnectButton.addEventListener("click", () => {
-			if (!isLocalhost) {
+			if (isLocalhost) {
 				alert(
 					"A conexão com o PagBank não está disponível em http://localhost. Você poderá utilizar uma URL como http://minhaloja.localhost ou conectar-se ao PagBank quando sua loja estiver disponível em um domínio público.",
 				);
