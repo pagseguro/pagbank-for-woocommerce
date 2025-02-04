@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: PagBank for WooCommerce 1.2.2\n"
+"Project-Id-Version: PagBank for WooCommerce 1.2.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/pagbank-for-woocommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-01-30T17:33:37+00:00\n"
+"POT-Creation-Date: 2025-02-04T13:44:58+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: pagbank-for-woocommerce\n"
@@ -33,7 +33,7 @@ msgstr ""
 #. Author of the plugin
 #: pagbank-for-woocommerce.php
 #: src/core/Marketplace/WcfmIntegration.php:275
-#: src/core/Presentation/ApiHelpers.php:274
+#: src/core/Presentation/ApiHelpers.php:276
 msgid "PagBank"
 msgstr ""
 
@@ -313,7 +313,7 @@ msgstr ""
 
 #. translators: 1: installments, 2: installment value.
 #: src/core/Gateways/CreditCardPaymentGateway.php:452
-#: src/core/Presentation/ApiHelpers.php:526
+#: src/core/Presentation/ApiHelpers.php:528
 msgid "%1$dx de %2$s sem juros"
 msgstr ""
 
@@ -484,35 +484,35 @@ msgid "O ID da aplicação é inválido."
 msgstr ""
 
 #. translators: %1$s: order id, %2$s: blog name.
-#: src/core/Presentation/ApiHelpers.php:265
-#: src/core/Presentation/ApiHelpers.php:343
-#: src/core/Presentation/ApiHelpers.php:473
+#: src/core/Presentation/ApiHelpers.php:267
+#: src/core/Presentation/ApiHelpers.php:345
+#: src/core/Presentation/ApiHelpers.php:475
 msgid "Pedido %1$s - %2$s"
 msgstr ""
 
 #. translators: %s: blog name.
-#: src/core/Presentation/ApiHelpers.php:273
+#: src/core/Presentation/ApiHelpers.php:275
 msgid "Pagamento para %s"
 msgstr ""
 
-#: src/core/Presentation/ApiHelpers.php:375
+#: src/core/Presentation/ApiHelpers.php:377
 msgid "O cartão de crédito criptografado é inválido. Por favor, contate o suporte."
 msgstr ""
 
-#: src/core/Presentation/ApiHelpers.php:394
+#: src/core/Presentation/ApiHelpers.php:396
 msgid "O token de pagamento não foi encontrado."
 msgstr ""
 
-#: src/core/Presentation/ApiHelpers.php:439
+#: src/core/Presentation/ApiHelpers.php:441
 msgid "Assinatura"
 msgstr ""
 
-#: src/core/Presentation/ApiHelpers.php:584
+#: src/core/Presentation/ApiHelpers.php:586
 msgid "O valor para reembolso deve ser maior que zero"
 msgstr ""
 
-#: src/core/Presentation/ApiHelpers.php:600
 #: src/core/Presentation/ApiHelpers.php:602
+#: src/core/Presentation/ApiHelpers.php:604
 msgid "Houve um erro ao tentar realizar o reembolso."
 msgstr ""
 

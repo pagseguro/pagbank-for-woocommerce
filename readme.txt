@@ -4,7 +4,7 @@ Tags: woocommerce, pagseguro, pagbank, pagamento, brasil
 Requires at least: 5.4
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.2.2
+Stable tag: 1.2.3
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -180,3 +180,6 @@ Caso o lojista não possua o identificador da conta preenchido, os produtos cada
 * Corrigido erro ao atualizar o token de acesso.
 * Melhoria no tratamento de webhooks.
 * Adicionado alerta ao tentar conectar a conta do PagBank em ambiente de desenvolvimento.
+
+= 1.2.3 - 2025-02-04 =
+* Corrigido problemas com CPF e CNPJ.
