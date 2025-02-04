@@ -4,6 +4,7 @@
 	}
 
 	use PagBank_WooCommerce\Presentation\Connect;
+	use PagBank_WooCommerce\Presentation\Helpers;
 
 	$applications = Connect::get_connect_applications();
 	$nonce = wp_create_nonce( 'pagbank_woocommerce_oauth' );
@@ -113,6 +114,7 @@
 				name="<?php echo esc_attr( $field_key ); ?>"
 				class="button button-primary"
 				type="button"
+				data-pagbank-is-localhost="<?php echo esc_attr( Helpers::is_localhost() ? 'true' : 'false' ); ?>"
 				data-pagbank-connect-nonce="<?php echo esc_attr( wp_create_nonce( 'pagbank_woocommerce_oauth' ) ); ?>"
 				data-pagbank-connect-environment-select="<?php echo esc_attr( $wc_settings->get_field_key( $data['environment_select'] ) ); ?>"
 				data-pagbank-connected-text="<?php esc_attr_e( 'Conectar a outra conta do PagBank', 'pagbank-for-woocommerce' ); ?>"

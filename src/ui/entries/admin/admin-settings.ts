@@ -68,6 +68,9 @@ document.querySelectorAll("[data-format-currency]").forEach((currencyInput) => {
 document
 	.querySelectorAll("[data-pagbank-connect-environment-select]")
 	.forEach((pagBankConnectButton) => {
+		const isLocalhost =
+			pagBankConnectButton.getAttribute("data-pagbank-is-localhost") === "true";
+
 		const environmentModalId = pagBankConnectButton.getAttribute(
 			"data-pagbank-connect-modal-environment-id",
 		);
@@ -129,6 +132,14 @@ document
 		};
 
 		pagBankConnectButton.addEventListener("click", () => {
+			if (isLocalhost) {
+				alert(
+					"A conexão com o PagBank não está disponível em http://localhost. Você poderá utilizar uma URL como http://minhaloja.localhost ou conectar-se ao PagBank quando sua loja estiver disponível em um domínio público.",
+				);
+
+				return;
+			}
+
 			openModal();
 		});
 

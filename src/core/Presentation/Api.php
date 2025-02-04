@@ -212,7 +212,7 @@ class Api {
 			$this->log_request_ends( $response_code, $response_body, 'pagbank_oauth' );
 		}
 
-		if ( 200 !== $response_code ) {
+		if ( ! $this->is_success_response_code( $response_code ) ) {
 			return new WP_Error( 'pagbank_request_error', __( 'Status HTTP inválido.', 'pagbank-for-woocommerce' ) );
 		}
 
@@ -278,7 +278,7 @@ class Api {
 
 		$this->log_request_ends( $response_code, $response_body, 'pagbank_oauth' );
 
-		if ( 200 !== $response_code ) {
+		if ( ! $this->is_success_response_code( $response_code ) ) {
 			return new WP_Error( 'pagbank_request_error', __( 'Status HTTP inválido.', 'pagbank-for-woocommerce' ) );
 		}
 
@@ -599,5 +599,15 @@ class Api {
 		$request_args = wp_parse_args( $args, $default_args );
 
 		return wp_remote_request( $url, $request_args );
+	}
+
+	/**
+	 * Check if a response code is success.
+	 *
+	 * @param int $response_code The response code.
+	 * @return bool if it's a success response code.
+	 */
+	private function is_success_response_code( int $response_code ): bool {
+		return 201 === $response_code || 200 === $response_code;
 	}
 }
