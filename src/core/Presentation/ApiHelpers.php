@@ -28,6 +28,36 @@ use WP_Error;
 class ApiHelpers {
 
 	/**
+	 * Get order person type.
+	 *
+	 * @param WC_Order $order The order.
+	 * @return array{type: string, tax_id: string}  The data.
+	 */
+	private static function get_order_person_type( WC_Order $order ) {
+		$person_type = $order->get_meta( '_billing_person_type' );
+		$cpf         = preg_replace( '/[^0-9]/', '', $order->get_meta( '_billing_cpf' ) );
+		$cnpj        = preg_replace( '/[^0-9]/', '', $order->get_meta( '_billing_cnpj' ) );
+
+		switch ( $person_type ) {
+			case '2':
+				return array(
+					'type'   => 'cnpj',
+					'tax_id' => $cnpj,
+				);
+			case '1':
+				return array(
+					'type'   => 'cpf',
+					'tax_id' => $cpf,
+				);
+			default:
+				return array(
+					'type'   => $cnpj ? 'cnpj' : 'cpf',
+					'tax_id' => $cnpj ? $cnpj : $cpf,
+				);
+		}
+	}
+
+	/**
 	 * Get order tax id.
 	 *
 	 * @param WC_Order $order Order.
@@ -35,11 +65,9 @@ class ApiHelpers {
 	 * @return string
 	 */
 	private static function get_order_tax_id_api_data( WC_Order $order ) {
-		$billing_peson_type = intval( $order->get_meta( '_billing_persontype' ) );
+		$data = self::get_order_person_type( $order );
 
-		$tax_id = preg_replace( '/[^0-9]/', '', $billing_peson_type === 1 ? $order->get_meta( '_billing_cpf' ) : $order->get_meta( '_billing_cnpj' ) );
-
-		return $tax_id;
+		return $data['tax_id'];
 	}
 
 	/**
@@ -83,9 +111,11 @@ class ApiHelpers {
 	 * @return array
 	 */
 	private static function get_order_customer_api_data( WC_Order $order ) {
-		$billing_person_type = intval( $order->get_meta( '_billing_persontype' ) );
-		$company_name        = $billing_person_type === 2 || $billing_person_type === 3 ? $order->get_billing_company() : null;
-		$name                = $company_name ? $company_name : $order->get_formatted_billing_full_name();
+		$person_type = self::get_order_person_type( $order );
+		$is_cnpj     = $person_type['type'] === 'cnpj';
+
+		$company_name = $is_cnpj ? $order->get_billing_company() : null;
+		$name         = $company_name ? $company_name : $order->get_formatted_billing_full_name();
 
 		return array(
 			'name'   => $name,
