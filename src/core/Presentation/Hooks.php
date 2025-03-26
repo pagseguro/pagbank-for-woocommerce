@@ -146,12 +146,22 @@ class Hooks {
 	 */
 	public function filter_woocommerce_get_order_item_totals( $total_rows, WC_Order $order ) {
 		if ( $order->get_payment_method() === 'pagbank_credit_card' ) {
-			$installments                = (int) $order->get_meta( '_pagbank_credit_card_installments' );
-			$installment_value           = $order->get_total() / $installments;
-			$installment_value_formatted = Helpers::format_money( $installment_value );
+			$installments = (int) $order->get_meta( '_pagbank_credit_card_installments' );
 
-			// translators: %d is the number of installments.
-			$total_rows['payment_method']['value'] = sprintf( __( 'Cartão de crédito (%1$dx de %2$s)', 'pagbank-for-woocommerce' ), $installments, $installment_value_formatted );
+			if ( $installments > 0 ) {
+				$installment_value = $order->get_total() / $installments;
+				$installment_value_formatted = Helpers::format_money( $installment_value );
+
+				// translators: %d is the number of installments.
+				$total_rows['payment_method']['value'] = sprintf(
+					__( 'Cartão de crédito (%1$dx de %2$s)', 'pagbank-for-woocommerce' ),
+					$installments,
+					$installment_value_formatted
+				);
+			} else {
+				// Valor padrão caso não haja parcelas
+				$total_rows['payment_method']['value'] = __( 'Cartão de crédito', 'pagbank-for-woocommerce' );
+			}
 		}
 
 		return $total_rows;
