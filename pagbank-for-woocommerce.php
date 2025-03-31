@@ -61,7 +61,11 @@ add_action(
 	add_action('admin_notices', function () {
 		if (
 			!isset($_GET['page']) || strpos($_GET['page'], 'wc-settings') === false ||
-			!isset($_GET['section']) || $_GET['section'] !== 'pagbank_pix'
+			!isset($_GET['section']) || !in_array($_GET['section'], [
+				'pagbank_pix',
+				'pagbank_boleto',
+				'pagbank_credit_card'
+			])
 		) {
 			return;
 		}
