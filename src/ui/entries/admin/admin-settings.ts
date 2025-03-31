@@ -251,3 +251,40 @@ document.querySelectorAll("[data-connect-application-id]").forEach((connectButto
 		})();
 	});
 });
+
+setTimeout(() => {
+	const fakeInput = document.querySelector('input[type="pagbank_connect"]');
+	const notice = document.querySelector('.notice-info');
+  
+	if (fakeInput && notice) {
+	  const td = fakeInput.closest("td");
+  
+	  if (td) {
+		const jumpButton = document.createElement("button");
+		jumpButton.type = "button";
+		jumpButton.className = "button button-secondary";
+		jumpButton.style.marginTop = "5px";
+		jumpButton.textContent = "⚠ Clique aqui para conectar com o PagBank";
+  
+		jumpButton.addEventListener("click", () => {
+		  notice.scrollIntoView({ behavior: "smooth" });
+		  notice.style.boxShadow = "0 0 0 3px #007cba";
+		  setTimeout(() => {
+			notice.style.boxShadow = "none";
+		  }, 2000);
+  
+		  document.querySelectorAll('.notice:not(.notice-info)').forEach(n => n.remove());
+
+		  const infoNotices = document.querySelectorAll('.notice-info');
+		  infoNotices.forEach((n, i) => {
+			if (i > 0) n.remove();
+		  });
+		});
+  
+		td.innerHTML = "";
+		td.appendChild(jumpButton);
+	  }
+	}
+  }, 500);
+
+
