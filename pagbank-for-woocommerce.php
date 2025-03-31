@@ -58,6 +58,20 @@ add_action(
 	ConnectAjaxApi::get_instance();
 	WebhookHandler::get_instance();
 
+	add_action('admin_notices', function () {
+		if (
+			!isset($_GET['page']) || strpos($_GET['page'], 'wc-settings') === false ||
+			!isset($_GET['section']) || $_GET['section'] !== 'pagbank_pix'
+		) {
+			return;
+		}
+	
+		$template = plugin_dir_path(__FILE__) . 'src/templates/connect-button-fix.php';
+		if (file_exists($template)) {
+			include $template;
+		}
+	});
+
 	if ( Helpers::is_wcfm_activated() ) {
 		WcfmIntegration::get_instance();
 	}
