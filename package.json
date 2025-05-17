@@ -21,7 +21,8 @@
         "todos": "leasot 'src/**/*.{php,ts,js}'",
         "prepare": "husky install",
         "make:pot": "./scripts/make-pot.sh",
-        "generate-md": "wp-readme-to-md --screenshot-url=https://raw.githubusercontent.com/pagseguro/pagbank-for-woocommerce/main/wordpress_org_assets/{screenshot}.png"
+        "generate-md": "wp-readme-to-md --screenshot-url=https://raw.githubusercontent.com/pagseguro/pagbank-for-woocommerce/main/wordpress_org_assets/{screenshot}.png",
+        "wp": "docker compose run --rm wordpress-cli wp"
     },
     "devDependencies": {
         "@commitlint/cli": "^17.5.0",
