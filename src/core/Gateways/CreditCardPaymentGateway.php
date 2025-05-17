@@ -16,6 +16,7 @@ use PagBank_WooCommerce\Presentation\Api;
 use PagBank_WooCommerce\Presentation\ApiHelpers;
 use PagBank_WooCommerce\Presentation\Connect;
 use PagBank_WooCommerce\Presentation\Helpers;
+use PagBank_WooCommerce\Presentation\PaymentGatewaysFields;
 use PagBank_WooCommerce\Presentation\PaymentToken;
 use WC_Order;
 use WC_Order_Item_Fee;
@@ -1148,5 +1149,19 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		} catch ( Exception $ex ) {
 			WC_Subscriptions_Manager::process_subscription_payment_failure_on_order( $renewal_order );
 		}
+	}
+
+	/**
+	 * Generate HTML for PagBank Connect field.
+	 *
+	 * @param string $key   Field key.
+	 * @param mixed  $value Field value.
+	 *
+	 * @return string HTML output.
+	 */
+	public function generate_pagbank_connect_html( $key, $value ) {
+		$pagbank_gateways_fields = PaymentGatewaysFields::get_instance();
+
+		return $pagbank_gateways_fields->generate_pagbank_connect_html( '', $key, $value, $this );
 	}
 }
