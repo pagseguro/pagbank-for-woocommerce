@@ -8,8 +8,6 @@
 
 namespace PagBank_WooCommerce\Presentation;
 
-use WooCommerce;
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
