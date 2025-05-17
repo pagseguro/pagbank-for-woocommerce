@@ -1,15 +1,20 @@
 <?php
+/**
+ * Template for displaying credit card installments fields with no interest.
+ *
+ * @var bool $is_checkout Whether this is being rendered on the checkout page
+ * @var WC_Order $order The order object
+ * @var int $total The total amount of the order
+ * @var PagBank_WooCommerce\Core\Gateways\CreditCardPaymentGateway $gateway The gateway object
+ */
 
 use PagBank_WooCommerce\Presentation\ApiHelpers;
-use PagBank_WooCommerce\Presentation\Helpers;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-
-$cart_total = Helpers::format_money_cents(WC()->cart->get_totals()['total']);
-$installments_plan = ApiHelpers::get_installments_plan_no_interest($cart_total, $gateway->maximum_installments);
+$installments_plan = ApiHelpers::get_installments_plan_no_interest($total, $gateway->maximum_installments);
 ?>
 <p
 	class="form-row pagbank-credit-card-installments form-row-wide validate-required"

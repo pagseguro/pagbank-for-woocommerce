@@ -588,11 +588,19 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 * Installments fields on checkout.
 	 */
 	public function installments_fields() {
+		$order_id    = get_query_var( 'order-pay' );
+		$is_checkout = empty( $order_id );
+		$order       = $is_checkout ? null : wc_get_order( $order_id );
+		$total       = Helpers::format_money_cents( $is_checkout ? WC()->cart->get_totals()['total'] : $order->get_total() );
+
 		if ( $this->transfer_of_interest_enabled ) {
 			wc_get_template(
 				'checkout-installments-fields-transfer-of-interest.php',
 				array(
-					'gateway' => $this,
+					'gateway'     => $this,
+					'is_checkout' => $is_checkout,
+					'order'       => $order,
+					'total'       => $total,
 				),
 				'woocommerce/pagbank/',
 				PAGBANK_WOOCOMMERCE_TEMPLATES_PATH
@@ -601,7 +609,10 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			wc_get_template(
 				'checkout-installments-fields-no-interest.php',
 				array(
-					'gateway' => $this,
+					'gateway'     => $this,
+					'is_checkout' => $is_checkout,
+					'order'       => $order,
+					'total'       => $total,
 				),
 				'woocommerce/pagbank/',
 				PAGBANK_WOOCOMMERCE_TEMPLATES_PATH
