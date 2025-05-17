@@ -967,7 +967,9 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		$order->update_meta_data( '_pagbank_password', $request['metadata']['password'] );
 
 		$order->update_meta_data( '_pagbank_credit_card_brand', $charge['payment_method']['card']['brand'] );
-		$order->update_meta_data( '_pagbank_credit_card_installments', $charge['payment_method']['installments'] );
+		if ( isset( $charge['payment_method']['installments'] ) ) {
+			$order->update_meta_data( '_pagbank_credit_card_installments', $charge['payment_method']['installments'] );
+		}
 		$order->update_meta_data( '_pagbank_environment', $this->environment );
 
 		if ( $payment_token && function_exists( 'wcs_get_subscriptions_for_order' ) ) {
