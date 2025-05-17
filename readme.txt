@@ -186,3 +186,4 @@ Caso o lojista não possua o identificador da conta preenchido, os produtos cada
 
 = 1.2.4 - 2025-02-17 =
 * Corrigido configuração para versões mais antigas do WooCommerce.
+* Adicionado suporte a novas versões do WordPress e WooCommerce.
