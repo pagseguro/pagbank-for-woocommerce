@@ -92,7 +92,7 @@ class WebhookHandler {
 			$input   = file_get_contents( 'php://input' );
 			$headers = getallheaders();
 
-			$content_type = $headers['Content-Type'];
+			$content_type = $headers['content-type'];
 
 			if ( $content_type !== 'application/json' ) {
 				$this->log( 'Webhook received, but ignored: ', $input );
