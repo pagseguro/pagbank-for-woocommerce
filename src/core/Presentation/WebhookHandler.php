@@ -95,7 +95,7 @@ class WebhookHandler {
 			$content_type = $headers['content-type'];
 
 			if ( $content_type !== 'application/json' ) {
-				$this->log( 'Webhook received, but ignored: ', $input );
+				$this->log( 'Webhook received, but ignored because of the content type: ' . $content_type . ' (' . $input . ')' );
 
 				return wp_send_json_error(
 					array(
