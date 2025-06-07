@@ -27,6 +27,7 @@
     "devDependencies": {
         "@commitlint/cli": "^17.5.0",
         "@commitlint/config-conventional": "^17.4.4",
+        "@types/escape-html": "^1.0.4",
         "@types/jquery": "^3.5.16",
         "@types/lodash": "^4.14.194",
         "@types/node": "^18.15.5",
@@ -60,6 +61,7 @@
         "axios": "^1.6.0",
         "card-validator": "^8.1.1",
         "date-fns": "^2.30.0",
+        "escape-html": "^1.0.3",
         "jquery": "^3.6.4",
         "lodash": "^4.17.21"
     }

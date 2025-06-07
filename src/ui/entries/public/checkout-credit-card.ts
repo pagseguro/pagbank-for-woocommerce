@@ -1,5 +1,6 @@
 import axios from "axios";
 import cardValidator from "card-validator";
+import escapeHtml from "escape-html";
 import first from "lodash/first";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -104,7 +105,7 @@ const submitCheckoutError = (errorMessage: string): void => {
 			'<div class="woocommerce-NoticeGroup woocommerce-NoticeGroup-checkout">' +
 				'<ul class="woocommerce-error" role="alert">' +
 				"<li>" +
-				errorMessage +
+				escapeHtml(errorMessage) +
 				"</li>" +
 				"</ul>" +
 				"</div>",
@@ -129,7 +130,7 @@ const submitCheckoutError = (errorMessage: string): void => {
 			'<div class="woocommerce-NoticeGroup woocommerce-NoticeGroup-checkout">' +
 				'<ul class="woocommerce-error" role="alert">' +
 				"<li>" +
-				errorMessage +
+				escapeHtml(errorMessage) +
 				"</li>" +
 				"</ul>" +
 				"</div>",
@@ -142,7 +143,7 @@ const submitCheckoutError = (errorMessage: string): void => {
 
 		scrollToNotices();
 
-		jQuery(document.body).trigger("checkout_error", [errorMessage]);
+		jQuery(document.body).trigger("checkout_error", [escapeHtml(errorMessage)]);
 	}
 };
 
