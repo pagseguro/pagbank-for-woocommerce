@@ -146,7 +146,13 @@ class Hooks {
 	 */
 	public function filter_woocommerce_get_order_item_totals( $total_rows, WC_Order $order ) {
 		if ( $order->get_payment_method() === 'pagbank_credit_card' ) {
-			$installments                = (int) $order->get_meta( '_pagbank_credit_card_installments' );
+			$installments_meta = $order->get_meta( '_pagbank_credit_card_installments' );
+
+			if ( empty( $installments_meta ) ) {
+				return $total_rows;
+			}
+
+			$installments                = max( 1, (int) $installments_meta );
 			$installment_value           = $order->get_total() / $installments;
 			$installment_value_formatted = Helpers::format_money( $installment_value );
 

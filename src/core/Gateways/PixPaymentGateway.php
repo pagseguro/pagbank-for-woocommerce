@@ -15,6 +15,7 @@ use Exception;
 use PagBank_WooCommerce\Presentation\Api;
 use PagBank_WooCommerce\Presentation\ApiHelpers;
 use PagBank_WooCommerce\Presentation\Connect;
+use PagBank_WooCommerce\Presentation\PaymentGatewaysFields;
 use WC_Order;
 use WC_Payment_Gateway;
 use WP_Error;
@@ -43,7 +44,7 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 	 *
 	 * @var string
 	 */
-	private $environment;
+	public $environment;
 
 	/**
 	 * Logs enabled.
@@ -392,5 +393,19 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 			PAGBANK_WOOCOMMERCE_VERSION,
 			true
 		);
+	}
+
+	/**
+	 * Generate HTML for PagBank Connect field.
+	 *
+	 * @param string $key   Field key.
+	 * @param mixed  $value Field value.
+	 *
+	 * @return string HTML output.
+	 */
+	public function generate_pagbank_connect_html( $key, $value ) {
+		$pagbank_gateways_fields = PaymentGatewaysFields::get_instance();
+
+		return $pagbank_gateways_fields->generate_pagbank_connect_html( '', $key, $value, $this );
 	}
 }

@@ -2,9 +2,9 @@
 Contributors: eliasjnior
 Tags: woocommerce, pagseguro, pagbank, pagamento, brasil
 Requires at least: 5.4
-Tested up to: 6.7
+Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.2.3
+Stable tag: 1.2.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,7 +81,7 @@ Para instalar o PagBank for WooCommerce, você precisa:
 
 * WordPress versão 5.4 ou superior (instalado)
 * WooCommerce versão 3.9 ou superior (instalado e ativado)
-* PHP versão 7.2 ou superior
+* PHP versão 7.4 ou superior
 * Conta no PagBank ([cadastre-se](https://cadastro.pagseguro.uol.com.br/))
 * [Brazilian Market on WooCommerce](https://br.wordpress.org/plugins/woocommerce-extra-checkout-fields-for-brazil/) instalado e ativado
 
@@ -183,3 +183,8 @@ Caso o lojista não possua o identificador da conta preenchido, os produtos cada
 
 = 1.2.3 - 2025-02-04 =
 * Corrigido problemas com CPF e CNPJ.
+
+= 1.2.4 - 2025-02-17 =
+* Corrigido configuração para versões mais antigas do WooCommerce.
+* Adicionado suporte a novas versões do WordPress e WooCommerce.
+* Corrigido erro ao tentar pagar por um pedido criado manualmente.

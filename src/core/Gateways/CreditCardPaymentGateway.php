@@ -16,6 +16,7 @@ use PagBank_WooCommerce\Presentation\Api;
 use PagBank_WooCommerce\Presentation\ApiHelpers;
 use PagBank_WooCommerce\Presentation\Connect;
 use PagBank_WooCommerce\Presentation\Helpers;
+use PagBank_WooCommerce\Presentation\PaymentGatewaysFields;
 use PagBank_WooCommerce\Presentation\PaymentToken;
 use WC_Order;
 use WC_Order_Item_Fee;
@@ -587,11 +588,19 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 * Installments fields on checkout.
 	 */
 	public function installments_fields() {
+		$order_id    = get_query_var( 'order-pay' );
+		$is_checkout = empty( $order_id );
+		$order       = $is_checkout ? null : wc_get_order( $order_id );
+		$total       = Helpers::format_money_cents( $is_checkout ? WC()->cart->get_totals()['total'] : $order->get_total() );
+
 		if ( $this->transfer_of_interest_enabled ) {
 			wc_get_template(
 				'checkout-installments-fields-transfer-of-interest.php',
 				array(
-					'gateway' => $this,
+					'gateway'     => $this,
+					'is_checkout' => $is_checkout,
+					'order'       => $order,
+					'total'       => $total,
 				),
 				'woocommerce/pagbank/',
 				PAGBANK_WOOCOMMERCE_TEMPLATES_PATH
@@ -600,7 +609,10 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			wc_get_template(
 				'checkout-installments-fields-no-interest.php',
 				array(
-					'gateway' => $this,
+					'gateway'     => $this,
+					'is_checkout' => $is_checkout,
+					'order'       => $order,
+					'total'       => $total,
 				),
 				'woocommerce/pagbank/',
 				PAGBANK_WOOCOMMERCE_TEMPLATES_PATH
@@ -955,7 +967,9 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		$order->update_meta_data( '_pagbank_password', $request['metadata']['password'] );
 
 		$order->update_meta_data( '_pagbank_credit_card_brand', $charge['payment_method']['card']['brand'] );
-		$order->update_meta_data( '_pagbank_credit_card_installments', $charge['payment_method']['installments'] );
+		if ( isset( $charge['payment_method']['installments'] ) ) {
+			$order->update_meta_data( '_pagbank_credit_card_installments', $charge['payment_method']['installments'] );
+		}
 		$order->update_meta_data( '_pagbank_environment', $this->environment );
 
 		if ( $payment_token && function_exists( 'wcs_get_subscriptions_for_order' ) ) {
@@ -1148,5 +1162,19 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		} catch ( Exception $ex ) {
 			WC_Subscriptions_Manager::process_subscription_payment_failure_on_order( $renewal_order );
 		}
+	}
+
+	/**
+	 * Generate HTML for PagBank Connect field.
+	 *
+	 * @param string $key   Field key.
+	 * @param mixed  $value Field value.
+	 *
+	 * @return string HTML output.
+	 */
+	public function generate_pagbank_connect_html( $key, $value ) {
+		$pagbank_gateways_fields = PaymentGatewaysFields::get_instance();
+
+		return $pagbank_gateways_fields->generate_pagbank_connect_html( '', $key, $value, $this );
 	}
 }

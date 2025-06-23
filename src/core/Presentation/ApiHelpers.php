@@ -213,7 +213,7 @@ class ApiHelpers {
 		$defaults = array(
 			'order_id'  => $order->get_id(),
 			'signature' => self::get_order_id_signed( $order->get_id() ),
-			'password'  => wp_generate_password( 30 ),
+			'password'  => wp_generate_password( 30, false ),
 		);
 
 		return wp_parse_args( $metadata, $defaults );
@@ -229,7 +229,7 @@ class ApiHelpers {
 	 * @return array
 	 */
 	public static function get_pix_payment_api_data( PixPaymentGateway $gateway, WC_Order $order, int $expiration_in_minutes ) {
-		$password = wp_generate_password( 30 );
+		$password = wp_generate_password( 30, false );
 
 		$data = array(
 			'reference_id'      => self::get_order_reference_id_data( $order, $password ),
@@ -279,7 +279,7 @@ class ApiHelpers {
 	 * @return array
 	 */
 	public static function get_boleto_payment_api_data( BoletoPaymentGateway $gateway, WC_Order $order, int $expiration_in_days ) {
-		$password = wp_generate_password( 30 );
+		$password = wp_generate_password( 30, false );
 
 		$data = array(
 			'reference_id'      => self::get_order_reference_id_data( $order, $password ),
@@ -357,7 +357,7 @@ class ApiHelpers {
 	 * @throws Exception Throws exception when card is not valid.
 	 */
 	public static function get_credit_card_payment_data( CreditCardPaymentGateway $gateway, WC_Order $order, string $payment_token = null, string $encrypted_card = null, string $card_holder = null, bool $save_card = false, string $cvv = null, bool $is_subscription = false, int $installments = 1, array $transfer_of_interest_fee = null ) {
-		$password = wp_generate_password( 30 );
+		$password = wp_generate_password( 30, false );
 
 		$data = array(
 			'reference_id'      => self::get_order_reference_id_data( $order, $password ),
@@ -487,7 +487,7 @@ class ApiHelpers {
 	 * @return array
 	 */
 	public static function get_credit_card_renewal_payment_data( WC_Order $renewal_order, PaymentToken $payment_token, float $amount ) {
-		$password = wp_generate_password( 30 );
+		$password = wp_generate_password( 30, false );
 
 		$data = array(
 			'reference_id'      => self::get_order_reference_id_data( $renewal_order, $password ),

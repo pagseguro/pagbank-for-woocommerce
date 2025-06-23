@@ -1,5 +1,6 @@
 import axios from "axios";
 import cardValidator from "card-validator";
+import escapeHtml from "escape-html";
 import first from "lodash/first";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -12,6 +13,22 @@ type PagBankCardEncryptedErrors =
 	| "INVALID_EXPIRATION_YEAR"
 	| "INVALID_PUBLIC_KEY"
 	| "INVALID_HOLDER";
+
+type CardBin = {
+	type: "card_bin";
+	nonce: string;
+	amount: string;
+	cardBin: string;
+};
+
+type PaymentToken = {
+	type: "payment_token";
+	nonce: string;
+	amount: string;
+	paymentToken: string;
+};
+
+type GetInstallmentsDto = CardBin | PaymentToken;
 
 interface PagBankCard {
 	publicKey: string;
@@ -51,44 +68,86 @@ declare const PagBankCheckoutCreditCardVariables: {
 	};
 };
 
+const wcForms = {
+	checkout: jQuery("form.checkout"),
+	orderReview: jQuery("form#order_review"),
+};
+
 const scrollToNotices = (): void => {
+	const isOrderReview = jQuery(document.body).hasClass("woocommerce-order-pay");
+	const $form = isOrderReview ? wcForms.orderReview : wcForms.checkout;
+
 	let scrollElement = jQuery(
-		".woocommerce-NoticeGroup-updateOrderReview, .woocommerce-NoticeGroup-checkout",
+		isOrderReview
+			? ".woocommerce-notices-wrapper"
+			: ".woocommerce-NoticeGroup-updateOrderReview, .woocommerce-NoticeGroup-checkout",
 	);
 
 	const hasScrollElements = scrollElement.length > 0;
 
 	if (!hasScrollElements) {
-		scrollElement = jQuery("form.checkout");
+		scrollElement = $form;
 	}
 
 	jQuery.scroll_to_notices(scrollElement);
 };
 
 const submitCheckoutError = (errorMessage: string): void => {
-	jQuery(".woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message").remove();
+	const isOrderReview = jQuery(document.body).hasClass("woocommerce-order-pay");
 
-	const $checkoutForm = jQuery("form.checkout");
+	if (isOrderReview) {
+		const $container = jQuery(".woocommerce-notices-wrapper");
+		const $form = jQuery("form#order_review");
 
-	$checkoutForm.prepend(
-		'<div class="woocommerce-NoticeGroup woocommerce-NoticeGroup-checkout">' +
-			'<ul class="woocommerce-error" role="alert">' +
-			"<li>" +
-			errorMessage +
-			"</li>" +
-			"</ul>" +
-			"</div>",
-	); // eslint-disable-line max-len
-	$checkoutForm.removeClass("processing").unblock();
-	$checkoutForm.find(".input-text, select, input:checkbox").trigger("validate").trigger("blur");
+		$container.empty();
 
-	scrollToNotices();
+		$container.append(
+			'<div class="woocommerce-NoticeGroup woocommerce-NoticeGroup-checkout">' +
+				'<ul class="woocommerce-error" role="alert">' +
+				"<li>" +
+				escapeHtml(errorMessage) +
+				"</li>" +
+				"</ul>" +
+				"</div>",
+		);
 
-	jQuery(document.body).trigger("checkout_error", [errorMessage]);
+		// Needs to trigger in the next tick, because the order review form will be submitted again.
+		setTimeout(() => {
+			$form.removeClass("processing").unblock();
+		}, 500);
+
+		$form.find(".input-text, select, input:checkbox").trigger("validate").trigger("blur");
+
+		scrollToNotices();
+	} else {
+		jQuery(
+			".woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-message",
+		).remove();
+
+		const $checkoutForm = jQuery("form.checkout");
+
+		$checkoutForm.prepend(
+			'<div class="woocommerce-NoticeGroup woocommerce-NoticeGroup-checkout">' +
+				'<ul class="woocommerce-error" role="alert">' +
+				"<li>" +
+				escapeHtml(errorMessage) +
+				"</li>" +
+				"</ul>" +
+				"</div>",
+		);
+		$checkoutForm.removeClass("processing").unblock();
+		$checkoutForm
+			.find(".input-text, select, input:checkbox")
+			.trigger("validate")
+			.trigger("blur");
+
+		scrollToNotices();
+
+		jQuery(document.body).trigger("checkout_error", [escapeHtml(errorMessage)]);
+	}
 };
 
-// eslint-disable-next-line no-undef
-jQuery("form.checkout").on("checkout_place_order_pagbank_credit_card", () => {
+const processEncryptedCard = () => {
 	const selectedPaymentToken = document.querySelector(
 		"[name=wc-pagbank_credit_card-payment-token]:checked",
 	) as HTMLInputElement;
@@ -243,9 +302,24 @@ jQuery("form.checkout").on("checkout_place_order_pagbank_credit_card", () => {
 
 		return false;
 	}
-});
+};
 
-jQuery(document.body).on("updated_checkout", () => {
+wcForms.orderReview.on(
+	"submit",
+	(event: JQuery.SubmitEvent<unknown, unknown, HTMLFormElement, unknown>) => {
+		event.preventDefault();
+
+		const shouldContinue = processEncryptedCard();
+
+		if (shouldContinue) {
+			event.currentTarget.submit();
+		}
+	},
+);
+
+wcForms.checkout.on("checkout_place_order_pagbank_credit_card", processEncryptedCard);
+
+const bootstrap = () => {
 	try {
 		const shouldContinue =
 			PagBankCheckoutCreditCardVariables.settings.installments_enabled &&
@@ -317,20 +391,6 @@ jQuery(document.body).on("updated_checkout", () => {
 
 			installmentsSelect.removeAttribute("disabled");
 		};
-
-		type GetInstallmentsDto =
-			| {
-					type: "card_bin";
-					nonce: string;
-					amount: string;
-					cardBin: string;
-			  }
-			| {
-					type: "payment_token";
-					nonce: string;
-					amount: string;
-					paymentToken: string;
-			  };
 
 		const getInstallments = async (data: GetInstallmentsDto): Promise<void> => {
 			setContainerLoading(true);
@@ -423,5 +483,15 @@ jQuery(document.body).on("updated_checkout", () => {
 		} else {
 			submitCheckoutError("Unknown error");
 		}
+	}
+};
+
+jQuery(document.body).on("updated_checkout", bootstrap);
+
+jQuery(document).ready(() => {
+	const isOrderReview = jQuery(document.body).hasClass("woocommerce-order-pay");
+
+	if (isOrderReview) {
+		bootstrap();
 	}
 });
