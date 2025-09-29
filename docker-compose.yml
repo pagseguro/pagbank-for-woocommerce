@@ -34,7 +34,7 @@ services:
       - ./wp:/var/www/html
       - ./:/var/www/html/wp-content/plugins/pagbank-for-woocommerce
     profiles:
-      - donotstart
+      - tools
 
   phpmyadmin:
     image: phpmyadmin
@@ -50,6 +50,16 @@ services:
       PMA_PASSWORD: wordpress
       PHP_UPLOAD_MAX_FILESIZE: 1G
       PHP_MAX_INPUT_VARS: 1G
+
+  composer:
+    image: composer:latest
+    volumes:
+      - ./composer.json:/app/composer.json
+      - ./composer.lock:/app/composer.lock
+      - ./vendor:/app/vendor
+    working_dir: /app
+    profiles:
+      - tools
 
 volumes:
   db_data: {}
