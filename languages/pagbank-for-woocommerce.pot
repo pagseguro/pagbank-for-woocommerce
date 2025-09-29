@@ -2,16 +2,16 @@
 # This file is distributed under the GPL-2.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: PagBank for WooCommerce 1.2.4\n"
+"Project-Id-Version: PagBank for WooCommerce 1.2.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/pagbank-for-woocommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-05-17T20:25:56+00:00\n"
+"POT-Creation-Date: 2025-09-29T19:58:24+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.11.0\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pagbank-for-woocommerce\n"
 
 #. Plugin Name of the plugin
@@ -314,11 +314,13 @@ msgstr ""
 #. translators: 1: installments, 2: installment value.
 #: src/core/Gateways/CreditCardPaymentGateway.php:453
 #: src/core/Presentation/ApiHelpers.php:556
+#, php-format
 msgid "%1$dx de %2$s sem juros"
 msgstr ""
 
 #. translators: 1: installments, 2: installment value, 3: installment total.
 #: src/core/Gateways/CreditCardPaymentGateway.php:455
+#, php-format
 msgid "%1$dx de %2$s com juros (%3$s)"
 msgstr ""
 
@@ -419,6 +421,7 @@ msgstr ""
 
 #. translators: 1: charge ID, 2: payment method, 3: installments, 4: card brand, 5: card last 4 digits.
 #: src/core/Gateways/CreditCardPaymentGateway.php:900
+#, php-format
 msgid "<ul><li><b>Cobrança:</b> %1$s.</li><li><b>Parcelas:</b> %2$d.</li><li><b>Bandeira do cartão:</b> %3$s.</li><li><b>Últimos 4 dígitos do cartão:</b> %4$s.</li><li><a href=\"%5$s\" target=\"_blank\" rel=\"noreferrer\">Visualizar pagamento no PagBank</a></li>"
 msgstr ""
 
@@ -487,11 +490,13 @@ msgstr ""
 #: src/core/Presentation/ApiHelpers.php:295
 #: src/core/Presentation/ApiHelpers.php:373
 #: src/core/Presentation/ApiHelpers.php:503
+#, php-format
 msgid "Pedido %1$s - %2$s"
 msgstr ""
 
 #. translators: %s: blog name.
 #: src/core/Presentation/ApiHelpers.php:303
+#, php-format
 msgid "Pagamento para %s"
 msgstr ""
 
@@ -526,6 +531,7 @@ msgstr ""
 
 #. translators: %d is the number of installments.
 #: src/core/Presentation/Hooks.php:160
+#, php-format
 msgid "Cartão de crédito (%1$dx de %2$s)"
 msgstr ""
 
@@ -535,6 +541,7 @@ msgstr ""
 
 #. translators: 1: credit card type 2: last 4 digits 3: expiry month 4: expiry year
 #: src/core/Presentation/PaymentToken.php:53
+#, php-format
 msgid "%1$s com final %2$s (expira em %3$s/%4$s)"
 msgstr ""
 

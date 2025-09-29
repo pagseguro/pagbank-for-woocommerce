@@ -188,3 +188,6 @@ Caso o lojista não possua o identificador da conta preenchido, os produtos cada
 * Corrigido configuração para versões mais antigas do WooCommerce.
 * Adicionado suporte a novas versões do WordPress e WooCommerce.
 * Corrigido erro ao tentar pagar por um pedido criado manualmente.
+
+= 1.2.5 - 2025-09-29 =
+* Atualização de segurança das bibliotecas.
