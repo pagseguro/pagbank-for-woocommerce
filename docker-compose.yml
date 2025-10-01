@@ -7,6 +7,18 @@ services:
       - ./wp:/var/www/html
       - ./:/var/www/html/wp-content/plugins/pagbank-for-woocommerce
       - ./wordpress.ini:/usr/local/etc/php/conf.d/wordpress.ini
+    entrypoint: |
+      bash -c "
+        if ! php -m | grep -q xdebug; then
+          echo 'Installing Xdebug...'
+          yes | pecl install xdebug
+          docker-php-ext-enable xdebug
+          echo 'Xdebug installed successfully!'
+        else
+          echo 'Xdebug is already installed.'
+        fi
+        exec apache2-foreground
+      "
     ports:
       - 80:80
     environment:
