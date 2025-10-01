@@ -1,18 +1,8 @@
 services:
-  db:
-    image: mariadb
-    volumes:
-      - db_data:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: wordpress
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD: wordpress
-
   wordpress:
-    image: eliasjnior/wordpress-xdebug
+    image: wordpress:php8.3
     depends_on:
-      - db
+      - database
     volumes:
       - ./wp:/var/www/html
       - ./:/var/www/html/wp-content/plugins/pagbank-for-woocommerce
@@ -24,6 +14,16 @@ services:
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_NAME: wordpress
+
+  database:
+    image: mariadb
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: wordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
 
   wordpress-cli:
     image: wordpress:cli
@@ -39,12 +39,12 @@ services:
   phpmyadmin:
     image: phpmyadmin
     depends_on:
-      - db
+      - database
     ports:
       - 8080:80
     environment:
       PMA_ARBITRARY: 0
-      PMA_HOST: db
+      PMA_HOST: database
       PMA_VERBOSE: wordpress
       PMA_USER: wordpress
       PMA_PASSWORD: wordpress
