@@ -34,7 +34,6 @@ const filesToIgnore = [
 	"tsconfig.json",
 	"tsconfig.node.json",
 	"vite.config.ts",
-	"yarn.lock",
 	"pnpm-lock.yaml",
 	"phpcs.xml.dist",
 	"phpunit.xml",
