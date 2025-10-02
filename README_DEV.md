@@ -13,5 +13,5 @@ docker compose up
 After start the project, run the initial setup script by executing:
 
 ```bash
-yarn setup
+pnpm setup
 ```

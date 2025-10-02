@@ -66,11 +66,21 @@ services:
 
   composer:
     image: composer:latest
+    user: '${UID:-1000}:${GID:-1000}'
     volumes:
       - ./composer.json:/app/composer.json
       - ./composer.lock:/app/composer.lock
       - ./vendor:/app/vendor
     working_dir: /app
+    profiles:
+      - tools
+
+  php-tools:
+    image: wordpress:php8.3
+    user: '${UID:-1000}:${GID:-1000}'
+    volumes:
+      - ./:/var/www/html/wp-content/plugins/pagbank-for-woocommerce
+    working_dir: /var/www/html/wp-content/plugins/pagbank-for-woocommerce
     profiles:
       - tools
 
