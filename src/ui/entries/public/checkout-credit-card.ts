@@ -309,7 +309,12 @@ wcForms.orderReview.on(
 	(event: JQuery.SubmitEvent<unknown, unknown, HTMLFormElement, unknown>) => {
 		event.preventDefault();
 
-		const shouldContinue = processEncryptedCard();
+		const isPagBankCreditCard = jQuery(
+			"input#payment_method_pagbank_credit_card[name=payment_method]",
+			event.currentTarget,
+		).is(":checked");
+
+		const shouldContinue = !isPagBankCreditCard || processEncryptedCard();
 
 		if (shouldContinue) {
 			event.currentTarget.submit();
