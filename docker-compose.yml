@@ -7,6 +7,7 @@ services:
       - ./wp:/var/www/html
       - ./:/var/www/html/wp-content/plugins/pagbank-for-woocommerce
       - ./wordpress.ini:/usr/local/etc/php/conf.d/wordpress.ini
+      - ./logs:/var/log
     entrypoint: |
       bash -c "
         if ! php -m | grep -q xdebug; then
