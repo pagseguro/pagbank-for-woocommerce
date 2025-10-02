@@ -92,6 +92,12 @@ const scrollToNotices = (): void => {
 	jQuery.scroll_to_notices(scrollElement);
 };
 
+const clearCheckoutErrors = (): void => {
+	const $container = jQuery(".woocommerce-notices-wrapper");
+
+	$container.empty();
+};
+
 const submitCheckoutError = (errorMessage: string): void => {
 	const isOrderReview = jQuery(document.body).hasClass("woocommerce-order-pay");
 
@@ -317,6 +323,10 @@ wcForms.orderReview.on(
 		const shouldContinue = !isPagBankCreditCard || processEncryptedCard();
 
 		if (shouldContinue) {
+			if (!isPagBankCreditCard) {
+				clearCheckoutErrors();
+			}
+
 			event.currentTarget.submit();
 		}
 	},
