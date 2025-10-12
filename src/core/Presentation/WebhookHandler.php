@@ -90,12 +90,13 @@ class WebhookHandler {
 	public function handle() {
 		try {
 			$input   = file_get_contents( 'php://input' );
-			$headers = getallheaders();
+			$headers = array_change_key_case( getallheaders(), CASE_LOWER );
 
 			$content_type = $headers['content-type'];
 
 			if ( $content_type !== 'application/json' ) {
 				$this->log( 'Webhook received, but ignored because of the content type: ' . $content_type . ' (' . $input . ')' );
+				$this->log( 'Headers: ' . json_encode( $headers ) );
 
 				return wp_send_json_error(
 					array(
