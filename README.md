@@ -206,3 +206,6 @@ Caso o lojista não possua o identificador da conta preenchido, os produtos cada
 ### 1.2.5 - 2025-09-29 ###
 * Atualização de segurança das bibliotecas.
 * Corrigido erro ao tentar pagar um pedido através de link utilizando outro método de pagamento.
+
+### 1.2.6 - 2025-10-12 ###
+* Corrigido webhook em algumas instalações.
