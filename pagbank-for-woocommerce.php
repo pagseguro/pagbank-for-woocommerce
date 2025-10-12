@@ -9,7 +9,7 @@
  * License: GPL-2.0
  * Requires PHP: 7.4
  * WC requires at least: 3.9
- * WC tested up to: 9.8
+ * WC tested up to: 10.2
  * Text Domain: pagbank-for-woocommerce
  *
  * @package PagBank_WooCommerce
