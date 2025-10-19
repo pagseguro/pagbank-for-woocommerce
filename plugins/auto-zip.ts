@@ -9,6 +9,7 @@ const exportFileName = `${data.name}-${data.version}.zip`;
 
 const filesToIgnore = [
 	".claude",
+	"CLAUDE.md",
 	"logs",
 	".idea",
 	"wordpress.ini",

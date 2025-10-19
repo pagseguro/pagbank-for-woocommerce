@@ -27,7 +27,12 @@ pnpm composer install
 docker compose up
 ```
 
-Access the development site at http://wordpress.localhost
+Access the development site at http://localhost
+
+**Development Services:**
+- WordPress: http://localhost
+- PHPMyAdmin: http://localhost:8080
+- Mailpit (Email testing): http://localhost:8025
 
 ### Build & Development
 ```bash
