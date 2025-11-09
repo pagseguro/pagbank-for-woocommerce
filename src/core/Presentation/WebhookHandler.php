@@ -231,7 +231,7 @@ class WebhookHandler {
 					do_action( 'pagbank_order_completed', $order );
 					break;
 				case 'CANCELED':
-					$order->update_status( 'refunded', __( 'O pagamento foi cancelado.', 'pagbank-for-woocommerce' ) );
+					$order->update_status( 'cancelled', __( 'O pagamento foi cancelado.', 'pagbank-for-woocommerce' ) );
 
 					do_action( 'pagbank_order_cancelled', $order );
 					break;
