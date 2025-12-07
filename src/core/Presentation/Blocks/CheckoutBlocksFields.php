@@ -33,8 +33,6 @@ class CheckoutBlocksFields {
 	 */
 	public function __construct() {
 		add_action( 'woocommerce_init', array( $this, 'register_additional_checkout_fields' ) );
-		// TODO: Maybe we don't need to keep compatibility with legacy meta keys.
-		add_action( 'woocommerce_set_additional_field_value', array( $this, 'save_field_to_legacy_meta' ), 10, 4 );
 	}
 
 	/**
@@ -186,7 +184,7 @@ class CheckoutBlocksFields {
 		// Billing number.
 		woocommerce_register_additional_checkout_field(
 			array(
-				'id'       => 'pagbank/number',
+				'id'       => 'pagbank/address-number',
 				'label'    => __( 'Número', 'pagbank-for-woocommerce' ),
 				'location' => 'address',
 				'type'     => 'text',
@@ -201,59 +199,8 @@ class CheckoutBlocksFields {
 				'label'    => __( 'Bairro', 'pagbank-for-woocommerce' ),
 				'location' => 'address',
 				'type'     => 'text',
-				'required' => false,
+				'required' => true,
 			)
 		);
-	}
-
-	/**
-	 * Save field values to legacy meta keys for compatibility with existing code.
-	 *
-	 * @param string                        $key      Field key.
-	 * @param mixed                         $value    Field value.
-	 * @param string                        $group    Field group (billing, shipping, other).
-	 * @param \WC_Order|\WC_Customer|object $wc_object WooCommerce object.
-	 */
-	public function save_field_to_legacy_meta( $key, $value, $group, $wc_object ) {
-		$field_mapping = array(
-			'pagbank/person-type'  => '_billing_person_type',
-			'pagbank/cpf'          => '_billing_cpf',
-			'pagbank/cnpj'         => '_billing_cnpj',
-			'pagbank/number'       => array(
-				'billing'  => '_billing_number',
-				'shipping' => '_shipping_number',
-			),
-			'pagbank/neighborhood' => array(
-				'billing'  => '_billing_neighborhood',
-				'shipping' => '_shipping_neighborhood',
-			),
-		);
-
-		if ( ! isset( $field_mapping[ $key ] ) ) {
-			return;
-		}
-
-		$meta_key = $field_mapping[ $key ];
-
-		// Handle fields that have different keys for billing/shipping.
-		if ( is_array( $meta_key ) ) {
-			if ( isset( $meta_key[ $group ] ) ) {
-				$meta_key = $meta_key[ $group ];
-			} else {
-				return;
-			}
-		}
-
-		// Clean/convert the value.
-		$clean_value = $value;
-		if ( in_array( $key, array( 'pagbank/cpf', 'pagbank/cnpj' ), true ) ) {
-			$clean_value = preg_replace( '/[^0-9]/', '', $value );
-		} elseif ( 'pagbank/person-type' === $key ) {
-			// Convert 'cpf' to '1' and 'cnpj' to '2' for legacy compatibility.
-			$clean_value = ( 'cpf' === $value ) ? '1' : '2';
-		}
-
-		$wc_object->update_meta_data( $meta_key, $clean_value );
-		$wc_object->save_meta_data();
 	}
 }

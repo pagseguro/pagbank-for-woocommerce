@@ -19,6 +19,8 @@ use PagBank_WooCommerce\Gateways\PixPaymentGateway;
 use WC_Order;
 use WC_Payment_Tokens;
 use WP_Error;
+use Automattic\WooCommerce\Blocks\Package;
+use Automattic\WooCommerce\Blocks\Domain\Services\CheckoutFields;
 
 /**
  * Api helper class.
@@ -34,17 +36,22 @@ class ApiHelpers {
 	 * @return array{type: string, tax_id: string}  The data.
 	 */
 	private static function get_order_person_type( WC_Order $order ) {
-		$person_type = $order->get_meta( '_billing_person_type' );
-		$cpf         = preg_replace( '/[^0-9]/', '', $order->get_meta( '_billing_cpf' ) );
-		$cnpj        = preg_replace( '/[^0-9]/', '', $order->get_meta( '_billing_cnpj' ) );
+		$is_api = wc()->is_store_api_request();
+		$checkout_fields = Package::container()->get( CheckoutFields::class );
+
+		$person_type = $is_api ? $checkout_fields->get_field_from_object( 'pagbank/person-type', $order, 'billing' ) : $order->get_meta( '_billing_person_type' );
+		$cpf         = $is_api ? $checkout_fields->get_field_from_object( 'pagbank/cpf', $order, 'billing' ) : preg_replace( '/[^0-9]/', '', $order->get_meta( '_billing_cpf' ) );
+		$cnpj        = $is_api ? $checkout_fields->get_field_from_object( 'pagbank/cpf', $order, 'billing' ) : preg_replace( '/[^0-9]/', '', $order->get_meta( '_billing_cnpj' ) );
 
 		switch ( $person_type ) {
 			case '2':
+			case 'cnpj':
 				return array(
 					'type'   => 'cnpj',
 					'tax_id' => $cnpj,
 				);
 			case '1':
+			case 'cpf':
 				return array(
 					'type'   => 'cpf',
 					'tax_id' => $cpf,
@@ -145,10 +152,13 @@ class ApiHelpers {
 	 * @return array
 	 */
 	private static function get_order_shipping_address_api_data( WC_Order $order, array $address = array() ) {
+		$is_api = wc()->is_store_api_request();
+		$checkout_fields = Package::container()->get( CheckoutFields::class );
+
 		$defaults = array(
 			'street'      => substr( self::get_not_empty( $order->get_shipping_address_1(), $order->get_billing_address_1() ), 0, 160 ),
-			'number'      => substr( self::get_not_empty( $order->get_meta( '_shipping_number' ), $order->get_meta( '_billing_number' ) ), 0, 20 ),
-			'locality'    => substr( self::get_not_empty( $order->get_meta( '_shipping_neighborhood' ), $order->get_meta( '_billing_neighborhood' ) ), 0, 60 ),
+			'number'      => substr( self::get_not_empty( $is_api ? $checkout_fields->get_field_from_object( 'pagbank/address-number', $order, 'shipping' ) : $order->get_meta( '_shipping_number' ), $is_api ? $checkout_fields->get_field_from_object( 'pagbank/address-number', $order, 'billing' ) : $order->get_meta( '_billing_number' ) ), 0, 20 ),
+			'locality'    => substr( self::get_not_empty( $is_api ? $checkout_fields->get_field_from_object( 'pagbank/neighborhood', $order, 'shipping' ) : $order->get_meta( '_shipping_neighborhood' ), $is_api ? $checkout_fields->get_field_from_object( 'pagbank/neighborhood', $order, 'billing' ) : $order->get_meta( '_billing_neighborhood' ) ), 0, 60 ),
 			'city'        => substr( self::get_not_empty( $order->get_shipping_city(), $order->get_billing_city() ), 0, 90 ),
 			'region_code' => substr( self::get_not_empty( $order->get_shipping_state(), $order->get_billing_state() ), 0, 2 ),
 			'country'     => 'BRA',
@@ -177,10 +187,13 @@ class ApiHelpers {
 	 * @return array
 	 */
 	private static function get_order_billing_address_api_data( WC_Order $order, array $address = array() ) {
+		$is_api = wc()->is_store_api_request();
+		$checkout_fields = Package::container()->get( CheckoutFields::class );
+
 		$defaults = array(
 			'street'      => substr( $order->get_billing_address_1(), 0, 160 ),
-			'number'      => substr( $order->get_meta( '_billing_number' ), 0, 20 ),
-			'locality'    => substr( $order->get_meta( '_billing_neighborhood' ), 0, 60 ),
+			'number'      => substr( $is_api ? $checkout_fields->get_field_from_object( 'pagbank/address-number', $order, 'billing' ) : $order->get_meta( '_billing_number' ), 0, 20 ),
+			'locality'    => substr( $is_api ? $checkout_fields->get_field_from_object( 'pagbank/neighborhood', $order, 'billing' ) : $order->get_meta( '_billing_neighborhood' ), 0, 60 ),
 			'city'        => substr( $order->get_billing_city(), 0, 90 ),
 			'region'      => substr( $order->get_billing_state(), 0, 2 ),
 			'region_code' => substr( $order->get_billing_state(), 0, 2 ),
