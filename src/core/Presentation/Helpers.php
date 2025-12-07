@@ -11,6 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use Bissolli\ValidadorCpfCnpj\CPF;
+use Bissolli\ValidadorCpfCnpj\CNPJ;
+
 /**
  * Class Helpers.
  */
@@ -145,5 +148,31 @@ class Helpers {
 	 */
 	public static function is_localhost() {
 		return wp_parse_url( get_site_url() )['host'] === 'localhost';
+	}
+
+	/**
+	 * Validate CPF number.
+	 *
+	 * @param string $cpf CPF number (with or without formatting).
+	 *
+	 * @return bool True if valid, false otherwise.
+	 */
+	public static function is_valid_cpf( $cpf ) {
+		$validator = new CPF( $cpf );
+
+		return $validator->isValid();
+	}
+
+	/**
+	 * Validate CNPJ number.
+	 *
+	 * @param string $cnpj CNPJ number (with or without formatting).
+	 *
+	 * @return bool True if valid, false otherwise.
+	 */
+	public static function is_valid_cnpj( $cnpj ) {
+		$validator = new CNPJ( $cnpj );
+
+		return $validator->isValid();
 	}
 }

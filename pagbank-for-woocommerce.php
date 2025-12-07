@@ -22,6 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use PagBank_WooCommerce\Marketplace\WcfmIntegration;
+use PagBank_WooCommerce\Presentation\Blocks\CheckoutBlocksFields;
 use PagBank_WooCommerce\Presentation\ConnectAjaxApi;
 use PagBank_WooCommerce\Presentation\Helpers;
 use PagBank_WooCommerce\Presentation\Hooks;
@@ -60,6 +61,7 @@ add_action(
 	ConnectAjaxApi::get_instance();
 	WebhookHandler::get_instance();
 	OrderStatusApi::get_instance();
+	CheckoutBlocksFields::get_instance();
 
 	if ( Helpers::is_wcfm_activated() ) {
 		WcfmIntegration::get_instance();

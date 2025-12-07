@@ -30,7 +30,8 @@
         "jakeasmith/http_build_url": "^1",
         "giggsey/libphonenumber-for-php": "^8.13",
         "nesbot/carbon": "^2.66",
-        "wilkques/pkce-php": "^2.0"
+        "wilkques/pkce-php": "^2.0",
+        "bissolli/validador-cpf-cnpj": "^1.2"
     },
     "config": {
         "platform": {
