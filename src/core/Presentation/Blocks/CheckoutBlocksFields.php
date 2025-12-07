@@ -33,6 +33,7 @@ class CheckoutBlocksFields {
 	 */
 	public function __construct() {
 		add_action( 'woocommerce_init', array( $this, 'register_additional_checkout_fields' ) );
+		// TODO: Maybe we don't need to keep compatibility with legacy meta keys.
 		add_action( 'woocommerce_set_additional_field_value', array( $this, 'save_field_to_legacy_meta' ), 10, 4 );
 	}
 
