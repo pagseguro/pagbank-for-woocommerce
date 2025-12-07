@@ -30,8 +30,11 @@
         "@types/jquery": "^3.5.33",
         "@types/lodash": "^4.17.20",
         "@types/node": "^18.15.5",
+        "@types/react": "^18.3.27",
+        "@types/react-dom": "^18.3.7",
         "@typescript-eslint/eslint-plugin": "^6.10.0",
         "@typescript-eslint/parser": "^6.10.0",
+        "@wordpress/html-entities": "^4.36.0",
         "concurrently": "^7.6.0",
         "eslint": "^8.53.0",
         "eslint-config-next": "^14.0.2",
@@ -52,16 +55,22 @@
         "prettier": "^3.6.2",
         "typescript": "*",
         "vite": "^4.2.1",
+        "vite-plugin-external": "^6.2.2",
         "wp-readme-to-markdown": "^1.0.1"
     },
     "dependencies": {
         "@fontsource/roboto": "^5.2.8",
+        "@woocommerce/components": "^13.1.0",
+        "@wordpress/hooks": "^4.36.0",
+        "@wordpress/i18n": "^6.9.0",
         "autonumeric": "^4.10.9",
         "axios": "^1.12.2",
         "card-validator": "^8.1.1",
         "date-fns": "^2.30.0",
         "escape-html": "^1.0.3",
         "jquery": "^3.7.1",
-        "lodash": "^4.17.21"
+        "lodash": "^4.17.21",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1"
     }
 }

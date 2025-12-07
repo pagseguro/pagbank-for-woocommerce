@@ -1,10 +1,23 @@
 import { resolve } from "path";
 import { defineConfig } from "vite";
+import createExternal from "vite-plugin-external";
 
 import autoZip from "./plugins/auto-zip";
 
 export default defineConfig({
-	plugins: [autoZip()],
+	plugins: [
+		autoZip(),
+		createExternal({
+			externals: {
+				"@woocommerce/blocks-registry": "wc.wcBlocksRegistry",
+				"@woocommerce/settings": "wc.wcSettings",
+				"@wordpress/html-entities": "wp.htmlEntities",
+				"@wordpress/element": "wp.element",
+				react: "React",
+				"react-dom": "ReactDOM",
+			},
+		}),
+	],
 	build: {
 		lib: {
 			entry: {
