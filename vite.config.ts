@@ -30,6 +30,7 @@ export default defineConfig({
 					__dirname,
 					"src/ui/entries/public/checkout-boleto.tsx",
 				),
+				"public/checkout-pix": resolve(__dirname, "src/ui/entries/public/checkout-pix.tsx"),
 			},
 			name: "[name]",
 			formats: ["es"],
