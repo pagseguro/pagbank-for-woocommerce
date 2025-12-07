@@ -180,8 +180,12 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 			$response           = $this->api->create_order( $data );
 
 			if ( is_wp_error( $response ) ) {
-				wc_add_notice( 'There was an error during the payment.', 'error' );
-				return;
+				wc_add_notice( __( 'Houve um erro ao processar o pagamento. Tente novamente.', 'pagbank-for-woocommerce' ), 'error' );
+
+				return array(
+					'result'  => 'failure',
+					'message' => __( 'Houve um erro ao processar o pagamento. Tente novamente.', 'pagbank-for-woocommerce' ),
+				);
 			}
 
 			// Add order details.
@@ -196,6 +200,11 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 			);
 		} catch ( Exception $e ) {
 			wc_add_notice( $e->getMessage(), 'error' );
+
+			return array(
+				'result'  => 'failure',
+				'message' => $e->getMessage(),
+			);
 		}
 	}
 

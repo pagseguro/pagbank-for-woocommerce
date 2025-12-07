@@ -792,7 +792,11 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 					if ( $token === null ) {
 						wc_add_notice( __( 'O token de pagamento é inválido.', 'pagbank-for-woocommerce' ), 'error' );
-						return;
+
+						return array(
+							'result'  => 'failure',
+							'message' => __( 'O token de pagamento é inválido.', 'pagbank-for-woocommerce' ),
+						);
 					}
 
 					$card_bin    = $token->get_bin();
@@ -803,7 +807,11 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 				if ( is_wp_error( $charge_fees ) ) {
 					wc_add_notice( __( 'Erro ao obter o plano de parcelamento.', 'pagbank-for-woocommerce' ), 'error' );
-					return;
+
+					return array(
+						'result'  => 'failure',
+						'message' => __( 'Erro ao obter o plano de parcelamento.', 'pagbank-for-woocommerce' ),
+					);
 				}
 
 				$key                = array_key_first( $charge_fees['payment_methods']['credit_card'] );
@@ -818,8 +826,12 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				}
 
 				if ( $matched_plan === null ) {
-					wc_add_notice( __( 'O plano de parcelamento não foi encontrado.', 'pagbank-for-woocommerce' ) );
-					return;
+					wc_add_notice( __( 'O plano de parcelamento não foi encontrado.', 'pagbank-for-woocommerce' ), 'error' );
+
+					return array(
+						'result'  => 'failure',
+						'message' => __( 'O plano de parcelamento não foi encontrado.', 'pagbank-for-woocommerce' ),
+					);
 				}
 
 				$transfer_of_interest_fee = $matched_plan['amount'];
@@ -855,7 +867,11 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 			if ( is_wp_error( $response ) ) {
 				wc_add_notice( __( 'Houve um erro durante o pagamento. Tente novamente.', 'pagbank-for-woocommerce' ), 'error' );
-				return;
+
+				return array(
+					'result'  => 'failure',
+					'message' => __( 'Houve um erro durante o pagamento. Tente novamente.', 'pagbank-for-woocommerce' ),
+				);
 			}
 
 			$charge = $response['charges'][0];
@@ -865,7 +881,11 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 				if ( is_wp_error( $refund_response ) ) {
 					wc_add_notice( __( 'Houve um erro durante o reembolso da cobrança inicial. Contate o administrador.', 'pagbank-for-woocommerce' ), 'error' );
-					return;
+
+					return array(
+						'result'  => 'failure',
+						'message' => __( 'Houve um erro durante o reembolso da cobrança inicial. Contate o administrador.', 'pagbank-for-woocommerce' ),
+					);
 				}
 			}
 
@@ -873,10 +893,18 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				$order->update_status( 'on-hold', __( 'O PagBank está analisando a transação.', 'pagbank-for-woocommerce' ) );
 			} elseif ( $charge['status'] === 'DECLINED' ) {
 				wc_add_notice( __( 'O pagamento foi recusado.', 'pagbank-for-woocommerce' ), 'error' );
-				return;
+
+				return array(
+					'result'  => 'failure',
+					'message' => __( 'O pagamento foi recusado.', 'pagbank-for-woocommerce' ),
+				);
 			} elseif ( $charge['status'] !== 'PAID' ) {
 				wc_add_notice( __( 'Houve um erro no pagamento. Por favor, entre em contato com o suporte.', 'pagbank-for-woocommerce' ), 'error' );
-				return;
+
+				return array(
+					'result'  => 'failure',
+					'message' => __( 'Houve um erro no pagamento. Por favor, entre em contato com o suporte.', 'pagbank-for-woocommerce' ),
+				);
 			}
 
 			if ( ( $save_card || $order_contains_subscription ) && isset( $charge['payment_method']['card']['id'] ) ) {
@@ -914,6 +942,11 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			);
 		} catch ( Exception $e ) {
 			wc_add_notice( $e->getMessage(), 'error' );
+
+			return array(
+				'result'  => 'failure',
+				'message' => $e->getMessage(),
+			);
 		}
 	}
 
