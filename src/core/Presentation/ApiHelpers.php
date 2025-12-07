@@ -36,7 +36,7 @@ class ApiHelpers {
 	 * @return array{type: string, tax_id: string}  The data.
 	 */
 	private static function get_order_person_type( WC_Order $order ) {
-		$is_api = wc()->is_store_api_request();
+		$is_api          = wc()->is_store_api_request();
 		$checkout_fields = Package::container()->get( CheckoutFields::class );
 
 		$person_type = $is_api ? $checkout_fields->get_field_from_object( 'pagbank/person-type', $order, 'billing' ) : $order->get_meta( '_billing_person_type' );
@@ -152,7 +152,7 @@ class ApiHelpers {
 	 * @return array
 	 */
 	private static function get_order_shipping_address_api_data( WC_Order $order, array $address = array() ) {
-		$is_api = wc()->is_store_api_request();
+		$is_api          = wc()->is_store_api_request();
 		$checkout_fields = Package::container()->get( CheckoutFields::class );
 
 		$defaults = array(
@@ -187,7 +187,7 @@ class ApiHelpers {
 	 * @return array
 	 */
 	private static function get_order_billing_address_api_data( WC_Order $order, array $address = array() ) {
-		$is_api = wc()->is_store_api_request();
+		$is_api          = wc()->is_store_api_request();
 		$checkout_fields = Package::container()->get( CheckoutFields::class );
 
 		$defaults = array(
