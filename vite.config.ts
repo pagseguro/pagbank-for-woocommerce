@@ -9,10 +9,6 @@ export default defineConfig({
 		autoZip(),
 		createExternal({
 			externals: {
-				"@woocommerce/blocks-registry": "wc.wcBlocksRegistry",
-				"@woocommerce/settings": "wc.wcSettings",
-				"@wordpress/html-entities": "wp.htmlEntities",
-				"@wordpress/element": "wp.element",
 				react: "React",
 				"react-dom": "ReactDOM",
 			},
@@ -29,6 +25,10 @@ export default defineConfig({
 				"public/checkout-credit-card": resolve(
 					__dirname,
 					"src/ui/entries/public/checkout-credit-card.ts",
+				),
+				"public/checkout-boleto": resolve(
+					__dirname,
+					"src/ui/entries/public/checkout-boleto.tsx",
 				),
 			},
 			name: "[name]",

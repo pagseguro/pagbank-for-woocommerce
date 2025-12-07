@@ -1,0 +1,63 @@
+<?php
+/**
+ * Registers PagBank payment methods for WooCommerce Checkout Blocks.
+ *
+ * @package PagBank_WooCommerce\Presentation\Blocks
+ */
+
+namespace PagBank_WooCommerce\Presentation\Blocks;
+
+use Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/**
+ * Class BlocksPaymentMethods.
+ */
+class BlocksPaymentMethods {
+
+	/**
+	 * Instance.
+	 *
+	 * @var BlocksPaymentMethods
+	 */
+	private static $instance = null;
+
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
+		add_action( 'woocommerce_blocks_loaded', array( $this, 'register_payment_methods' ) );
+	}
+
+	/**
+	 * Get instance.
+	 *
+	 * @return BlocksPaymentMethods
+	 */
+	public static function get_instance() {
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
+
+	/**
+	 * Register payment methods for WooCommerce Blocks.
+	 */
+	public function register_payment_methods() {
+		if ( ! class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
+			return;
+		}
+
+		add_action(
+			'woocommerce_blocks_payment_method_type_registration',
+			function ( PaymentMethodRegistry $payment_method_registry ) {
+				$payment_method_registry->register( new BoletoBlocksSupport() );
+			}
+		);
+	}
+}

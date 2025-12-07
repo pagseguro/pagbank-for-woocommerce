@@ -34,7 +34,6 @@
         "@types/react-dom": "^18.3.7",
         "@typescript-eslint/eslint-plugin": "^6.10.0",
         "@typescript-eslint/parser": "^6.10.0",
-        "@wordpress/html-entities": "^4.36.0",
         "concurrently": "^7.6.0",
         "eslint": "^8.53.0",
         "eslint-config-next": "^14.0.2",
@@ -61,7 +60,9 @@
     "dependencies": {
         "@fontsource/roboto": "^5.2.8",
         "@woocommerce/components": "^13.1.0",
+        "@wordpress/data": "^10.36.0",
         "@wordpress/hooks": "^4.36.0",
+        "@wordpress/html-entities": "^4.36.0",
         "@wordpress/i18n": "^6.9.0",
         "autonumeric": "^4.10.9",
         "axios": "^1.12.2",
