@@ -11,7 +11,9 @@ import type {
 } from "@woocommerce/types";
 import { decodeEntities } from "@wordpress/html-entities";
 import cardValidator from "card-validator";
+import parsePhoneNumber from "libphonenumber-js";
 import { useEffect, useRef, useState } from "react";
+import { type ThreeDSAuthenticateParams, use3DS } from "../hooks/use3DS";
 import { useInstallments } from "../hooks/useInstallments";
 import { settings } from "../settings";
 import { convertTwoDigitsYearToFourDigits, getCardBin } from "../utils";
@@ -44,6 +46,8 @@ export const Content = ({
 		cardBin,
 	});
 
+	const { authenticate, isAuthenticating, isEnabled: is3DSEnabled } = use3DS();
+
 	// Refs for form data to avoid re-registering callback
 	const formDataRef = useRef({
 		holder,
@@ -53,6 +57,9 @@ export const Content = ({
 		installments,
 		shouldSavePayment,
 	});
+
+	// Ref for billing data
+	const billingRef = useRef(billing);
 
 	useEffect(() => {
 		formDataRef.current = {
@@ -65,12 +72,17 @@ export const Content = ({
 		};
 	}, [holder, number, expiry, cvc, installments, shouldSavePayment]);
 
+	useEffect(() => {
+		billingRef.current = billing;
+	}, [billing]);
+
 	// Payment setup handler - register only once
 	// biome-ignore lint/correctness/useExhaustiveDependencies: eventRegistration and emitResponse are stable WooCommerce Blocks references.
 	useEffect(() => {
-		const unsubscribe = eventRegistration.onPaymentSetup(() => {
+		const unsubscribe = eventRegistration.onPaymentSetup(async () => {
 			const { holder, number, expiry, cvc, installments, shouldSavePayment } =
 				formDataRef.current;
+			const currentBilling = billingRef.current;
 
 			const cardBin = getCardBin(number);
 
@@ -127,15 +139,18 @@ export const Content = ({
 					};
 				}
 
+				const expMonth = cardExpirationDateValidation.month as string;
+				const expYear = convertTwoDigitsYearToFourDigits(
+					cardExpirationDateValidation.year as string,
+				);
+
 				// Encrypt card using PagBank SDK
 				const encryptedCard = PagSeguro.encryptCard({
 					publicKey: settings.card_public_key,
 					holder: holder.trim(),
 					number: cardNumber,
-					expMonth: cardExpirationDateValidation.month as string,
-					expYear: convertTwoDigitsYearToFourDigits(
-						cardExpirationDateValidation.year as string,
-					),
+					expMonth,
+					expYear,
 					securityCode: cvc.trim(),
 				});
 
@@ -161,6 +176,101 @@ export const Content = ({
 					};
 				}
 
+				// 3DS Authentication if enabled
+				let threedsId: string | undefined;
+
+				if (is3DSEnabled) {
+					const cellphone = parsePhoneNumber(
+						currentBilling.billingData["pagbank/cellphone"],
+						"BR",
+					);
+
+					if (!cellphone) {
+						return {
+							type: emitResponse.responseTypes.ERROR,
+							message: settings.messages.invalid_cellphone,
+							messageContext: emitResponse.noticeContexts.PAYMENTS,
+						};
+					}
+
+					if (cellphone.getType() !== "MOBILE") {
+						return {
+							type: emitResponse.responseTypes.ERROR,
+							message: settings.messages.invalid_cellphone,
+							messageContext: emitResponse.noticeContexts.PAYMENTS,
+						};
+					}
+
+					const threeDSParams: ThreeDSAuthenticateParams = {
+						customer: {
+							name: holder.trim(),
+							email: currentBilling.billingData.email,
+							phones: [
+								{
+									country: cellphone.countryCallingCode,
+									area: cellphone.nationalNumber
+										.replace(/\D/g, "")
+										.substring(0, 2),
+									number: cellphone.nationalNumber
+										.replace(/\D/g, "")
+										.substring(2),
+									type: "MOBILE",
+								},
+							],
+						},
+						card: {
+							number: cardNumber,
+							expMonth,
+							expYear,
+							holder: {
+								name: holder.trim(),
+							},
+						},
+						amount: {
+							value: currentBilling.cartTotal.value,
+							currency: currentBilling.currency.code,
+						},
+						installments: Number.parseInt(installments, 10),
+						billingAddress: {
+							street: currentBilling.billingData.address_1,
+							number: currentBilling.billingData["pagbank/address-number"],
+							regionCode: currentBilling.billingData.state,
+							country: "BRA",
+							city: currentBilling.billingData.city,
+							postalCode: currentBilling.billingData.postcode.replace(/\D/g, ""),
+						},
+					};
+
+					const result = await authenticate(threeDSParams);
+
+					if (result.status === "CHANGE_PAYMENT_METHOD") {
+						return {
+							type: emitResponse.responseTypes.ERROR,
+							message: settings.messages.threeds_change_payment_method,
+							messageContext: emitResponse.noticeContexts.PAYMENTS,
+						};
+					}
+
+					if (result.status === "AUTH_FLOW_COMPLETED" && result.id) {
+						threedsId = result.id;
+					}
+
+					// AUTH_NOT_SUPPORTED: Continue without 3DS if allowed
+					// Note: If the merchant doesn't allow continuing without 3DS (threeds_allow_continue = false),
+					// the backend will handle the rejection. This decision can be changed later by modifying
+					// this condition to check settings.threeds_allow_continue and return an error here.
+					if (
+						result.status === "AUTH_NOT_SUPPORTED" &&
+						!settings.threeds_allow_continue
+					) {
+						return {
+							type: emitResponse.responseTypes.ERROR,
+							message: settings.messages.threeds_change_payment_method,
+							messageContext: emitResponse.noticeContexts.PAYMENTS,
+						};
+					}
+				}
+
 				// Return success with payment data
 				return {
 					type: emitResponse.responseTypes.SUCCESS,
@@ -170,6 +280,9 @@ export const Content = ({
 							"pagbank_credit_card-card-holder": holder.trim(),
 							"pagbank_credit_card-card-bin": cardBin,
 							"pagbank_credit_card-installments": installments,
+							...(threedsId && {
+								"pagbank_credit_card-threeds-id": threedsId,
+							}),
 							...(shouldSavePayment && {
 								"wc-pagbank_credit_card-payment-token": "new",
 								"wc-pagbank_credit_card-new-payment-method": "true",
@@ -190,7 +303,7 @@ export const Content = ({
 		});
 
 		return unsubscribe;
-	}, []);
+	}, [authenticate, is3DSEnabled]);
 
 	return (
 		<div className="pagbank-credit-card-form">
@@ -218,17 +331,11 @@ export const Content = ({
 						value={installments}
 						onChange={setInstallments}
 						plans={installmentPlans}
-						isLoading={isLoading}
+						isLoading={isLoading || isAuthenticating}
 						disabled={settings.transfer_of_interest_enabled && cardBin.length < 6}
 					/>
 				)}
 			</div>
-
-			{/*
-				TODO: 3DS Authentication
-				O fluxo 3DS será implementado aqui quando necessário.
-				Documentação: https://dev.pagbank.uol.com.br/reference/3ds-autenticacao
-			*/}
 		</div>
 	);
 };

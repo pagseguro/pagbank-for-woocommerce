@@ -21,6 +21,12 @@ export const settings = getSetting<PaymentMethodSettings>("pagbank_credit_card_d
 	installments_plan: [],
 	api_installments_url: "",
 	nonce: "",
+	// 3DS settings
+	threeds_enabled: false,
+	threeds_allow_continue: true,
+	threeds_for_saved_cards: false,
+	api_3ds_session_url: "",
+	threeds_nonce: "",
 	messages: {
 		invalid_public_key: __("Invalid public key.", TEXT_DOMAIN),
 		invalid_holder_name: __("Invalid cardholder name.", TEXT_DOMAIN),
@@ -30,5 +36,20 @@ export const settings = getSetting<PaymentMethodSettings>("pagbank_credit_card_d
 		invalid_encrypted_card: __("Encrypted credit card not found.", TEXT_DOMAIN),
 		invalid_card_bin: __("Credit card BIN not found.", TEXT_DOMAIN),
 		installments_error: __("Failed to load installments. Please try again.", TEXT_DOMAIN),
+		// 3DS messages
+		threeds_session_error: __("Failed to create 3DS session. Please try again.", TEXT_DOMAIN),
+		threeds_auth_error: __(
+			"3DS authentication failed. Please try again or use a different card.",
+			TEXT_DOMAIN,
+		),
+		threeds_change_payment_method: __(
+			"This card cannot be authenticated. Please use a different payment method.",
+			TEXT_DOMAIN,
+		),
+		invalid_cellphone: __("The cellphone informed is not valid.", TEXT_DOMAIN),
+		threeds_not_supported: __(
+			"The credit card cannot be authenticated. Please use a different payment method.",
+			TEXT_DOMAIN,
+		),
 	},
 });
