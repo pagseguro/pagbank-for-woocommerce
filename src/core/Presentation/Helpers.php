@@ -164,6 +164,19 @@ class Helpers {
 	}
 
 	/**
+	 * Format CPF number.
+	 *
+	 * @param string $cpf CPF number (with or without formatting).
+	 *
+	 * @return string Formatted CPF (000.000.000-00).
+	 */
+	public static function format_cpf( $cpf ) {
+		$validator = new CPF( $cpf );
+
+		return $validator->format();
+	}
+
+	/**
 	 * Validate CNPJ number.
 	 *
 	 * @param string $cnpj CNPJ number (with or without formatting).
@@ -174,6 +187,33 @@ class Helpers {
 		$validator = new CNPJ( $cnpj );
 
 		return $validator->isValid();
+	}
+
+	/**
+	 * Format CNPJ number.
+	 *
+	 * @param string $cnpj CNPJ number (with or without formatting).
+	 *
+	 * @return string Formatted CNPJ (00.000.000/0000-00).
+	 */
+	public static function format_cnpj( $cnpj ) {
+		$validator = new CNPJ( $cnpj );
+
+		return $validator->format();
+	}
+
+	/**
+	 * Format CPF or CNPJ number based on its length/validity.
+	 *
+	 * @param string $value CPF or CNPJ number (with or without formatting).
+	 *
+	 * @return string|null Formatted CPF/CNPJ or null if invalid.
+	 */
+	public static function format_cpf_or_cnpj( $value ) {
+		$is_valid_cpf  = self::is_valid_cpf( $value );
+		$is_valid_cnpj = self::is_valid_cnpj( $value );
+
+		return $is_valid_cpf ? self::format_cpf( $value ) : ( $is_valid_cnpj ? self::format_cnpj( $value ) : null );
 	}
 
 	/**
@@ -188,5 +228,37 @@ class Helpers {
 	 */
 	public static function get_constant_value( string $constant_name, $fallback = null ) {
 		return \defined( $constant_name ) ? \constant( $constant_name ) : $fallback;
+	}
+
+	/**
+	 * Filter a string to keep only numeric characters.
+	 *
+	 * @param string $value Input string.
+	 *
+	 * @return string String containing only numbers.
+	 */
+	public static function filter_only_numbers( string $value ) {
+		return preg_replace( '/[^0-9]/', '', $value );
+	}
+
+	/**
+	 * Parse CPF or CNPJ value and return structured data.
+	 *
+	 * @param string $value CPF or CNPJ number (with or without formatting).
+	 *
+	 * @return array{type: string, value: string|null, is_valid: bool, error_message: string|null} Parsed data.
+	 */
+	public static function parse_cpf_or_cnpj( string $value ) {
+		$is_valid_cpf  = self::is_valid_cpf( $value );
+		$is_valid_cnpj = self::is_valid_cnpj( $value );
+
+		$is_valid = $is_valid_cpf || $is_valid_cnpj;
+
+		return array(
+			'type'          => $is_valid_cpf ? 'cpf' : ( $is_valid_cnpj ? 'cnpj' : 'unknown' ),
+			'value'         => $is_valid_cpf ? self::filter_only_numbers( $value ) : ( $is_valid_cnpj ? self::filter_only_numbers( $value ) : null ),
+			'is_valid'      => $is_valid,
+			'error_message' => $is_valid ? null : ( $is_valid_cpf ? __( 'CPF inválido. Verifique os dígitos informados.', 'pagbank-for-woocommerce' ) : ( $is_valid_cnpj ? __( 'CNPJ inválido. Verifique os dígitos informados.', 'pagbank-for-woocommerce' ) : __( 'CPF/CNPJ inválido. Informe 11 dígitos para CPF ou 14 para CNPJ.', 'pagbank-for-woocommerce' ) ) ),
+		);
 	}
 }
