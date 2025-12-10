@@ -4,8 +4,6 @@
  * @package PagBank_WooCommerce
  */
 
-import * as React from "react";
-
 import { decodeEntities } from "@wordpress/html-entities";
 
 const settings: PaymentMethodSettings = wc.wcSettings.getSetting("pagbank_boleto_data", {

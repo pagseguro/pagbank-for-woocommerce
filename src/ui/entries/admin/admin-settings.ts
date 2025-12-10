@@ -243,6 +243,7 @@ document.querySelectorAll("[data-connect-application-id]").forEach((connectButto
 					);
 				}
 			} catch (error) {
+				console.error(error);
 				alert("Houve um erro na conexão. Por favor, tente novamente.");
 			}
 

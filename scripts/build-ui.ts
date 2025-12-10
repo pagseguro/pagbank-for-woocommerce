@@ -1,6 +1,6 @@
-import { rmSync } from "fs";
-import { dirname, resolve } from "path";
-import { fileURLToPath } from "url";
+import { rmSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { build } from "vite";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

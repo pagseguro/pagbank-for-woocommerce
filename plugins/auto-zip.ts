@@ -1,7 +1,7 @@
-import Fs from "fs";
+import Fs from "node:fs";
+import Path from "node:path";
 import JSZip from "jszip";
-import Path from "path";
-import { type PluginOption } from "vite";
+import type { PluginOption } from "vite";
 
 import data from "../package.json";
 

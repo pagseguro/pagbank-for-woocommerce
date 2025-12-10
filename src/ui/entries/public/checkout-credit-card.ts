@@ -1,10 +1,8 @@
 import axios from "axios";
 import cardValidator from "card-validator";
 import escapeHtml from "escape-html";
+import jQuery from "jquery";
 import first from "lodash/first";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-declare const jQuery: any;
 
 type PagBankCardEncryptedErrors =
 	| "INVALID_NUMBER"
@@ -89,7 +87,14 @@ const scrollToNotices = (): void => {
 		scrollElement = $form;
 	}
 
-	jQuery.scroll_to_notices(scrollElement);
+	if (scrollElement.length > 0) {
+		$("html, body").animate(
+			{
+				scrollTop: (scrollElement.offset()?.top ?? 0) - 100,
+			},
+			1000,
+		);
+	}
 };
 
 const clearCheckoutErrors = (): void => {
@@ -310,27 +315,24 @@ const processEncryptedCard = () => {
 	}
 };
 
-wcForms.orderReview.on(
-	"submit",
-	(event: JQuery.SubmitEvent<unknown, unknown, HTMLFormElement, unknown>) => {
-		event.preventDefault();
+wcForms.orderReview.on("submit", (event: JQuery.SubmitEvent) => {
+	event.preventDefault();
 
-		const isPagBankCreditCard = jQuery(
-			"input#payment_method_pagbank_credit_card[name=payment_method]",
-			event.currentTarget,
-		).is(":checked");
+	const isPagBankCreditCard = jQuery(
+		"input#payment_method_pagbank_credit_card[name=payment_method]",
+		event.currentTarget,
+	).is(":checked");
 
-		const shouldContinue = !isPagBankCreditCard || processEncryptedCard();
+	const shouldContinue = !isPagBankCreditCard || processEncryptedCard();
 
-		if (shouldContinue) {
-			if (!isPagBankCreditCard) {
-				clearCheckoutErrors();
-			}
-
-			event.currentTarget.submit();
+	if (shouldContinue) {
+		if (!isPagBankCreditCard) {
+			clearCheckoutErrors();
 		}
-	},
-);
+
+		event.currentTarget.submit();
+	}
+});
 
 wcForms.checkout.on("checkout_place_order_pagbank_credit_card", processEncryptedCard);
 
@@ -431,6 +433,8 @@ const bootstrap = () => {
 				});
 				setInstallments(result.data);
 			} catch (error) {
+				console.error(error);
+
 				const cardNumberInput = document.getElementById(
 					"pagbank_credit_card-card-number",
 				) as HTMLInputElement | null;
