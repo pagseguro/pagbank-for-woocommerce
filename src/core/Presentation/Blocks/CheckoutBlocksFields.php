@@ -13,6 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use libphonenumber\NumberParseException;
+use libphonenumber\PhoneNumberFormat;
+use libphonenumber\PhoneNumberUtil;
 use PagBank_WooCommerce\Presentation\Helpers;
 use WC_Order;
 use WP_Error;
@@ -180,6 +183,30 @@ class CheckoutBlocksFields {
 				'type'                       => 'text',
 				'show_in_order_confirmation' => false,
 				'required'                   => true,
+				'sanitize_callback'          => function ( $field_value ) {
+					$phone_util = PhoneNumberUtil::getInstance();
+
+					try {
+						$phone_number = $phone_util->parse( $field_value, 'BR' );
+
+						return $phone_util->format( $phone_number, PhoneNumberFormat::E164 );
+					} catch ( NumberParseException $e ) {
+						return $field_value;
+					}
+				},
+				'validate_callback'          => function ( $field_value ) {
+					$phone_util = PhoneNumberUtil::getInstance();
+
+					try {
+						$phone_number = $phone_util->parse( $field_value, 'BR' );
+
+						if ( ! $phone_util->isValidNumber( $phone_number ) ) {
+							return new WP_Error( 'invalid_cellphone', __( 'Número de celular inválido.', 'pagbank-for-woocommerce' ) );
+						}
+					} catch ( NumberParseException $e ) {
+						return new WP_Error( 'invalid_cellphone', __( 'Número de celular inválido.', 'pagbank-for-woocommerce' ) );
+					}
+				},
 			)
 		);
 	}

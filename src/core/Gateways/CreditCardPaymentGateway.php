@@ -147,9 +147,9 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		$this->transfer_of_interest_enabled       = 'yes' === $this->get_option( 'transfer_of_interest_enabled' );
 		$this->maximum_installments_interest_free = (int) $this->get_option( 'maximum_installments_interest_free' );
 
-		$this->threeds_enabled         = 'yes' === $this->get_option( 'threeds_enabled' );
+		$this->threeds_enabled = 'yes' === $this->get_option( 'threeds_enabled' );
 		// TODO: This will probably be always false.
-		$this->threeds_allow_continue  = 'yes' === $this->get_option( 'threeds_allow_continue' );
+		$this->threeds_allow_continue = 'yes' === $this->get_option( 'threeds_allow_continue' );
 		// TODO: This will probably be always false.
 		$this->threeds_for_saved_cards = 'yes' === $this->get_option( 'threeds_for_saved_cards' );
 
@@ -799,7 +799,8 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		}
 
 		// Validation for 3DS.
-		if( $this->threeds_enabled && $is_new_credit_card ) {
+		if ( $this->threeds_enabled && $is_new_credit_card ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce is verified by WooCommerce checkout process.
 			$has_3ds_id = isset( $_POST['pagbank_credit_card-threeds-id'] ) && ! empty( $_POST['pagbank_credit_card-threeds-id'] );
 
 			if ( ! $has_3ds_id ) {

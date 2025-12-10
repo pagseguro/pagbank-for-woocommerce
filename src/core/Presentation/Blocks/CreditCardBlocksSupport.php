@@ -131,9 +131,9 @@ final class CreditCardBlocksSupport extends AbstractPaymentMethodType {
 		$maximum_installments_interest_free = (int) $this->get_setting( 'maximum_installments_interest_free', 1 );
 
 		// 3DS settings.
-		$threeds_enabled         = 'yes' === $this->get_setting( 'threeds_enabled', 'no' );
+		$threeds_enabled = 'yes' === $this->get_setting( 'threeds_enabled', 'no' );
 		// TODO: This will probably be always false.
-		$threeds_allow_continue  = 'yes' === $this->get_setting( 'threeds_allow_continue', 'yes' );
+		$threeds_allow_continue = 'yes' === $this->get_setting( 'threeds_allow_continue', 'yes' );
 		// TODO: This will probably be always false.
 		$threeds_for_saved_cards = 'yes' === $this->get_setting( 'threeds_for_saved_cards', 'no' );
 
