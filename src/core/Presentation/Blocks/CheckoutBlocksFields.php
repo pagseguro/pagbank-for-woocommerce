@@ -74,35 +74,12 @@ class CheckoutBlocksFields {
 			return;
 		}
 
-		// Person type (Pessoa Física / Pessoa Jurídica).
+		// CPF/CNPJ field - shown only for Brazil.
 		woocommerce_register_additional_checkout_field(
 			array(
-				'id'       => 'pagbank/person-type',
-				'index'    => 2,
-				'label'    => __( 'Tipo de pessoa', 'pagbank-for-woocommerce' ),
-				'location' => 'address',
-				'type'     => 'select',
-				'required' => true,
-				'options'  => array(
-					array(
-						'value' => 'cpf',
-						'label' => __( 'Pessoa Física', 'pagbank-for-woocommerce' ),
-					),
-					array(
-						'value' => 'cnpj',
-						'label' => __( 'Pessoa Jurídica', 'pagbank-for-woocommerce' ),
-					),
-				),
-			)
-		);
-
-		// CPF field - shown only for Pessoa Física (value = 'cpf').
-		// Uses dynamic 'address' property that adapts to billing/shipping context.
-		woocommerce_register_additional_checkout_field(
-			array(
-				'id'                => 'pagbank/cpf',
-				'index'             => 3,
-				'label'             => __( 'CPF', 'pagbank-for-woocommerce' ),
+				'id'                => 'pagbank/tax-id',
+				'index'             => 2,
+				'label'             => __( 'CPF/CNPJ', 'pagbank-for-woocommerce' ),
 				'location'          => 'address',
 				'type'              => 'text',
 				'required'          => array(
@@ -112,8 +89,8 @@ class CheckoutBlocksFields {
 							'properties' => array(
 								'address' => array(
 									'properties' => array(
-										'pagbank/person-type' => array(
-											'const' => 'cpf',
+										'country' => array(
+											'const' => 'BR',
 										),
 									),
 								),
@@ -128,9 +105,9 @@ class CheckoutBlocksFields {
 							'properties' => array(
 								'address' => array(
 									'properties' => array(
-										'pagbank/person-type' => array(
+										'country' => array(
 											'not' => array(
-												'const' => 'cpf',
+												'const' => 'BR',
 											),
 										),
 									),
@@ -143,110 +120,20 @@ class CheckoutBlocksFields {
 					return preg_replace( '/[^0-9]/', '', $field_value );
 				},
 				'validate_callback' => function ( $field_value ) {
-					if ( ! Helpers::is_valid_cpf( $field_value ) ) {
-						return new WP_Error( 'invalid_cpf', __( 'CPF inválido. Verifique os dígitos informados.', 'pagbank-for-woocommerce' ) );
+					$digits = preg_replace( '/[^0-9]/', '', $field_value );
+
+					if ( strlen( $digits ) === 11 ) {
+						if ( ! Helpers::is_valid_cpf( $digits ) ) {
+							return new WP_Error( 'invalid_cpf', __( 'CPF inválido. Verifique os dígitos informados.', 'pagbank-for-woocommerce' ) );
+						}
+					} elseif ( strlen( $digits ) === 14 ) {
+						if ( ! Helpers::is_valid_cnpj( $digits ) ) {
+							return new WP_Error( 'invalid_cnpj', __( 'CNPJ inválido. Verifique os dígitos informados.', 'pagbank-for-woocommerce' ) );
+						}
+					} else {
+						return new WP_Error( 'invalid_tax_id', __( 'CPF/CNPJ inválido. Informe 11 dígitos para CPF ou 14 para CNPJ.', 'pagbank-for-woocommerce' ) );
 					}
 				},
-			)
-		);
-
-		// CNPJ field - shown only for Pessoa Jurídica (value = 'cnpj').
-		// Uses dynamic 'address' property that adapts to billing/shipping context.
-		woocommerce_register_additional_checkout_field(
-			array(
-				'id'                => 'pagbank/cnpj',
-				'index'             => 3,
-				'label'             => __( 'CNPJ', 'pagbank-for-woocommerce' ),
-				'location'          => 'address',
-				'type'              => 'text',
-				'required'          => array(
-					'type'       => 'object',
-					'properties' => array(
-						'customer' => array(
-							'properties' => array(
-								'address' => array(
-									'properties' => array(
-										'pagbank/person-type' => array(
-											'const' => 'cnpj',
-										),
-									),
-								),
-							),
-						),
-					),
-				),
-				'hidden'            => array(
-					'type'       => 'object',
-					'properties' => array(
-						'customer' => array(
-							'properties' => array(
-								'address' => array(
-									'properties' => array(
-										'pagbank/person-type' => array(
-											'not' => array(
-												'const' => 'cnpj',
-											),
-										),
-									),
-								),
-							),
-						),
-					),
-				),
-				'sanitize_callback' => function ( $field_value ) {
-					return preg_replace( '/[^0-9]/', '', $field_value );
-				},
-				'validate_callback' => function ( $field_value ) {
-					if ( ! Helpers::is_valid_cnpj( $field_value ) ) {
-						return new WP_Error( 'invalid_cnpj', __( 'CNPJ inválido. Verifique os dígitos informados.', 'pagbank-for-woocommerce' ) );
-					}
-				},
-			)
-		);
-
-		// Company name field - shown only for Pessoa Jurídica (value = 'cnpj').
-		// Uses dynamic 'address' property that adapts to billing/shipping context.
-		woocommerce_register_additional_checkout_field(
-			array(
-				'id'       => 'pagbank/company-name',
-				'index'    => 4,
-				'label'    => __( 'Nome da empresa', 'pagbank-for-woocommerce' ),
-				'location' => 'address',
-				'type'     => 'text',
-				'required' => array(
-					'type'       => 'object',
-					'properties' => array(
-						'customer' => array(
-							'properties' => array(
-								'address' => array(
-									'properties' => array(
-										'pagbank/person-type' => array(
-											'const' => 'cnpj',
-										),
-									),
-								),
-							),
-						),
-					),
-				),
-				'hidden'   => array(
-					'type'       => 'object',
-					'properties' => array(
-						'customer' => array(
-							'properties' => array(
-								'address' => array(
-									'properties' => array(
-										'pagbank/person-type' => array(
-											'not' => array(
-												'const' => 'cnpj',
-											),
-										),
-									),
-								),
-							),
-						),
-					),
-				),
 			)
 		);
 
@@ -254,6 +141,7 @@ class CheckoutBlocksFields {
 		woocommerce_register_additional_checkout_field(
 			array(
 				'id'       => 'pagbank/address-number',
+				'index'    => 41,
 				'label'    => __( 'Número', 'pagbank-for-woocommerce' ),
 				'location' => 'address',
 				'type'     => 'text',
@@ -265,6 +153,7 @@ class CheckoutBlocksFields {
 		woocommerce_register_additional_checkout_field(
 			array(
 				'id'       => 'pagbank/neighborhood',
+				'index'    => 42,
 				'label'    => __( 'Bairro', 'pagbank-for-woocommerce' ),
 				'location' => 'address',
 				'type'     => 'text',
