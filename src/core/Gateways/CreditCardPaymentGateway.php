@@ -89,6 +89,27 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	private $maximum_installments_interest_free;
 
 	/**
+	 * 3DS authentication enabled.
+	 *
+	 * @var bool
+	 */
+	public $threeds_enabled;
+
+	/**
+	 * Allow continue when 3DS is not supported.
+	 *
+	 * @var bool
+	 */
+	public $threeds_allow_continue;
+
+	/**
+	 * Apply 3DS for saved cards.
+	 *
+	 * @var bool
+	 */
+	public $threeds_for_saved_cards;
+
+	/**
 	 * CreditCardPaymentGateway constructor.
 	 */
 	public function __construct() {
@@ -126,8 +147,15 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		$this->transfer_of_interest_enabled       = 'yes' === $this->get_option( 'transfer_of_interest_enabled' );
 		$this->maximum_installments_interest_free = (int) $this->get_option( 'maximum_installments_interest_free' );
 
+		$this->threeds_enabled         = 'yes' === $this->get_option( 'threeds_enabled' );
+		// TODO: This will probably be always false.
+		$this->threeds_allow_continue  = 'yes' === $this->get_option( 'threeds_allow_continue' );
+		// TODO: This will probably be always false.
+		$this->threeds_for_saved_cards = 'yes' === $this->get_option( 'threeds_for_saved_cards' );
+
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 		add_action( 'woocommerce_api_' . $this->id . '_installments', array( $this, 'get_installments' ) );
+		add_action( 'woocommerce_api_' . $this->id . '_3ds_session', array( $this, 'get_3ds_session' ) );
 		add_action( 'woocommerce_scheduled_subscription_payment_' . $this->id, array( $this, 'scheduled_subscription_payment' ), 10, 2 );
 		add_filter( 'woocommerce_get_customer_payment_tokens', array( $this, 'filter_customer_tokens' ), 10, 3 );
 
@@ -254,6 +282,41 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				'options'     => $this->get_installment_options( true ),
 				'desc_tip'    => true,
 			),
+			'threeds_enabled'                    => array(
+				'title'             => __( 'Autenticação 3DS', 'pagbank-for-woocommerce' ),
+				'type'              => 'checkbox',
+				'label'             => __( 'Habilitar autenticação 3DS', 'pagbank-for-woocommerce' ),
+				'description'       => __( 'Adiciona uma camada extra de segurança e transfere a responsabilidade de fraude para o banco emissor em transações autenticadas.', 'pagbank-for-woocommerce' ),
+				'default'           => 'no',
+				'desc_tip'          => true,
+				'custom_attributes' => array(
+					'data-toggle' => implode(
+						',',
+						array(
+							'#' . $this->get_field_key( 'threeds_allow_continue' ),
+							'#' . $this->get_field_key( 'threeds_for_saved_cards' ),
+						)
+					),
+				),
+			),
+			// TODO: This will probably be removed.
+			'threeds_allow_continue'             => array(
+				'title'       => __( 'Permitir transações não autenticadas', 'pagbank-for-woocommerce' ),
+				'type'        => 'checkbox',
+				'label'       => __( 'Permitir prosseguir quando 3DS não for suportado', 'pagbank-for-woocommerce' ),
+				'description' => __( 'Se desabilitado, transações com cartões não elegíveis ao 3DS serão recusadas.', 'pagbank-for-woocommerce' ),
+				'default'     => 'yes',
+				'desc_tip'    => true,
+			),
+			// TODO: This will probably be removed.
+			'threeds_for_saved_cards'            => array(
+				'title'       => __( '3DS para cartões salvos', 'pagbank-for-woocommerce' ),
+				'type'        => 'checkbox',
+				'label'       => __( 'Aplicar 3DS também para cartões salvos', 'pagbank-for-woocommerce' ),
+				'description' => __( 'Se habilitado, cartões tokenizados também passarão pela autenticação 3DS.', 'pagbank-for-woocommerce' ),
+				'default'     => 'no',
+				'desc_tip'    => true,
+			),
 			'logs_enabled'                       => array(
 				'title'       => __( 'Logs para depuração', 'pagbank-for-woocommerce' ),
 				'type'        => 'checkbox',
@@ -315,14 +378,20 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			'PagBankCheckoutCreditCardVariables',
 			array(
 				'messages' => array(
-					'inputs_not_found'         => __( 'Campos não encontrado.', 'pagbank-for-woocommerce' ),
-					'invalid_public_key'       => __( 'Chave pública inválida.', 'pagbank-for-woocommerce' ),
-					'invalid_holder_name'      => __( 'Nome do titular do cartão inválido.', 'pagbank-for-woocommerce' ),
-					'invalid_card_number'      => __( 'Número do cartão inválido.', 'pagbank-for-woocommerce' ),
-					'invalid_card_expiry_date' => __( 'Data de expiração do cartão inválida.', 'pagbank-for-woocommerce' ),
-					'invalid_security_code'    => __( 'Código de segurança do cartão inválido.', 'pagbank-for-woocommerce' ),
-					'invalid_encrypted_card'   => __( 'O cartão de crédito criptografado não foi encontrado.', 'pagbank-for-woocommerce' ),
-					'invalid_card_bin'         => __( 'O bin do cartão de crédito não foi encontrado.', 'pagbank-for-woocommerce' ),
+					'inputs_not_found'              => __( 'Campos não encontrado.', 'pagbank-for-woocommerce' ),
+					'invalid_public_key'            => __( 'Chave pública inválida.', 'pagbank-for-woocommerce' ),
+					'invalid_holder_name'           => __( 'Nome do titular do cartão inválido.', 'pagbank-for-woocommerce' ),
+					'invalid_card_number'           => __( 'Número do cartão inválido.', 'pagbank-for-woocommerce' ),
+					'invalid_card_expiry_date'      => __( 'Data de expiração do cartão inválida.', 'pagbank-for-woocommerce' ),
+					'invalid_security_code'         => __( 'Código de segurança do cartão inválido.', 'pagbank-for-woocommerce' ),
+					'invalid_encrypted_card'        => __( 'O cartão de crédito criptografado não foi encontrado.', 'pagbank-for-woocommerce' ),
+					'invalid_card_bin'              => __( 'O bin do cartão de crédito não foi encontrado.', 'pagbank-for-woocommerce' ),
+					// 3DS messages.
+					'threeds_session_error'         => __( 'Erro ao criar sessão 3DS. Tente novamente.', 'pagbank-for-woocommerce' ),
+					'threeds_auth_error'            => __( 'Falha na autenticação 3DS. Tente novamente ou use outro cartão.', 'pagbank-for-woocommerce' ),
+					'threeds_change_payment_method' => __( 'Este cartão não pode ser utilizado. Use outro método de pagamento.', 'pagbank-for-woocommerce' ),
+					'invalid_cellphone'             => __( 'O celular informado não é válido.', 'pagbank-for-woocommerce' ),
+					'threeds_not_supported'         => __( 'O cartão de crédito não pode ser autenticado. Use outro método de pagamento.', 'pagbank-for-woocommerce' ),
 				),
 				'settings' => array(
 					'installments_enabled'               => $this->installments_enabled,
@@ -330,6 +399,13 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 					'transfer_of_interest_enabled'       => $this->transfer_of_interest_enabled,
 					'maximum_installments_interest_free' => $this->maximum_installments_interest_free,
 					'card_public_key'                    => isset( $connect_data['public_key'] ) ? $connect_data['public_key'] : null,
+					// 3DS settings.
+					'threeds_enabled'                    => $this->threeds_enabled,
+					'threeds_allow_continue'             => $this->threeds_allow_continue,
+					'threeds_for_saved_cards'            => $this->threeds_for_saved_cards,
+					'api_3ds_session_url'                => $this->get_api_3ds_session_url(),
+					'threeds_nonce'                      => wp_create_nonce( 'pagbank_get_3ds_session' ),
+					'environment'                        => $this->environment,
 				),
 			)
 		);
@@ -560,6 +636,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			</p>',
 			'encrypted-card-field' => '<input id="' . esc_attr( $this->id ) . '-encrypted-card" type="hidden" name="' . esc_attr( $this->id ) . '-encrypted-card" />',
 			'card-bin-field'       => '<input id="' . esc_attr( $this->id ) . '-card-bin" type="hidden" name="' . esc_attr( $this->id ) . '-card-bin" />',
+			'threeds-id-field'     => '<input id="' . esc_attr( $this->id ) . '-threeds-id" type="hidden" name="' . esc_attr( $this->id ) . '-threeds-id" />',
 		);
 
 		if ( ! $cart_contains_subscription ) {
@@ -721,6 +798,16 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			}
 		}
 
+		// Validation for 3DS.
+		if( $this->threeds_enabled && $is_new_credit_card ) {
+			$has_3ds_id = isset( $_POST['pagbank_credit_card-threeds-id'] ) && ! empty( $_POST['pagbank_credit_card-threeds-id'] );
+
+			if ( ! $has_3ds_id ) {
+				wc_add_notice( __( 'A autenticação 3DS é obrigatória para novos cartões.', 'pagbank-for-woocommerce' ), 'error' );
+				return false;
+			}
+		}
+
 		return true;
 	}
 
@@ -754,6 +841,64 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	}
 
 	/**
+	 * Get API 3DS session URL.
+	 *
+	 * @return string API 3DS session URL.
+	 */
+	public function get_api_3ds_session_url() {
+		return WooCommerce::instance()->api_request_url( $this->id . '_3ds_session' );
+	}
+
+	/**
+	 * Get 3DS session for authentication.
+	 *
+	 * @return void
+	 */
+	public function get_3ds_session(): void {
+		$nonce = isset( $_GET['nonce'] ) ? sanitize_text_field( wp_unslash( $_GET['nonce'] ) ) : null;
+
+		if ( ! wp_verify_nonce( $nonce, 'pagbank_get_3ds_session' ) ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'Nonce inválido.', 'pagbank-for-woocommerce' ),
+				),
+				400
+			);
+			return;
+		}
+
+		if ( false === $this->threeds_enabled ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'A autenticação 3DS não está habilitada.', 'pagbank-for-woocommerce' ),
+				),
+				400
+			);
+			return;
+		}
+
+		$session_response = $this->api->create_3ds_session();
+
+		if ( is_wp_error( $session_response ) ) {
+			wp_send_json_error(
+				array(
+					'message' => $session_response->get_error_message(),
+				),
+				500
+			);
+			return;
+		}
+
+		wp_send_json_success(
+			array(
+				'session'    => $session_response['session'],
+				'expires_at' => $session_response['expires_at'],
+				'env'        => $this->environment === 'production' ? 'PROD' : 'SANDBOX',
+			)
+		);
+	}
+
+	/**
 	 * Process order payment.
 	 *
 	 * @param int $order_id Order ID.
@@ -781,6 +926,8 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			$installments = $order_contains_subscription ? 1 : ( isset( $_POST['pagbank_credit_card-installments'] ) ? (int) wc_clean( wp_unslash( $_POST['pagbank_credit_card-installments'] ) ) : 1 );
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$cvc = $order_contains_subscription && isset( $_POST['pagbank_credit_card-card-cvc'] ) ? wc_clean( wp_unslash( $_POST['pagbank_credit_card-card-cvc'] ) ) : null;
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$threeds_id = isset( $_POST['pagbank_credit_card-threeds-id'] ) ? wc_clean( wp_unslash( $_POST['pagbank_credit_card-threeds-id'] ) ) : null;
 
 			if ( $this->installments_enabled && $this->transfer_of_interest_enabled ) {
 				$amount_in_cents    = Helpers::format_money_cents( $order->get_total() );
@@ -853,7 +1000,8 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				$cvc,
 				$order_contains_subscription,
 				$installments,
-				$transfer_of_interest_fee
+				$transfer_of_interest_fee,
+				$threeds_id
 			) : ApiHelpers::get_credit_card_payment_data(
 				$this,
 				$order,
@@ -864,7 +1012,8 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				$cvc,
 				$order_contains_subscription,
 				$installments,
-				$transfer_of_interest_fee
+				$transfer_of_interest_fee,
+				$threeds_id
 			);
 
 			$response = $this->api->create_order( $data );

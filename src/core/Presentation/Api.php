@@ -476,6 +476,60 @@ class Api {
 	}
 
 	/**
+	 * Get the 3DS SDK API URL.
+	 *
+	 * @param string $path The path to append to the API URL.
+	 *
+	 * @return string The API URL.
+	 */
+	public function get_3ds_api_url( string $path = '' ): string {
+		return "https://{$this->get_environment()}sdk.pagseguro.com/$path";
+	}
+
+	/**
+	 * Create 3DS authentication session.
+	 *
+	 * The session is used for authentication operations with PagBank's internal 3DS SDK.
+	 * The session is valid for 30 minutes after creation.
+	 *
+	 * @return array|WP_Error The session data containing 'session' and 'expires_at'.
+	 */
+	public function create_3ds_session() {
+		$url = $this->get_3ds_api_url( 'checkout-sdk/sessions' );
+
+		$this->log_api_request( $url, '' );
+
+		$response = $this->request(
+			$url,
+			array(
+				'method'  => 'POST',
+				'headers' => array(
+					'Authorization' => $this->connect->get_access_token(),
+					'Content-Type'  => 'application/json',
+				),
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			$this->log_api_request_error( $response );
+
+			return $response;
+		}
+
+		$response_code         = wp_remote_retrieve_response_code( $response );
+		$response_body         = wp_remote_retrieve_body( $response );
+		$decoded_response_body = json_decode( $response_body, true );
+
+		$this->log_api_response( $response_code, $response_body );
+
+		if ( 201 !== $response_code ) {
+			return new WP_Error( 'pagbank_3ds_session_failed', 'PagBank 3DS session creation failed', $decoded_response_body );
+		}
+
+		return $decoded_response_body;
+	}
+
+	/**
 	 * Get public key.
 	 *
 	 * @param string $access_token The access token.

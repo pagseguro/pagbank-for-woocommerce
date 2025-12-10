@@ -130,6 +130,13 @@ final class CreditCardBlocksSupport extends AbstractPaymentMethodType {
 		$transfer_of_interest_enabled       = 'yes' === $this->get_setting( 'transfer_of_interest_enabled', 'no' );
 		$maximum_installments_interest_free = (int) $this->get_setting( 'maximum_installments_interest_free', 1 );
 
+		// 3DS settings.
+		$threeds_enabled         = 'yes' === $this->get_setting( 'threeds_enabled', 'no' );
+		// TODO: This will probably be always false.
+		$threeds_allow_continue  = 'yes' === $this->get_setting( 'threeds_allow_continue', 'yes' );
+		// TODO: This will probably be always false.
+		$threeds_for_saved_cards = 'yes' === $this->get_setting( 'threeds_for_saved_cards', 'no' );
+
 		// Calculate fixed installments plan if transfer of interest is disabled.
 		$installments_plan = array();
 		if ( $installments_enabled && ! $transfer_of_interest_enabled ) {
@@ -150,15 +157,27 @@ final class CreditCardBlocksSupport extends AbstractPaymentMethodType {
 			'installments_plan'                  => $installments_plan,
 			'api_installments_url'               => $this->gateway ? $this->gateway->get_api_installments_url() : '',
 			'nonce'                              => wp_create_nonce( 'pagbank_get_installments' ),
+			// 3DS settings.
+			'threeds_enabled'                    => $threeds_enabled,
+			'threeds_allow_continue'             => $threeds_allow_continue,
+			'threeds_for_saved_cards'            => $threeds_for_saved_cards,
+			'api_3ds_session_url'                => $this->gateway ? $this->gateway->get_api_3ds_session_url() : '',
+			'threeds_nonce'                      => wp_create_nonce( 'pagbank_get_3ds_session' ),
 			'messages'                           => array(
-				'invalid_public_key'       => __( 'Chave pública inválida.', 'pagbank-for-woocommerce' ),
-				'invalid_holder_name'      => __( 'Nome do titular do cartão inválido.', 'pagbank-for-woocommerce' ),
-				'invalid_card_number'      => __( 'Número do cartão inválido.', 'pagbank-for-woocommerce' ),
-				'invalid_card_expiry_date' => __( 'Data de expiração do cartão inválida.', 'pagbank-for-woocommerce' ),
-				'invalid_security_code'    => __( 'Código de segurança do cartão inválido.', 'pagbank-for-woocommerce' ),
-				'invalid_encrypted_card'   => __( 'O cartão de crédito criptografado não foi encontrado.', 'pagbank-for-woocommerce' ),
-				'invalid_card_bin'         => __( 'O bin do cartão de crédito não foi encontrado.', 'pagbank-for-woocommerce' ),
-				'installments_error'       => __( 'Erro ao carregar parcelas. Tente novamente.', 'pagbank-for-woocommerce' ),
+				'invalid_public_key'            => __( 'Chave pública inválida.', 'pagbank-for-woocommerce' ),
+				'invalid_holder_name'           => __( 'Nome do titular do cartão inválido.', 'pagbank-for-woocommerce' ),
+				'invalid_card_number'           => __( 'Número do cartão inválido.', 'pagbank-for-woocommerce' ),
+				'invalid_card_expiry_date'      => __( 'Data de expiração do cartão inválida.', 'pagbank-for-woocommerce' ),
+				'invalid_security_code'         => __( 'Código de segurança do cartão inválido.', 'pagbank-for-woocommerce' ),
+				'invalid_encrypted_card'        => __( 'O cartão de crédito criptografado não foi encontrado.', 'pagbank-for-woocommerce' ),
+				'invalid_card_bin'              => __( 'O bin do cartão de crédito não foi encontrado.', 'pagbank-for-woocommerce' ),
+				'installments_error'            => __( 'Erro ao carregar parcelas. Tente novamente.', 'pagbank-for-woocommerce' ),
+				// 3DS messages.
+				'threeds_session_error'         => __( 'Erro ao criar sessão 3DS. Tente novamente.', 'pagbank-for-woocommerce' ),
+				'threeds_auth_error'            => __( 'Falha na autenticação 3DS. Tente novamente ou use outro cartão.', 'pagbank-for-woocommerce' ),
+				'threeds_change_payment_method' => __( 'Este cartão não pode ser autenticado. Use outro método de pagamento.', 'pagbank-for-woocommerce' ),
+				'invalid_cellphone'             => __( 'O celular informado não é válido.', 'pagbank-for-woocommerce' ),
+				'threeds_not_supported'         => __( 'O cartão de crédito não pode ser autenticado. Use outro método de pagamento.', 'pagbank-for-woocommerce' ),
 			),
 		);
 	}
