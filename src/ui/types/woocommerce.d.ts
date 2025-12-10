@@ -97,3 +97,11 @@ declare module "@woocommerce/settings" {
 	export function setSetting(key: string, value: unknown): void;
 	export function getAdminLink(path: string): string;
 }
+
+// ============================================================================
+// @woocommerce/price-format
+// ============================================================================
+
+declare module "@woocommerce/price-format" {
+	export function formatPrice(price: number | string): string;
+}

@@ -50,6 +50,7 @@
 	"dependencies": {
 		"@woocommerce/components": "^13.1.0",
 		"@wordpress/data": "^10.36.0",
+		"@wordpress/element": "^6.36.0",
 		"@wordpress/hooks": "^4.36.0",
 		"@wordpress/html-entities": "^4.36.0",
 		"@wordpress/i18n": "^6.9.0",

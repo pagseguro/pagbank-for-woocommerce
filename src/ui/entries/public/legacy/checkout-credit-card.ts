@@ -3,14 +3,6 @@ import cardValidator from "card-validator";
 import escapeHtml from "escape-html";
 import jQuery from "jquery";
 
-type PagBankCardEncryptedErrors =
-	| "INVALID_NUMBER"
-	| "INVALID_SECURITY_CODE"
-	| "INVALID_EXPIRATION_MONTH"
-	| "INVALID_EXPIRATION_YEAR"
-	| "INVALID_PUBLIC_KEY"
-	| "INVALID_HOLDER";
-
 type CardBin = {
 	type: "card_bin";
 	nonce: string;
@@ -26,25 +18,6 @@ type PaymentToken = {
 };
 
 type GetInstallmentsDto = CardBin | PaymentToken;
-
-interface PagBankCard {
-	publicKey: string;
-	holder: string;
-	number: string;
-	expMonth: string;
-	expYear: string;
-	securityCode: string;
-}
-
-interface PagBankCardEncrypted {
-	hasErrors: boolean;
-	errors: Array<{ code: PagBankCardEncryptedErrors }>;
-	encryptedCard: string;
-}
-
-declare const PagSeguro: {
-	encryptCard: (card: PagBankCard) => PagBankCardEncrypted;
-};
 
 declare const PagBankCheckoutCreditCardVariables: {
 	messages: {
@@ -269,7 +242,7 @@ const processEncryptedCard = () => {
 			securityCode: card.cvc,
 		});
 
-		const messages: Record<PagBankCardEncryptedErrors, string> = {
+		const messages: Record<PagSeguroEncryptCardErrorCode, string> = {
 			INVALID_NUMBER: PagBankCheckoutCreditCardVariables.messages.invalid_card_number,
 			INVALID_SECURITY_CODE:
 				PagBankCheckoutCreditCardVariables.messages.invalid_security_code,
@@ -295,10 +268,12 @@ const processEncryptedCard = () => {
 			"pagbank_credit_card-card-bin",
 		) as HTMLInputElement | null;
 
-		if (encryptedCardInput == null) {
+		if (!encryptedCardInput) {
 			throw new Error(PagBankCheckoutCreditCardVariables.messages.invalid_encrypted_card);
-		} else if (cardBinInput === null) {
+		} else if (!cardBinInput) {
 			throw new Error(PagBankCheckoutCreditCardVariables.messages.invalid_card_bin);
+		} else if (!encryptedCard.encryptedCard) {
+			throw new Error(PagBankCheckoutCreditCardVariables.messages.invalid_encrypted_card);
 		}
 
 		encryptedCardInput.value = encryptedCard.encryptedCard;

@@ -14,6 +14,7 @@ export const externals: Record<string, string> = {
 	"@wordpress/admin-ui": "wp.adminUi",
 	"@wordpress/dataviews": "wp.dataviews",
 	"@wordpress/dataviews/wp": "wp.dataviews.wp",
+	"@wordpress/element": "wp.element",
 	"@wordpress/icons": "wp.icons",
 	"@wordpress/interface": "wp.interface",
 	"@wordpress/sync": "wp.sync",
@@ -42,6 +43,7 @@ export const entries: Record<string, string> = {
 	"public/legacy/checkout-credit-card": "src/ui/entries/public/legacy/checkout-credit-card.ts",
 	"public/blocks/checkout-boleto": "src/ui/entries/public/blocks/checkout-boleto.tsx",
 	"public/blocks/checkout-pix": "src/ui/entries/public/blocks/checkout-pix.tsx",
+	"public/blocks/checkout-credit-card": "src/ui/entries/public/blocks/checkout-credit-card/index.tsx",
 };
 
 interface BuildConfigOptions {

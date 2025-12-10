@@ -202,7 +202,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				'title'       => __( 'Descrição', 'pagbank-for-woocommerce' ),
 				'type'        => 'textarea',
 				'description' => __( 'Isso irá controlar a descrição que o cliente verá durante o checkout.', 'pagbank-for-woocommerce' ),
-				'default'     => __( 'Escolha um cartão de crédito salvo ou preencha os dados do seu cartão de crédito no formulário abaixo:', 'pagbank-for-woocommerce' ),
+				'default'     => 'Preencha os dados do seu cartão de crédito no formulário abaixo:',
 				'desc_tip'    => true,
 			),
 			'installments_enabled'               => array(
@@ -776,7 +776,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$card_bin = isset( $_POST['pagbank_credit_card-card-bin'] ) ? wc_clean( wp_unslash( $_POST['pagbank_credit_card-card-bin'] ) ) : null;
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$save_card = ( $payment_token === null || $payment_token === 'new' ) && isset( $_POST[ 'wc-' . $this->id . '-new-payment-method' ] ) && $_POST[ 'wc-' . $this->id . '-new-payment-method' ] === 'true';
+			$save_card = ( $payment_token === null || $payment_token === 'new' ) && isset( $_POST[ 'wc-' . $this->id . '-new-payment-method' ] ) && ( $_POST[ 'wc-' . $this->id . '-new-payment-method' ] === 'true' || $_POST[ 'wc-' . $this->id . '-new-payment-method' ] === '1' );
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$installments = $order_contains_subscription ? 1 : ( isset( $_POST['pagbank_credit_card-installments'] ) ? (int) wc_clean( wp_unslash( $_POST['pagbank_credit_card-installments'] ) ) : 1 );
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
