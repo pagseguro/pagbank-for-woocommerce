@@ -81,13 +81,13 @@ class CheckoutBlocksFields {
 		// CPF/CNPJ field - shown only for Brazil.
 		woocommerce_register_additional_checkout_field(
 			array(
-				'id'                => 'pagbank/tax-id',
-				'index'             => 2,
-				'label'             => __( 'CPF/CNPJ', 'pagbank-for-woocommerce' ),
-				'location'          => 'address',
-				'type'              => 'text',
+				'id'                         => 'pagbank/tax-id',
+				'index'                      => 2,
+				'label'                      => __( 'CPF/CNPJ', 'pagbank-for-woocommerce' ),
+				'location'                   => 'address',
+				'type'                       => 'text',
 				'show_in_order_confirmation' => false,
-				'required'          => array(
+				'required'                   => array(
 					'type'       => 'object',
 					'properties' => array(
 						'customer' => array(
@@ -103,7 +103,7 @@ class CheckoutBlocksFields {
 						),
 					),
 				),
-				'hidden'            => array(
+				'hidden'                     => array(
 					'type'       => 'object',
 					'properties' => array(
 						'customer' => array(
@@ -121,12 +121,12 @@ class CheckoutBlocksFields {
 						),
 					),
 				),
-				'sanitize_callback' => function ( $field_value ) {
+				'sanitize_callback'          => function ( $field_value ) {
 					$filtered_value = preg_replace( '/[^0-9]/', '', $field_value );
 
 					return Helpers::format_cpf_or_cnpj( $filtered_value );
 				},
-				'validate_callback' => function ( $field_value ) {
+				'validate_callback'          => function ( $field_value ) {
 					$digits = preg_replace( '/[^0-9]/', '', $field_value );
 
 					if ( strlen( $digits ) === 11 ) {
@@ -147,26 +147,39 @@ class CheckoutBlocksFields {
 		// Billing number.
 		woocommerce_register_additional_checkout_field(
 			array(
-				'id'       => 'pagbank/address-number',
-				'index'    => 41,
-				'label'    => __( 'Número', 'pagbank-for-woocommerce' ),
-				'location' => 'address',
-				'type'     => 'text',
+				'id'                         => 'pagbank/address-number',
+				'index'                      => 41,
+				'label'                      => __( 'Número', 'pagbank-for-woocommerce' ),
+				'location'                   => 'address',
+				'type'                       => 'text',
 				'show_in_order_confirmation' => false,
-				'required' => true,
+				'required'                   => true,
 			)
 		);
 
 		// Billing neighborhood.
 		woocommerce_register_additional_checkout_field(
 			array(
-				'id'       => 'pagbank/neighborhood',
-				'index'    => 42,
-				'label'    => __( 'Bairro', 'pagbank-for-woocommerce' ),
-				'location' => 'address',
-				'type'     => 'text',
+				'id'                         => 'pagbank/neighborhood',
+				'index'                      => 42,
+				'label'                      => __( 'Bairro', 'pagbank-for-woocommerce' ),
+				'location'                   => 'address',
+				'type'                       => 'text',
 				'show_in_order_confirmation' => false,
-				'required' => true,
+				'required'                   => true,
+			)
+		);
+
+		// Cellphone.
+		woocommerce_register_additional_checkout_field(
+			array(
+				'id'                         => 'pagbank/cellphone',
+				'index'                      => 101,
+				'label'                      => __( 'Celular', 'pagbank-for-woocommerce' ),
+				'location'                   => 'address',
+				'type'                       => 'text',
+				'show_in_order_confirmation' => false,
+				'required'                   => true,
 			)
 		);
 	}
@@ -214,6 +227,10 @@ class CheckoutBlocksFields {
 
 			case 'pagbank/neighborhood':
 				$wc_object->update_meta_data( $prefix . 'neighborhood', $value );
+				break;
+
+			case 'pagbank/cellphone':
+				$wc_object->update_meta_data( $prefix . 'cellphone', $value );
 				break;
 
 			default:
