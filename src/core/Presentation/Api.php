@@ -185,7 +185,7 @@ class Api {
 			)
 		);
 
-		if ( defined( 'PAGBANK_LOG_OAUTH_REQUEST' ) && PAGBANK_LOG_OAUTH_REQUEST ) {
+		if ( true === Helpers::get_constant_value( 'PAGBANK_LOG_OAUTH_REQUEST' ) ) {
 			$this->log_api_request( $url, $body, 'pagbank_oauth' );
 		}
 
@@ -202,7 +202,7 @@ class Api {
 		);
 
 		if ( is_wp_error( $response ) ) {
-			if ( defined( 'PAGBANK_LOG_OAUTH_REQUEST' ) && PAGBANK_LOG_OAUTH_REQUEST ) {
+			if ( true === Helpers::get_constant_value( 'PAGBANK_LOG_OAUTH_REQUEST' ) ) {
 				$this->log_api_request_error( $response, 'pagbank_oauth' );
 			}
 
@@ -213,7 +213,7 @@ class Api {
 		$response_body         = wp_remote_retrieve_body( $response );
 		$decoded_response_body = json_decode( $response_body, true );
 
-		if ( defined( 'PAGBANK_LOG_OAUTH_REQUEST' ) && PAGBANK_LOG_OAUTH_REQUEST ) {
+		if ( true === Helpers::get_constant_value( 'PAGBANK_LOG_OAUTH_REQUEST' ) ) {
 			$this->log_api_response( $response_code, $response_body, 'pagbank_oauth' );
 		}
 

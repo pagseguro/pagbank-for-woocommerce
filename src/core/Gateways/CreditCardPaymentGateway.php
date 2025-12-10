@@ -155,7 +155,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			$start = 1;
 		}
 
-		$max = defined( 'PAGBANK_FEATURE_FLAG_18X_INSTALLMENTS' ) && PAGBANK_FEATURE_FLAG_18X_INSTALLMENTS ? 18 : 12;
+		$max = true === Helpers::get_constant_value( 'PAGBANK_FEATURE_FLAG_18X_INSTALLMENTS' ) ? 18 : 12;
 
 		for ( $i = $start; $i <= $max; $i++ ) {
 			$options[ (string) $i ] = "{$i}x";

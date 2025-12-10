@@ -63,8 +63,10 @@ class WebhookHandler {
 	 * Get webhook url.
 	 */
 	public static function get_webhook_url(): string {
-		if ( defined( 'PAGBANK_WEBHOOK_SITE_URL' ) && PAGBANK_WEBHOOK_SITE_URL ) {
-			return PAGBANK_WEBHOOK_SITE_URL . '/wc-api/pagbank_woocommerce_handler';
+		$custom_site_url = Helpers::get_constant_value( 'PAGBANK_WEBHOOK_SITE_URL' );
+
+		if ( $custom_site_url ) {
+			return $custom_site_url . '/wc-api/pagbank_woocommerce_handler';
 		}
 
 		return WooCommerce::instance()->api_request_url( 'pagbank_woocommerce_handler' );
