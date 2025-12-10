@@ -89,19 +89,46 @@ interface PagSeguroPaymentMethodCard {
 	encrypted?: string;
 }
 
+type PagSeguroPaymentMethodType = "CREDIT_CARD" | "DEBIT_CARD";
+
 interface PagSeguro3DSAuthenticationRequest {
 	data: {
 		paymentMethod?: {
+			type?: PagSeguroPaymentMethodType;
+			installments?: number;
 			card?: PagSeguroPaymentMethodCard;
 		};
+		customer?: {
+			name: string;
+			email: string;
+			phones?: Array<{
+				country: string;
+				area: string;
+				number: string;
+				type: "MOBILE" | "HOME" | "BUSINESS";
+			}>;
+		};
+		amount?: {
+			value: number;
+			currency: string;
+		};
+		billingAddress?: {
+			street: string;
+			number: string;
+			complement?: string;
+			regionCode: string;
+			country: string;
+			city: string;
+			postalCode: string;
+		};
+		dataOnly?: boolean;
 		deviceInformation?: PagSeguroDeviceInformation | null;
 		[key: string]: unknown;
 	};
-	beforeChallenge?: (challenge: {
-		open: () => void;
-		brand: string;
-		issuer: string;
-	}) => void;
+	beforeChallenge?: (challenge: { open: () => void; brand: string; issuer: string }) => void;
+	onSuccess?: (result: PagSeguro3DSAuthenticationResponse) => void;
+	onFailure?: (error: Error) => void;
+	onError?: (error: Error) => void;
 }
 
 interface PagSeguro3DSInitialization {
@@ -185,7 +212,10 @@ declare const PagSeguro: {
 	/**
 	 * Custom error class for PagSeguro errors.
 	 */
-	PagSeguroError: new (message: string, detail: PagSeguroErrorDetail) => Error & {
+	PagSeguroError: new (
+		message: string,
+		detail: PagSeguroErrorDetail,
+	) => Error & {
 		detail: PagSeguroErrorDetail;
 	};
 };

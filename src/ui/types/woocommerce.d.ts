@@ -110,6 +110,23 @@ declare module "@woocommerce/types" {
 		cartTotal: PreparedCartTotalItem;
 		currency: Currency;
 		customerId: number;
+		billingData: {
+			address_1: string;
+			address_2: string;
+			city: string;
+			company: string;
+			country: string;
+			email: string;
+			first_name: string;
+			last_name: string;
+			"pagbank/address-number": string;
+			"pagbank/neighborhood": string;
+			"pagbank/tax-id": string;
+			"pagbank/cellphone": string;
+			phone: string;
+			postcode: string;
+			state: string;
+		};
 	}
 
 	export interface PreparedCartTotalItem {
