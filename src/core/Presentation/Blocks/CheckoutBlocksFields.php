@@ -189,7 +189,7 @@ class CheckoutBlocksFields {
 					try {
 						$phone_number = $phone_util->parse( $field_value, 'BR' );
 
-						return $phone_util->format( $phone_number, PhoneNumberFormat::E164 );
+						return $phone_util->format( $phone_number, PhoneNumberFormat::INTERNATIONAL );
 					} catch ( NumberParseException $e ) {
 						return $field_value;
 					}
