@@ -239,14 +239,6 @@ class CheckoutBlocksFields {
 						),
 					),
 				),
-				'sanitize_callback' => function ( $field_value ) {
-					return preg_replace( '/[^0-9]/', '', $field_value );
-				},
-				'validate_callback' => function ( $field_value ) {
-					if ( ! Helpers::is_valid_cnpj( $field_value ) ) {
-						return new WP_Error( 'invalid_cnpj', __( 'CNPJ inválido. Verifique os dígitos informados.', 'pagbank-for-woocommerce' ) );
-					}
-				},
 			)
 		);
 
