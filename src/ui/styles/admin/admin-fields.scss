@@ -1,0 +1,144 @@
+.pagbank-connect-modal {
+	position: fixed;
+	z-index: 99999;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	background-color: rgba(0, 0, 0, 0.4);
+
+	&.hidden {
+		display: none;
+	}
+
+	p {
+		margin-bottom: 10px !important;
+		margin-top: 0 !important;
+	}
+
+	table {
+		width: 100%;
+		margin: 20px 0;
+		border: 1px solid #e3e3e3;
+		border-collapse: collapse;
+
+		th,
+		td {
+			border: 1px solid #e3e3e3;
+			padding: 10px;
+			text-align: center;
+		}
+
+		td {
+			padding: 20px 10px;
+		}
+
+		ul {
+			list-style: disc;
+			margin-top: 0;
+			margin-left: 20px;
+			font-size: 0.8rem;
+			text-align: left;
+		}
+
+		button {
+			text-decoration: none;
+			background-color: #1bb99a;
+			display: inline-block;
+			padding: 10px 15px;
+			color: #fff;
+			border-radius: 3px;
+			font-size: 1.2rem;
+			font-weight: 300;
+			margin-left: auto;
+			margin-right: auto;
+			border: none;
+			cursor: pointer;
+
+			&:hover:not(:disabled) {
+				background-color: #1a947b;
+			}
+
+			&:disabled {
+				opacity: 0.6;
+				cursor: auto;
+			}
+		}
+	}
+
+	.pagbank-connect-modal-own-condition,
+	.pagbank-connect-modal-condition-sandbox {
+		text-align: center;
+	}
+
+	.pagbank-connect-modal-own-condition button {
+		border: none;
+		background-color: transparent;
+		color: #1bb99a;
+		cursor: pointer;
+
+		&:hover:not(:disabled) {
+			color: #1a947b;
+		}
+
+		&:disabled {
+			cursor: auto;
+			opacity: 0.6;
+		}
+	}
+
+	.pagbank-connect-modal-condition-sandbox button {
+		text-decoration: none;
+		background-color: #1bb99a;
+		display: inline-block;
+		padding: 10px 15px;
+		color: #fff;
+		border-radius: 3px;
+		font-size: 1.2rem;
+		font-weight: 300;
+		margin-left: auto;
+		margin-right: auto;
+		border: none;
+		cursor: pointer;
+
+		&:hover:not(:disabled) {
+			background-color: #1a947b;
+		}
+
+		&:disabled {
+			cursor: auto;
+			opacity: 0.6;
+		}
+	}
+}
+
+.pagbank-connect-modal-close-button {
+	background-color: transparent;
+	border: none;
+	position: absolute;
+	right: 0;
+	top: 0;
+	font-size: 30px;
+	cursor: pointer;
+
+	&:hover {
+		opacity: 0.8;
+	}
+}
+
+.pagbank-connect-modal-wrapper {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+}
+
+.pagbank-connect-modal-content {
+	width: 100%;
+	max-width: 600px;
+	padding: 30px;
+	border-radius: 5px;
+	background-color: #fff;
+	position: relative;
+}

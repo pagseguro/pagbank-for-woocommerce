@@ -1,0 +1,10 @@
+@container (min-width: 700px) {
+	.wc-block-checkout__shipping-fields,
+	.wc-block-checkout__billing-fields {
+		.wc-block-components-address-form {
+			.wc-block-components-text-input.wc-block-components-address-form__pagbank-company-name {
+				flex: 0 0 100%;
+			}
+		}
+	}
+}

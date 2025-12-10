@@ -1,4 +1,4 @@
-import { rmSync } from "node:fs";
+import { globSync, rmSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { build } from "vite";
@@ -77,6 +77,31 @@ async function buildAll() {
 					output: {
 						globals: externals,
 						dir: resolve(rootDir, "dist"),
+					},
+				},
+			},
+		});
+	}
+
+	// Build SCSS files
+	console.log("\nBuilding SCSS styles...");
+	const scssFiles = globSync("src/ui/styles/**/*.scss", { cwd: rootDir });
+
+	for (const scssFile of scssFiles) {
+		const relativePath = scssFile.replace("src/ui/styles/", "").replace(".scss", "");
+		console.log(`  Compiling ${relativePath}...`);
+
+		await build({
+			configFile: false,
+			root: rootDir,
+			build: {
+				emptyOutDir: false,
+				cssCodeSplit: false,
+				rollupOptions: {
+					input: resolve(rootDir, scssFile),
+					output: {
+						dir: resolve(rootDir, "dist/styles"),
+						assetFileNames: `${relativePath}.css`,
 					},
 				},
 			},

@@ -52,7 +52,7 @@ class CheckoutBlocksFields {
 	public function enqueue_scripts() {
 		wp_register_style(
 			'pagbank-checkout-blocks-fields',
-			plugins_url( 'styles/blocks/checkout-fields.css', PAGBANK_WOOCOMMERCE_FILE_PATH ),
+			plugins_url( 'dist/styles/blocks/checkout-fields.css', PAGBANK_WOOCOMMERCE_FILE_PATH ),
 			array(),
 			PAGBANK_WOOCOMMERCE_VERSION,
 			'all'

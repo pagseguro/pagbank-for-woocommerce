@@ -88,7 +88,7 @@ class PaymentGateways {
 		wp_register_script( 'pagbank-for-woocommerce-admin-settings', plugins_url( 'dist/admin/admin-settings.js', PAGBANK_WOOCOMMERCE_FILE_PATH ), array(), PAGBANK_WOOCOMMERCE_VERSION, true );
 		wp_register_style(
 			'pagbank-for-woocommerce-admin-settings',
-			plugins_url( 'styles/admin/admin-fields.css', PAGBANK_WOOCOMMERCE_FILE_PATH ),
+			plugins_url( 'dist/styles/admin/admin-fields.css', PAGBANK_WOOCOMMERCE_FILE_PATH ),
 			array(),
 			PAGBANK_WOOCOMMERCE_VERSION,
 			'all'
