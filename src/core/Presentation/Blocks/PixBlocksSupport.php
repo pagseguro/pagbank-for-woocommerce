@@ -62,7 +62,7 @@ final class PixBlocksSupport extends AbstractPaymentMethodType {
 	 * @return array
 	 */
 	public function get_payment_method_script_handles() {
-		$asset_path = plugin_dir_path( PAGBANK_WOOCOMMERCE_FILE_PATH ) . 'dist/public/checkout-pix.js';
+		$asset_path = plugin_dir_path( PAGBANK_WOOCOMMERCE_FILE_PATH ) . 'dist/public/blocks/checkout-pix.js';
 
 		if ( ! file_exists( $asset_path ) ) {
 			return array();
@@ -70,7 +70,7 @@ final class PixBlocksSupport extends AbstractPaymentMethodType {
 
 		wp_register_script(
 			'pagbank-pix-blocks',
-			plugins_url( 'dist/public/checkout-pix.js', PAGBANK_WOOCOMMERCE_FILE_PATH ),
+			plugins_url( 'dist/public/blocks/checkout-pix.js', PAGBANK_WOOCOMMERCE_FILE_PATH ),
 			array( 'react', 'wc-blocks-registry', 'wc-settings', 'wp-html-entities' ),
 			PAGBANK_WOOCOMMERCE_VERSION,
 			true

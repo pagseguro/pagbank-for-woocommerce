@@ -288,7 +288,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 		wp_enqueue_script(
 			'pagbank-checkout-credit-card',
-			plugins_url( 'dist/public/checkout-credit-card.js', PAGBANK_WOOCOMMERCE_FILE_PATH ),
+			plugins_url( 'dist/public/legacy/checkout-credit-card.js', PAGBANK_WOOCOMMERCE_FILE_PATH ),
 			array(),
 			PAGBANK_WOOCOMMERCE_VERSION,
 			true

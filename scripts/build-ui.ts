@@ -36,10 +36,11 @@ const externals: Record<string, string> = {
 
 const entries: Record<string, string> = {
 	"admin/admin-settings": "src/ui/entries/admin/admin-settings.ts",
-	"public/order": "src/ui/entries/public/order.ts",
-	"public/checkout-credit-card": "src/ui/entries/public/checkout-credit-card.ts",
-	"public/checkout-boleto": "src/ui/entries/public/checkout-boleto.tsx",
-	"public/checkout-pix": "src/ui/entries/public/checkout-pix.tsx",
+	"public/order-received/order-received-pooling":
+		"src/ui/entries/public/order-received/order-received-pooling.ts",
+	"public/legacy/checkout-credit-card": "src/ui/entries/public/legacy/checkout-credit-card.ts",
+	"public/blocks/checkout-boleto": "src/ui/entries/public/blocks/checkout-boleto.tsx",
+	"public/blocks/checkout-pix": "src/ui/entries/public/blocks/checkout-pix.tsx",
 };
 
 const rootDir = resolve(__dirname, "..");

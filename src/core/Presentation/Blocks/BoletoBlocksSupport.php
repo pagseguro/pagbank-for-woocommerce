@@ -62,7 +62,7 @@ final class BoletoBlocksSupport extends AbstractPaymentMethodType {
 	 * @return array
 	 */
 	public function get_payment_method_script_handles() {
-		$asset_path = plugin_dir_path( PAGBANK_WOOCOMMERCE_FILE_PATH ) . 'dist/public/checkout-boleto.js';
+		$asset_path = plugin_dir_path( PAGBANK_WOOCOMMERCE_FILE_PATH ) . 'dist/public/blocks/checkout-boleto.js';
 
 		if ( ! file_exists( $asset_path ) ) {
 			return array();
@@ -70,7 +70,7 @@ final class BoletoBlocksSupport extends AbstractPaymentMethodType {
 
 		wp_register_script(
 			'pagbank-boleto-blocks',
-			plugins_url( 'dist/public/checkout-boleto.js', PAGBANK_WOOCOMMERCE_FILE_PATH ),
+			plugins_url( 'dist/public/blocks/checkout-boleto.js', PAGBANK_WOOCOMMERCE_FILE_PATH ),
 			array( 'react', 'wc-blocks-registry', 'wc-settings', 'wp-html-entities' ),
 			PAGBANK_WOOCOMMERCE_VERSION,
 			true
