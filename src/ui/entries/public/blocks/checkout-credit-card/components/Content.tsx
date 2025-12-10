@@ -4,21 +4,24 @@
  * @package PagBank_WooCommerce
  */
 
+import type {
+	BillingDataProps,
+	EmitResponseProps,
+	EventRegistrationProps,
+} from "@woocommerce/types";
 import { decodeEntities } from "@wordpress/html-entities";
 import cardValidator from "card-validator";
 import { useEffect, useRef, useState } from "react";
-
 import { useInstallments } from "../hooks/useInstallments";
 import { settings } from "../settings";
-import type { Billing, EmitResponse, EventRegistration } from "../types";
 import { convertTwoDigitsYearToFourDigits, getCardBin } from "../utils";
 import { CardFormFields } from "./CardFormFields";
 import { InstallmentsSelect } from "./InstallmentsSelect";
 
 interface ContentProps {
-	eventRegistration: EventRegistration;
-	emitResponse: EmitResponse;
-	billing: Billing;
+	eventRegistration: EventRegistrationProps;
+	emitResponse: EmitResponseProps;
+	billing: BillingDataProps;
 	shouldSavePayment: boolean;
 }
 

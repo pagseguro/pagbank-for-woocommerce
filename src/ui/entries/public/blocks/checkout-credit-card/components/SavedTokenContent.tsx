@@ -4,19 +4,22 @@
  * @package PagBank_WooCommerce
  */
 
+import type {
+	BillingDataProps,
+	EmitResponseProps,
+	EventRegistrationProps,
+} from "@woocommerce/types";
 import { useEffect, useRef } from "react";
-
 import { useInstallments } from "../hooks/useInstallments";
 import { settings } from "../settings";
-import type { Billing, EmitResponse, EventRegistration } from "../types";
 import { InstallmentsSelect } from "./InstallmentsSelect";
 
 interface SavedTokenContentProps {
 	token: string;
 	activePaymentMethod: string;
-	eventRegistration: EventRegistration;
-	emitResponse: EmitResponse;
-	billing: Billing;
+	eventRegistration: EventRegistrationProps;
+	emitResponse: EmitResponseProps;
+	billing: BillingDataProps;
 }
 
 export const SavedTokenContent = ({

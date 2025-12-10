@@ -35,24 +35,3 @@ export interface PaymentMethodSettings {
 		installments_error: string;
 	};
 }
-
-export interface EventRegistration {
-	onPaymentSetup: (callback: () => unknown) => () => void;
-}
-
-export interface EmitResponse {
-	responseTypes: {
-		SUCCESS: string;
-		FAIL: string;
-		ERROR: string;
-	};
-	noticeContexts: {
-		PAYMENTS: string;
-	};
-}
-
-export interface Billing {
-	cartTotal: {
-		value: number;
-	};
-}
