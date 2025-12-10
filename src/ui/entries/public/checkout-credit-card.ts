@@ -2,7 +2,6 @@ import axios from "axios";
 import cardValidator from "card-validator";
 import escapeHtml from "escape-html";
 import jQuery from "jquery";
-import first from "lodash/first";
 
 type PagBankCardEncryptedErrors =
 	| "INVALID_NUMBER"
@@ -285,7 +284,7 @@ const processEncryptedCard = () => {
 		if (encryptedCard.hasErrors) {
 			const errors = encryptedCard.errors.map((item) => messages[item.code]);
 
-			throw new Error(first(errors));
+			throw new Error(errors[0]);
 		}
 
 		const encryptedCardInput = document.getElementById(
