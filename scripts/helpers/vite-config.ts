@@ -43,7 +43,8 @@ export const entries: Record<string, string> = {
 	"public/legacy/checkout-credit-card": "src/ui/entries/public/legacy/checkout-credit-card.ts",
 	"public/blocks/checkout-boleto": "src/ui/entries/public/blocks/checkout-boleto.tsx",
 	"public/blocks/checkout-pix": "src/ui/entries/public/blocks/checkout-pix.tsx",
-	"public/blocks/checkout-credit-card": "src/ui/entries/public/blocks/checkout-credit-card/index.tsx",
+	"public/blocks/checkout-credit-card":
+		"src/ui/entries/public/blocks/checkout-credit-card/index.tsx",
 };
 
 interface BuildConfigOptions {
