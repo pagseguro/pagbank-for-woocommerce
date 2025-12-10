@@ -36,12 +36,22 @@ class ApiHelpers {
 	 * @return array{type: string, tax_id: string}  The data.
 	 */
 	private static function get_order_person_type( WC_Order $order ) {
-		$is_api          = wc()->is_store_api_request();
-		$checkout_fields = Package::container()->get( CheckoutFields::class );
+		$is_api = wc()->is_store_api_request();
 
-		$person_type = $is_api ? $checkout_fields->get_field_from_object( 'pagbank/person-type', $order, 'billing' ) : $order->get_meta( '_billing_person_type' );
-		$cpf         = $is_api ? $checkout_fields->get_field_from_object( 'pagbank/cpf', $order, 'billing' ) : preg_replace( '/[^0-9]/', '', $order->get_meta( '_billing_cpf' ) );
-		$cnpj        = $is_api ? $checkout_fields->get_field_from_object( 'pagbank/cpf', $order, 'billing' ) : preg_replace( '/[^0-9]/', '', $order->get_meta( '_billing_cnpj' ) );
+		if ( $is_api ) {
+			$checkout_fields = Package::container()->get( CheckoutFields::class );
+			$tax_id          = $checkout_fields->get_field_from_object( 'pagbank/tax-id', $order, 'billing' ) ?? $checkout_fields->get_field_from_object( 'pagbank/tax-id', $order, 'shipping' );
+			$parsed_tax_id   = Helpers::parse_cpf_or_cnpj( $tax_id );
+
+			return array(
+				'type'   => $parsed_tax_id['type'],
+				'tax_id' => $parsed_tax_id['value'],
+			);
+		}
+
+		$person_type = $order->get_meta( '_billing_person_type' );
+		$cpf         = Helpers::filter_only_numbers( $order->get_meta( '_billing_cpf' ) );
+		$cnpj        = Helpers::filter_only_numbers( $order->get_meta( '_billing_cnpj' ) );
 
 		switch ( $person_type ) {
 			case '2':
@@ -152,18 +162,33 @@ class ApiHelpers {
 	 * @return array
 	 */
 	private static function get_order_shipping_address_api_data( WC_Order $order, array $address = array() ) {
-		$is_api          = wc()->is_store_api_request();
-		$checkout_fields = Package::container()->get( CheckoutFields::class );
+		$is_api = wc()->is_store_api_request();
 
-		$defaults = array(
-			'street'      => substr( self::get_not_empty( $order->get_shipping_address_1(), $order->get_billing_address_1() ), 0, 160 ),
-			'number'      => substr( self::get_not_empty( $is_api ? $checkout_fields->get_field_from_object( 'pagbank/address-number', $order, 'shipping' ) : $order->get_meta( '_shipping_number' ), $is_api ? $checkout_fields->get_field_from_object( 'pagbank/address-number', $order, 'billing' ) : $order->get_meta( '_billing_number' ) ), 0, 20 ),
-			'locality'    => substr( self::get_not_empty( $is_api ? $checkout_fields->get_field_from_object( 'pagbank/neighborhood', $order, 'shipping' ) : $order->get_meta( '_shipping_neighborhood' ), $is_api ? $checkout_fields->get_field_from_object( 'pagbank/neighborhood', $order, 'billing' ) : $order->get_meta( '_billing_neighborhood' ) ), 0, 60 ),
-			'city'        => substr( self::get_not_empty( $order->get_shipping_city(), $order->get_billing_city() ), 0, 90 ),
-			'region_code' => substr( self::get_not_empty( $order->get_shipping_state(), $order->get_billing_state() ), 0, 2 ),
-			'country'     => 'BRA',
-			'postal_code' => preg_replace( '/[^0-9]/', '', self::get_not_empty( $order->get_shipping_postcode(), $order->get_billing_postcode() ) ),
-		);
+		$defaults = array();
+
+		if ( $is_api ) {
+			$checkout_fields = Package::container()->get( CheckoutFields::class );
+
+			$defaults = array(
+				'street'      => substr( self::get_not_empty( $order->get_shipping_address_1(), $order->get_billing_address_1() ), 0, 160 ),
+				'number'      => substr( self::get_not_empty( $checkout_fields->get_field_from_object( 'pagbank/address-number', $order, 'shipping' ), $checkout_fields->get_field_from_object( 'pagbank/address-number', $order, 'billing' ) ), 0, 20 ),
+				'locality'    => substr( self::get_not_empty( $checkout_fields->get_field_from_object( 'pagbank/neighborhood', $order, 'shipping' ), $checkout_fields->get_field_from_object( 'pagbank/neighborhood', $order, 'billing' ) ), 0, 60 ),
+				'city'        => substr( self::get_not_empty( $order->get_shipping_city(), $order->get_billing_city() ), 0, 90 ),
+				'region_code' => substr( self::get_not_empty( $order->get_shipping_state(), $order->get_billing_state() ), 0, 2 ),
+				'country'     => 'BRA',
+				'postal_code' => preg_replace( '/[^0-9]/', '', self::get_not_empty( $order->get_shipping_postcode(), $order->get_billing_postcode() ) ),
+			);
+		} else {
+			$defaults = array(
+				'street'      => substr( self::get_not_empty( $order->get_shipping_address_1(), $order->get_billing_address_1() ), 0, 160 ),
+				'number'      => substr( self::get_not_empty( $order->get_meta( '_shipping_number' ), $order->get_meta( '_billing_number' ) ), 0, 20 ),
+				'locality'    => substr( self::get_not_empty( $order->get_meta( '_shipping_neighborhood' ), $order->get_meta( '_billing_neighborhood' ) ), 0, 60 ),
+				'city'        => substr( self::get_not_empty( $order->get_shipping_city(), $order->get_billing_city() ), 0, 90 ),
+				'region_code' => substr( self::get_not_empty( $order->get_shipping_state(), $order->get_billing_state() ), 0, 2 ),
+				'country'     => 'BRA',
+				'postal_code' => preg_replace( '/[^0-9]/', '', self::get_not_empty( $order->get_shipping_postcode(), $order->get_billing_postcode() ) ),
+			);
+		}
 
 		if ( $order->get_shipping_address_2() ) {
 			$defaults['complement'] = substr( self::get_not_empty( $order->get_shipping_address_2(), $order->get_billing_address_2() ), 0, 40 );

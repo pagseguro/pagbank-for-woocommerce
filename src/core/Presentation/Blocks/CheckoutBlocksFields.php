@@ -14,6 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use PagBank_WooCommerce\Presentation\Helpers;
+use WC_Order;
 use WP_Error;
 
 /**
@@ -34,6 +35,7 @@ class CheckoutBlocksFields {
 	public function __construct() {
 		add_action( 'woocommerce_init', array( $this, 'register_additional_checkout_fields' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+		add_action( 'woocommerce_set_additional_field_value', array( $this, 'save_field_to_legacy_meta' ), 10, 4 );
 	}
 
 	/**
@@ -68,6 +70,8 @@ class CheckoutBlocksFields {
 
 	/**
 	 * Register additional checkout fields for Blocks.
+	 *
+	 * @return void
 	 */
 	public function register_additional_checkout_fields() {
 		if ( ! function_exists( 'woocommerce_register_additional_checkout_field' ) ) {
@@ -82,6 +86,7 @@ class CheckoutBlocksFields {
 				'label'             => __( 'CPF/CNPJ', 'pagbank-for-woocommerce' ),
 				'location'          => 'address',
 				'type'              => 'text',
+				'show_in_order_confirmation' => false,
 				'required'          => array(
 					'type'       => 'object',
 					'properties' => array(
@@ -117,7 +122,9 @@ class CheckoutBlocksFields {
 					),
 				),
 				'sanitize_callback' => function ( $field_value ) {
-					return preg_replace( '/[^0-9]/', '', $field_value );
+					$filtered_value = preg_replace( '/[^0-9]/', '', $field_value );
+
+					return Helpers::format_cpf_or_cnpj( $filtered_value );
 				},
 				'validate_callback' => function ( $field_value ) {
 					$digits = preg_replace( '/[^0-9]/', '', $field_value );
@@ -145,6 +152,7 @@ class CheckoutBlocksFields {
 				'label'    => __( 'Número', 'pagbank-for-woocommerce' ),
 				'location' => 'address',
 				'type'     => 'text',
+				'show_in_order_confirmation' => false,
 				'required' => true,
 			)
 		);
@@ -157,8 +165,61 @@ class CheckoutBlocksFields {
 				'label'    => __( 'Bairro', 'pagbank-for-woocommerce' ),
 				'location' => 'address',
 				'type'     => 'text',
+				'show_in_order_confirmation' => false,
 				'required' => true,
 			)
 		);
+	}
+
+	/**
+	 * Save field values to legacy meta keys for compatibility with existing code.
+	 *
+	 * This method maps the new checkout block fields to legacy meta keys used by
+	 * the classic checkout and other parts of the plugin.
+	 *
+	 * @param string                        $key       Field key.
+	 * @param mixed                         $value     Field value.
+	 * @param string                        $group     Field group (billing, shipping, other).
+	 * @param \WC_Order|\WC_Customer|object $wc_object WooCommerce object.
+	 *
+	 * @return void
+	 */
+	public function save_field_to_legacy_meta( $key, $value, $group, $wc_object ) {
+		if ( ! ( $wc_object instanceof WC_Order ) ) {
+			return;
+		}
+
+		$prefix = 'billing' === $group ? '_billing_' : '_shipping_';
+
+		switch ( $key ) {
+			case 'pagbank/tax-id':
+				$digits = Helpers::filter_only_numbers( $value );
+
+				if ( strlen( $digits ) === 11 ) {
+					// CPF.
+					$wc_object->update_meta_data( $prefix . 'persontype', '1' );
+					$wc_object->update_meta_data( $prefix . 'cpf', Helpers::format_cpf( $digits ) );
+					$wc_object->update_meta_data( $prefix . 'cnpj', '' );
+				} elseif ( strlen( $digits ) === 14 ) {
+					// CNPJ.
+					$wc_object->update_meta_data( $prefix . 'persontype', '2' );
+					$wc_object->update_meta_data( $prefix . 'cpf', '' );
+					$wc_object->update_meta_data( $prefix . 'cnpj', Helpers::format_cnpj( $digits ) );
+				}
+				break;
+
+			case 'pagbank/address-number':
+				$wc_object->update_meta_data( $prefix . 'number', $value );
+				break;
+
+			case 'pagbank/neighborhood':
+				$wc_object->update_meta_data( $prefix . 'neighborhood', $value );
+				break;
+
+			default:
+				return;
+		}
+
+		$wc_object->save_meta_data();
 	}
 }
