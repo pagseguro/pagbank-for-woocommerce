@@ -6,10 +6,8 @@
 
 import { getSetting } from "@woocommerce/settings";
 import { __ } from "@wordpress/i18n";
-
+import { TEXT_DOMAIN } from "../../../../constants";
 import type { PaymentMethodSettings } from "./types";
-
-const TEXT_DOMAIN = "pagbank-for-woocommerce";
 
 export const settings = getSetting<PaymentMethodSettings>("pagbank_credit_card_data", {
 	title: __("Credit card", TEXT_DOMAIN),

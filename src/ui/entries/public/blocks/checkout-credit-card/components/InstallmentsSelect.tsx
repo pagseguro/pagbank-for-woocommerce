@@ -5,10 +5,8 @@
  */
 
 import { __ } from "@wordpress/i18n";
-
+import { TEXT_DOMAIN } from "../../../../../constants";
 import type { InstallmentPlan } from "../types";
-
-const TEXT_DOMAIN = "pagbank-for-woocommerce";
 
 interface InstallmentsSelectProps {
 	id: string;

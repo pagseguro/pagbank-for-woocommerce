@@ -8,10 +8,8 @@ import { formatPrice } from "@woocommerce/price-format";
 import { getSetting } from "@woocommerce/settings";
 import { __, sprintf } from "@wordpress/i18n";
 import cardValidator from "card-validator";
-
+import { TEXT_DOMAIN } from "../../../../constants";
 import type { InstallmentPlan } from "./types";
-
-const TEXT_DOMAIN = "pagbank-for-woocommerce";
 
 /**
  * Format card number with proper spacing based on card type.
