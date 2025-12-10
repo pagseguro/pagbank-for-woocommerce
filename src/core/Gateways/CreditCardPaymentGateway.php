@@ -135,6 +135,36 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	}
 
 	/**
+	 * Get installment options for select fields.
+	 *
+	 * By default returns options from 1x to 12x.
+	 * If PAGBANK_FEATURE_FLAG_18X_INSTALLMENTS constant is defined,
+	 * extends the options to include 13x through 18x.
+	 *
+	 * @param bool $include_zero_option Whether to include a '0' option that maps to '1x' (for interest-free field).
+	 *
+	 * @return array Associative array of installment options.
+	 */
+	private function get_installment_options( bool $include_zero_option = false ): array {
+		$options = array();
+
+		if ( $include_zero_option ) {
+			$options['0'] = '1x';
+			$start        = 2;
+		} else {
+			$start = 1;
+		}
+
+		$max = defined( 'PAGBANK_FEATURE_FLAG_18X_INSTALLMENTS' ) && PAGBANK_FEATURE_FLAG_18X_INSTALLMENTS ? 18 : 12;
+
+		for ( $i = $start; $i <= $max; $i++ ) {
+			$options[ (string) $i ] = "{$i}x";
+		}
+
+		return $options;
+	}
+
+	/**
 	 * Initialize form fields.
 	 */
 	public function init_form_fields() {
@@ -197,20 +227,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				'type'        => 'select',
 				'description' => __( 'Isso irá definir o número máximo de parcelas durante o checkout.', 'pagbank-for-woocommerce' ),
 				'default'     => '12',
-				'options'     => array(
-					'1'  => '1x',
-					'2'  => '2x',
-					'3'  => '3x',
-					'4'  => '4x',
-					'5'  => '5x',
-					'6'  => '6x',
-					'7'  => '7x',
-					'8'  => '8x',
-					'9'  => '9x',
-					'10' => '10x',
-					'11' => '11x',
-					'12' => '12x',
-				),
+				'options'     => $this->get_installment_options(),
 				'desc_tip'    => true,
 			),
 			'transfer_of_interest_enabled'       => array(
@@ -234,20 +251,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				'type'        => 'select',
 				'description' => __( 'Isso irá definir a quantidade de parcelas que serão sem juros.', 'pagbank-for-woocommerce' ),
 				'default'     => '12',
-				'options'     => array(
-					'0'  => '1x',
-					'2'  => '2x',
-					'3'  => '3x',
-					'4'  => '4x',
-					'5'  => '5x',
-					'6'  => '6x',
-					'7'  => '7x',
-					'8'  => '8x',
-					'9'  => '9x',
-					'10' => '10x',
-					'11' => '11x',
-					'12' => '12x',
-				),
+				'options'     => $this->get_installment_options( true ),
 				'desc_tip'    => true,
 			),
 			'logs_enabled'                       => array(
