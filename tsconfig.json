@@ -24,5 +24,5 @@
             "@/*": ["./src/*"]
         }
     },
-    "include": ["src", "plugins", "scripts"]
+    "include": ["src", "scripts"]
 }
