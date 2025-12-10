@@ -22,11 +22,16 @@ const externals: Record<string, string> = {
 	"@wordpress/views": "wp.views",
 	"@wordpress/html-entities": "wp.htmlEntities",
 	// WooCommerce dependencies
-	"@woocommerce/data": "wc.data",
-	"@woocommerce/csv-export": "wc.csvExport",
-	"@woocommerce/settings": "wc.settings",
-	"@woocommerce/blocks-registry": "wc.wcBlocksRegistry",
+	"@woocommerce/blocks-checkout": "wc.blocksCheckout",
+	"@woocommerce/blocks-checkout-events": "wc.blocksCheckoutEvents",
+	"@woocommerce/blocks-components": "wc.blocksComponents",
+	"@woocommerce/price-format": "wc.priceFormat",
 	"@woocommerce/block-data": "wc.wcBlocksData",
+	"@woocommerce/blocks-registry": "wc.wcBlocksRegistry",
+	"@woocommerce/shared-context": "wc.wcBlocksSharedContext",
+	"@woocommerce/shared-hocs": "wc.wcBlocksSharedHocs",
+	"@woocommerce/settings": "wc.wcSettings",
+	"@woocommerce/types": "wc.wcTypes",
 };
 
 const entries: Record<string, string> = {

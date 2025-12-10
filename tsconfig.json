@@ -21,7 +21,19 @@
 
         /* Alias */
         "paths": {
-            "@/*": ["./src/*"]
+            "@/*": ["./src/*"],
+            /* WooCommerce dependencies */
+            "@woocommerce/blocks-checkout": ["./node_modules/woocommerce-monorepo/plugins/woocommerce/client/blocks/packages/checkout"],
+            "@woocommerce/blocks-checkout-events": ["./node_modules/woocommerce-monorepo/plugins/woocommerce/client/blocks/assets/js/events"],
+            "@woocommerce/blocks-components": ["./node_modules/woocommerce-monorepo/plugins/woocommerce/client/blocks/packages/components"],
+            "@woocommerce/price-format": ["./node_modules/woocommerce-monorepo/plugins/woocommerce/client/blocks/packages/prices"],
+            "@woocommerce/block-data": ["./node_modules/woocommerce-monorepo/plugins/woocommerce/client/blocks/assets/js/data"],
+            // Can't resolve the index.js file, so we're using the payment-methods index.
+            "@woocommerce/blocks-registry": ["./node_modules/woocommerce-monorepo/plugins/woocommerce/client/blocks/assets/js/blocks-registry/payment-methods"],
+            "@woocommerce/shared-context": ["./node_modules/woocommerce-monorepo/plugins/woocommerce/client/blocks/assets/js/shared/context"],
+            "@woocommerce/shared-hocs": ["./node_modules/woocommerce-monorepo/plugins/woocommerce/client/blocks/assets/js/shared/hocs"],
+            "@woocommerce/settings": ["./node_modules/woocommerce-monorepo/plugins/woocommerce/client/blocks/assets/js/settings/shared"],
+            "@woocommerce/types": ["./node_modules/woocommerce-monorepo/plugins/woocommerce/client/blocks/assets/js/types"]
         }
     },
     "include": ["src", "plugins", "scripts"]

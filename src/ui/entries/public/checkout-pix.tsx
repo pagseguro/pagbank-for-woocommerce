@@ -4,9 +4,17 @@
  * @package PagBank_WooCommerce
  */
 
+import { registerPaymentMethod } from "@woocommerce/blocks-registry";
+import { getSetting } from "@woocommerce/settings";
 import { decodeEntities } from "@wordpress/html-entities";
 
-const settings: PaymentMethodSettings = wc.wcSettings.getSetting("pagbank_pix_data", {
+interface PaymentMethodSettings {
+	title: string;
+	description: string;
+	supports: string[];
+}
+
+const settings = getSetting<PaymentMethodSettings>("pagbank_pix_data", {
 	title: "Pix",
 	description: "O código Pix será gerado assim que você finalizar o pedido.",
 	supports: [],
@@ -21,8 +29,6 @@ const Content = (): JSX.Element => {
 		<div className="pagbank-pix-description">{decodeEntities(settings.description || "")}</div>
 	);
 };
-
-const { registerPaymentMethod } = wc.wcBlocksRegistry;
 
 registerPaymentMethod({
 	name: "pagbank_pix",

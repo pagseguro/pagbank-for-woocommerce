@@ -40,6 +40,7 @@
 		"tsx": "^4.21.0",
 		"typescript": "^5.9.3",
 		"vite": "^7.2.7",
+		"woocommerce-monorepo": "github:woocommerce/woocommerce#release/10.3",
 		"wp-readme-to-markdown": "^1.0.1"
 	},
 	"dependencies": {
