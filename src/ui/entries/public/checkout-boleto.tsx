@@ -1,47 +1,41 @@
 /**
  * PagBank Boleto - WooCommerce Checkout Blocks Integration.
  *
- * This file uses global React from WordPress, not ES module imports.
- * Wrapped in IIFE to avoid variable conflicts with other scripts.
- *
  * @package PagBank_WooCommerce
  */
 
-(function () {
-	const React = window.React;
-	const { decodeEntities } = wp.htmlEntities;
+import * as React from "react";
 
-	const settings: PaymentMethodSettings = wc.wcSettings.getSetting("pagbank_boleto_data", {
-		title: "Boleto",
-		description: "O boleto será gerado assim que você finalizar o pedido.",
-		supports: [],
-	});
+import { decodeEntities } from "@wordpress/html-entities";
 
-	const Label = (): JSX.Element => {
-		return <span>{decodeEntities(settings.title)}</span>;
-	};
+const settings: PaymentMethodSettings = wc.wcSettings.getSetting("pagbank_boleto_data", {
+	title: "Boleto",
+	description: "O boleto será gerado assim que você finalizar o pedido.",
+	supports: [],
+});
 
-	const Content = (): JSX.Element => {
-		return (
-			<div className="pagbank-boleto-description">
-				{decodeEntities(settings.description || "")}
-			</div>
-		);
-	};
+const Label = (): JSX.Element => {
+	return <span>{decodeEntities(settings.title)}</span>;
+};
 
-	const { registerPaymentMethod } = wc.wcBlocksRegistry;
+const Content = (): JSX.Element => {
+	return (
+		<div className="pagbank-boleto-description">
+			{decodeEntities(settings.description || "")}
+		</div>
+	);
+};
 
-	registerPaymentMethod({
-		name: "pagbank_boleto",
-		label: <Label />,
-		content: <Content />,
-		edit: <Content />,
-		canMakePayment: () => true,
-		ariaLabel: decodeEntities(settings.title),
-		supports: {
-			features: settings.supports,
-		},
-	});
-})();
+const { registerPaymentMethod } = wc.wcBlocksRegistry;
 
-export {};
+registerPaymentMethod({
+	name: "pagbank_boleto",
+	label: <Label />,
+	content: <Content />,
+	edit: <Content />,
+	canMakePayment: () => true,
+	ariaLabel: decodeEntities(settings.title),
+	supports: {
+		features: settings.supports,
+	},
+});

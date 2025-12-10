@@ -1,47 +1,38 @@
 /**
  * PagBank Pix - WooCommerce Checkout Blocks Integration.
  *
- * This file uses global React from WordPress, not ES module imports.
- * Wrapped in IIFE to avoid variable conflicts with other scripts.
- *
  * @package PagBank_WooCommerce
  */
+import * as React from "react";
 
-(function () {
-	const React = window.React;
-	const { decodeEntities } = wp.htmlEntities;
+import { decodeEntities } from "@wordpress/html-entities";
 
-	const settings: PaymentMethodSettings = wc.wcSettings.getSetting("pagbank_pix_data", {
-		title: "Pix",
-		description: "O código Pix será gerado assim que você finalizar o pedido.",
-		supports: [],
-	});
+const settings: PaymentMethodSettings = wc.wcSettings.getSetting("pagbank_pix_data", {
+	title: "Pix",
+	description: "O código Pix será gerado assim que você finalizar o pedido.",
+	supports: [],
+});
 
-	const Label = (): JSX.Element => {
-		return <span>{decodeEntities(settings.title)}</span>;
-	};
+const Label = (): JSX.Element => {
+	return <span>{decodeEntities(settings.title)}</span>;
+};
 
-	const Content = (): JSX.Element => {
-		return (
-			<div className="pagbank-pix-description">
-				{decodeEntities(settings.description || "")}
-			</div>
-		);
-	};
+const Content = (): JSX.Element => {
+	return (
+		<div className="pagbank-pix-description">{decodeEntities(settings.description || "")}</div>
+	);
+};
 
-	const { registerPaymentMethod } = wc.wcBlocksRegistry;
+const { registerPaymentMethod } = wc.wcBlocksRegistry;
 
-	registerPaymentMethod({
-		name: "pagbank_pix",
-		label: <Label />,
-		content: <Content />,
-		edit: <Content />,
-		canMakePayment: () => true,
-		ariaLabel: decodeEntities(settings.title),
-		supports: {
-			features: settings.supports,
-		},
-	});
-})();
-
-export {};
+registerPaymentMethod({
+	name: "pagbank_pix",
+	label: <Label />,
+	content: <Content />,
+	edit: <Content />,
+	canMakePayment: () => true,
+	ariaLabel: decodeEntities(settings.title),
+	supports: {
+		features: settings.supports,
+	},
+});
