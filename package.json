@@ -8,6 +8,7 @@
 	"scripts": {
 		"setup": "./scripts/initial-setup.sh",
 		"composer": "./scripts/composer.sh",
+		"dev": "npx tsx scripts/dev-ui.ts",
 		"prebuild": "pnpm composer install --no-dev --optimize-autoloader",
 		"build": "tsc && npx tsx scripts/build-ui.ts",
 		"postbuild": "pnpm composer install",
