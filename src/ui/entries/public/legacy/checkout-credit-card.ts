@@ -19,6 +19,18 @@ type PaymentToken = {
 
 type GetInstallmentsDto = CardBin | PaymentToken;
 
+interface ThreeDSSession {
+	session: string;
+	expires_at: number;
+}
+
+interface ThreeDSResult {
+	status: "AUTH_FLOW_COMPLETED" | "AUTH_NOT_SUPPORTED" | "CHANGE_PAYMENT_METHOD";
+	id?: string;
+}
+
+let cachedSession: ThreeDSSession | null = null;
+
 declare const PagBankCheckoutCreditCardVariables: {
 	messages: {
 		invalid_public_key: string;
@@ -28,6 +40,11 @@ declare const PagBankCheckoutCreditCardVariables: {
 		invalid_security_code: string;
 		invalid_encrypted_card: string;
 		invalid_card_bin: string;
+		threeds_session_error: string;
+		threeds_auth_error: string;
+		threeds_change_payment_method: string;
+		invalid_cellphone: string;
+		threeds_not_supported: string;
 	};
 	settings: {
 		installments_enabled: boolean;
@@ -35,6 +52,11 @@ declare const PagBankCheckoutCreditCardVariables: {
 		transfer_of_interest_enabled: boolean;
 		maximum_installments_interest_free: number;
 		card_public_key: string;
+		threeds_enabled: boolean;
+		threeds_allow_continue: boolean;
+		api_3ds_session_url: string;
+		threeds_nonce: string;
+		environment: "sandbox" | "production";
 	};
 };
 
@@ -73,6 +95,100 @@ const clearCheckoutErrors = (): void => {
 	const $container = jQuery(".woocommerce-notices-wrapper");
 
 	$container.empty();
+};
+
+const fetch3DSSession = async (): Promise<ThreeDSSession> => {
+	if (cachedSession && cachedSession.expires_at > Date.now() / 1000) {
+		return cachedSession;
+	}
+
+	const { data } = await axios.get<{ success: boolean; data: ThreeDSSession }>(
+		PagBankCheckoutCreditCardVariables.settings.api_3ds_session_url,
+		{
+			params: {
+				nonce: PagBankCheckoutCreditCardVariables.settings.threeds_nonce,
+			},
+		},
+	);
+
+	if (!data.success) {
+		throw new Error(PagBankCheckoutCreditCardVariables.messages.threeds_session_error);
+	}
+
+	cachedSession = data.data;
+	return cachedSession;
+};
+
+const authenticate3DS = async (params: {
+	cardNumber: string;
+	expMonth: string;
+	expYear: string;
+	cardHolder: string;
+	amount: number;
+	installments: number;
+}): Promise<ThreeDSResult> => {
+	const session = await fetch3DSSession();
+
+	const env =
+		PagBankCheckoutCreditCardVariables.settings.environment === "production"
+			? "PROD"
+			: "SANDBOX";
+
+	PagSeguro.setUp({
+		session: session.session,
+		env,
+	});
+
+	return new Promise((resolve, reject) => {
+		PagSeguro.authenticate3DS({
+			data: {
+				customer: {
+					name: params.cardHolder,
+					email: "",
+				},
+				paymentMethod: {
+					type: "CREDIT_CARD",
+					installments: params.installments,
+					card: {
+						number: params.cardNumber,
+						expMonth: params.expMonth,
+						expYear: params.expYear,
+						holder: {
+							name: params.cardHolder,
+						},
+					},
+				},
+				amount: {
+					value: params.amount,
+					currency: "BRL",
+				},
+				billingAddress: {
+					street: "",
+					number: "",
+					regionCode: "",
+					country: "BRA",
+					city: "",
+					postalCode: "",
+				},
+				dataOnly: false,
+			},
+			beforeChallenge: (challengeInfo) => {
+				challengeInfo.open();
+			},
+			onSuccess: (result: PagSeguro3DSAuthenticationResponse) => {
+				resolve({
+					status: result.status as ThreeDSResult["status"],
+					id: result.id,
+				});
+			},
+			onFailure: () => {
+				reject(new Error(PagBankCheckoutCreditCardVariables.messages.threeds_auth_error));
+			},
+			onError: () => {
+				reject(new Error(PagBankCheckoutCreditCardVariables.messages.threeds_auth_error));
+			},
+		});
+	});
 };
 
 const submitCheckoutError = (errorMessage: string): void => {
@@ -130,7 +246,7 @@ const submitCheckoutError = (errorMessage: string): void => {
 	}
 };
 
-const processEncryptedCard = () => {
+const processEncryptedCard = async (): Promise<boolean> => {
 	const selectedPaymentToken = document.querySelector(
 		"[name=wc-pagbank_credit_card-payment-token]:checked",
 	) as HTMLInputElement;
@@ -268,6 +384,10 @@ const processEncryptedCard = () => {
 			"pagbank_credit_card-card-bin",
 		) as HTMLInputElement | null;
 
+		const threedsIdInput = document.getElementById(
+			"pagbank_credit_card-threeds-id",
+		) as HTMLInputElement | null;
+
 		if (!encryptedCardInput) {
 			throw new Error(PagBankCheckoutCreditCardVariables.messages.invalid_encrypted_card);
 		} else if (!cardBinInput) {
@@ -279,6 +399,48 @@ const processEncryptedCard = () => {
 		encryptedCardInput.value = encryptedCard.encryptedCard;
 		cardBinInput.value = card.number.substring(0, 6);
 
+		// 3DS Authentication
+		if (PagBankCheckoutCreditCardVariables.settings.threeds_enabled) {
+			const installmentsSelect = document.getElementById(
+				"pagbank_credit_card-installments",
+			) as HTMLSelectElement | null;
+
+			const installments = installmentsSelect
+				? Number.parseInt(installmentsSelect.value, 10)
+				: 1;
+			const amount = installmentsSelect
+				? Number.parseInt(installmentsSelect.getAttribute("data-amount") || "0", 10)
+				: 0;
+
+			const result = await authenticate3DS({
+				cardNumber: card.number,
+				expMonth: card.expirationDate.month,
+				expYear: card.expirationDate.year,
+				cardHolder: card.holder,
+				amount,
+				installments,
+			});
+
+			if (result.status === "CHANGE_PAYMENT_METHOD") {
+				throw new Error(
+					PagBankCheckoutCreditCardVariables.messages.threeds_change_payment_method,
+				);
+			}
+
+			if (result.status === "AUTH_NOT_SUPPORTED") {
+				if (!PagBankCheckoutCreditCardVariables.settings.threeds_allow_continue) {
+					throw new Error(
+						PagBankCheckoutCreditCardVariables.messages.threeds_change_payment_method,
+					);
+				}
+				// Continue without 3DS if allowed
+			}
+
+			if (result.status === "AUTH_FLOW_COMPLETED" && result.id && threedsIdInput) {
+				threedsIdInput.value = result.id;
+			}
+		}
+
 		return true;
 	} catch (error: unknown) {
 		if (error instanceof Error) {
@@ -289,7 +451,7 @@ const processEncryptedCard = () => {
 	}
 };
 
-wcForms.orderReview.on("submit", (event: JQuery.SubmitEvent) => {
+wcForms.orderReview.on("submit", async (event: JQuery.SubmitEvent) => {
 	event.preventDefault();
 
 	const isPagBankCreditCard = jQuery(
@@ -297,7 +459,7 @@ wcForms.orderReview.on("submit", (event: JQuery.SubmitEvent) => {
 		event.currentTarget,
 	).is(":checked");
 
-	const shouldContinue = !isPagBankCreditCard || processEncryptedCard();
+	const shouldContinue = !isPagBankCreditCard || (await processEncryptedCard());
 
 	if (shouldContinue) {
 		if (!isPagBankCreditCard) {
@@ -308,7 +470,35 @@ wcForms.orderReview.on("submit", (event: JQuery.SubmitEvent) => {
 	}
 });
 
-wcForms.checkout.on("checkout_place_order_pagbank_credit_card", processEncryptedCard);
+let isProcessing = false;
+let cardProcessed = false;
+
+wcForms.checkout.on("checkout_place_order_pagbank_credit_card", () => {
+	if (cardProcessed) {
+		cardProcessed = false;
+		return true;
+	}
+
+	if (isProcessing) {
+		return false;
+	}
+
+	isProcessing = true;
+
+	processEncryptedCard()
+		.then((success) => {
+			isProcessing = false;
+			if (success) {
+				cardProcessed = true;
+				wcForms.checkout.trigger("submit");
+			}
+		})
+		.catch(() => {
+			isProcessing = false;
+		});
+
+	return false;
+});
 
 const bootstrap = () => {
 	try {
