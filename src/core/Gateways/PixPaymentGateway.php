@@ -424,7 +424,7 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 	private function enqueue_pix_scripts() {
 		wp_enqueue_style(
 			'pagbank-order-pix',
-			plugins_url( 'styles/order-pix.css', PAGBANK_WOOCOMMERCE_FILE_PATH ),
+			plugins_url( 'styles/order-received/order-pix.css', PAGBANK_WOOCOMMERCE_FILE_PATH ),
 			array(),
 			PAGBANK_WOOCOMMERCE_VERSION,
 			'all'
