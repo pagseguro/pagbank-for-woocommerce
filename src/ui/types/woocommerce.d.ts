@@ -9,21 +9,21 @@
  */
 
 // ============================================================================
-// @woocommerce/blocks-registry
+// @woocommerce/types
 // ============================================================================
 
-declare module "@woocommerce/blocks-registry" {
+declare module "@woocommerce/types" {
 	import type { ReactNode } from "react";
 
-	interface PaymentMethodIcon {
+	export interface PaymentMethodIcon {
 		id: string;
 		src: string | null;
 		alt: string;
 	}
 
-	type PaymentMethodIcons = (PaymentMethodIcon | string)[];
+	export type PaymentMethodIcons = (PaymentMethodIcon | string)[];
 
-	interface SupportsConfiguration {
+	export interface SupportsConfiguration {
 		showSavedCards?: boolean;
 		showSaveOption?: boolean;
 		features?: string[];
@@ -31,7 +31,7 @@ declare module "@woocommerce/blocks-registry" {
 		style?: string[];
 	}
 
-	interface CanMakePaymentArgument {
+	export interface CanMakePaymentArgument {
 		cart: unknown;
 		cartTotals: unknown;
 		cartNeedsShipping: boolean;
@@ -43,11 +43,15 @@ declare module "@woocommerce/blocks-registry" {
 		paymentMethods: string[];
 	}
 
-	type CanMakePaymentReturnType = boolean | Promise<boolean | { error: { message: string } }>;
+	export type CanMakePaymentReturnType =
+		| boolean
+		| Promise<boolean | { error: { message: string } }>;
 
-	type CanMakePaymentCallback = (cartData: CanMakePaymentArgument) => CanMakePaymentReturnType;
+	export type CanMakePaymentCallback = (
+		cartData: CanMakePaymentArgument,
+	) => CanMakePaymentReturnType;
 
-	interface PaymentMethodConfiguration {
+	export interface PaymentMethodConfiguration {
 		name: string;
 		content: ReactNode;
 		edit: ReactNode;
@@ -61,7 +65,7 @@ declare module "@woocommerce/blocks-registry" {
 		savedTokenComponent?: ReactNode | null;
 	}
 
-	interface ExpressPaymentMethodConfiguration {
+	export interface ExpressPaymentMethodConfiguration {
 		name: string;
 		title?: string;
 		description?: string;
@@ -74,7 +78,127 @@ declare module "@woocommerce/blocks-registry" {
 		savedTokenComponent?: ReactNode | null;
 	}
 
-	type CanMakePaymentExtensionCallback = (cartData: CanMakePaymentArgument) => boolean;
+	export type CanMakePaymentExtensionCallback = (cartData: CanMakePaymentArgument) => boolean;
+
+	export type ActionCallbackType = (...args: unknown[]) => unknown;
+
+	export interface EventRegistrationProps {
+		onPaymentSetup: ReturnType<typeof emitterCallback>;
+	}
+
+	export interface EmitResponseProps {
+		responseTypes: {
+			SUCCESS: string;
+			FAIL: string;
+			ERROR: string;
+		};
+		noticeContexts: {
+			CART: string;
+			CHECKOUT: string;
+			PAYMENTS: string;
+			EXPRESS_PAYMENTS: string;
+			CONTACT_INFORMATION: string;
+			SHIPPING_ADDRESS: string;
+			BILLING_ADDRESS: string;
+			SHIPPING_METHODS: string;
+			CHECKOUT_ACTIONS: string;
+			ORDER_INFORMATION: string;
+		};
+	}
+
+	export interface BillingDataProps {
+		cartTotal: PreparedCartTotalItem;
+		currency: Currency;
+		customerId: number;
+	}
+
+	export interface PreparedCartTotalItem {
+		label: string;
+		value: number;
+	}
+
+	export interface Currency {
+		code: CurrencyCode;
+		decimalSeparator: string;
+		minorUnit: number;
+		prefix: string;
+		suffix: string;
+		symbol: string;
+		thousandSeparator: string;
+	}
+
+	export type CurrencyCode = string;
+
+	export type PaymentMethodInterface = {
+		activePaymentMethod: string;
+		billing: BillingDataProps;
+		checkoutStatus: CheckoutStatusProps;
+		components: ComponentProps;
+		emitResponse: EmitResponseProps;
+		eventRegistration: EventRegistrationProps;
+		onSubmit: () => void;
+		paymentStatus: {
+			isIdle: boolean;
+			isStarted: boolean;
+			isProcessing: boolean;
+			hasError: boolean;
+			isReady: boolean;
+			isDoingExpressPayment: boolean;
+		};
+		setExpressPaymentError: (errorMessage?: string) => void;
+		shouldSavePayment: boolean;
+	};
+
+	export interface CheckoutStatusProps {
+		isCalculating: boolean;
+		isComplete: boolean;
+		isIdle: boolean;
+		isProcessing: boolean;
+	}
+
+	export interface ComponentProps {
+		LoadingMask: React.ComponentType<LoadingMaskProps>;
+		PaymentMethodIcons: React.ComponentType<PaymentMethodIconsProps>;
+		PaymentMethodLabel: React.ComponentType<PaymentMethodLabelProps>;
+		ValidationInputError: React.ComponentType<ValidationInputErrorProps>;
+	}
+
+	export interface LoadingMaskProps {
+		children?: React.ReactNode | React.ReactNode[];
+		className?: string;
+		screenReaderLabel?: string;
+		showSpinner?: boolean;
+		isLoading?: boolean;
+	}
+
+	export interface PaymentMethodIconsProps {
+		icons: PaymentMethodIconsType;
+		align?: "left" | "right" | "center";
+		className?: string;
+	}
+
+	export interface PaymentMethodLabelProps {
+		icon: "" | keyof NamedIcons | SVGElement;
+		text: string;
+	}
+
+	export interface ValidationInputErrorProps {
+		errorMessage?: string;
+		propertyName?: string;
+		elementId?: string;
+	}
+}
+
+// ============================================================================
+// @woocommerce/blocks-registry
+// ============================================================================
+
+declare module "@woocommerce/blocks-registry" {
+	import type {
+		PaymentMethodConfiguration,
+		ExpressPaymentMethodConfiguration,
+		CanMakePaymentExtensionCallback,
+	} from "@woocommerce/types";
 
 	export function registerPaymentMethod(options: PaymentMethodConfiguration): void;
 	export function registerExpressPaymentMethod(options: ExpressPaymentMethodConfiguration): void;
