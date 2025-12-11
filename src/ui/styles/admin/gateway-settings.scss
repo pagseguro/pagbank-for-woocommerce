@@ -61,11 +61,51 @@ $pagbank-text-light: #757575;
 		margin-bottom: 24px;
 	}
 
+	&__title-row {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin-bottom: 16px;
+	}
+
+	&__icon {
+		flex-shrink: 0;
+	}
+
 	&__title {
 		font-size: 24px;
 		font-weight: 600;
 		color: $pagbank-text;
 		margin: 0;
+		flex-grow: 1;
+	}
+
+	&__logo {
+		flex-shrink: 0;
+	}
+
+	&__nav {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 16px;
+		padding-bottom: 16px;
+		border-bottom: 1px solid $pagbank-border;
+	}
+
+	&__nav-link {
+		font-size: 13px;
+		color: $pagbank-primary;
+		text-decoration: none;
+
+		&:hover {
+			color: $pagbank-primary-dark;
+			text-decoration: underline;
+		}
+
+		&--current {
+			color: $pagbank-text-light;
+			cursor: default;
+		}
 	}
 
 	&__notice {
@@ -172,6 +212,14 @@ $pagbank-text-light: #757575;
 		align-items: center;
 		gap: 8px;
 		color: $pagbank-text-light;
+	}
+
+	&__refreshing {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		color: $pagbank-text-light;
+		font-size: 13px;
 	}
 
 	&__status {

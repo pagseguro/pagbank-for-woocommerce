@@ -6,6 +6,7 @@
 
 import { Button, Notice, Spinner } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
+import { useEffect, useRef } from "react";
 import { TEXT_DOMAIN } from "@/constants";
 import { BoletoSettings as BoletoSettingsComponent } from "./components/boleto";
 import { CreditCardSettings as CreditCardSettingsComponent } from "./components/credit-card";
@@ -34,6 +35,22 @@ const GATEWAY_TITLES: Record<GatewayId, string> = {
 	pagbank_pay_with_pagbank: __("Pay with PagBank", TEXT_DOMAIN),
 };
 
+const GATEWAY_ICONS: Record<GatewayId, string> = {
+	pagbank_credit_card: "credit-card.svg",
+	pagbank_debit_card: "debit-card.svg",
+	pagbank_pix: "pix.svg",
+	pagbank_boleto: "boleto.svg",
+	pagbank_pay_with_pagbank: "pagbank.svg",
+};
+
+const ALL_GATEWAYS: GatewayId[] = [
+	"pagbank_credit_card",
+	"pagbank_debit_card",
+	"pagbank_pix",
+	"pagbank_boleto",
+	"pagbank_pay_with_pagbank",
+];
+
 export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 	const {
 		settings,
@@ -45,6 +62,19 @@ export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 		saveSettings,
 		resetSettings,
 	} = useSettings(gatewayId);
+
+	const noticeRef = useRef<HTMLDivElement>(null);
+
+	const pluginUrl = window.pagbankSettings?.pluginUrl ?? "";
+	const settingsUrl = window.pagbankSettings?.settingsUrl ?? "";
+	const iconUrl = `${pluginUrl}/images/icons/${GATEWAY_ICONS[gatewayId]}`;
+	const logoUrl = `${pluginUrl}/images/logos/logo-pagbank.png`;
+
+	useEffect(() => {
+		if (error && noticeRef.current) {
+			noticeRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+		}
+	}, [error]);
 
 	const handleSave = async () => {
 		await saveSettings();
@@ -163,19 +193,58 @@ export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 	return (
 		<div className="pagbank-gateway-settings">
 			<div className="pagbank-gateway-settings__header">
-				<h1 className="pagbank-gateway-settings__title">
-					{__("PagBank", TEXT_DOMAIN)} - {GATEWAY_TITLES[gatewayId]}
-				</h1>
+				<div className="pagbank-gateway-settings__title-row">
+					<img
+						src={iconUrl}
+						alt=""
+						className="pagbank-gateway-settings__icon"
+						width={32}
+						height={32}
+					/>
+					<h1 className="pagbank-gateway-settings__title">{GATEWAY_TITLES[gatewayId]}</h1>
+					<img
+						src={logoUrl}
+						alt="PagBank"
+						className="pagbank-gateway-settings__logo"
+						height={24}
+					/>
+				</div>
+				<nav className="pagbank-gateway-settings__nav">
+					{ALL_GATEWAYS.map((id) => {
+						const isCurrentGateway = id === gatewayId;
+						if (isCurrentGateway) {
+							return (
+								<span
+									key={id}
+									className="pagbank-gateway-settings__nav-link pagbank-gateway-settings__nav-link--current"
+								>
+									{GATEWAY_TITLES[id]}
+								</span>
+							);
+						}
+						return (
+							<a
+								key={id}
+								href={`${settingsUrl}${id}`}
+								className="pagbank-gateway-settings__nav-link"
+							>
+								{GATEWAY_TITLES[id]}
+							</a>
+						);
+					})}
+				</nav>
 			</div>
 
 			{error && (
-				<Notice
-					status="error"
-					isDismissible={false}
-					className="pagbank-gateway-settings__notice"
-				>
-					{error}
-				</Notice>
+				<div ref={noticeRef}>
+					<Notice
+						status="error"
+						isDismissible={false}
+						className="pagbank-gateway-settings__notice"
+					>
+						{error}
+					</Notice>
+				</div>
 			)}
 
 			<div className="pagbank-gateway-settings__content">{renderGatewaySettings()}</div>

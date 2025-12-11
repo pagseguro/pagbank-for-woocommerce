@@ -22,6 +22,7 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 		account,
 		account_id,
 		isLoading,
+		isRefreshing,
 		refresh,
 		error,
 		missing_scopes,
@@ -136,6 +137,13 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 				</div>
 			) : (
 				<>
+					{isRefreshing && (
+						<div className="pagbank-connect__refreshing">
+							<Spinner />
+							<span>{__("Atualizando...", TEXT_DOMAIN)}</span>
+						</div>
+					)}
+
 					{connected && authentication_error && (
 						<Notice
 							status="error"

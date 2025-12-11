@@ -66,6 +66,7 @@ export interface ConnectStatus {
 	account_id: string | null;
 	environment: Environment;
 	isLoading: boolean;
+	isRefreshing: boolean;
 	account: AccountInfo | null;
 	missing_scopes: string[];
 	authentication_error: boolean;
@@ -97,6 +98,8 @@ export interface PagBankSettingsLocalized {
 	ajaxUrl: string;
 	isLocalhost: boolean;
 	connectApplications: Record<string, ConnectApplication>;
+	pluginUrl: string;
+	settingsUrl: string;
 }
 
 declare global {

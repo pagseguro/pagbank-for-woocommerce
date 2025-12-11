@@ -21,14 +21,21 @@ export const useConnectStatus = (environment: Environment): UseConnectStatusRetu
 		account_id: null,
 		environment,
 		isLoading: true,
+		isRefreshing: false,
 		account: null,
 		missing_scopes: [],
 		authentication_error: false,
 	});
 	const [error, setError] = useState<string | null>(null);
+	const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
 	const refresh = useCallback(async () => {
-		setStatus((prev) => ({ ...prev, isLoading: true }));
+		// Only show full loading state on initial load, otherwise show refresh indicator
+		if (!hasLoadedOnce) {
+			setStatus((prev) => ({ ...prev, isLoading: true }));
+		} else {
+			setStatus((prev) => ({ ...prev, isRefreshing: true }));
+		}
 		setError(null);
 
 		try {
@@ -48,17 +55,20 @@ export const useConnectStatus = (environment: Environment): UseConnectStatusRetu
 				account_id: response.account_id,
 				environment: response.environment,
 				isLoading: false,
+				isRefreshing: false,
 				account: response.account,
 				missing_scopes: response.missing_scopes,
 				authentication_error: response.authentication_error,
 			});
+			setHasLoadedOnce(true);
 		} catch (err) {
 			setError(
 				err instanceof Error ? err.message : __("Erro ao verificar conexão", TEXT_DOMAIN),
 			);
-			setStatus((prev) => ({ ...prev, isLoading: false }));
+			setStatus((prev) => ({ ...prev, isLoading: false, isRefreshing: false }));
+			setHasLoadedOnce(true);
 		}
-	}, [environment]);
+	}, [environment, hasLoadedOnce]);
 
 	useEffect(() => {
 		refresh();

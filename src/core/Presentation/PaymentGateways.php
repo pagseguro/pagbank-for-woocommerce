@@ -139,6 +139,8 @@ class PaymentGateways {
 				'ajaxUrl'             => admin_url( 'admin-ajax.php' ),
 				'isLocalhost'         => Helpers::is_localhost(),
 				'connectApplications' => Connect::get_connect_applications(),
+				'pluginUrl'           => plugins_url( '', PAGBANK_WOOCOMMERCE_FILE_PATH ),
+				'settingsUrl'         => admin_url( 'admin.php?page=wc-settings&tab=checkout&section=' ),
 			)
 		);
 
