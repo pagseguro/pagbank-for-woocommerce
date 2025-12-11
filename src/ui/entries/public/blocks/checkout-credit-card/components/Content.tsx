@@ -11,7 +11,7 @@ import type {
 } from "@woocommerce/types";
 import { decodeEntities } from "@wordpress/html-entities";
 import cardValidator from "card-validator";
-import parsePhoneNumber from "libphonenumber-js";
+import parsePhoneNumber from "libphonenumber-js/mobile";
 import { useEffect, useRef, useState } from "react";
 import { type ThreeDSAuthenticateParams, use3DS } from "../hooks/use3DS";
 import { useInstallments } from "../hooks/useInstallments";

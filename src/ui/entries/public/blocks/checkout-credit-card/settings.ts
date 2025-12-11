@@ -48,7 +48,7 @@ export const settings = getSetting<PaymentMethodSettings>("pagbank_credit_card_d
 		),
 		invalid_cellphone: __("The cellphone informed is not valid.", TEXT_DOMAIN),
 		threeds_not_supported: __(
-			"The credit card cannot be authenticated. Please use a different payment method.",
+			"The card cannot be authenticated. Please use a different payment method.",
 			TEXT_DOMAIN,
 		),
 	},

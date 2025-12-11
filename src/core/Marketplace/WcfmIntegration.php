@@ -36,7 +36,7 @@ class WcfmIntegration {
 	private function __construct() {
 		add_action( 'wcfm_vendor_end_settings_payment', array( $this, 'payments_settings' ), 100 );
 		add_filter( 'woocommerce_is_purchasable', array( $this, 'disable_disconnected_users_product' ), 10, 2 );
-		add_filter( 'pagbank_credit_card_payment_data', array( $this, 'credit_card_payment_data' ), 10, 3 );
+		add_filter( 'pagbank_card_payment_data', array( $this, 'card_payment_data' ), 10, 2 );
 		add_filter( 'pagbank_pix_payment_data', array( $this, 'pix_payment_data' ), 10, 3 );
 		add_filter( 'pagbank_boleto_payment_data', array( $this, 'boleto_payment_data' ), 10, 3 );
 		add_action( 'wcfm_vendor_settings_update', array( $this, 'save_vendor_settings' ), 10, 2 );
@@ -189,7 +189,7 @@ class WcfmIntegration {
 	 * @param CreditCardPaymentGateway $gateway The credit card gateway class.
 	 * @return mixed
 	 */
-	public function credit_card_payment_data( $data, WC_Order $order, CreditCardPaymentGateway $gateway ) {
+	public function card_payment_data( $data, WC_Order $order, CreditCardPaymentGateway $gateway ) {
 		$splits = $this->get_splits_payment_data( $order, $gateway );
 
 		if ( $splits ) {

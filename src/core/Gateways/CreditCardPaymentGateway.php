@@ -110,10 +110,18 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	public $threeds_for_saved_cards;
 
 	/**
+	 * Card type.
+	 *
+	 * @var string (CREDIT_CARD, DEBIT_CARD)
+	 */
+	public $card_type;
+
+	/**
 	 * CreditCardPaymentGateway constructor.
 	 */
 	public function __construct() {
 		$this->id                 = 'pagbank_credit_card';
+		$this->card_type          = 'CREDIT_CARD';
 		$this->method_title       = __( 'PagBank Cartão de Crédito', 'pagbank-for-woocommerce' );
 		$this->method_description = __( 'Aceite pagamentos via cartão de crédito através do PagBank.', 'pagbank-for-woocommerce' );
 		$this->has_fields         = true;
@@ -591,7 +599,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 */
 	public function payment_fields() {
 		if ( ! is_checkout() ) {
-			echo '<p>' . esc_html( __( 'Você só pode adicionar um cartão de crédito durante o checkout.', 'pagbank-for-woocommerce' ) ) . '</p>';
+			echo '<p>' . esc_html( __( 'Você só pode adicionar um cartão durante o checkout.', 'pagbank-for-woocommerce' ) ) . '</p>';
 			return;
 		}
 
@@ -716,9 +724,11 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	public function validate_fields() {
 		// Disable outside checkout.
 		if ( ! is_checkout() ) {
-			wc_add_notice( __( 'Você só pode adicionar um cartão de crédito durante o checkout.', 'pagbank-for-woocommerce' ), 'error' );
+			wc_add_notice( __( 'Você só pode adicionar um cartão durante o checkout.', 'pagbank-for-woocommerce' ), 'error' );
 			return;
 		}
+
+		$card_prefix = $this->card_type === 'CREDIT_CARD' ? 'pagbank_credit_card' : 'pagbank_debit_card';
 
 		$cart_contains_subscriptions = $this->cart_contains_subscription();
 
@@ -726,9 +736,9 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		$payment_token = isset( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) ? wc_clean( wp_unslash( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) ) : null;
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$cvc = $cart_contains_subscriptions && isset( $_POST['pagbank_credit_card-card-cvc'] ) ? wc_clean( wp_unslash( $_POST['pagbank_credit_card-card-cvc'] ) ) : null;
+		$cvc = $cart_contains_subscriptions && isset( $_POST[ $card_prefix . '-card-cvc' ] ) ? wc_clean( wp_unslash( $_POST[ $card_prefix . '-card-cvc' ] ) ) : null;
 
-		$is_new_credit_card = null === $payment_token || 'new' === $payment_token;
+		$is_new_card = null === $payment_token || 'new' === $payment_token;
 
 		// Validate for subscriptions.
 		if ( $cart_contains_subscriptions ) {
@@ -739,30 +749,30 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		}
 
 		// Validation for new credit cards.
-		if ( $is_new_credit_card ) {
+		if ( $is_new_card ) {
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$has_holder = isset( $_POST['pagbank_credit_card-card-holder'] ) && ! empty( $_POST['pagbank_credit_card-card-holder'] );
+			$has_holder = isset( $_POST[ $card_prefix . '-card-holder' ] ) && ! empty( $_POST[ $card_prefix . '-card-holder' ] );
 			if ( ! $has_holder ) {
 				wc_add_notice( __( 'O titular do cartão de crédito é obrigatório.', 'pagbank-for-woocommerce' ), 'error' );
 				return false;
 			}
 
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$has_encrypted_card = isset( $_POST['pagbank_credit_card-encrypted-card'] ) && ! empty( $_POST['pagbank_credit_card-encrypted-card'] );
+			$has_encrypted_card = isset( $_POST[ $card_prefix . '-encrypted-card' ] ) && ! empty( $_POST[ $card_prefix . '-encrypted-card' ] );
 			if ( ! $has_encrypted_card ) {
 				wc_add_notice( __( 'O cartão de crédito criptografado não foi identificado. Por favor, contate o suporte.', 'pagbank-for-woocommerce' ), 'error' );
 				return false;
 			}
 
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$has_card_bin = isset( $_POST['pagbank_credit_card-card-bin'] ) && ! empty( $_POST['pagbank_credit_card-card-bin'] );
+			$has_card_bin = isset( $_POST[ $card_prefix . '-card-bin' ] ) && ! empty( $_POST[ $card_prefix . '-card-bin' ] );
 			if ( ! $has_card_bin ) {
 				wc_add_notice( __( 'O bin do cartão de crédito não foi identificado. Por favor, contate o suporte.', 'pagbank-for-woocommerce' ), 'error' );
 				return false;
 			}
 
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$card_bin          = wc_clean( wp_unslash( $_POST['pagbank_credit_card-card-bin'] ) );
+			$card_bin          = wc_clean( wp_unslash( $_POST[ $card_prefix . '-card-bin' ] ) );
 			$is_valid_card_bin = strlen( $card_bin ) === 6;
 			if ( ! $is_valid_card_bin ) {
 				wc_add_notice( __( 'Bin do cartão de crédito inválido. Por favor, contate o suporte.', 'pagbank-for-woocommerce' ), 'error' );
@@ -771,7 +781,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		}
 
 		// Validation for saved credit cards.
-		if ( ! $is_new_credit_card ) {
+		if ( ! $is_new_card ) {
 			$token = WC_Payment_Tokens::get( $payment_token );
 
 			$is_token_from_same_user = $token->get_user_id() === get_current_user_id();
@@ -784,14 +794,14 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		// Validation for installments.
 		if ( $this->installments_enabled ) {
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$has_installments = isset( $_POST['pagbank_credit_card-installments'] ) && ! empty( $_POST['pagbank_credit_card-installments'] );
+			$has_installments = isset( $_POST[ $card_prefix . '-installments' ] ) && ! empty( $_POST[ $card_prefix . '-installments' ] );
 			if ( ! $has_installments ) {
 				wc_add_notice( __( 'É necessário selecionar a quantidade de parcelas.', 'pagbank-for-woocommerce' ), 'error' );
 				return false;
 			}
 
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$installments = (int) wc_clean( wp_unslash( $_POST['pagbank_credit_card-installments'] ) );
+			$installments = (int) wc_clean( wp_unslash( $_POST[ $card_prefix . '-installments' ] ) );
 			if ( $installments > $this->maximum_installments || $installments < 1 ) {
 				wc_add_notice( __( 'A quantidade de parcelas é inválida.', 'pagbank-for-woocommerce' ), 'error' );
 				return false;
@@ -799,9 +809,9 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		}
 
 		// Validation for 3DS.
-		if ( $this->threeds_enabled && $is_new_credit_card ) {
+		if ( $this->threeds_enabled && $is_new_card ) {
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce is verified by WooCommerce checkout process.
-			$has_3ds_id = isset( $_POST['pagbank_credit_card-threeds-id'] ) && ! empty( $_POST['pagbank_credit_card-threeds-id'] );
+			$has_3ds_id = isset( $_POST[ $card_prefix . '-threeds-id' ] ) && ! empty( $_POST[ $card_prefix . '-threeds-id' ] );
 
 			if ( ! $has_3ds_id ) {
 				wc_add_notice( __( 'A autenticação 3DS é obrigatória para novos cartões.', 'pagbank-for-woocommerce' ), 'error' );
@@ -991,7 +1001,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 			$is_empty_order_with_subscription = $order_contains_subscription && Helpers::format_money_cents( $order->get_total() ) === 0;
 
-			$data = $is_empty_order_with_subscription ? ApiHelpers::get_credit_card_payment_data_for_empty_value_subscription(
+			$data = $is_empty_order_with_subscription ? ApiHelpers::get_card_payment_data_for_empty_value_subscription(
 				$this,
 				$order,
 				$payment_token,
@@ -1002,8 +1012,9 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				$order_contains_subscription,
 				$installments,
 				$transfer_of_interest_fee,
-				$threeds_id
-			) : ApiHelpers::get_credit_card_payment_data(
+				$threeds_id,
+				$this->card_type
+			) : ApiHelpers::get_card_payment_data(
 				$this,
 				$order,
 				$payment_token,
@@ -1014,7 +1025,8 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				$order_contains_subscription,
 				$installments,
 				$transfer_of_interest_fee,
-				$threeds_id
+				$threeds_id,
+				$this->card_type
 			);
 
 			$response = $this->api->create_order( $data );
@@ -1126,6 +1138,14 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		$token->set_expiry_year( $data['exp_year'] );
 		$token->set_gateway_id( $this->id );
 		$token->set_connect_account_id( $connect_data['account_id'] );
+		switch ( $this->card_type ) {
+			case 'CREDIT_CARD':
+				$token->set_type( PaymentToken::TYPE_CREDIT_CARD );
+				break;
+			case 'DEBIT_CARD':
+				$token->set_type( PaymentToken::TYPE_DEBIT_CARD );
+				break;
+		}
 
 		if ( $attach_user_id ) {
 			$token->set_user_id( $order->get_user_id() );
@@ -1317,10 +1337,11 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				throw new Exception( 'Token de pagamento não encontrado.' );
 			}
 
-			$data = ApiHelpers::get_credit_card_renewal_payment_data(
+			$data = ApiHelpers::get_card_renewal_payment_data(
 				$renewal_order,
 				$token,
-				$amount
+				$amount,
+				$this->card_type
 			);
 
 			$response = $this->api->create_order( $data );

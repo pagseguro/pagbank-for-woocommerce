@@ -116,7 +116,7 @@ class OrderStatusApi {
 		$payment_method = $order->get_payment_method();
 
 		// Check if payment method is PagBank.
-		if ( ! in_array( $payment_method, array( 'pagbank_credit_card', 'pagbank_boleto', 'pagbank_pix', 'pagbank_pay_with_pagbank' ), true ) ) {
+		if ( ! in_array( $payment_method, array( 'pagbank_credit_card', 'pagbank_debit_card', 'pagbank_boleto', 'pagbank_pix', 'pagbank_pay_with_pagbank' ), true ) ) {
 			return new WP_Error( 'invalid_payment_method', __( 'Método de pagamento inválido.', 'pagbank-for-woocommerce' ), array( 'status' => 400 ) );
 		}
 
