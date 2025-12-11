@@ -89,15 +89,63 @@ class PaymentGateways {
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		if ( ! isset( $_GET['section'] ) || ! in_array( $_GET['section'], self::$gateway_ids, true ) ) {
+		$tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$section = isset( $_GET['section'] ) ? sanitize_text_field( wp_unslash( $_GET['section'] ) ) : '';
+
+		// Add PagBank branding to payment gateways list.
+		if ( 'checkout' === $tab && empty( $section ) ) {
+			$this->enqueue_gateway_list_styles();
 			return;
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$gateway_id = sanitize_text_field( wp_unslash( $_GET['section'] ) );
+		if ( ! in_array( $section, self::$gateway_ids, true ) ) {
+			return;
+		}
 
 		// Enqueue React gateway settings.
-		$this->enqueue_gateway_settings_scripts( $gateway_id );
+		$this->enqueue_gateway_settings_scripts( $section );
+	}
+
+	/**
+	 * Enqueue styles for gateway list page.
+	 *
+	 * @return void
+	 */
+	private function enqueue_gateway_list_styles(): void {
+		$plugin_url  = plugins_url( '', PAGBANK_WOOCOMMERCE_FILE_PATH );
+		$gateway_ids = self::$gateway_ids;
+
+		// Build CSS selectors for all PagBank gateways.
+		$selectors = array_map(
+			function ( $id ) {
+				return '#' . $id . ' .woocommerce-list__item-title::after';
+			},
+			$gateway_ids
+		);
+
+		$css = implode( ', ', $selectors ) . ' {
+			content: "Oficial";
+			display: inline-flex;
+			align-items: center;
+			gap: 4px;
+			margin-left: 8px;
+			padding: 2px 6px 2px 22px;
+			background-image: url("' . esc_url( $plugin_url . '/dist/images/icons/pagbank.png' ) . '");
+			background-size: 14px 14px;
+			background-repeat: no-repeat;
+			background-position: 4px center;
+			font-size: 11px;
+			font-weight: 500;
+			color: #1bb99a;
+			background-color: rgba(27, 185, 154, 0.1);
+			border-radius: 4px;
+			vertical-align: middle;
+		}';
+
+		wp_register_style( 'pagbank-gateway-list', false, array(), PAGBANK_WOOCOMMERCE_VERSION );
+		wp_enqueue_style( 'pagbank-gateway-list' );
+		wp_add_inline_style( 'pagbank-gateway-list', $css );
 	}
 
 	/**
