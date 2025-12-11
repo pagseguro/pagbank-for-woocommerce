@@ -7,7 +7,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Notice, Spinner } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { TEXT_DOMAIN } from "@/constants";
 import { BoletoSettingsForm } from "./components/boleto";
@@ -51,6 +51,7 @@ const ALL_GATEWAYS: GatewayId[] = [
 
 export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 	const noticeRef = useRef<HTMLDivElement>(null);
+	const [isInitialized, setIsInitialized] = useState(false);
 
 	// TanStack Query hooks
 	const { data, isLoading, error: fetchError } = useGatewaySettingsQuery(gatewayId);
@@ -65,18 +66,34 @@ export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 		defaultValues: data?.settings,
 	});
 
-	const {
-		handleSubmit,
-		reset,
-		formState: { isDirty },
-	} = form;
+	const { handleSubmit, reset, watch } = form;
 
-	// Reset form when data loads
-	useEffect(() => {
-		if (data?.settings) {
-			reset(data.settings);
+	// Watch all form values to compute dirty state manually
+	const watchedValues = watch();
+
+	// Store the "clean" values (last saved or initial load)
+	const [cleanValues, setCleanValues] = useState<GatewaySettings | null>(null);
+
+	// Compute isDirty by comparing watched values with clean values
+	const isDirty = useMemo(() => {
+		if (!cleanValues) return false;
+		// Compare only the keys that exist in cleanValues
+		for (const key of Object.keys(cleanValues) as (keyof GatewaySettings)[]) {
+			if (watchedValues[key] !== cleanValues[key]) {
+				return true;
+			}
 		}
-	}, [data?.settings, reset]);
+		return false;
+	}, [watchedValues, cleanValues]);
+
+	// Reset form only on initial data load
+	useEffect(() => {
+		if (data?.settings && !isInitialized) {
+			reset(data.settings);
+			setCleanValues(data.settings);
+			setIsInitialized(true);
+		}
+	}, [data?.settings, reset, isInitialized]);
 
 	// Disable WooCommerce's native form change detection
 	useWooCommerceFormDisable(isDirty);
@@ -105,8 +122,8 @@ export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 				fieldDefaults: data.fieldDefaults,
 			});
 
-			// Reset dirty state after successful save
-			reset(formData);
+			// Update clean values to match saved data (resets isDirty)
+			setCleanValues(formData);
 		},
 		(errors) => {
 			// Log validation errors for debugging
@@ -116,8 +133,9 @@ export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 	);
 
 	const handleReset = () => {
-		if (data?.settings) {
-			reset(data.settings);
+		if (cleanValues) {
+			// Reset form to clean values
+			reset(cleanValues);
 		}
 	};
 
