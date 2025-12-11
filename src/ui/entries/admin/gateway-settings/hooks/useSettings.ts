@@ -10,6 +10,18 @@ import { useCallback, useEffect, useState } from "react";
 import { TEXT_DOMAIN } from "@/constants";
 import type { GatewayId, GatewaySettings } from "../types/settings";
 
+interface WCGatewaySetting {
+	id: string;
+	label: string;
+	description: string;
+	type: string;
+	value: string;
+	default: string;
+	tip: string;
+	placeholder: string;
+	options?: Record<string, string>;
+}
+
 interface WCGatewayResponse {
 	id: string;
 	title: string;
@@ -19,21 +31,14 @@ interface WCGatewayResponse {
 	method_title: string;
 	method_description: string;
 	method_supports: string[];
-	settings: Record<
-		string,
-		{
-			id: string;
-			label: string;
-			description: string;
-			type: string;
-			value: string;
-			default: string;
-			tip: string;
-			placeholder: string;
-			options?: Record<string, string>;
-		}
-	>;
+	settings: Record<string, WCGatewaySetting>;
 }
+
+// Field types that should not be saved via REST API (custom/display-only fields)
+const EXCLUDED_FIELD_TYPES = ["pagbank_connect"];
+
+// Field names that should not be saved via REST API
+const EXCLUDED_FIELD_NAMES = ["pagbank_connect"];
 
 interface UseSettingsReturn {
 	settings: GatewaySettings | null;
@@ -52,6 +57,7 @@ interface UseSettingsReturn {
 export const useSettings = (gatewayId: GatewayId): UseSettingsReturn => {
 	const [settings, setSettings] = useState<GatewaySettings | null>(null);
 	const [originalSettings, setOriginalSettings] = useState<GatewaySettings | null>(null);
+	const [fieldTypes, setFieldTypes] = useState<Record<string, string>>({});
 	const [isLoading, setIsLoading] = useState(true);
 	const [isSaving, setIsSaving] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -68,16 +74,17 @@ export const useSettings = (gatewayId: GatewayId): UseSettingsReturn => {
 				path: `/wc/v3/payment_gateways/${gatewayId}`,
 			});
 
-			const extractedSettings = Object.entries(response.settings).reduce(
-				(acc, [key, field]) => {
-					acc[key] = field.value;
-					return acc;
-				},
-				{} as Record<string, string>,
-			) as unknown as GatewaySettings;
+			const extractedSettings: Record<string, string> = {};
+			const extractedFieldTypes: Record<string, string> = {};
 
-			setSettings(extractedSettings);
-			setOriginalSettings(extractedSettings);
+			for (const [key, field] of Object.entries(response.settings)) {
+				extractedSettings[key] = field.value;
+				extractedFieldTypes[key] = field.type;
+			}
+
+			setSettings(extractedSettings as unknown as GatewaySettings);
+			setOriginalSettings(extractedSettings as unknown as GatewaySettings);
+			setFieldTypes(extractedFieldTypes);
 		} catch (err) {
 			setError(
 				err instanceof Error
@@ -110,19 +117,27 @@ export const useSettings = (gatewayId: GatewayId): UseSettingsReturn => {
 		setError(null);
 
 		try {
-			const settingsPayload = Object.entries(settings).reduce(
-				(acc, [key, value]) => {
-					acc[key] = { value };
-					return acc;
-				},
-				{} as Record<string, { value: string }>,
-			);
+			// Filter out fields that should not be saved via REST API
+			const filteredSettings: Record<string, string> = {};
+			for (const [key, value] of Object.entries(settings)) {
+				// Skip excluded field names
+				if (EXCLUDED_FIELD_NAMES.includes(key)) {
+					continue;
+				}
+				// Skip excluded field types
+				const fieldType = fieldTypes[key];
+				if (fieldType && EXCLUDED_FIELD_TYPES.includes(fieldType)) {
+					continue;
+				}
+				filteredSettings[key] = value;
+			}
 
+			// WooCommerce REST API expects settings as simple key-value pairs
 			await apiFetch<WCGatewayResponse>({
 				path: `/wc/v3/payment_gateways/${gatewayId}`,
 				method: "PUT",
 				data: {
-					settings: settingsPayload,
+					settings: filteredSettings,
 				},
 			});
 
@@ -134,7 +149,7 @@ export const useSettings = (gatewayId: GatewayId): UseSettingsReturn => {
 		} finally {
 			setIsSaving(false);
 		}
-	}, [gatewayId, settings]);
+	}, [gatewayId, settings, fieldTypes]);
 
 	const resetSettings = useCallback(() => {
 		setSettings(originalSettings);

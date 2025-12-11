@@ -38,7 +38,6 @@ const INSTALLMENT_OPTIONS = [
 	{ label: "10x", value: "10" },
 	{ label: "11x", value: "11" },
 	{ label: "12x", value: "12" },
-	{ label: "18x", value: "18" },
 ];
 
 export const InstallmentsSection = ({
@@ -54,6 +53,10 @@ export const InstallmentsSection = ({
 	const interestFreeOptions = INSTALLMENT_OPTIONS.filter(
 		(opt) => parseInt(opt.value, 10) <= maxInstallmentsValue,
 	);
+
+	// Clamp interest-free value to max installments (use the minimum of both)
+	const currentInterestFree = parseInt(settings.maximum_installments_interest_free, 10) || 1;
+	const clampedInterestFreeValue = Math.min(currentInterestFree, maxInstallmentsValue).toString();
 
 	return (
 		<SettingsCard title={__("Parcelamento", TEXT_DOMAIN)}>
@@ -104,7 +107,7 @@ export const InstallmentsSection = ({
 						<SelectControl
 							__nextHasNoMarginBottom
 							label={__("Máximo de parcelas sem juros", TEXT_DOMAIN)}
-							value={settings.maximum_installments_interest_free}
+							value={clampedInterestFreeValue}
 							options={interestFreeOptions}
 							onChange={(value) =>
 								onSettingChange("maximum_installments_interest_free", value)
