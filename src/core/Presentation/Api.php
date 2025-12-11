@@ -21,6 +21,22 @@ use WP_Error;
 class Api {
 
 	/**
+	 * Required OAuth scopes for full functionality.
+	 *
+	 * @var array
+	 */
+	public const REQUIRED_SCOPES = array(
+		'accounts.read',
+		'payments.read',
+		'payments.create',
+		'payments.refund',
+		'payments.split.read',
+		'checkout.create',
+		'checkout.view',
+		'checkout.update',
+	);
+
+	/**
 	 * The Connect instance.
 	 *
 	 * @var Connect
@@ -117,7 +133,7 @@ class Api {
 				'query' => implode(
 					'&',
 					array(
-						'scope=' . implode( '+', array( 'payments.read', 'payments.create', 'payments.refund' ) ),
+						'scope=' . implode( '+', self::REQUIRED_SCOPES ),
 						'response_type=code',
 						'client_id=' . $application_id,
 						'redirect_uri=' . rawurlencode( $callback_url ),
@@ -524,6 +540,55 @@ class Api {
 
 		if ( 201 !== $response_code ) {
 			return new WP_Error( 'pagbank_3ds_session_failed', 'PagBank 3DS session creation failed', $decoded_response_body );
+		}
+
+		return $decoded_response_body;
+	}
+
+	/**
+	 * Get account information.
+	 *
+	 * @param string $account_id The account ID.
+	 *
+	 * @return array|WP_Error The account data.
+	 */
+	public function get_account( string $account_id ) {
+		$url = $this->get_api_url( 'accounts/' . $account_id );
+
+		$this->log_api_request( $url, '' );
+
+		$response = $this->request(
+			$url,
+			array(
+				'method'  => 'GET',
+				'headers' => array(
+					'Authorization' => $this->connect->get_access_token(),
+					'Content-Type'  => 'application/json',
+				),
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			$this->log_api_request_error( $response );
+
+			return $response;
+		}
+
+		$response_code         = wp_remote_retrieve_response_code( $response );
+		$response_body         = wp_remote_retrieve_body( $response );
+		$decoded_response_body = json_decode( $response_body, true );
+
+		$this->log_api_response( $response_code, $response_body );
+
+		if ( 200 !== $response_code ) {
+			return new WP_Error(
+				'pagbank_get_account_failed',
+				'PagBank get account failed',
+				array(
+					'http_code' => $response_code,
+					'response'  => $decoded_response_body,
+				)
+			);
 		}
 
 		return $decoded_response_body;

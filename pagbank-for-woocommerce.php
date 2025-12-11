@@ -29,6 +29,7 @@ use PagBank_WooCommerce\Presentation\Helpers;
 use PagBank_WooCommerce\Presentation\Hooks;
 use PagBank_WooCommerce\Presentation\OrderStatusApi;
 use PagBank_WooCommerce\Presentation\PaymentGateways;
+use PagBank_WooCommerce\Presentation\SettingsApi;
 use PagBank_WooCommerce\Presentation\PaymentGatewaysFields;
 use PagBank_WooCommerce\Presentation\WebhookHandler;
 
@@ -62,6 +63,7 @@ add_action(
 	ConnectAjaxApi::get_instance();
 	WebhookHandler::get_instance();
 	OrderStatusApi::get_instance();
+	SettingsApi::get_instance();
 	CheckoutBlocksFields::get_instance();
 	BlocksPaymentMethods::get_instance();
 
