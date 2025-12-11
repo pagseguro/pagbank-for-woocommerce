@@ -60,6 +60,7 @@ export const useSettings = (gatewayId: GatewayId): UseSettingsReturn => {
 	const [originalSettings, setOriginalSettings] = useState<GatewaySettings | null>(null);
 	const [methodDescription, setMethodDescription] = useState<string | null>(null);
 	const [fieldTypes, setFieldTypes] = useState<Record<string, string>>({});
+	const [fieldDefaults, setFieldDefaults] = useState<Record<string, string>>({});
 	const [isLoading, setIsLoading] = useState(true);
 	const [isSaving, setIsSaving] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -78,16 +79,19 @@ export const useSettings = (gatewayId: GatewayId): UseSettingsReturn => {
 
 			const extractedSettings: Record<string, string> = {};
 			const extractedFieldTypes: Record<string, string> = {};
+			const extractedFieldDefaults: Record<string, string> = {};
 
 			for (const [key, field] of Object.entries(response.settings)) {
 				extractedSettings[key] = field.value;
 				extractedFieldTypes[key] = field.type;
+				extractedFieldDefaults[key] = field.default;
 			}
 
 			setSettings(extractedSettings as unknown as GatewaySettings);
 			setOriginalSettings(extractedSettings as unknown as GatewaySettings);
 			setMethodDescription(response.method_description);
 			setFieldTypes(extractedFieldTypes);
+			setFieldDefaults(extractedFieldDefaults);
 		} catch (err) {
 			setError(
 				err instanceof Error
@@ -178,7 +182,9 @@ export const useSettings = (gatewayId: GatewayId): UseSettingsReturn => {
 				if (fieldType && EXCLUDED_FIELD_TYPES.includes(fieldType)) {
 					continue;
 				}
-				filteredSettings[key] = value;
+				// Use default value if field is empty (required for select fields)
+				const fieldDefault = fieldDefaults[key];
+				filteredSettings[key] = value === "" && fieldDefault ? fieldDefault : value;
 			}
 
 			// WooCommerce REST API expects settings as simple key-value pairs
@@ -198,7 +204,7 @@ export const useSettings = (gatewayId: GatewayId): UseSettingsReturn => {
 		} finally {
 			setIsSaving(false);
 		}
-	}, [gatewayId, settings, fieldTypes]);
+	}, [gatewayId, settings, fieldTypes, fieldDefaults]);
 
 	const resetSettings = useCallback(() => {
 		setSettings(originalSettings);
