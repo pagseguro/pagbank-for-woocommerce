@@ -59,6 +59,7 @@ class BlocksPaymentMethods {
 				$payment_method_registry->register( new PixBlocksSupport() );
 				$payment_method_registry->register( new BoletoBlocksSupport() );
 				$payment_method_registry->register( new CreditCardBlocksSupport() );
+				$payment_method_registry->register( new DebitCardBlocksSupport() );
 				$payment_method_registry->register( new PayWithPagBankBlocksSupport() );
 			}
 		);

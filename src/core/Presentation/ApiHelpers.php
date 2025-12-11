@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use Exception;
 use PagBank_WooCommerce\Gateways\BoletoPaymentGateway;
 use PagBank_WooCommerce\Gateways\CreditCardPaymentGateway;
+use PagBank_WooCommerce\Gateways\DebitCardPaymentGateway;
 use PagBank_WooCommerce\Gateways\PayWithPagBankGateway;
 use PagBank_WooCommerce\Gateways\PixPaymentGateway;
 use WC_Order;
@@ -445,11 +446,12 @@ class ApiHelpers {
 	 * @param int                      $installments Installments.
 	 * @param array                    $transfer_of_interest_fee Transfer of interest fee.
 	 * @param string                   $threeds_id 3DS authentication ID.
+	 * @param string                   $card_type Card type.
 	 *
 	 * @return array
 	 * @throws Exception Throws exception when card is not valid.
 	 */
-	public static function get_credit_card_payment_data( CreditCardPaymentGateway $gateway, WC_Order $order, string $payment_token = null, string $encrypted_card = null, string $card_holder = null, bool $save_card = false, string $cvv = null, bool $is_subscription = false, int $installments = 1, array $transfer_of_interest_fee = null, string $threeds_id = null ) {
+	public static function get_card_payment_data( CreditCardPaymentGateway $gateway, WC_Order $order, string $payment_token = null, string $encrypted_card = null, string $card_holder = null, bool $save_card = false, string $cvv = null, bool $is_subscription = false, int $installments = 1, array $transfer_of_interest_fee = null, string $threeds_id = null, string $card_type = 'CREDIT_CARD' ) {
 		$password = wp_generate_password( 30, false );
 
 		$data = array(
@@ -466,7 +468,7 @@ class ApiHelpers {
 					'description'    => sprintf( esc_html__( 'Pedido %1$s - %2$s', 'pagbank-for-woocommerce' ), $order->get_id(), get_bloginfo( 'name' ) ),
 					'amount'         => self::get_order_amount_api_data( $order ),
 					'payment_method' => array(
-						'type'         => 'CREDIT_CARD',
+						'type'         => $card_type,
 						'installments' => $installments,
 						'capture'      => true,
 						'holder'       => array(
@@ -489,13 +491,13 @@ class ApiHelpers {
 			$data['charges'][0]['amount'] = $transfer_of_interest_fee;
 		}
 
-		$is_new_credit_card = null === $payment_token || 'new' === $payment_token;
+		$is_new_card = null === $payment_token || 'new' === $payment_token;
 
-		if ( $is_new_credit_card ) {
-			$is_missing_new_credit_card = null === $encrypted_card || empty( $encrypted_card );
+		if ( $is_new_card ) {
+			$is_missing_new_card = null === $encrypted_card || empty( $encrypted_card );
 
-			if ( $is_missing_new_credit_card ) {
-				throw new Exception( esc_html__( 'O cartão de crédito criptografado é inválido. Por favor, contate o suporte.', 'pagbank-for-woocommerce' ) );
+			if ( $is_missing_new_card ) {
+				throw new Exception( esc_html__( 'O cartão criptografado é inválido. Por favor, contate o suporte.', 'pagbank-for-woocommerce' ) );
 			}
 
 			$data['charges'][0]['payment_method']['card'] = array(
@@ -541,7 +543,7 @@ class ApiHelpers {
 			);
 		}
 
-		return apply_filters( 'pagbank_credit_card_payment_data', $data, $order, $gateway );
+		return apply_filters( 'pagbank_card_payment_data', $data, $order, $card_type );
 	}
 
 	/**
@@ -558,12 +560,13 @@ class ApiHelpers {
 	 * @param int                      $installments Installments.
 	 * @param array                    $transfer_of_interest_fee Transfer of interest fee.
 	 * @param string                   $threeds_id 3DS authentication ID.
+	 * @param string                   $card_type Card type.
 	 *
 	 * @return array
 	 * @throws Exception Throws exception when card is not valid.
 	 */
-	public static function get_credit_card_payment_data_for_empty_value_subscription( CreditCardPaymentGateway $gateway, WC_Order $order, string $payment_token = null, string $encrypted_card = null, string $card_holder = null, bool $save_card = false, string $cvv = null, bool $is_subscription = false, int $installments = 1, array $transfer_of_interest_fee = null, string $threeds_id = null ) {
-		$data = self::get_credit_card_payment_data( $gateway, $order, $payment_token, $encrypted_card, $card_holder, $save_card, $cvv, $is_subscription, $installments, $transfer_of_interest_fee, $threeds_id );
+	public static function get_card_payment_data_for_empty_value_subscription( CreditCardPaymentGateway $gateway, WC_Order $order, string $payment_token = null, string $encrypted_card = null, string $card_holder = null, bool $save_card = false, string $cvv = null, bool $is_subscription = false, int $installments = 1, array $transfer_of_interest_fee = null, string $threeds_id = null, string $card_type = 'CREDIT_CARD' ) {
+		$data = self::get_card_payment_data( $gateway, $order, $payment_token, $encrypted_card, $card_holder, $save_card, $cvv, $is_subscription, $installments, $transfer_of_interest_fee, $threeds_id, $card_type );
 
 		$data['items'] = array(
 			array(
@@ -584,10 +587,11 @@ class ApiHelpers {
 	 * @param WC_Order     $renewal_order Renewal order.
 	 * @param PaymentToken $payment_token Payment token.
 	 * @param float        $amount Amount.
+	 * @param string       $card_type Card type.
 	 *
 	 * @return array
 	 */
-	public static function get_credit_card_renewal_payment_data( WC_Order $renewal_order, PaymentToken $payment_token, float $amount ) {
+	public static function get_card_renewal_payment_data( WC_Order $renewal_order, PaymentToken $payment_token, float $amount, string $card_type = 'CREDIT_CARD' ) {
 		$password = wp_generate_password( 30, false );
 
 		$data = array(
@@ -607,7 +611,7 @@ class ApiHelpers {
 						'currency' => $renewal_order->get_currency(),
 					),
 					'payment_method' => array(
-						'type'         => 'CREDIT_CARD',
+						'type'         => $card_type,
 						'installments' => 1,
 						'capture'      => true,
 						'card'         => array(
@@ -629,7 +633,7 @@ class ApiHelpers {
 			'metadata'          => self::get_order_metadata_api_data( $renewal_order, array( 'password' => $password ) ),
 		);
 
-		return apply_filters( 'pagbank_credit_card_payment_data', $data, $renewal_order );
+		return apply_filters( 'pagbank_card_payment_data', $data, $renewal_order, $card_type );
 	}
 
 	/**

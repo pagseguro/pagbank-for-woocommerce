@@ -30,6 +30,7 @@ class PaymentGateways {
 	 */
 	public static $gateway_ids = array(
 		'pagbank_credit_card',
+		'pagbank_debit_card',
 		'pagbank_pix',
 		'pagbank_boleto',
 		'pagbank_pay_with_pagbank',
@@ -63,6 +64,7 @@ class PaymentGateways {
 	 */
 	public function add_gateways( $methods ): array {
 		$methods[] = 'PagBank_WooCommerce\Gateways\CreditCardPaymentGateway';
+		$methods[] = 'PagBank_WooCommerce\Gateways\DebitCardPaymentGateway';
 		$methods[] = 'PagBank_WooCommerce\Gateways\BoletoPaymentGateway';
 		$methods[] = 'PagBank_WooCommerce\Gateways\PixPaymentGateway';
 		$methods[] = 'PagBank_WooCommerce\Gateways\PayWithPagBankGateway';

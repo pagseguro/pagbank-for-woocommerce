@@ -45,6 +45,8 @@ export const entries: Record<string, string> = {
 	"public/blocks/checkout-pix": "src/ui/entries/public/blocks/checkout-pix.tsx",
 	"public/blocks/checkout-credit-card":
 		"src/ui/entries/public/blocks/checkout-credit-card/index.tsx",
+	"public/blocks/checkout-debit-card":
+		"src/ui/entries/public/blocks/checkout-debit-card/index.tsx",
 	"public/blocks/checkout-pay-with-pagbank":
 		"src/ui/entries/public/blocks/checkout-pay-with-pagbank.tsx",
 };
