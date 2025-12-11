@@ -4,60 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "eefaae82c4e006af653602c2dd4a9cf1",
+    "content-hash": "7ba75d7d0cafae2927f2fb9d12dbd2e8",
     "packages": [
-        {
-            "name": "bissolli/validador-cpf-cnpj",
-            "version": "1.2.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/bissolli/validador-cpf-cnpj.git",
-                "reference": "b358473e7fae8944fc88b18158886fcc3ee2c404"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/bissolli/validador-cpf-cnpj/zipball/b358473e7fae8944fc88b18158886fcc3ee2c404",
-                "reference": "b358473e7fae8944fc88b18158886fcc3ee2c404",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.2"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^8.5"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Bissolli\\ValidadorCpfCnpj\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Gustavo Bissolli",
-                    "email": "gustavo.bissolli@gmail.com"
-                }
-            ],
-            "description": "Classe em PHP para validação de CPF e CNPJ.",
-            "homepage": "https://github.com/bissolli/validador-cpf-cnpj",
-            "keywords": [
-                "brasil",
-                "cnpj",
-                "cpf",
-                "documento",
-                "laravel",
-                "validador"
-            ],
-            "support": {
-                "issues": "https://github.com/bissolli/validador-cpf-cnpj/issues",
-                "source": "https://github.com/bissolli/validador-cpf-cnpj/tree/v1.2.2"
-            },
-            "time": "2020-02-01T18:38:04+00:00"
-        },
         {
             "name": "carbonphp/carbon-doctrine-types",
             "version": "2.1.0",
@@ -3386,5 +3334,5 @@
     "platform-overrides": {
         "php": "7.4"
     },
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }

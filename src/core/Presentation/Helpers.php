@@ -11,8 +11,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use Bissolli\ValidadorCpfCnpj\CPF;
-use Bissolli\ValidadorCpfCnpj\CNPJ;
+use PagBank_WooCommerce\Validators\CPF;
+use PagBank_WooCommerce\Validators\CNPJ;
 use PagBank_WooCommerce\Validators\AlphanumericCNPJ;
 
 /**
@@ -161,7 +161,7 @@ class Helpers {
 	public static function is_valid_cpf( $cpf ) {
 		$validator = new CPF( $cpf );
 
-		return $validator->isValid();
+		return $validator->is_valid();
 	}
 
 	/**
@@ -196,7 +196,7 @@ class Helpers {
 
 		$validator = new CNPJ( $cnpj );
 
-		return $validator->isValid();
+		return $validator->is_valid();
 	}
 
 	/**
