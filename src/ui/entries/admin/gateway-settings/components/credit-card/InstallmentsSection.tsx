@@ -5,7 +5,7 @@
  */
 
 import { __ } from "@wordpress/i18n";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useWatch } from "react-hook-form";
 import { TEXT_DOMAIN } from "@/constants";
 import { useFormContext } from "../../context";
@@ -46,8 +46,36 @@ export const InstallmentsSection = () => {
 		name: "maximum_installments" as keyof GatewaySettings,
 	}) as string;
 
+	const maximumInstallmentsInterestFree = useWatch({
+		control: form.control,
+		name: "maximum_installments_interest_free" as keyof GatewaySettings,
+	}) as string;
+
 	const isInstallmentsEnabled = installmentsEnabled === "yes";
 	const isTransferOfInterestEnabled = transferOfInterestEnabled === "yes";
+
+	// Track if this is the initial render to avoid adjusting values on load
+	const isInitialRender = useRef(true);
+
+	// Adjust interest-free installments when max installments decreases
+	useEffect(() => {
+		// Skip adjustment on initial render
+		if (isInitialRender.current) {
+			isInitialRender.current = false;
+			return;
+		}
+
+		const maxInstallments = Number.parseInt(maximumInstallments, 10) || 12;
+		const currentInterestFree = Number.parseInt(maximumInstallmentsInterestFree, 10) || 1;
+
+		// Only adjust if current interest-free value exceeds the new max
+		if (currentInterestFree > maxInstallments) {
+			form.setValue(
+				"maximum_installments_interest_free" as keyof GatewaySettings,
+				String(maxInstallments),
+			);
+		}
+	}, [maximumInstallments, maximumInstallmentsInterestFree, form]);
 
 	// Filter options for interest-free installments (can't be more than max installments)
 	const interestFreeOptions = useMemo(() => {
