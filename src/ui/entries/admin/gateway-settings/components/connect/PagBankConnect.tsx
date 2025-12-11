@@ -136,11 +136,10 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 					<span>{__("Verificando conexão...", TEXT_DOMAIN)}</span>
 				</div>
 			) : (
-				<>
+				<div className="pagbank-connect__content">
 					{isRefreshing && (
-						<div className="pagbank-connect__refreshing">
+						<div className="pagbank-connect__overlay">
 							<Spinner />
-							<span>{__("Atualizando...", TEXT_DOMAIN)}</span>
 						</div>
 					)}
 
@@ -207,12 +206,12 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 					<Button
 						variant="primary"
 						onClick={handleOpenModal}
-						disabled={isConnecting}
+						disabled={isConnecting || isRefreshing}
 						className="pagbank-connect__button"
 					>
 						{buttonText}
 					</Button>
-				</>
+				</div>
 			)}
 
 			<ConnectModal
