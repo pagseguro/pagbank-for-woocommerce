@@ -8,3 +8,4 @@ build/
 docs/
 .idea
 logs/
+certs/

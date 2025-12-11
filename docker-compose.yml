@@ -9,8 +9,11 @@ services:
       - ./:/var/www/html/wp-content/plugins/pagbank-for-woocommerce
       - ./wordpress.ini:/usr/local/etc/php/conf.d/wordpress.ini
       - ./logs:/var/log
+      - ./certs:/etc/ssl/custom-certs:ro
+      - ./ssl.conf:/etc/apache2/sites-available/ssl.conf:ro
     entrypoint: |
       bash -c "
+        # Install Xdebug if not present
         if ! php -m | grep -q xdebug; then
           echo 'Installing Xdebug...'
           yes | pecl install xdebug
@@ -19,10 +22,26 @@ services:
         else
           echo 'Xdebug is already installed.'
         fi
+
+        # SSL Certificate setup
+        if ls /etc/ssl/custom-certs/*.crt 1>/dev/null 2>&1; then
+          echo 'Using custom SSL certificates from ./certs/'
+          cp /etc/ssl/custom-certs/*.crt /etc/ssl/certs/server.crt
+          cp /etc/ssl/custom-certs/*.key /etc/ssl/private/server.key
+        else
+          echo 'No custom certificates found, generating self-signed certificate...'
+          openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/server.key -out /etc/ssl/certs/server.crt -subj '/CN=localhost/O=PagBank Development/C=BR'
+          echo 'Self-signed certificate generated!'
+        fi
+        chmod 600 /etc/ssl/private/server.key
+
+        a2enmod ssl
+        a2ensite ssl
         exec apache2-foreground
       "
     ports:
       - 80:80
+      - 443:443
     environment:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_USER: wordpress
