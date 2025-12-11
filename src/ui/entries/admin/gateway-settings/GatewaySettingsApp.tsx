@@ -80,6 +80,13 @@ export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 		await saveSettings();
 	};
 
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		if (isDirty && !isSaving) {
+			handleSave();
+		}
+	};
+
 	if (isLoading) {
 		return (
 			<div className="pagbank-gateway-settings pagbank-gateway-settings--loading">
@@ -191,7 +198,7 @@ export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 	};
 
 	return (
-		<div className="pagbank-gateway-settings">
+		<form className="pagbank-gateway-settings" onSubmit={handleSubmit}>
 			<div className="pagbank-gateway-settings__header">
 				<div className="pagbank-gateway-settings__title-row">
 					<img
@@ -251,8 +258,8 @@ export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 
 			<div className="pagbank-gateway-settings__actions">
 				<Button
+					type="submit"
 					variant="primary"
-					onClick={handleSave}
 					disabled={!isDirty || isSaving}
 					isBusy={isSaving}
 				>
@@ -267,6 +274,6 @@ export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 					</Button>
 				)}
 			</div>
-		</div>
+		</form>
 	);
 };
