@@ -5,9 +5,8 @@
  */
 
 import { useCallback, useEffect, useState } from "react";
-import type { InstallmentPlan } from "../../shared";
+import { calculateFixedInstallmentPlans, type InstallmentPlan } from "../../shared";
 import { settings } from "../settings";
-import { calculateFixedInstallmentPlans } from "../utils";
 
 interface UseInstallmentsOptions {
 	cartTotalInCents: number;

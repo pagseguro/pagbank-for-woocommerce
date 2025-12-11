@@ -13,10 +13,15 @@ import { decodeEntities } from "@wordpress/html-entities";
 import cardValidator from "card-validator";
 import parsePhoneNumber from "libphonenumber-js/mobile";
 import { useEffect, useRef, useState } from "react";
-import { CardFormFields, type ThreeDSAuthenticateParams, use3DS } from "../../shared";
+import {
+	CardFormFields,
+	convertTwoDigitsYearToFourDigits,
+	getCardBin,
+	type ThreeDSAuthenticateParams,
+	use3DS,
+} from "../../shared";
 import { useInstallments } from "../hooks/useInstallments";
 import { settings } from "../settings";
-import { convertTwoDigitsYearToFourDigits, getCardBin } from "../utils";
 import { InstallmentsSelect } from "./InstallmentsSelect";
 
 interface ContentProps {
