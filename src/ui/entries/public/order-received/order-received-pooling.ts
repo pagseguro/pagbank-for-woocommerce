@@ -26,12 +26,6 @@ interface OrderStatusResponse {
 	is_expired?: boolean;
 }
 
-interface PagBankOrderStatusGlobal {
-	nonce: string;
-}
-
-declare const pagbankOrderStatus: PagBankOrderStatusGlobal;
-
 const orderStatusPoolingInit = (): void => {
 	// Support both Pix and Pay with PagBank
 	const orderStatusElement = document.querySelector(

@@ -431,22 +431,26 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 		);
 
 		wp_enqueue_script(
-			'pagbank-order-pix',
-			plugins_url( 'dist/public/order-received/order-received-pooling.js', PAGBANK_WOOCOMMERCE_FILE_PATH ),
-			array(),
+			'pagbank-payment-instructions',
+			plugins_url( 'dist/public/order-received/payment-instructions.js', PAGBANK_WOOCOMMERCE_FILE_PATH ),
+			array( 'react', 'react-dom', 'wp-i18n' ),
 			PAGBANK_WOOCOMMERCE_VERSION,
 			true
 		);
 
 		wp_localize_script(
-			'pagbank-order-pix',
+			'pagbank-payment-instructions',
 			'pagbankOrderStatus',
 			array(
 				'nonce' => wp_create_nonce( 'wp_rest' ),
 			)
 		);
 
-		wp_scripts()->add_data( 'pagbank-order-pix', 'pagbank_script', true );
+		if ( function_exists( 'wp_set_script_translations' ) ) {
+			wp_set_script_translations( 'pagbank-payment-instructions', 'pagbank-for-woocommerce' );
+		}
+
+		wp_scripts()->add_data( 'pagbank-payment-instructions', 'pagbank_script', true );
 	}
 
 	/**

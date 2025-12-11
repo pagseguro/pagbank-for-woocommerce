@@ -21,7 +21,7 @@
 
         /* Alias */
         "paths": {
-            "@/*": ["./src/*"]
+            "@/*": ["./src/ui/*"]
         }
     },
     "include": ["src", "scripts"]

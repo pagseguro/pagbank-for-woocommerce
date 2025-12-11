@@ -21,3 +21,10 @@ declare const pagbank_debit_card_data: {
 declare const pagbank_pix_data: {
 	plugin_url: string;
 };
+
+/**
+ * pagbankOrderStatus is localized for order status polling.
+ */
+declare const pagbankOrderStatus: {
+	nonce: string;
+};

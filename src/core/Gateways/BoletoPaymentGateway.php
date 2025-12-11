@@ -273,11 +273,13 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 		wc_get_template(
 			'payment-instructions-boleto.php',
 			array(
+				'order_id'               => $order_id,
+				'order_key'              => $order->get_order_key(),
+				'is_paid'                => $order->is_paid(),
 				'boleto_expiration_date' => $boleto_expiration_date,
 				'boleto_barcode'         => $boleto_barcode,
 				'boleto_link_pdf'        => $boleto_link_pdf,
 				'boleto_link_png'        => $boleto_link_png,
-
 			),
 			'woocommerce/pagbank/',
 			PAGBANK_WOOCOMMERCE_TEMPLATES_PATH
@@ -433,14 +435,26 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 		);
 
 		wp_enqueue_script(
-			'pagbank-order-boleto',
-			plugins_url( 'dist/public/order-received/order-received-pooling.js', PAGBANK_WOOCOMMERCE_FILE_PATH ),
-			array(),
+			'pagbank-payment-instructions',
+			plugins_url( 'dist/public/order-received/payment-instructions.js', PAGBANK_WOOCOMMERCE_FILE_PATH ),
+			array( 'react', 'react-dom', 'wp-i18n' ),
 			PAGBANK_WOOCOMMERCE_VERSION,
 			true
 		);
 
-		wp_scripts()->add_data( 'pagbank-order-boleto', 'pagbank_script', true );
+		wp_localize_script(
+			'pagbank-payment-instructions',
+			'pagbankOrderStatus',
+			array(
+				'nonce' => wp_create_nonce( 'wp_rest' ),
+			)
+		);
+
+		if ( function_exists( 'wp_set_script_translations' ) ) {
+			wp_set_script_translations( 'pagbank-payment-instructions', 'pagbank-for-woocommerce' );
+		}
+
+		wp_scripts()->add_data( 'pagbank-payment-instructions', 'pagbank_script', true );
 	}
 
 	/**

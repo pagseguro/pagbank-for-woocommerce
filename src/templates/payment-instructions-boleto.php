@@ -1,28 +1,29 @@
 <?php
-	if ( ! defined( 'ABSPATH' ) ) {
-		exit;
-	}
+/**
+ * Boleto payment instructions template.
+ * Renders a container that React will hydrate with the payment instructions UI.
+ *
+ * @package PagBank_WooCommerce
+ *
+ * @var int    $order_id               Order ID.
+ * @var string $order_key              Order key.
+ * @var bool   $is_paid                Whether the order is paid.
+ * @var string $boleto_expiration_date Boleto expiration date.
+ * @var string $boleto_barcode         Boleto barcode.
+ * @var string $boleto_link_pdf        Boleto PDF link.
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
-<div class="pagbank-boleto">
-	<h3><?php esc_html_e('Opção 1: faça download do boleto', 'pagbank-for-woocommerce') ;?></h3>
-	<ol>
-		<li><?php esc_html_e('Abra o aplicativo do seu banco e selecione a opção "Pagar boleto"', 'pagbank-for-woocommerce'); ?></li>
-		<li><?php esc_html_e('Escaneie o código de barras', 'pagbank-for-woocommerce') ;?></li>
-	</ol>
-	<div class="center">
-		<a class="button" target="_blank" href="<?php echo esc_url(sanitize_text_field($boleto_link_pdf)); ?>"><?php esc_html_e('Download boleto', 'pagbank-for-woocommerce'); ?></a>
-	</div>
-	<hr />
-	<h3><?php esc_html_e('Opção 2: copie o código de barras', 'pagbank-for-woocommerce'); ?></h3>
-	<ol>
-		<li><?php esc_html_e('Abra o aplicativo do seu banco e selecione a opção "Pagar boleto"', 'pagbank-for-woocommerce'); ?></li>
-		<li><?php esc_html_e('Cole o código de barras abaixo', 'pagbank-for-woocommerce'); ?></li>
-	</ol>
-	<div class="boleto-barcode">
-		<input type="text" readonly value="<?php echo esc_attr( sanitize_text_field($boleto_barcode) ); ?>" data-select-on-click />
-		<button type="button" class="button" data-copy-clipboard="<?php echo esc_attr( sanitize_text_field($boleto_barcode) ); ?>"><?php esc_html_e('Copiar', 'pagbank-for-woocommerce'); ?></button>
-	</div>
-	<hr />
-	<h3><?php esc_html_e('Quando o pagamento for concluído', 'pagbank-for-woocommerce'); ?></h3>
-	<p><?php esc_html_e('Quando finalizar a transação, você pode retornar à tela inicial.', 'pagbank-for-woocommerce'); ?></p>
-</div>
+<div
+	id="pagbank-boleto-instructions"
+	data-order-id="<?php echo esc_attr( $order_id ); ?>"
+	data-order-key="<?php echo esc_attr( $order_key ); ?>"
+	data-is-paid="<?php echo esc_attr( $is_paid ? 'true' : 'false' ); ?>"
+	data-rest-url="<?php echo esc_url( rest_url() ); ?>"
+	data-boleto-barcode="<?php echo esc_attr( sanitize_text_field( $boleto_barcode ) ); ?>"
+	data-boleto-link-pdf="<?php echo esc_url( sanitize_text_field( $boleto_link_pdf ) ); ?>"
+	data-boleto-expiration-date="<?php echo esc_attr( sanitize_text_field( $boleto_expiration_date ) ); ?>"
+></div>
