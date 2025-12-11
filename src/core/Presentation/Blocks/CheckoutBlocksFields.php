@@ -131,17 +131,10 @@ class CheckoutBlocksFields {
 				},
 				'validate_callback'          => function ( $field_value ) {
 					$digits = preg_replace( '/[^0-9]/', '', $field_value );
+					$parsed = Helpers::parse_cpf_or_cnpj( $digits );
 
-					if ( strlen( $digits ) === 11 ) {
-						if ( ! Helpers::is_valid_cpf( $digits ) ) {
-							return new WP_Error( 'invalid_cpf', __( 'CPF inválido. Verifique os dígitos informados.', 'pagbank-for-woocommerce' ) );
-						}
-					} elseif ( strlen( $digits ) === 14 ) {
-						if ( ! Helpers::is_valid_cnpj( $digits ) ) {
-							return new WP_Error( 'invalid_cnpj', __( 'CNPJ inválido. Verifique os dígitos informados.', 'pagbank-for-woocommerce' ) );
-						}
-					} else {
-						return new WP_Error( 'invalid_tax_id', __( 'CPF/CNPJ inválido. Informe 11 dígitos para CPF ou 14 para CNPJ.', 'pagbank-for-woocommerce' ) );
+					if ( ! $parsed['is_valid'] ) {
+						return new WP_Error( 'invalid_tax_id', $parsed['error_message'] );
 					}
 				},
 			)
