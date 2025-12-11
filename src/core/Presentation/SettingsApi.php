@@ -120,16 +120,19 @@ class SettingsApi {
 			'account_id'           => null,
 			'environment'          => $environment,
 			'account'              => null,
+			'scopes'               => array(),
 			'missing_scopes'       => array(),
 			'authentication_error' => false,
+			'authorization_error'  => false,
 		);
 
 		if ( $data ) {
 			$response_data['connected']  = true;
 			$response_data['account_id'] = $data['account_id'] ?? null;
 
-			// Check for missing scopes.
+			// Get current scopes and check for missing ones.
 			$current_scopes                  = ! empty( $data['scope'] ) ? explode( ' ', $data['scope'] ) : array();
+			$response_data['scopes']         = array_values( $current_scopes );
 			$response_data['missing_scopes'] = array_values( array_diff( Api::REQUIRED_SCOPES, $current_scopes ) );
 
 			// Fetch account information from PagBank API.
@@ -142,15 +145,15 @@ class SettingsApi {
 					$http_code  = $error_data['http_code'] ?? null;
 
 					if ( 401 === $http_code ) {
-						// Missing accounts.read scope - will be in missing_scopes array.
-						// No additional action needed.
-						$response_data['missing_scopes'] = array_values(
+						// Authorization error - authenticated but insufficient permissions.
+						$response_data['authorization_error'] = true;
+						$response_data['missing_scopes']      = array_values(
 							array_unique(
 								array_merge( $response_data['missing_scopes'], array( 'accounts.read' ) )
 							)
 						);
 					} elseif ( 403 === $http_code ) {
-						// Authentication error.
+						// Authentication error - not authenticated, needs to reconnect.
 						$response_data['authentication_error'] = true;
 					}
 				} else {

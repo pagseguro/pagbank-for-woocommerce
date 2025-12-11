@@ -25,8 +25,10 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 		isRefreshing,
 		refresh,
 		error,
+		scopes,
 		missing_scopes,
 		authentication_error,
+		authorization_error,
 	} = useConnectStatus(environment);
 	const hasMissingScopes = missing_scopes.length > 0;
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -154,46 +156,91 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 							isDismissible={false}
 							className="pagbank-connect__status"
 						>
+							{__("Sessão expirada. Reconecte sua conta do PagBank.", TEXT_DOMAIN)}
+						</Notice>
+					)}
+
+					{connected && !authentication_error && authorization_error && (
+						<Notice
+							status="warning"
+							isDismissible={false}
+							className="pagbank-connect__status"
+						>
 							{__(
-								"Erro de autenticação. Reconecte sua conta do PagBank.",
+								"Conectado, mas com permissões insuficientes. Reconecte para obter todas as permissões.",
 								TEXT_DOMAIN,
 							)}
 						</Notice>
 					)}
 
-					{connected && !authentication_error && account && (
+					{connected && (account || account_id) && (
 						<Notice
-							status="success"
+							status="info"
 							isDismissible={false}
 							className="pagbank-connect__status"
 						>
 							<div className="pagbank-connect__account-info">
-								<span className="pagbank-connect__account-label">
-									{__("Conectado à conta:", TEXT_DOMAIN)}
-								</span>
-								{account.name && (
-									<span className="pagbank-connect__account-name">
-										{account.name}
+								<div className="pagbank-connect__account-details">
+									<span className="pagbank-connect__account-details-label">
+										{__("ID da conta:", TEXT_DOMAIN)}
 									</span>
-								)}
-								{account.email && (
-									<span className="pagbank-connect__account-email">
-										{account.email}
+									<span className="pagbank-connect__account-details-value">
+										{account_id}
 									</span>
-								)}
+								</div>
+								<div className="pagbank-connect__account-details">
+									<span className="pagbank-connect__account-details-label">
+										{__("Ambiente:", TEXT_DOMAIN)}
+									</span>
+									<span className="pagbank-connect__account-details-value">
+										{environment === "sandbox" &&
+											__("Sandbox (testes)", TEXT_DOMAIN)}
+										{environment === "production" &&
+											__("Produção", TEXT_DOMAIN)}
+									</span>
+								</div>
+								<div className="pagbank-connect__account-details">
+									<span className="pagbank-connect__account-details-label">
+										{__("Nome:", TEXT_DOMAIN)}
+									</span>
+									<span className="pagbank-connect__account-details-value">
+										{account?.name || __("**********", TEXT_DOMAIN)}
+									</span>
+								</div>
+								<div className="pagbank-connect__account-details">
+									<span className="pagbank-connect__account-details-label">
+										{__("Email:", TEXT_DOMAIN)}
+									</span>
+									<span className="pagbank-connect__account-details-value">
+										{account?.email || __("**********", TEXT_DOMAIN)}
+									</span>
+								</div>
+								<div className="pagbank-connect__account-details">
+									<span className="pagbank-connect__account-details-label">
+										{__("Escopos:", TEXT_DOMAIN)}
+									</span>
+									<span className="pagbank-connect__account-details-value">
+										{scopes.join(", ")}
+									</span>
+								</div>
 							</div>
 						</Notice>
 					)}
 
-					{connected && !authentication_error && !account && account_id && (
-						<Notice
-							status="success"
-							isDismissible={false}
-							className="pagbank-connect__status"
-						>
-							{__("Conectado à conta:", TEXT_DOMAIN)} <strong>{account_id}</strong>
-						</Notice>
-					)}
+					{connected &&
+						!authentication_error &&
+						!authorization_error &&
+						!account &&
+						account_id && (
+							<Notice
+								status="success"
+								isDismissible={false}
+								className="pagbank-connect__status"
+							>
+								{__("Conectado à conta:", TEXT_DOMAIN)}{" "}
+								<strong>{account_id}</strong>
+							</Notice>
+						)}
 
 					{connected && hasMissingScopes && (
 						<Notice

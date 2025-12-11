@@ -248,24 +248,31 @@ $pagbank-text-light: #757575;
 	}
 
 	&__account-info {
-		display: flex;
-		flex-direction: column;
-		gap: 2px;
+		display: table;
+		border-collapse: collapse;
+		width: 100%;
 	}
 
-	&__account-label {
-		font-weight: 500;
-		color: $pagbank-text;
+	&__account-details {
+		display: table-row;
 	}
 
-	&__account-name {
+	&__account-details-label {
+		display: table-cell;
 		font-weight: 600;
 		color: $pagbank-text;
+		padding: 4px 12px 4px 0;
+		white-space: nowrap;
+		vertical-align: top;
 	}
 
-	&__account-email {
+	&__account-details-value {
+		display: table-cell;
 		font-size: 13px;
 		color: $pagbank-text-light;
+		padding: 4px 0;
+		vertical-align: top;
+		word-break: break-word;
 	}
 
 	&__error {

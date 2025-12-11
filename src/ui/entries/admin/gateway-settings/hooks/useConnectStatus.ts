@@ -23,8 +23,10 @@ export const useConnectStatus = (environment: Environment): UseConnectStatusRetu
 		isLoading: true,
 		isRefreshing: false,
 		account: null,
+		scopes: [],
 		missing_scopes: [],
 		authentication_error: false,
+		authorization_error: false,
 	});
 	const [error, setError] = useState<string | null>(null);
 	const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
@@ -44,8 +46,10 @@ export const useConnectStatus = (environment: Environment): UseConnectStatusRetu
 				account_id: string | null;
 				environment: Environment;
 				account: AccountInfo | null;
+				scopes: string[];
 				missing_scopes: string[];
 				authentication_error: boolean;
+				authorization_error: boolean;
 			}>({
 				path: `pagbank/v1/connect-status?environment=${environment}`,
 			});
@@ -57,8 +61,10 @@ export const useConnectStatus = (environment: Environment): UseConnectStatusRetu
 				isLoading: false,
 				isRefreshing: false,
 				account: response.account,
+				scopes: response.scopes,
 				missing_scopes: response.missing_scopes,
 				authentication_error: response.authentication_error,
+				authorization_error: response.authorization_error,
 			});
 			setHasLoadedOnce(true);
 		} catch (err) {

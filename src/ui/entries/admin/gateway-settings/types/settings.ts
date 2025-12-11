@@ -68,8 +68,10 @@ export interface ConnectStatus {
 	isLoading: boolean;
 	isRefreshing: boolean;
 	account: AccountInfo | null;
+	scopes: string[];
 	missing_scopes: string[];
 	authentication_error: boolean;
+	authorization_error: boolean;
 }
 
 export interface ConnectApplication {
