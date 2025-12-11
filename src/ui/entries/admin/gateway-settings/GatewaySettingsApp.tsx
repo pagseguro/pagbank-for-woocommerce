@@ -10,6 +10,7 @@ import { __ } from "@wordpress/i18n";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { TEXT_DOMAIN } from "@/constants";
+import { ApplePaySettingsForm } from "./components/apple-pay";
 import { BoletoSettingsForm } from "./components/boleto";
 import { CreditCardSettingsForm } from "./components/credit-card";
 import { DebitCardSettingsForm } from "./components/debit-card";
@@ -33,6 +34,7 @@ const GATEWAY_TITLES: Record<GatewayId, string> = {
 	pagbank_boleto: __("Boleto", TEXT_DOMAIN),
 	pagbank_pay_with_pagbank: __("Pague com PagBank", TEXT_DOMAIN),
 	pagbank_google_pay: __("Google Pay", TEXT_DOMAIN),
+	pagbank_apple_pay: __("Apple Pay", TEXT_DOMAIN),
 };
 
 const GATEWAY_ICONS: Record<GatewayId, string> = {
@@ -42,6 +44,7 @@ const GATEWAY_ICONS: Record<GatewayId, string> = {
 	pagbank_boleto: "boleto.png",
 	pagbank_pay_with_pagbank: "pagbank.png",
 	pagbank_google_pay: "google-pay.png",
+	pagbank_apple_pay: "apple-pay.png",
 };
 
 const ALL_GATEWAYS: GatewayId[] = [
@@ -51,6 +54,7 @@ const ALL_GATEWAYS: GatewayId[] = [
 	"pagbank_boleto",
 	"pagbank_pay_with_pagbank",
 	"pagbank_google_pay",
+	"pagbank_apple_pay",
 ];
 
 export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
@@ -193,6 +197,8 @@ export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 				return <PayWithPagBankSettingsForm />;
 			case "pagbank_google_pay":
 				return <GooglePaySettingsForm />;
+			case "pagbank_apple_pay":
+				return <ApplePaySettingsForm />;
 			default:
 				return (
 					<Notice status="error" isDismissible={false}>

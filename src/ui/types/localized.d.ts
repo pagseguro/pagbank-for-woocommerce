@@ -26,6 +26,10 @@ declare const pagbank_google_pay_data: {
 	plugin_url: string;
 };
 
+declare const pagbank_apple_pay_data: {
+	plugin_url: string;
+};
+
 /**
  * pagbankOrderStatus is localized for order status polling.
  */

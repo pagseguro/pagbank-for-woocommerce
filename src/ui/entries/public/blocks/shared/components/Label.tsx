@@ -3,7 +3,7 @@ import { decodeEntities } from "@wordpress/html-entities";
 type LabelProps = {
 	title: string;
 	baseUrl: string;
-	icon: "card" | "boleto" | "pix" | "pagbank" | "google-pay";
+	icon: "card" | "boleto" | "pix" | "pagbank" | "google-pay" | "apple-pay";
 };
 
 export const Label = ({ title, baseUrl, icon }: LabelProps): JSX.Element => {

@@ -57,6 +57,7 @@ export const entries: Record<string, string> = {
 		"src/ui/entries/public/blocks/checkout-pay-with-pagbank/index.tsx",
 	"public/blocks/checkout-google-pay":
 		"src/ui/entries/public/blocks/checkout-google-pay/index.tsx",
+	"public/blocks/checkout-apple-pay": "src/ui/entries/public/blocks/checkout-apple-pay/index.tsx",
 };
 
 interface BuildConfigOptions {
