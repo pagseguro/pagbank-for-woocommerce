@@ -227,7 +227,7 @@ class Hooks {
 	 */
 	public function check_for_plugin_dependencies() {
 		if ( ! class_exists( 'Extra_Checkout_Fields_For_Brazil' ) ) {
-			include dirname( PAGBANK_WOOCOMMERCE_FILE_PATH ) . '/src/templates/admin-html-notice-missing-brazilian-market-on-woocommerce.php';
+			include dirname( PAGBANK_WOOCOMMERCE_FILE_PATH ) . '/src/templates/admin/notices/html-notice-missing-brazilian-market-on-woocommerce.php';
 		}
 	}
 

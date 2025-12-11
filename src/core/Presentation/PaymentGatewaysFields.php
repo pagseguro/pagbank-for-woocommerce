@@ -69,7 +69,7 @@ class PaymentGatewaysFields {
 		ob_start();
 
 		wc_get_template(
-			'html-pagbank-connect.php',
+			'admin/settings/legacy/html-pagbank-connect.php',
 			array(
 				'gateway'     => $this,
 				'field_html'  => $field_html,

@@ -64,7 +64,7 @@ class WcfmIntegration {
 	 */
 	public function payments_settings( $user_id ) {
 		wc_get_template(
-			'wcfm-payment-settings.php',
+			'my-account/legacy/wcfm-payment-settings.php',
 			array(
 				'user_id'    => $user_id,
 				'account_id' => get_user_meta( $user_id, 'pagbank_account_id', true ),

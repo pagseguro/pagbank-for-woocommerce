@@ -684,7 +684,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 		if ( $this->transfer_of_interest_enabled ) {
 			wc_get_template(
-				'checkout-installments-fields-transfer-of-interest.php',
+				'checkout/legacy/checkout-installments-fields-transfer-of-interest.php',
 				array(
 					'gateway'     => $this,
 					'is_checkout' => $is_checkout,
@@ -696,7 +696,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			);
 		} else {
 			wc_get_template(
-				'checkout-installments-fields-no-interest.php',
+				'checkout/legacy/checkout-installments-fields-no-interest.php',
 				array(
 					'gateway'     => $this,
 					'is_checkout' => $is_checkout,
