@@ -4,6 +4,8 @@
  * @package PagBank_WooCommerce
  */
 
+@use "sass:color";
+
 // Variables
 $pagbank-primary: #00a651;
 $pagbank-primary-dark: #008f46;
@@ -200,6 +202,97 @@ $pagbank-text-light: #757575;
 	.components-textarea-control__input,
 	.components-select-control__input {
 		width: 100%;
+	}
+}
+
+// Number stepper component
+.pagbank-number-stepper-wrapper {
+	display: inline-block;
+	width: auto;
+}
+
+.pagbank-number-stepper {
+	display: inline-flex;
+	align-items: center;
+	border: 1px solid $pagbank-border;
+	border-radius: 4px;
+	background: #fff;
+	overflow: hidden;
+
+	&__button {
+		width: 36px;
+		height: 36px;
+		min-width: 36px;
+		padding: 0;
+		border: none;
+		background: $pagbank-bg;
+		color: $pagbank-text;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: background-color 0.15s ease, color 0.15s ease;
+		border-radius: 0;
+
+		&:hover:not(:disabled) {
+			background: color.adjust($pagbank-bg, $lightness: -5%);
+			color: $pagbank-primary;
+		}
+
+		&:disabled {
+			opacity: 0.4;
+			cursor: not-allowed;
+		}
+
+		&--minus {
+			border-right: 1px solid $pagbank-border;
+		}
+
+		&--plus {
+			border-left: 1px solid $pagbank-border;
+		}
+
+		svg {
+			width: 20px;
+			height: 20px;
+		}
+	}
+
+	&__input {
+		width: 60px;
+		height: 36px;
+		border: none;
+		text-align: center;
+		font-size: 14px;
+		font-weight: 500;
+		color: $pagbank-text;
+		background: transparent;
+		padding: 0 4px;
+		-moz-appearance: textfield;
+
+		&::-webkit-outer-spin-button,
+		&::-webkit-inner-spin-button {
+			-webkit-appearance: none;
+			margin: 0;
+		}
+
+		&:focus {
+			outline: none;
+			background: rgba($pagbank-primary, 0.05);
+		}
+
+		&:disabled {
+			opacity: 0.6;
+			cursor: not-allowed;
+		}
+	}
+
+	&__suffix {
+		padding: 0 12px 0 8px;
+		font-size: 13px;
+		color: $pagbank-text-light;
+		white-space: nowrap;
+		border: none;
 	}
 }
 
