@@ -66,6 +66,7 @@ $pagbank-text-light: #757575;
 		align-items: center;
 		gap: 12px;
 		margin-bottom: 16px;
+		width: 100%;
 	}
 
 	&__icon {
@@ -87,9 +88,7 @@ $pagbank-text-light: #757575;
 	&__nav {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 8px 16px;
-		padding-bottom: 16px;
-		border-bottom: 1px solid $pagbank-border;
+		gap: 4px;
 		margin: 0 !important;
 	}
 
@@ -97,15 +96,23 @@ $pagbank-text-light: #757575;
 		font-size: 13px;
 		color: $pagbank-primary;
 		text-decoration: none;
+		padding: 4px 8px;
+		border-radius: 4px;
+		transition: background-color 0.15s ease, color 0.15s ease;
 
 		&:hover {
 			color: $pagbank-primary-dark;
-			text-decoration: underline;
+			background-color: rgba($pagbank-primary, 0.1);
 		}
 
 		&--current {
 			color: $pagbank-text-light;
 			cursor: default;
+
+			&:hover {
+				color: $pagbank-text-light;
+				background-color: transparent;
+			}
 		}
 	}
 
@@ -181,7 +188,6 @@ $pagbank-text-light: #757575;
 	.components-textarea-control__input,
 	.components-select-control__input {
 		width: 100%;
-		max-width: 400px;
 	}
 }
 

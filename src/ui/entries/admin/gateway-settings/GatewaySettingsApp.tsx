@@ -32,12 +32,12 @@ const GATEWAY_TITLES: Record<GatewayId, string> = {
 	pagbank_debit_card: __("Cartão de Débito", TEXT_DOMAIN),
 	pagbank_pix: __("Pix", TEXT_DOMAIN),
 	pagbank_boleto: __("Boleto", TEXT_DOMAIN),
-	pagbank_pay_with_pagbank: __("Pay with PagBank", TEXT_DOMAIN),
+	pagbank_pay_with_pagbank: __("Pague com PagBank", TEXT_DOMAIN),
 };
 
 const GATEWAY_ICONS: Record<GatewayId, string> = {
 	pagbank_credit_card: "card.png",
-	pagbank_debit_card: "card.svg",
+	pagbank_debit_card: "card.png",
 	pagbank_pix: "pix.png",
 	pagbank_boleto: "boleto.png",
 	pagbank_pay_with_pagbank: "pagbank.png",
