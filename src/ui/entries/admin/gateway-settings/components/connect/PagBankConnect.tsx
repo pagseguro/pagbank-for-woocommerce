@@ -144,7 +144,7 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 			{isLoading ? (
 				<div className="pagbank-connect__loading">
 					<Spinner />
-					<span>{__("Verificando conexão...", TEXT_DOMAIN)}</span>
+					<span>{__("Verificando a sua conta do PagBank...", TEXT_DOMAIN)}</span>
 				</div>
 			) : (
 				<div className="pagbank-connect__content">
