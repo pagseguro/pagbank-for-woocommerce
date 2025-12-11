@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Bissolli\ValidadorCpfCnpj\CPF;
 use Bissolli\ValidadorCpfCnpj\CNPJ;
+use PagBank_WooCommerce\Validators\AlphanumericCNPJ;
 
 /**
  * Class Helpers.
@@ -179,11 +180,20 @@ class Helpers {
 	/**
 	 * Validate CNPJ number.
 	 *
+	 * When PAGBANK_FEATURE_FLAG_ALPHANUMERIC_CNPJ_ENABLED is true, validates both traditional
+	 * numeric CNPJ and the new alphanumeric format (starting July 2026).
+	 *
 	 * @param string $cnpj CNPJ number (with or without formatting).
 	 *
 	 * @return bool True if valid, false otherwise.
 	 */
 	public static function is_valid_cnpj( $cnpj ) {
+		if ( self::get_constant_value( 'PAGBANK_FEATURE_FLAG_ALPHANUMERIC_CNPJ_ENABLED', false ) ) {
+			$validator = new AlphanumericCNPJ( $cnpj );
+
+			return $validator->is_valid();
+		}
+
 		$validator = new CNPJ( $cnpj );
 
 		return $validator->isValid();
@@ -192,11 +202,20 @@ class Helpers {
 	/**
 	 * Format CNPJ number.
 	 *
+	 * When PAGBANK_FEATURE_FLAG_ALPHANUMERIC_CNPJ_ENABLED is true, formats both traditional
+	 * numeric CNPJ and the new alphanumeric format (starting July 2026).
+	 *
 	 * @param string $cnpj CNPJ number (with or without formatting).
 	 *
-	 * @return string Formatted CNPJ (00.000.000/0000-00).
+	 * @return string Formatted CNPJ (00.000.000/0000-00 or XX.XXX.XXX/XXXX-XX).
 	 */
 	public static function format_cnpj( $cnpj ) {
+		if ( self::get_constant_value( 'PAGBANK_FEATURE_FLAG_ALPHANUMERIC_CNPJ_ENABLED', false ) ) {
+			$validator = new AlphanumericCNPJ( $cnpj );
+
+			return $validator->format();
+		}
+
 		$validator = new CNPJ( $cnpj );
 
 		return $validator->format();
@@ -239,6 +258,42 @@ class Helpers {
 	 */
 	public static function filter_only_numbers( string $value ) {
 		return preg_replace( '/[^0-9]/', '', $value );
+	}
+
+	/**
+	 * Validate alphanumeric CNPJ (new format starting July 2026).
+	 *
+	 * The alphanumeric CNPJ has 14 positions:
+	 * - First 12 positions: alphanumeric (0-9, A-Z)
+	 * - Last 2 positions: numeric digits (verification digits)
+	 *
+	 * The verification digits are calculated using module 11, where each character
+	 * is converted to its ASCII code minus 48 (so '0' = 0, 'A' = 17, 'Z' = 42).
+	 *
+	 * @see https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/acoes-e-programas/programas-e-atividades/cnpj-alfanumerico
+	 * @see https://www.serpro.gov.br/menu/noticias/noticias-2024/cnpj-alfanumerico
+	 *
+	 * @param string $cnpj CNPJ alfanumérico (with or without formatting).
+	 *
+	 * @return bool True if valid, false otherwise.
+	 */
+	public static function is_valid_alphanumeric_cnpj( string $cnpj ): bool {
+		$validator = new AlphanumericCNPJ( $cnpj );
+
+		return $validator->is_valid();
+	}
+
+	/**
+	 * Format alphanumeric CNPJ.
+	 *
+	 * @param string $cnpj CNPJ alfanumérico (without formatting).
+	 *
+	 * @return string Formatted CNPJ (XX.XXX.XXX/XXXX-XX).
+	 */
+	public static function format_alphanumeric_cnpj( string $cnpj ): string {
+		$validator = new AlphanumericCNPJ( $cnpj );
+
+		return $validator->format();
 	}
 
 	/**
