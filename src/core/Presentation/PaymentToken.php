@@ -19,6 +19,16 @@ use WC_Payment_Token;
 class PaymentToken extends WC_Payment_Token {
 
 	/**
+	 * Token type for credit cards.
+	 */
+	const TYPE_CREDIT_CARD = 'PagBank_CC';
+
+	/**
+	 * Token type for debit cards.
+	 */
+	const TYPE_DEBIT_CARD = 'PagBank_DC';
+
+	/**
 	 * Token Type String.
 	 *
 	 * @var string
@@ -48,15 +58,29 @@ class PaymentToken extends WC_Payment_Token {
 	 * @return string
 	 */
 	public function get_display_name( $deprecated = '' ) {
+		$card_mode = $this->get_type() === self::TYPE_DEBIT_CARD
+			? __( 'Débito', 'pagbank-for-woocommerce' )
+			: __( 'Crédito', 'pagbank-for-woocommerce' );
+
 		$display = sprintf(
-			/* translators: 1: credit card type 2: last 4 digits 3: expiry month 4: expiry year */
-			__( '%1$s com final %2$s (expira em %3$s/%4$s)', 'pagbank-for-woocommerce' ),
+			/* translators: 1: credit card type 2: last 4 digits 3: card mode (Crédito/Débito) 4: expiry month 5: expiry year */
+			__( '%1$s com final %2$s (%3$s) - expira em %4$s/%5$s', 'pagbank-for-woocommerce' ),
 			wc_get_credit_card_type_label( $this->get_card_type() ),
 			$this->get_last4(),
+			$card_mode,
 			$this->get_expiry_month(),
 			substr( $this->get_expiry_year(), 2 )
 		);
 		return $display;
+	}
+
+	/**
+	 * Set the token type.
+	 *
+	 * @param string $type Token type (PagBank_CC or PagBank_DC).
+	 */
+	public function set_type( $type ) {
+		$this->type = $type;
 	}
 
 	/**
