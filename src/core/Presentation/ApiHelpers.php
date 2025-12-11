@@ -16,6 +16,7 @@ use Exception;
 use PagBank_WooCommerce\Gateways\BoletoPaymentGateway;
 use PagBank_WooCommerce\Gateways\CreditCardPaymentGateway;
 use PagBank_WooCommerce\Gateways\DebitCardPaymentGateway;
+use PagBank_WooCommerce\Gateways\GooglePayPaymentGateway;
 use PagBank_WooCommerce\Gateways\PayWithPagBankGateway;
 use PagBank_WooCommerce\Gateways\PixPaymentGateway;
 use WC_Order;
@@ -413,6 +414,53 @@ class ApiHelpers {
 		);
 
 		return apply_filters( 'pagbank_boleto_payment_data', $data, $order, $gateway );
+	}
+
+	/**
+	 * Get Google Pay payment api data.
+	 *
+	 * @param GooglePayPaymentGateway $gateway Gateway.
+	 * @param WC_Order                $order Order.
+	 * @param string                  $google_pay_token Google Pay payment token (JSON string from Google Pay API).
+	 *
+	 * @return array
+	 */
+	public static function get_google_pay_payment_api_data( GooglePayPaymentGateway $gateway, WC_Order $order, string $google_pay_token ) {
+		$password = wp_generate_password( 30, false );
+
+		$data = array(
+			'reference_id'      => self::get_order_reference_id_data( $order, $password ),
+			'items'             => self::get_order_items_api_data( $order ),
+			'customer'          => self::get_order_customer_api_data( $order ),
+			'shipping'          => array(
+				'address' => self::get_order_shipping_address_api_data( $order ),
+			),
+			'charges'           => array(
+				array(
+					'reference_id'   => self::get_order_reference_id_data( $order, $password ),
+					// translators: %1$s: order id, %2$s: blog name.
+					'description'    => sprintf( __( 'Pedido %1$s - %2$s', 'pagbank-for-woocommerce' ), $order->get_id(), get_bloginfo( 'name' ) ),
+					'amount'         => self::get_order_amount_api_data( $order ),
+					'payment_method' => array(
+						'type'         => 'CREDIT_CARD',
+						'installments' => 1,
+						'capture'      => true,
+						'card'         => array(
+							'wallet' => array(
+								'type' => 'GOOGLE_PAY',
+								'key'  => $google_pay_token,
+							),
+						),
+					),
+				),
+			),
+			'notification_urls' => array(
+				WebhookHandler::get_webhook_url(),
+			),
+			'metadata'          => self::get_order_metadata_api_data( $order, array( 'password' => $password ) ),
+		);
+
+		return apply_filters( 'pagbank_google_pay_payment_data', $data, $order, $gateway );
 	}
 
 	/**

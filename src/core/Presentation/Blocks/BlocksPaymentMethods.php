@@ -61,6 +61,7 @@ class BlocksPaymentMethods {
 				$payment_method_registry->register( new CreditCardBlocksSupport() );
 				$payment_method_registry->register( new DebitCardBlocksSupport() );
 				$payment_method_registry->register( new PayWithPagBankBlocksSupport() );
+				$payment_method_registry->register( new GooglePayBlocksSupport() );
 			}
 		);
 	}
