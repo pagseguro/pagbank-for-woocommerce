@@ -77,9 +77,13 @@ export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 	// Compute isDirty by comparing watched values with clean values
 	const isDirty = useMemo(() => {
 		if (!cleanValues) return false;
-		// Compare only the keys that exist in cleanValues
-		for (const key of Object.keys(cleanValues) as (keyof GatewaySettings)[]) {
-			if (watchedValues[key] !== cleanValues[key]) {
+		// Get all unique keys from both objects
+		const allKeys = new Set([...Object.keys(cleanValues), ...Object.keys(watchedValues)]);
+		// Compare values for all keys
+		for (const key of allKeys) {
+			const cleanValue = cleanValues[key as keyof GatewaySettings] ?? "";
+			const watchedValue = watchedValues[key as keyof GatewaySettings] ?? "";
+			if (cleanValue !== watchedValue) {
 				return true;
 			}
 		}
