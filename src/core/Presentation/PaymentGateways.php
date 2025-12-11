@@ -113,39 +113,21 @@ class PaymentGateways {
 	 * @return void
 	 */
 	private function enqueue_gateway_list_styles(): void {
-		$plugin_url  = plugins_url( '', PAGBANK_WOOCOMMERCE_FILE_PATH );
-		$gateway_ids = self::$gateway_ids;
-
-		// Build CSS selectors for all PagBank gateways.
-		$selectors = array_map(
-			function ( $id ) {
-				return '#' . $id . ' .woocommerce-list__item-title::after';
-			},
-			$gateway_ids
+		wp_enqueue_style(
+			'pagbank-gateway-list',
+			plugins_url( 'dist/styles/admin/gateway-list.css', PAGBANK_WOOCOMMERCE_FILE_PATH ),
+			array(),
+			PAGBANK_WOOCOMMERCE_VERSION
 		);
 
-		$css = implode( ', ', $selectors ) . ' {
-			content: "Oficial PagBank";
-			display: inline-flex;
-			align-items: center;
-			gap: 4px;
-			margin-left: 8px;
-			padding: 2px 6px 2px 22px;
-			background-image: url("' . esc_url( $plugin_url . '/dist/images/icons/pagbank.png' ) . '");
-			background-size: 14px 14px;
-			background-repeat: no-repeat;
-			background-position: 4px center;
-			font-size: 11px;
-			font-weight: 500;
-			color: #1bb99a;
-			background-color: rgba(27, 185, 154, 0.1);
-			border-radius: 4px;
-			vertical-align: middle;
-		}';
+		// Pass dynamic values via CSS custom properties.
+		$icon_url   = plugins_url( 'dist/images/icons/pagbank.png', PAGBANK_WOOCOMMERCE_FILE_PATH );
+		$badge_text = __( 'Oficial PagBank', 'pagbank-for-woocommerce' );
 
-		wp_register_style( 'pagbank-gateway-list', false, array(), PAGBANK_WOOCOMMERCE_VERSION );
-		wp_enqueue_style( 'pagbank-gateway-list' );
-		wp_add_inline_style( 'pagbank-gateway-list', $css );
+		wp_add_inline_style(
+			'pagbank-gateway-list',
+			':root { --pagbank-icon-url: url("' . esc_url( $icon_url ) . '"); --pagbank-badge-text: "' . esc_attr( $badge_text ) . '"; }'
+		);
 	}
 
 	/**

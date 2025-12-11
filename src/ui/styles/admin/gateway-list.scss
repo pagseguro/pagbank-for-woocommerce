@@ -1,0 +1,44 @@
+/**
+ * PagBank Gateway List Styles
+ *
+ * Adds "Oficial PagBank" badge to all PagBank gateways on the WooCommerce
+ * payment methods list page.
+ */
+
+@use "sass:list";
+
+// PagBank gateway IDs
+$gateway-ids: (
+	"pagbank_credit_card",
+	"pagbank_debit_card",
+	"pagbank_pix",
+	"pagbank_boleto",
+	"pagbank_pay_with_pagbank",
+	"pagbank_google_pay",
+	"pagbank_apple_pay"
+);
+
+// Build selectors for all gateways
+$selectors: ();
+@each $id in $gateway-ids {
+	$selectors: list.append($selectors, "##{$id} .woocommerce-list__item-title::after", comma);
+}
+
+#{$selectors} {
+	content: var(--pagbank-badge-text);
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	margin-left: 8px;
+	padding: 2px 6px 2px 22px;
+	background-image: var(--pagbank-icon-url);
+	background-size: 14px 14px;
+	background-repeat: no-repeat;
+	background-position: 4px center;
+	font-size: 11px;
+	font-weight: 500;
+	color: #1bb99a;
+	background-color: rgba(27, 185, 154, 0.1);
+	border-radius: 4px;
+	vertical-align: middle;
+}
