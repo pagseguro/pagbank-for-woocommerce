@@ -67,6 +67,7 @@ export function getEntryBuildConfig(name: string, entry: string, options: BuildC
 	return {
 		configFile: false as const,
 		root: rootDir,
+		logLevel: "warn" as const,
 		resolve: {
 			alias: {
 				"@": resolve(rootDir, "src/ui"),
@@ -77,7 +78,8 @@ export function getEntryBuildConfig(name: string, entry: string, options: BuildC
 		},
 		build: {
 			emptyOutDir: false,
-			sourcemap: isDev,
+			// Use 'hidden' sourcemaps in dev to avoid warnings from node_modules without sourcemaps
+			sourcemap: isDev ? "hidden" : false,
 			minify: !isDev,
 			watch: isDev ? {} : null,
 			lib: {
@@ -91,6 +93,31 @@ export function getEntryBuildConfig(name: string, entry: string, options: BuildC
 				output: {
 					globals: externals,
 					dir: resolve(rootDir, "dist"),
+					// Suppress sourcemap warnings for node_modules
+					sourcemapIgnoreList: (relativeSourcePath) => {
+						return relativeSourcePath.includes("node_modules");
+					},
+				},
+				onwarn(warning, warn) {
+					// Ignore "use client" directive warnings from TanStack Query and other libraries
+					if (
+						warning.code === "MODULE_LEVEL_DIRECTIVE" &&
+						warning.message.includes('"use client"')
+					) {
+						return;
+					}
+					// Ignore sourcemap warnings from node_modules
+					if (
+						warning.code === "SOURCEMAP_ERROR" &&
+						warning.message.includes("node_modules")
+					) {
+						return;
+					}
+					// Ignore sourcemap location resolution warnings
+					if (warning.message?.includes("Can't resolve original location of error")) {
+						return;
+					}
+					warn(warning);
 				},
 			},
 		} satisfies BuildOptions,

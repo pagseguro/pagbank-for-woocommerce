@@ -7,7 +7,7 @@
 import { Button, Modal, Spinner } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import { TEXT_DOMAIN } from "@/constants";
-import type { Environment } from "../../types/settings";
+import type { Environment } from "../../schemas/settings";
 import { PlanSelector } from "./PlanSelector";
 
 interface ConnectModalProps {

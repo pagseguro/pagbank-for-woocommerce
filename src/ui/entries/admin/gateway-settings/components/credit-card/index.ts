@@ -4,6 +4,6 @@
  * @package PagBank_WooCommerce
  */
 
-export { CreditCardSettings } from "./CreditCardSettings";
+export { CreditCardSettingsForm } from "./CreditCardSettings";
 export { InstallmentsSection } from "./InstallmentsSection";
 export { ThreeDSSection } from "./ThreeDSSection";

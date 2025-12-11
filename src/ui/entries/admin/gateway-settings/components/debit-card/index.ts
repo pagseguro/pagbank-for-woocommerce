@@ -4,4 +4,4 @@
  * @package PagBank_WooCommerce
  */
 
-export { DebitCardSettings } from "./DebitCardSettings";
+export { DebitCardSettingsForm } from "./DebitCardSettings";

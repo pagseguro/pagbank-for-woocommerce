@@ -28,3 +28,27 @@ declare const pagbank_pix_data: {
 declare const pagbankOrderStatus: {
 	nonce: string;
 };
+
+/**
+ * pagbankSettings is localized for gateway settings page.
+ */
+interface PagBankSettingsData {
+	gatewayId?: string;
+	pluginUrl?: string;
+	settingsUrl?: string;
+	iconUrl?: string;
+	logoUrl?: string;
+	isLocalhost?: boolean;
+	oauthNonce?: string;
+	ajaxUrl?: string;
+	connectApplications?: Array<{
+		id: string;
+		name: string;
+		description: string;
+		fee: string;
+	}>;
+}
+
+interface Window {
+	pagbankSettings?: PagBankSettingsData;
+}

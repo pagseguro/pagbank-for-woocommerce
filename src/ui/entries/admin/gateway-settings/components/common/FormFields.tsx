@@ -7,7 +7,7 @@
 import { SelectControl, TextareaControl, TextControl, ToggleControl } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import { TEXT_DOMAIN } from "@/constants";
-import type { Environment, YesNo } from "../../types/settings";
+import type { Environment, YesNo } from "../../schemas/settings";
 
 interface EnabledToggleProps {
 	value: YesNo;

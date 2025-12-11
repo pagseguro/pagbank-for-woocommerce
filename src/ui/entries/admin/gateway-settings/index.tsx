@@ -6,7 +6,8 @@
 
 import { createRoot } from "react-dom/client";
 import { GatewaySettingsApp } from "./GatewaySettingsApp";
-import type { GatewayId } from "./types/settings";
+import { QueryProvider } from "./providers";
+import type { GatewayId } from "./schemas/settings";
 
 const init = () => {
 	const container = document.getElementById("pagbank-gateway-settings-root");
@@ -23,7 +24,11 @@ const init = () => {
 	}
 
 	const root = createRoot(container);
-	root.render(<GatewaySettingsApp gatewayId={gatewayId} />);
+	root.render(
+		<QueryProvider>
+			<GatewaySettingsApp gatewayId={gatewayId} />
+		</QueryProvider>,
+	);
 };
 
 if (document.readyState === "loading") {

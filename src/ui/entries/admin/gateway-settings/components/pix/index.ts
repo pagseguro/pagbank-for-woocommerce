@@ -4,4 +4,4 @@
  * @package PagBank_WooCommerce
  */
 
-export { PixSettings } from "./PixSettings";
+export { PixSettingsForm } from "./PixSettings";

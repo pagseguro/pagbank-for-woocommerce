@@ -8,8 +8,8 @@ import { Button, Notice, Spinner } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import { useCallback, useState } from "react";
 import { TEXT_DOMAIN } from "@/constants";
-import { useConnectStatus } from "../../hooks/useConnectStatus";
-import type { Environment } from "../../types/settings";
+import { useConnectStatusQuery } from "../../hooks/useConnectStatusQuery";
+import type { Environment } from "../../schemas/settings";
 import { ConnectModal } from "./ConnectModal";
 
 interface PagBankConnectProps {
@@ -29,7 +29,8 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 		missing_scopes,
 		authentication_error,
 		authorization_error,
-	} = useConnectStatus(environment);
+	} = useConnectStatusQuery(environment);
+
 	const hasMissingScopes = missing_scopes.length > 0;
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isConnecting, setIsConnecting] = useState(false);
@@ -125,15 +126,18 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 		[ajaxUrl, environment, oauthNonce, refresh],
 	);
 
+	const errorMessage = error instanceof Error ? error.message : null;
+	const displayError = errorMessage || connectError;
+
 	const buttonText = connected
 		? __("Conectar a outra conta do PagBank", TEXT_DOMAIN)
 		: __("Conectar a uma conta do PagBank", TEXT_DOMAIN);
 
 	return (
 		<div className="pagbank-connect">
-			{(error || connectError) && (
+			{displayError && (
 				<Notice status="error" isDismissible={false} className="pagbank-connect__error">
-					{error || connectError}
+					{displayError}
 				</Notice>
 			)}
 

@@ -5,77 +5,67 @@
  */
 
 import { __ } from "@wordpress/i18n";
+import { useWatch } from "react-hook-form";
 import { TEXT_DOMAIN } from "@/constants";
-import type { BaseGatewaySettings as BaseSettings, Environment, YesNo } from "../../types/settings";
-import {
-	DescriptionTextarea,
-	EnabledToggle,
-	EnvironmentSelect,
-	LogsToggle,
-	SettingsCard,
-	TitleInput,
-} from "../common";
+import { useFormContext } from "../../context";
+import type { Environment } from "../../schemas/settings";
+import { SettingsCard } from "../common";
 import { PagBankConnect } from "../connect";
+import { FormInput, FormSelect, FormTextarea, FormToggle } from "../form";
 
-interface BaseGatewaySettingsProps<T extends BaseSettings> {
-	settings: T;
-	onSettingChange: (key: keyof T, value: T[keyof T]) => void;
-	disabled?: boolean;
+interface BaseGatewaySettingsProps {
 	children?: React.ReactNode;
 }
 
-export const BaseGatewaySettings = <T extends BaseSettings>({
-	settings,
-	onSettingChange,
-	disabled = false,
-	children,
-}: BaseGatewaySettingsProps<T>) => {
+const ENVIRONMENT_OPTIONS = [
+	{ label: __("Sandbox (Testes)", TEXT_DOMAIN), value: "sandbox" },
+	{ label: __("Produção", TEXT_DOMAIN), value: "production" },
+];
+
+export const BaseGatewaySettings = ({ children }: BaseGatewaySettingsProps) => {
+	const { form } = useFormContext();
+	const environment = useWatch({ control: form.control, name: "environment" }) as Environment;
+
 	return (
 		<>
 			<SettingsCard title={__("Configurações Gerais", TEXT_DOMAIN)}>
 				<div className="pagbank-settings-field">
-					<EnabledToggle
-						value={settings.enabled}
-						onChange={(value: YesNo) =>
-							onSettingChange("enabled" as keyof T, value as T[keyof T])
-						}
-						disabled={disabled}
+					<FormToggle
+						name="enabled"
+						label={__("Ativar método de pagamento", TEXT_DOMAIN)}
+						helpChecked={__("Este método de pagamento está ativo.", TEXT_DOMAIN)}
+						helpUnchecked={__("Este método de pagamento está desativado.", TEXT_DOMAIN)}
 					/>
 				</div>
 
 				<div className="pagbank-settings-field">
-					<EnvironmentSelect
-						value={settings.environment}
-						onChange={(value: Environment) =>
-							onSettingChange("environment" as keyof T, value as T[keyof T])
-						}
-						disabled={disabled}
+					<FormSelect
+						name="environment"
+						label={__("Ambiente", TEXT_DOMAIN)}
+						options={ENVIRONMENT_OPTIONS}
+						help={__("Selecione o ambiente para processar os pagamentos.", TEXT_DOMAIN)}
 					/>
 				</div>
 
 				<div className="pagbank-settings-field">
-					<PagBankConnect environment={settings.environment} />
+					<PagBankConnect environment={environment} />
 				</div>
 			</SettingsCard>
 
 			<SettingsCard title={__("Configurações de Exibição", TEXT_DOMAIN)}>
 				<div className="pagbank-settings-field">
-					<TitleInput
-						value={settings.title}
-						onChange={(value) =>
-							onSettingChange("title" as keyof T, value as T[keyof T])
-						}
-						disabled={disabled}
+					<FormInput
+						name="title"
+						label={__("Título", TEXT_DOMAIN)}
+						help={__("Título exibido ao cliente durante o checkout.", TEXT_DOMAIN)}
 					/>
 				</div>
 
 				<div className="pagbank-settings-field">
-					<DescriptionTextarea
-						value={settings.description}
-						onChange={(value) =>
-							onSettingChange("description" as keyof T, value as T[keyof T])
-						}
-						disabled={disabled}
+					<FormTextarea
+						name="description"
+						label={__("Descrição", TEXT_DOMAIN)}
+						help={__("Descrição exibida ao cliente durante o checkout.", TEXT_DOMAIN)}
 					/>
 				</div>
 			</SettingsCard>
@@ -84,12 +74,13 @@ export const BaseGatewaySettings = <T extends BaseSettings>({
 
 			<SettingsCard title={__("Configurações Avançadas", TEXT_DOMAIN)}>
 				<div className="pagbank-settings-field">
-					<LogsToggle
-						value={settings.logs_enabled}
-						onChange={(value: YesNo) =>
-							onSettingChange("logs_enabled" as keyof T, value as T[keyof T])
-						}
-						disabled={disabled}
+					<FormToggle
+						name="logs_enabled"
+						label={__("Habilitar logs", TEXT_DOMAIN)}
+						help={__(
+							"Registra eventos do gateway de pagamento para debug.",
+							TEXT_DOMAIN,
+						)}
 					/>
 				</div>
 			</SettingsCard>

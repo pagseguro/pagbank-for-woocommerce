@@ -4,4 +4,4 @@
  * @package PagBank_WooCommerce
  */
 
-export { BoletoSettings } from "./BoletoSettings";
+export { BoletoSettingsForm } from "./BoletoSettings";

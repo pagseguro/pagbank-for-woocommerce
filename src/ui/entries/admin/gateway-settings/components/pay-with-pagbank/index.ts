@@ -4,4 +4,4 @@
  * @package PagBank_WooCommerce
  */
 
-export { PayWithPagBankSettings } from "./PayWithPagBankSettings";
+export { PayWithPagBankSettingsForm } from "./PayWithPagBankSettings";
