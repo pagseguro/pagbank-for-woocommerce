@@ -53,7 +53,6 @@ declare const PagBankCheckoutCreditCardVariables: {
 		maximum_installments_interest_free: number;
 		card_public_key: string;
 		threeds_enabled: boolean;
-		threeds_allow_continue: boolean;
 		api_3ds_session_url: string;
 		threeds_nonce: string;
 		environment: "sandbox" | "production";
@@ -427,13 +426,9 @@ const processEncryptedCard = async (): Promise<boolean> => {
 				);
 			}
 
+			// AUTH_NOT_SUPPORTED: Block the transaction - 3DS authentication is required
 			if (result.status === "AUTH_NOT_SUPPORTED") {
-				if (!PagBankCheckoutCreditCardVariables.settings.threeds_allow_continue) {
-					throw new Error(
-						PagBankCheckoutCreditCardVariables.messages.threeds_change_payment_method,
-					);
-				}
-				// Continue without 3DS if allowed
+				throw new Error(PagBankCheckoutCreditCardVariables.messages.threeds_not_supported);
 			}
 
 			if (result.status === "AUTH_FLOW_COMPLETED" && result.id && threedsIdInput) {

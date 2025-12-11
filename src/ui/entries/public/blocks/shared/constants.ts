@@ -15,7 +15,6 @@ export const defaultCardPaymentMethodSettings: Omit<CardPaymentMethodSettings, "
 	nonce: "",
 	// 3DS settings
 	threeds_enabled: false,
-	threeds_allow_continue: true,
 	threeds_for_saved_cards: false,
 	api_3ds_session_url: "",
 	threeds_nonce: "",

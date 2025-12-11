@@ -38,17 +38,6 @@ export const ThreeDSSection = () => {
 			<AnimatedField visible={isThreedsEnabled}>
 				<div className="pagbank-settings-field">
 					<FormToggle
-						name={"threeds_allow_continue" as keyof GatewaySettings}
-						label={__("Permitir continuar sem autenticação", TEXT_DOMAIN)}
-						help={__(
-							"Quando ativado, permite que a transação continue mesmo quando a autenticação 3DS não estiver disponível.",
-							TEXT_DOMAIN,
-						)}
-					/>
-				</div>
-
-				<div className="pagbank-settings-field">
-					<FormToggle
 						name={"threeds_for_saved_cards" as keyof GatewaySettings}
 						label={__("3DS para cartões salvos", TEXT_DOMAIN)}
 						help={__(

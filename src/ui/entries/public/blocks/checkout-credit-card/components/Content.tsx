@@ -266,17 +266,11 @@ export const Content = ({
 						threedsId = result.id;
 					}
 
-					// AUTH_NOT_SUPPORTED: Continue without 3DS if allowed
-					// Note: If the merchant doesn't allow continuing without 3DS (threeds_allow_continue = false),
-					// the backend will handle the rejection. This decision can be changed later by modifying
-					// this condition to check settings.threeds_allow_continue and return an error here.
-					if (
-						result.status === "AUTH_NOT_SUPPORTED" &&
-						!settings.threeds_allow_continue
-					) {
+					// AUTH_NOT_SUPPORTED: Block the transaction - 3DS authentication is required
+					if (result.status === "AUTH_NOT_SUPPORTED") {
 						return {
 							type: emitResponse.responseTypes.ERROR,
-							message: settings.messages.threeds_change_payment_method,
+							message: settings.messages.threeds_not_supported,
 							messageContext: emitResponse.noticeContexts.PAYMENTS,
 						};
 					}

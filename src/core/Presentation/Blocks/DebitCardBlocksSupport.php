@@ -141,7 +141,6 @@ final class DebitCardBlocksSupport extends AbstractPaymentMethodType {
 			'maximum_installments'    => 1,
 			// 3DS is always enabled and mandatory for debit cards.
 			'threeds_enabled'         => true,
-			'threeds_allow_continue'  => false,
 			'threeds_for_saved_cards' => true,
 			'api_3ds_session_url'     => $this->gateway ? $this->gateway->get_api_3ds_session_url() : '',
 			'threeds_nonce'           => wp_create_nonce( 'pagbank_get_3ds_session' ),

@@ -53,7 +53,6 @@ class DebitCardPaymentGateway extends CreditCardPaymentGateway {
 
 		$this->installments_enabled    = false;
 		$this->threeds_enabled         = true;
-		$this->threeds_allow_continue  = false;
 		$this->threeds_for_saved_cards = false;
 
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );

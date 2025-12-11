@@ -99,13 +99,6 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	public $threeds_enabled;
 
 	/**
-	 * Allow continue when 3DS is not supported.
-	 *
-	 * @var bool
-	 */
-	public $threeds_allow_continue;
-
-	/**
 	 * Apply 3DS for saved cards.
 	 *
 	 * @var bool
@@ -158,10 +151,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		$this->transfer_of_interest_enabled       = 'yes' === $this->get_option( 'transfer_of_interest_enabled' );
 		$this->maximum_installments_interest_free = (int) $this->get_option( 'maximum_installments_interest_free' );
 
-		$this->threeds_enabled = 'yes' === $this->get_option( 'threeds_enabled' );
-		// TODO: This will probably be always false.
-		$this->threeds_allow_continue = 'yes' === $this->get_option( 'threeds_allow_continue' );
-		// TODO: This will probably be always false.
+		$this->threeds_enabled         = 'yes' === $this->get_option( 'threeds_enabled' );
 		$this->threeds_for_saved_cards = 'yes' === $this->get_option( 'threeds_for_saved_cards' );
 
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
@@ -301,25 +291,9 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				'default'           => 'no',
 				'desc_tip'          => true,
 				'custom_attributes' => array(
-					'data-toggle' => implode(
-						',',
-						array(
-							'#' . $this->get_field_key( 'threeds_allow_continue' ),
-							'#' . $this->get_field_key( 'threeds_for_saved_cards' ),
-						)
-					),
+					'data-toggle' => '#' . $this->get_field_key( 'threeds_for_saved_cards' ),
 				),
 			),
-			// TODO: This will probably be removed.
-			'threeds_allow_continue'             => array(
-				'title'       => __( 'Permitir transações não autenticadas', 'pagbank-for-woocommerce' ),
-				'type'        => 'checkbox',
-				'label'       => __( 'Permitir prosseguir quando 3DS não for suportado', 'pagbank-for-woocommerce' ),
-				'description' => __( 'Se desabilitado, transações com cartões não elegíveis ao 3DS serão recusadas.', 'pagbank-for-woocommerce' ),
-				'default'     => 'yes',
-				'desc_tip'    => true,
-			),
-			// TODO: This will probably be removed.
 			'threeds_for_saved_cards'            => array(
 				'title'       => __( '3DS para cartões salvos', 'pagbank-for-woocommerce' ),
 				'type'        => 'checkbox',
@@ -412,7 +386,6 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 					'card_public_key'                    => isset( $connect_data['public_key'] ) ? $connect_data['public_key'] : null,
 					// 3DS settings.
 					'threeds_enabled'                    => $this->threeds_enabled,
-					'threeds_allow_continue'             => $this->threeds_allow_continue,
 					'threeds_for_saved_cards'            => $this->threeds_for_saved_cards,
 					'api_3ds_session_url'                => $this->get_api_3ds_session_url(),
 					'threeds_nonce'                      => wp_create_nonce( 'pagbank_get_3ds_session' ),
