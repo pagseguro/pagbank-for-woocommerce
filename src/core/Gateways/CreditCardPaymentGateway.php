@@ -177,7 +177,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 * Get installment options for select fields.
 	 *
 	 * By default returns options from 1x to 12x.
-	 * If PAGBANK_FEATURE_FLAG_18X_INSTALLMENTS constant is defined,
+	 * If PAGBANK_FEATURE_FLAG_18X_INSTALLMENTS_ENABLED constant is defined,
 	 * extends the options to include 13x through 18x.
 	 *
 	 * @param bool $include_zero_option Whether to include a '0' option that maps to '1x' (for interest-free field).
@@ -194,7 +194,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			$start = 1;
 		}
 
-		$max = true === Helpers::get_constant_value( 'PAGBANK_FEATURE_FLAG_18X_INSTALLMENTS' ) ? 18 : 12;
+		$max = true === Helpers::get_constant_value( 'PAGBANK_FEATURE_FLAG_18X_INSTALLMENTS_ENABLED' ) ? 18 : 12;
 
 		for ( $i = $start; $i <= $max; $i++ ) {
 			$options[ (string) $i ] = "{$i}x";
