@@ -89,21 +89,67 @@ class PaymentGateways {
 			return;
 		}
 
-		wp_register_script( 'pagbank-for-woocommerce-admin-settings', plugins_url( 'dist/admin/admin-settings.js', PAGBANK_WOOCOMMERCE_FILE_PATH ), array(), PAGBANK_WOOCOMMERCE_VERSION, true );
-		wp_register_style(
-			'pagbank-for-woocommerce-admin-settings',
-			plugins_url( 'dist/styles/admin/admin-fields.css', PAGBANK_WOOCOMMERCE_FILE_PATH ),
-			array(),
-			PAGBANK_WOOCOMMERCE_VERSION,
-			'all'
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$gateway_id = sanitize_text_field( wp_unslash( $_GET['section'] ) );
+
+		// Enqueue React gateway settings.
+		$this->enqueue_gateway_settings_scripts( $gateway_id );
+	}
+
+	/**
+	 * Enqueue React gateway settings scripts.
+	 *
+	 * @param string $gateway_id Gateway ID.
+	 *
+	 * @return void
+	 */
+	private function enqueue_gateway_settings_scripts( string $gateway_id ): void {
+		$dependencies = array(
+			'react',
+			'react-dom',
+			'wp-element',
+			'wp-components',
+			'wp-api-fetch',
+			'wp-i18n',
 		);
 
-		wp_scripts()->add_data( 'pagbank-for-woocommerce-admin-settings', 'pagbank_script', true );
+		wp_enqueue_script(
+			'pagbank-gateway-settings',
+			plugins_url( 'dist/admin/gateway-settings.js', PAGBANK_WOOCOMMERCE_FILE_PATH ),
+			$dependencies,
+			PAGBANK_WOOCOMMERCE_VERSION,
+			true
+		);
 
-		wp_enqueue_script( 'pagbank-for-woocommerce-admin-settings' );
-		wp_enqueue_script( 'thickbox' );
+		wp_enqueue_style(
+			'pagbank-gateway-settings',
+			plugins_url( 'dist/styles/admin/gateway-settings.css', PAGBANK_WOOCOMMERCE_FILE_PATH ),
+			array( 'wp-components' ),
+			PAGBANK_WOOCOMMERCE_VERSION
+		);
 
-		wp_enqueue_style( 'thickbox' );
-		wp_enqueue_style( 'pagbank-for-woocommerce-admin-settings' );
+		wp_localize_script(
+			'pagbank-gateway-settings',
+			'pagbankSettings',
+			array(
+				'gatewayId'           => $gateway_id,
+				'restUrl'             => rest_url(),
+				'nonce'               => wp_create_nonce( 'wp_rest' ),
+				'oauthNonce'          => wp_create_nonce( 'pagbank_woocommerce_oauth' ),
+				'ajaxUrl'             => admin_url( 'admin-ajax.php' ),
+				'isLocalhost'         => Helpers::is_localhost(),
+				'connectApplications' => Connect::get_connect_applications(),
+			)
+		);
+
+		// Configure api-fetch to use the nonce.
+		wp_add_inline_script(
+			'wp-api-fetch',
+			sprintf(
+				'wp.apiFetch.use( wp.apiFetch.createNonceMiddleware( "%s" ) );',
+				wp_create_nonce( 'wp_rest' )
+			),
+			'after'
+		);
 	}
 }

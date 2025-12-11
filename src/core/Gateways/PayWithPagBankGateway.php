@@ -12,6 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Exception;
+use PagBank_WooCommerce\Gateways\Traits\ReactSettingsTrait;
 use PagBank_WooCommerce\Presentation\Api;
 use PagBank_WooCommerce\Presentation\ApiHelpers;
 use PagBank_WooCommerce\Presentation\Connect;
@@ -24,6 +25,8 @@ use WP_Error;
  * Class PayWithPagBankGateway.
  */
 class PayWithPagBankGateway extends WC_Payment_Gateway {
+
+	use ReactSettingsTrait;
 
 	/**
 	 * Api instance.
