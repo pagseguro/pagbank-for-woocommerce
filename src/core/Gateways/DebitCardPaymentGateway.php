@@ -38,7 +38,6 @@ class DebitCardPaymentGateway extends CreditCardPaymentGateway {
 		$this->has_fields         = true;
 		$this->supports           = array(
 			'products',
-			'tokenization',
 			'refunds',
 		);
 
@@ -123,9 +122,6 @@ class DebitCardPaymentGateway extends CreditCardPaymentGateway {
 			return;
 		}
 
-		$this->tokenization_script();
-		$this->saved_payment_methods();
 		$this->form();
-		$this->save_payment_method_checkbox();
 	}
 }

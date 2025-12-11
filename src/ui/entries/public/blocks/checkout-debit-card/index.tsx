@@ -8,7 +8,6 @@ import { registerPaymentMethod } from "@woocommerce/blocks-registry";
 import { decodeEntities } from "@wordpress/html-entities";
 import { Label } from "../shared";
 import { Content } from "./components/Content";
-import { SavedTokenContent } from "./components/SavedTokenContent";
 import { settings } from "./settings";
 
 registerPaymentMethod({
@@ -24,9 +23,7 @@ registerPaymentMethod({
 	ariaLabel: decodeEntities(settings.title),
 	supports: {
 		features: settings.supports,
-		showSavedCards: true,
-		showSaveOption: true,
+		showSavedCards: false,
+		showSaveOption: false,
 	},
-	// @ts-expect-error: WooCommerce Blocks injects props at runtime.
-	savedTokenComponent: <SavedTokenContent />,
 });

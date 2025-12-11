@@ -27,14 +27,12 @@ interface ContentProps {
 	eventRegistration: EventRegistrationProps;
 	emitResponse: EmitResponseProps;
 	billing: BillingDataProps;
-	shouldSavePayment: boolean;
 }
 
 export const Content = ({
 	eventRegistration,
 	emitResponse,
 	billing,
-	shouldSavePayment,
 }: ContentProps): JSX.Element => {
 	// Form state
 	const [holder, setHolder] = useState("");
@@ -53,7 +51,6 @@ export const Content = ({
 		number,
 		expiry,
 		cvc,
-		shouldSavePayment,
 	});
 
 	// Ref for billing data
@@ -65,9 +62,8 @@ export const Content = ({
 			number,
 			expiry,
 			cvc,
-			shouldSavePayment,
 		};
-	}, [holder, number, expiry, cvc, shouldSavePayment]);
+	}, [holder, number, expiry, cvc]);
 
 	useEffect(() => {
 		billingRef.current = billing;
@@ -77,7 +73,7 @@ export const Content = ({
 	// biome-ignore lint/correctness/useExhaustiveDependencies: eventRegistration and emitResponse are stable WooCommerce Blocks references.
 	useEffect(() => {
 		const unsubscribe = eventRegistration.onPaymentSetup(async () => {
-			const { holder, number, expiry, cvc, shouldSavePayment } = formDataRef.current;
+			const { holder, number, expiry, cvc } = formDataRef.current;
 			const currentBilling = billingRef.current;
 
 			const cardBin = getCardBin(number);
@@ -268,10 +264,6 @@ export const Content = ({
 							"pagbank_debit_card-card-holder": holder.trim(),
 							"pagbank_debit_card-card-bin": cardBin,
 							"pagbank_debit_card-threeds-id": threedsId,
-							...(shouldSavePayment && {
-								"wc-pagbank_debit_card-payment-token": "new",
-								"wc-pagbank_debit_card-new-payment-method": "true",
-							}),
 						},
 					},
 				};
