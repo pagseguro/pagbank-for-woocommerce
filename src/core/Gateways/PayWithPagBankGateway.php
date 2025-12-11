@@ -294,7 +294,7 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 		$expiration_date = $order->get_meta( '_pagbank_qrcode_expiration_date' );
 
 		wc_get_template(
-			'payment-instructions-pay-with-pagbank.php',
+			'order-received/payment-instructions-pay-with-pagbank.php',
 			array(
 				'order_id'        => $order_id,
 				'order_key'       => $order->get_order_key(),

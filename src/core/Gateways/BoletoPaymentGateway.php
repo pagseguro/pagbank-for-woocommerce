@@ -271,7 +271,7 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 		$boleto_link_png        = $order->get_meta( '_pagbank_boleto_link_png' );
 
 		wc_get_template(
-			'payment-instructions-boleto.php',
+			'order-received/payment-instructions-boleto.php',
 			array(
 				'order_id'               => $order_id,
 				'order_key'              => $order->get_order_key(),

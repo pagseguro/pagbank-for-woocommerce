@@ -269,7 +269,7 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 		$pix_qr_code         = $order->get_meta( '_pagbank_pix_qr_code' );
 
 		wc_get_template(
-			'payment-instructions-pix.php',
+			'order-received/payment-instructions-pix.php',
 			array(
 				'order_id'            => $order_id,
 				'order_key'           => $order->get_order_key(),
