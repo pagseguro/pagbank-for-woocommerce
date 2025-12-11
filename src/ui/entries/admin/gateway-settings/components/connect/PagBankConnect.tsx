@@ -82,11 +82,16 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 					throw new Error(__("URL de autorização inválida", TEXT_DOMAIN));
 				}
 
-				// Open OAuth popup
+				// Open OAuth popup centered on screen
+				const popupWidth = 600;
+				const popupHeight = 700;
+				const left = window.screenX + (window.outerWidth - popupWidth) / 2;
+				const top = window.screenY + (window.outerHeight - popupHeight) / 2;
+
 				const popup = window.open(
 					data.oauth_url,
 					"pagbank_oauth",
-					"width=600,height=700,scrollbars=yes,resizable=yes",
+					`width=${popupWidth},height=${popupHeight},left=${left},top=${top},scrollbars=yes,resizable=yes`,
 				);
 
 				if (!popup) {
