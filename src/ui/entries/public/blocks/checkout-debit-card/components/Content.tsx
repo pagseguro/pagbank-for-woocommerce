@@ -14,10 +14,14 @@ import { decodeEntities } from "@wordpress/html-entities";
 import cardValidator from "card-validator";
 import parsePhoneNumber from "libphonenumber-js/mobile";
 import { useEffect, useRef, useState } from "react";
-import { type ThreeDSAuthenticateParams, use3DS } from "../hooks/use3DS";
+import {
+	CardFormFields,
+	convertTwoDigitsYearToFourDigits,
+	getCardBin,
+	type ThreeDSAuthenticateParams,
+	use3DS,
+} from "../../shared";
 import { settings } from "../settings";
-import { convertTwoDigitsYearToFourDigits, getCardBin } from "../utils";
-import { CardFormFields } from "./CardFormFields";
 
 interface ContentProps {
 	eventRegistration: EventRegistrationProps;
@@ -38,7 +42,10 @@ export const Content = ({
 	const [expiry, setExpiry] = useState("");
 	const [cvc, setCvc] = useState("");
 
-	const { authenticate, isAuthenticating } = use3DS();
+	const { authenticate, isAuthenticating } = use3DS({
+		settings,
+		cardType: "DEBIT_CARD",
+	});
 
 	// Refs for form data to avoid re-registering callback
 	const formDataRef = useRef({
@@ -212,6 +219,7 @@ export const Content = ({
 						value: currentBilling.cartTotal.value,
 						currency: currentBilling.currency.code,
 					},
+					installments: 1, // Debit cards always use 1 installment
 					billingAddress: {
 						street: currentBilling.billingData.address_1,
 						number: currentBilling.billingData["pagbank/address-number"],
@@ -300,6 +308,7 @@ export const Content = ({
 					onExpiryChange={setExpiry}
 					cvc={cvc}
 					onCvcChange={setCvc}
+					idPrefix="pagbank-debit-card"
 				/>
 
 				{isAuthenticating && (

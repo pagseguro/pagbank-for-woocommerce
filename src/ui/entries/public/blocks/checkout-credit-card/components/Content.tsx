@@ -13,11 +13,10 @@ import { decodeEntities } from "@wordpress/html-entities";
 import cardValidator from "card-validator";
 import parsePhoneNumber from "libphonenumber-js/mobile";
 import { useEffect, useRef, useState } from "react";
-import { type ThreeDSAuthenticateParams, use3DS } from "../hooks/use3DS";
+import { CardFormFields, type ThreeDSAuthenticateParams, use3DS } from "../../shared";
 import { useInstallments } from "../hooks/useInstallments";
 import { settings } from "../settings";
 import { convertTwoDigitsYearToFourDigits, getCardBin } from "../utils";
-import { CardFormFields } from "./CardFormFields";
 import { InstallmentsSelect } from "./InstallmentsSelect";
 
 interface ContentProps {
@@ -46,7 +45,14 @@ export const Content = ({
 		cardBin,
 	});
 
-	const { authenticate, isAuthenticating, isEnabled: is3DSEnabled } = use3DS();
+	const {
+		authenticate,
+		isAuthenticating,
+		isEnabled: is3DSEnabled,
+	} = use3DS({
+		settings,
+		cardType: "CREDIT_CARD",
+	});
 
 	// Refs for form data to avoid re-registering callback
 	const formDataRef = useRef({

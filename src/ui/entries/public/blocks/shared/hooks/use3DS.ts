@@ -1,12 +1,11 @@
 /**
- * Custom hook for managing 3DS authentication.
+ * Shared hook for managing 3DS authentication.
  *
  * @package PagBank_WooCommerce
  */
 
 import { useCallback, useRef, useState } from "react";
-
-import { settings } from "../settings";
+import type { CardPaymentMethodSettings, CardType } from "../types";
 
 export type ThreeDSStatus =
 	| "AUTH_FLOW_COMPLETED"
@@ -60,6 +59,11 @@ export interface ThreeDSAuthenticateParams {
 	shippingAddress?: ThreeDSAddress;
 }
 
+interface Use3DSOptions {
+	settings: CardPaymentMethodSettings;
+	cardType: CardType;
+}
+
 interface Use3DSReturn {
 	authenticate: (params: ThreeDSAuthenticateParams) => Promise<ThreeDSResult>;
 	isAuthenticating: boolean;
@@ -73,7 +77,7 @@ interface SessionData {
 	env: PagSeguroEnvironment;
 }
 
-export const use3DS = (): Use3DSReturn => {
+export const use3DS = ({ settings, cardType }: Use3DSOptions): Use3DSReturn => {
 	const [isAuthenticating, setIsAuthenticating] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const sessionDataRef = useRef<SessionData | null>(null);
@@ -98,7 +102,11 @@ export const use3DS = (): Use3DSReturn => {
 			setError(settings.messages.threeds_session_error);
 			return null;
 		}
-	}, []);
+	}, [
+		settings.api_3ds_session_url,
+		settings.threeds_nonce,
+		settings.messages.threeds_session_error,
+	]);
 
 	const authenticate = useCallback(
 		async (params: ThreeDSAuthenticateParams): Promise<ThreeDSResult> => {
@@ -128,8 +136,8 @@ export const use3DS = (): Use3DSReturn => {
 							phones: params.customer.phones || [],
 						},
 						paymentMethod: {
-							type: "CREDIT_CARD",
-							installments: params.installments,
+							type: cardType,
+							installments: cardType === "DEBIT_CARD" ? 1 : params.installments,
 							card: {
 								number: params.card.number,
 								expMonth: params.card.expMonth,
@@ -174,7 +182,7 @@ export const use3DS = (): Use3DSReturn => {
 				setIsAuthenticating(false);
 			}
 		},
-		[fetchSession],
+		[fetchSession, cardType, settings.messages.threeds_auth_error],
 	);
 
 	return {

@@ -6,7 +6,7 @@
 
 import { __ } from "@wordpress/i18n";
 import { TEXT_DOMAIN } from "../../../../../constants";
-import type { InstallmentPlan } from "../types";
+import type { InstallmentPlan } from "../../shared";
 
 interface InstallmentsSelectProps {
 	id: string;

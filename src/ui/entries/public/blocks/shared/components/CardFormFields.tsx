@@ -1,5 +1,5 @@
 /**
- * Debit card form fields component.
+ * Shared card form fields component.
  *
  * @package PagBank_WooCommerce
  */
@@ -17,6 +17,7 @@ interface CardFormFieldsProps {
 	onExpiryChange: (value: string) => void;
 	cvc: string;
 	onCvcChange: (value: string) => void;
+	idPrefix?: string;
 }
 
 export const CardFormFields = ({
@@ -28,17 +29,16 @@ export const CardFormFields = ({
 	onExpiryChange,
 	cvc,
 	onCvcChange,
+	idPrefix = "pagbank-card",
 }: CardFormFieldsProps): JSX.Element => {
 	return (
 		<>
 			{/* Card Holder */}
 			<div className="pagbank-field pagbank-field-holder">
-				<label htmlFor="pagbank-debit-card-holder">
-					{__("Cardholder name", TEXT_DOMAIN)}
-				</label>
+				<label htmlFor={`${idPrefix}-holder`}>{__("Cardholder name", TEXT_DOMAIN)}</label>
 				<input
 					type="text"
-					id="pagbank-debit-card-holder"
+					id={`${idPrefix}-holder`}
 					value={holder}
 					onChange={(e) => onHolderChange(e.target.value)}
 					placeholder="John Doe"
@@ -48,10 +48,10 @@ export const CardFormFields = ({
 
 			{/* Card Number */}
 			<div className="pagbank-field pagbank-field-number">
-				<label htmlFor="pagbank-debit-card-number">{__("Card number", TEXT_DOMAIN)}</label>
+				<label htmlFor={`${idPrefix}-number`}>{__("Card number", TEXT_DOMAIN)}</label>
 				<input
 					type="text"
-					id="pagbank-debit-card-number"
+					id={`${idPrefix}-number`}
 					value={number}
 					onChange={(e) => onNumberChange(formatCardNumber(e.target.value))}
 					placeholder="0000 0000 0000 0000"
@@ -64,12 +64,10 @@ export const CardFormFields = ({
 			{/* Expiry and CVC */}
 			<div className="pagbank-field-row">
 				<div className="pagbank-field pagbank-field-expiry">
-					<label htmlFor="pagbank-debit-card-expiry">
-						{__("Expiry date", TEXT_DOMAIN)}
-					</label>
+					<label htmlFor={`${idPrefix}-expiry`}>{__("Expiry date", TEXT_DOMAIN)}</label>
 					<input
 						type="text"
-						id="pagbank-debit-card-expiry"
+						id={`${idPrefix}-expiry`}
 						value={expiry}
 						onChange={(e) => onExpiryChange(formatExpiry(e.target.value, expiry))}
 						placeholder="MM/YY"
@@ -80,10 +78,10 @@ export const CardFormFields = ({
 				</div>
 
 				<div className="pagbank-field pagbank-field-cvc">
-					<label htmlFor="pagbank-debit-card-cvc">{__("CVV", TEXT_DOMAIN)}</label>
+					<label htmlFor={`${idPrefix}-cvc`}>{__("CVV", TEXT_DOMAIN)}</label>
 					<input
 						type="text"
-						id="pagbank-debit-card-cvc"
+						id={`${idPrefix}-cvc`}
 						value={cvc}
 						onChange={(e) =>
 							onCvcChange(e.target.value.replace(/\D/g, "").substring(0, 4))

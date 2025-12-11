@@ -6,7 +6,7 @@
  */
 
 import type { EmitResponseProps, EventRegistrationProps } from "@woocommerce/types";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { settings } from "../settings";
 
 interface SavedTokenContentProps {
@@ -16,6 +16,9 @@ interface SavedTokenContentProps {
 	emitResponse: EmitResponseProps;
 }
 
+/**
+ * TODO: Use the SavedTokenContent component from the credit card block.
+ */
 export const SavedTokenContent = ({
 	token,
 	eventRegistration,
@@ -39,9 +42,5 @@ export const SavedTokenContent = ({
 		return unsubscribe;
 	}, [token]);
 
-	return (
-		<div className="pagbank-debit-card-saved-token">
-			{/* Saved debit cards require 3DS which cannot be performed without full card details */}
-		</div>
-	);
+	return <React.Fragment />;
 };

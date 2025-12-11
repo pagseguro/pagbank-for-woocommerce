@@ -1,5 +1,5 @@
 /**
- * Utility functions for PagBank Credit Card Blocks.
+ * Shared utility functions for PagBank Card Blocks.
  *
  * @package PagBank_WooCommerce
  */
@@ -36,8 +36,6 @@ export const formatCardNumber = (value: string): string => {
 
 /**
  * Format expiry date as MM/YY.
- *
- * TODO: This function can be improved to handle more cases.
  */
 export const formatExpiry = (value: string, previousValue: string): string => {
 	const digits = value.replace(/\D/g, "");
@@ -67,6 +65,13 @@ export const convertTwoDigitsYearToFourDigits = (year: string): string => {
 	}
 
 	return year;
+};
+
+/**
+ * Extract card BIN (first 6 digits) from card number.
+ */
+export const getCardBin = (cardNumber: string): string => {
+	return cardNumber.replace(/\s/g, "").substring(0, 6);
 };
 
 /**
@@ -114,11 +119,4 @@ export const calculateFixedInstallmentPlans = (
 	}
 
 	return plans;
-};
-
-/**
- * Extract card BIN (first 6 digits) from card number.
- */
-export const getCardBin = (cardNumber: string): string => {
-	return cardNumber.replace(/\s/g, "").substring(0, 6);
 };

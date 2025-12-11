@@ -5,9 +5,8 @@
  */
 
 import { useCallback, useEffect, useState } from "react";
-
+import type { InstallmentPlan } from "../../shared";
 import { settings } from "../settings";
-import type { InstallmentPlan } from "../types";
 import { calculateFixedInstallmentPlans } from "../utils";
 
 interface UseInstallmentsOptions {
