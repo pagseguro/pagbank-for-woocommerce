@@ -42,6 +42,7 @@ const EXCLUDED_FIELD_NAMES = ["pagbank_connect"];
 
 interface UseSettingsReturn {
 	settings: GatewaySettings | null;
+	methodDescription: string | null;
 	isLoading: boolean;
 	isSaving: boolean;
 	isDirty: boolean;
@@ -57,6 +58,7 @@ interface UseSettingsReturn {
 export const useSettings = (gatewayId: GatewayId): UseSettingsReturn => {
 	const [settings, setSettings] = useState<GatewaySettings | null>(null);
 	const [originalSettings, setOriginalSettings] = useState<GatewaySettings | null>(null);
+	const [methodDescription, setMethodDescription] = useState<string | null>(null);
 	const [fieldTypes, setFieldTypes] = useState<Record<string, string>>({});
 	const [isLoading, setIsLoading] = useState(true);
 	const [isSaving, setIsSaving] = useState(false);
@@ -84,6 +86,7 @@ export const useSettings = (gatewayId: GatewayId): UseSettingsReturn => {
 
 			setSettings(extractedSettings as unknown as GatewaySettings);
 			setOriginalSettings(extractedSettings as unknown as GatewaySettings);
+			setMethodDescription(response.method_description);
 			setFieldTypes(extractedFieldTypes);
 		} catch (err) {
 			setError(
@@ -99,6 +102,52 @@ export const useSettings = (gatewayId: GatewayId): UseSettingsReturn => {
 	useEffect(() => {
 		fetchSettings();
 	}, [fetchSettings]);
+
+	// Manage beforeunload warning for unsaved changes
+	useEffect(() => {
+		const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+			if (isDirty) {
+				e.preventDefault();
+				e.returnValue = "";
+				return "";
+			}
+		};
+
+		window.addEventListener("beforeunload", handleBeforeUnload);
+
+		return () => {
+			window.removeEventListener("beforeunload", handleBeforeUnload);
+		};
+	}, [isDirty]);
+
+	// Disable WooCommerce's native form change detection on mount
+	useEffect(() => {
+		// WooCommerce uses jQuery to detect form changes via wc_admin_meta_boxes.changed
+		// We need to disable this since we handle our own dirty state
+		const disableWcChangeDetection = () => {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const wc = (window as any).woocommerce_admin;
+			if (wc) {
+				wc.unsaved_changes = false;
+			}
+
+			// Also try to unbind the beforeunload from jQuery
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const $ = (window as any).jQuery;
+			if ($) {
+				$(window).off("beforeunload.woocommerce");
+			}
+		};
+
+		disableWcChangeDetection();
+
+		// Re-run periodically in case WooCommerce re-attaches
+		const interval = setInterval(disableWcChangeDetection, 1000);
+
+		return () => {
+			clearInterval(interval);
+		};
+	}, []);
 
 	const updateSetting = useCallback(
 		(key: keyof GatewaySettings, value: GatewaySettings[keyof GatewaySettings]) => {
@@ -157,6 +206,7 @@ export const useSettings = (gatewayId: GatewayId): UseSettingsReturn => {
 
 	return {
 		settings,
+		methodDescription,
 		isLoading,
 		isSaving,
 		isDirty,
