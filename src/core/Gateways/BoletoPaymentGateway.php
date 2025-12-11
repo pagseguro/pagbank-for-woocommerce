@@ -61,6 +61,7 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 	 */
 	public function __construct() {
 		$this->id                 = 'pagbank_boleto';
+		$this->icon               = plugins_url( 'dist/images/icons/boleto.png', PAGBANK_WOOCOMMERCE_FILE_PATH );
 		$this->method_title       = __( 'PagBank Boleto', 'pagbank-for-woocommerce' );
 		$this->method_description = __( 'Aceite pagamentos via Boleto através do PagBank.', 'pagbank-for-woocommerce' );
 		$this->description        = $this->get_option( 'description' );

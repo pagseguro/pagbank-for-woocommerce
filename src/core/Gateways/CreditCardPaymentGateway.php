@@ -111,6 +111,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 */
 	public function __construct() {
 		$this->id                 = 'pagbank_credit_card';
+		$this->icon               = plugins_url( 'dist/images/icons/card.png', PAGBANK_WOOCOMMERCE_FILE_PATH );
 		$this->card_type          = 'CREDIT_CARD';
 		$this->method_title       = __( 'PagBank Cartão de Crédito', 'pagbank-for-woocommerce' );
 		$this->method_description = __( 'Aceite pagamentos via cartão de crédito através do PagBank.', 'pagbank-for-woocommerce' );

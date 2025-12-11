@@ -61,6 +61,7 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 	 */
 	public function __construct() {
 		$this->id                 = 'pagbank_pay_with_pagbank';
+		$this->icon               = plugins_url( 'dist/images/icons/pagbank.png', PAGBANK_WOOCOMMERCE_FILE_PATH );
 		$this->method_title       = __( 'Pagar com PagBank', 'pagbank-for-woocommerce' );
 		$this->method_description = __( 'Aceite pagamentos usando a carteira digital PagBank. O cliente pode pagar usando saldo da conta ou cartão de crédito pelo app PagBank.', 'pagbank-for-woocommerce' );
 		$this->description        = $this->get_option( 'description' );

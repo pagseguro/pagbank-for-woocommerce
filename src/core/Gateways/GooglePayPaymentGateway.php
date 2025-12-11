@@ -61,6 +61,7 @@ class GooglePayPaymentGateway extends WC_Payment_Gateway {
 	 */
 	public function __construct() {
 		$this->id                 = 'pagbank_google_pay';
+		$this->icon               = plugins_url( 'dist/images/icons/google-pay.png', PAGBANK_WOOCOMMERCE_FILE_PATH );
 		$this->method_title       = __( 'PagBank Google Pay', 'pagbank-for-woocommerce' );
 		$this->method_description = __( 'Aceite pagamentos via Google Pay através do PagBank.', 'pagbank-for-woocommerce' );
 		$this->description        = $this->get_option( 'description' );

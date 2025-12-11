@@ -61,6 +61,7 @@ class ApplePayPaymentGateway extends WC_Payment_Gateway {
 	 */
 	public function __construct() {
 		$this->id                 = 'pagbank_apple_pay';
+		$this->icon               = plugins_url( 'dist/images/icons/apple-pay.png', PAGBANK_WOOCOMMERCE_FILE_PATH );
 		$this->method_title       = __( 'PagBank Apple Pay', 'pagbank-for-woocommerce' );
 		$this->method_description = __( 'Aceite pagamentos via Apple Pay através do PagBank.', 'pagbank-for-woocommerce' );
 		$this->description        = $this->get_option( 'description' );

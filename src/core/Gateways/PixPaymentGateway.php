@@ -61,6 +61,7 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 	 */
 	public function __construct() {
 		$this->id                 = 'pagbank_pix';
+		$this->icon               = plugins_url( 'dist/images/icons/pix.png', PAGBANK_WOOCOMMERCE_FILE_PATH );
 		$this->method_title       = __( 'PagBank Pix', 'pagbank-for-woocommerce' );
 		$this->method_description = __( 'Aceite pagamentos via Pix através do PagBank.', 'pagbank-for-woocommerce' );
 		$this->description        = $this->get_option( 'description' );

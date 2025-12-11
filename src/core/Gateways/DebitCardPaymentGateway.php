@@ -32,6 +32,7 @@ class DebitCardPaymentGateway extends CreditCardPaymentGateway {
 	 */
 	public function __construct() {
 		$this->id                 = 'pagbank_debit_card';
+		$this->icon               = plugins_url( 'dist/images/icons/card.png', PAGBANK_WOOCOMMERCE_FILE_PATH );
 		$this->card_type          = 'DEBIT_CARD';
 		$this->method_title       = __( 'PagBank Cartão de Débito', 'pagbank-for-woocommerce' );
 		$this->method_description = __( 'Aceite pagamentos via cartão de débito através do PagBank. A autenticação 3DS é obrigatória.', 'pagbank-for-woocommerce' );
