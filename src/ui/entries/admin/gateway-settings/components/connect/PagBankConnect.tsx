@@ -27,8 +27,6 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 		error,
 		scopes,
 		missing_scopes,
-		authentication_error,
-		authorization_error,
 	} = useConnectStatusQuery(environment);
 
 	const hasMissingScopes = missing_scopes.length > 0;
@@ -154,29 +152,6 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 						</div>
 					)}
 
-					{connected && authentication_error && (
-						<Notice
-							status="error"
-							isDismissible={false}
-							className="pagbank-connect__status"
-						>
-							{__("Sessão expirada. Reconecte sua conta do PagBank.", TEXT_DOMAIN)}
-						</Notice>
-					)}
-
-					{connected && !authentication_error && authorization_error && (
-						<Notice
-							status="warning"
-							isDismissible={false}
-							className="pagbank-connect__status"
-						>
-							{__(
-								"Conectado, mas com permissões insuficientes. Reconecte para obter todas as permissões.",
-								TEXT_DOMAIN,
-							)}
-						</Notice>
-					)}
-
 					{connected && (account || account_id) && (
 						<Notice
 							status="info"
@@ -203,22 +178,26 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 											__("Produção", TEXT_DOMAIN)}
 									</span>
 								</div>
-								<div className="pagbank-connect__account-details">
-									<span className="pagbank-connect__account-details-label">
-										{__("Nome:", TEXT_DOMAIN)}
-									</span>
-									<span className="pagbank-connect__account-details-value">
-										{account?.name || __("**********", TEXT_DOMAIN)}
-									</span>
-								</div>
-								<div className="pagbank-connect__account-details">
-									<span className="pagbank-connect__account-details-label">
-										{__("Email:", TEXT_DOMAIN)}
-									</span>
-									<span className="pagbank-connect__account-details-value">
-										{account?.email || __("**********", TEXT_DOMAIN)}
-									</span>
-								</div>
+								{account?.name && (
+									<div className="pagbank-connect__account-details">
+										<span className="pagbank-connect__account-details-label">
+											{__("Nome:", TEXT_DOMAIN)}
+										</span>
+										<span className="pagbank-connect__account-details-value">
+											{account.name}
+										</span>
+									</div>
+								)}
+								{account?.email && (
+									<div className="pagbank-connect__account-details">
+										<span className="pagbank-connect__account-details-label">
+											{__("Email:", TEXT_DOMAIN)}
+										</span>
+										<span className="pagbank-connect__account-details-value">
+											{account.email}
+										</span>
+									</div>
+								)}
 								<div className="pagbank-connect__account-details">
 									<span className="pagbank-connect__account-details-label">
 										{__("Escopos:", TEXT_DOMAIN)}
@@ -230,21 +209,6 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 							</div>
 						</Notice>
 					)}
-
-					{connected &&
-						!authentication_error &&
-						!authorization_error &&
-						!account &&
-						account_id && (
-							<Notice
-								status="success"
-								isDismissible={false}
-								className="pagbank-connect__status"
-							>
-								{__("Conectado à conta:", TEXT_DOMAIN)}{" "}
-								<strong>{account_id}</strong>
-							</Notice>
-						)}
 
 					{connected && hasMissingScopes && (
 						<Notice

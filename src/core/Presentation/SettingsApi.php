@@ -116,14 +116,12 @@ class SettingsApi {
 		$data        = $connect->get_data();
 
 		$response_data = array(
-			'connected'            => false,
-			'account_id'           => null,
-			'environment'          => $environment,
-			'account'              => null,
-			'scopes'               => array(),
-			'missing_scopes'       => array(),
-			'authentication_error' => false,
-			'authorization_error'  => false,
+			'connected'      => false,
+			'account_id'     => null,
+			'environment'    => $environment,
+			'account'        => null,
+			'scopes'         => array(),
+			'missing_scopes' => array(),
 		);
 
 		if ( $data ) {
@@ -135,33 +133,10 @@ class SettingsApi {
 			$response_data['scopes']         = array_values( $current_scopes );
 			$response_data['missing_scopes'] = array_values( array_diff( Api::REQUIRED_SCOPES, $current_scopes ) );
 
-			// Fetch account information from PagBank API.
-			if ( ! empty( $data['account_id'] ) ) {
-				$api          = new Api( $environment );
-				$account_data = $api->get_account( $data['account_id'] );
-
-				if ( is_wp_error( $account_data ) ) {
-					$error_data = $account_data->get_error_data();
-					$http_code  = $error_data['http_code'] ?? null;
-
-					if ( 401 === $http_code ) {
-						// Authorization error - authenticated but insufficient permissions.
-						$response_data['authorization_error'] = true;
-						$response_data['missing_scopes']      = array_values(
-							array_unique(
-								array_merge( $response_data['missing_scopes'], array( 'accounts.read' ) )
-							)
-						);
-					} elseif ( 403 === $http_code ) {
-						// Authentication error - not authenticated, needs to reconnect.
-						$response_data['authentication_error'] = true;
-					}
-				} else {
-					$response_data['account'] = array(
-						'email' => $account_data['email'] ?? null,
-						'name'  => $account_data['person']['name'] ?? ( $account_data['company']['name'] ?? null ),
-					);
-				}
+			// Use stored account data if available.
+			// For older connections without account data, it will remain null.
+			if ( ! empty( $data['account'] ) ) {
+				$response_data['account'] = $data['account'];
 			}
 		}
 

@@ -546,30 +546,33 @@ class Api {
 	}
 
 	/**
-	 * Get account information.
+	 * Get account data using a provided access token.
 	 *
-	 * @param string $account_id The account ID.
+	 * This method is used during OAuth callback when the token is not yet saved.
+	 *
+	 * @param string $account_id   The account ID.
+	 * @param string $access_token The access token.
 	 *
 	 * @return array|WP_Error The account data.
 	 */
-	public function get_account( string $account_id ) {
+	public function get_account_with_token( string $account_id, string $access_token ) {
 		$url = $this->get_api_url( 'accounts/' . $account_id );
 
-		$this->log_api_request( $url, '' );
+		$this->log_api_request( $url, '', 'pagbank_oauth' );
 
 		$response = $this->request(
 			$url,
 			array(
 				'method'  => 'GET',
 				'headers' => array(
-					'Authorization' => $this->connect->get_access_token(),
+					'Authorization' => $access_token,
 					'Content-Type'  => 'application/json',
 				),
 			)
 		);
 
 		if ( is_wp_error( $response ) ) {
-			$this->log_api_request_error( $response );
+			$this->log_api_request_error( $response, 'pagbank_oauth' );
 
 			return $response;
 		}
@@ -578,7 +581,7 @@ class Api {
 		$response_body         = wp_remote_retrieve_body( $response );
 		$decoded_response_body = json_decode( $response_body, true );
 
-		$this->log_api_response( $response_code, $response_body );
+		$this->log_api_response( $response_code, $response_body, 'pagbank_oauth' );
 
 		if ( 200 !== $response_code ) {
 			return new WP_Error(

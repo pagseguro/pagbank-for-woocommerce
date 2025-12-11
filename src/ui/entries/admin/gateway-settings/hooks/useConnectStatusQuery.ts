@@ -22,8 +22,6 @@ interface ConnectStatusResponse {
 	account: { email: string | null; name: string | null } | null;
 	scopes: string[];
 	missing_scopes: string[];
-	authentication_error: boolean;
-	authorization_error: boolean;
 }
 
 // Fetch connect status
@@ -77,8 +75,6 @@ export const useConnectStatusQuery = (environment: Environment) => {
 		account: query.data?.account ?? null,
 		scopes: query.data?.scopes ?? [],
 		missing_scopes: query.data?.missing_scopes ?? [],
-		authentication_error: query.data?.authentication_error ?? false,
-		authorization_error: query.data?.authorization_error ?? false,
 		isRefreshing: query.isFetching && !query.isLoading,
 	};
 };

@@ -162,8 +162,6 @@ export const connectStatusSchema = z.object({
 	account: accountInfoSchema.nullable(),
 	scopes: z.array(z.string()),
 	missing_scopes: z.array(z.string()),
-	authentication_error: z.boolean(),
-	authorization_error: z.boolean(),
 });
 
 export type AccountInfo = z.infer<typeof accountInfoSchema>;
