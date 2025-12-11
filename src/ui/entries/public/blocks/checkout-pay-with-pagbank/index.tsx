@@ -1,5 +1,5 @@
 /**
- * PagBank Boleto - WooCommerce Checkout Blocks Integration.
+ * PagBank Pay with PagBank - WooCommerce Checkout Blocks Integration.
  *
  * @package PagBank_WooCommerce
  */
@@ -7,6 +7,7 @@
 import { registerPaymentMethod } from "@woocommerce/blocks-registry";
 import { getSetting } from "@woocommerce/settings";
 import { decodeEntities } from "@wordpress/html-entities";
+import { Label } from "../shared";
 
 interface PaymentMethodSettings {
 	title: string;
@@ -14,27 +15,29 @@ interface PaymentMethodSettings {
 	supports: string[];
 }
 
-const settings = getSetting<PaymentMethodSettings>("pagbank_boleto_data", {
-	title: "Boleto",
-	description: "O boleto será gerado assim que você finalizar o pedido.",
+const settings = getSetting<PaymentMethodSettings>("pagbank_pay_with_pagbank_data", {
+	title: "Pagar com PagBank",
+	description: "Pague usando sua conta PagBank: saldo, crédito à vista ou parcelado.",
 	supports: [],
 });
 
-const Label = (): JSX.Element => {
-	return <span>{decodeEntities(settings.title)}</span>;
-};
-
 const Content = (): JSX.Element => {
 	return (
-		<div className="pagbank-boleto-description">
+		<div className="pagbank-pay-with-pagbank-description">
 			{decodeEntities(settings.description || "")}
 		</div>
 	);
 };
 
 registerPaymentMethod({
-	name: "pagbank_boleto",
-	label: <Label />,
+	name: "pagbank_pay_with_pagbank",
+	label: (
+		<Label
+			title={settings.title}
+			baseUrl={pagbank_pay_with_pagbank_data.plugin_url}
+			icon="pagbank"
+		/>
+	),
 	content: <Content />,
 	edit: <Content />,
 	canMakePayment: () => true,

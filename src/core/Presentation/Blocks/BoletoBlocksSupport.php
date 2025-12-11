@@ -76,6 +76,14 @@ final class BoletoBlocksSupport extends AbstractPaymentMethodType {
 			true
 		);
 
+		wp_localize_script(
+			'pagbank-boleto-blocks',
+			'pagbank_boleto_data',
+			array(
+				'plugin_url' => plugins_url( '', PAGBANK_WOOCOMMERCE_FILE_PATH ),
+			)
+		);
+
 		if ( function_exists( 'wp_set_script_translations' ) ) {
 			wp_set_script_translations( 'pagbank-boleto-blocks', 'pagbank-for-woocommerce' );
 		}

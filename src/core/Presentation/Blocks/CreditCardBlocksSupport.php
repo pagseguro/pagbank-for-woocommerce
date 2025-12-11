@@ -88,6 +88,14 @@ final class CreditCardBlocksSupport extends AbstractPaymentMethodType {
 			true
 		);
 
+		wp_localize_script(
+			'pagbank-credit-card-blocks',
+			'pagbank_credit_card_data',
+			array(
+				'plugin_url' => plugins_url( '', PAGBANK_WOOCOMMERCE_FILE_PATH ),
+			)
+		);
+
 		// Register styles.
 		wp_register_style(
 			'pagbank-credit-card-blocks',

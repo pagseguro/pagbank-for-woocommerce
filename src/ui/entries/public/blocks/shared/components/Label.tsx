@@ -1,0 +1,16 @@
+import { decodeEntities } from "@wordpress/html-entities";
+
+type LabelProps = {
+	title: string;
+	baseUrl: string;
+	icon: "card" | "boleto" | "pix" | "pagbank";
+};
+
+export const Label = ({ title, baseUrl, icon }: LabelProps): JSX.Element => {
+	return (
+		<span className="pagbank-block-label">
+			{icon && <img src={`${baseUrl}/dist/images/${icon}.png`} alt={title} />}
+			{decodeEntities(title)}
+		</span>
+	);
+};

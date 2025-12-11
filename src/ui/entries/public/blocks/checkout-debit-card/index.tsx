@@ -6,18 +6,16 @@
 
 import { registerPaymentMethod } from "@woocommerce/blocks-registry";
 import { decodeEntities } from "@wordpress/html-entities";
-
+import { Label } from "../shared";
 import { Content } from "./components/Content";
 import { SavedTokenContent } from "./components/SavedTokenContent";
 import { settings } from "./settings";
 
-const Label = (): JSX.Element => {
-	return <span>{decodeEntities(settings.title)}</span>;
-};
-
 registerPaymentMethod({
 	name: "pagbank_debit_card",
-	label: <Label />,
+	label: (
+		<Label title={settings.title} baseUrl={pagbank_debit_card_data.plugin_url} icon="card" />
+	),
 	// @ts-expect-error: WooCommerce Blocks injects props at runtime.
 	content: <Content />,
 	// @ts-expect-error: WooCommerce Blocks injects props at runtime.

@@ -41,14 +41,14 @@ export const entries: Record<string, string> = {
 	"public/order-received/order-received-pooling":
 		"src/ui/entries/public/order-received/order-received-pooling.ts",
 	"public/legacy/checkout-credit-card": "src/ui/entries/public/legacy/checkout-credit-card.ts",
-	"public/blocks/checkout-boleto": "src/ui/entries/public/blocks/checkout-boleto.tsx",
-	"public/blocks/checkout-pix": "src/ui/entries/public/blocks/checkout-pix.tsx",
+	"public/blocks/checkout-boleto": "src/ui/entries/public/blocks/checkout-boleto/index.tsx",
+	"public/blocks/checkout-pix": "src/ui/entries/public/blocks/checkout-pix/index.tsx",
 	"public/blocks/checkout-credit-card":
 		"src/ui/entries/public/blocks/checkout-credit-card/index.tsx",
 	"public/blocks/checkout-debit-card":
 		"src/ui/entries/public/blocks/checkout-debit-card/index.tsx",
 	"public/blocks/checkout-pay-with-pagbank":
-		"src/ui/entries/public/blocks/checkout-pay-with-pagbank.tsx",
+		"src/ui/entries/public/blocks/checkout-pay-with-pagbank/index.tsx",
 };
 
 interface BuildConfigOptions {

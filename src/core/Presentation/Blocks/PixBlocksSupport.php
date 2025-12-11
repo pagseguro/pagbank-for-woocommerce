@@ -76,6 +76,14 @@ final class PixBlocksSupport extends AbstractPaymentMethodType {
 			true
 		);
 
+		wp_localize_script(
+			'pagbank-pix-blocks',
+			'pagbank_pix_data',
+			array(
+				'plugin_url' => plugins_url( '', PAGBANK_WOOCOMMERCE_FILE_PATH ),
+			)
+		);
+
 		if ( function_exists( 'wp_set_script_translations' ) ) {
 			wp_set_script_translations( 'pagbank-pix-blocks', 'pagbank-for-woocommerce' );
 		}

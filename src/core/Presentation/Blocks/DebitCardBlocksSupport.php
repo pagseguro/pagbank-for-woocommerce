@@ -86,6 +86,14 @@ final class DebitCardBlocksSupport extends AbstractPaymentMethodType {
 			true
 		);
 
+		wp_localize_script(
+			'pagbank-debit-card-blocks',
+			'pagbank_debit_card_data',
+			array(
+				'plugin_url' => plugins_url( '', PAGBANK_WOOCOMMERCE_FILE_PATH ),
+			)
+		);
+
 		// Register styles (reuse credit card styles).
 		wp_register_style(
 			'pagbank-debit-card-blocks',

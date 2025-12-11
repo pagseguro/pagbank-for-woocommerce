@@ -6,6 +6,7 @@
 
 // Components
 export { CardFormFields } from "./components/CardFormFields";
+export { Label } from "./components/Label";
 // Constants
 export * from "./constants";
 export type { ThreeDSAuthenticateParams, ThreeDSResult, ThreeDSStatus } from "./hooks/use3DS";

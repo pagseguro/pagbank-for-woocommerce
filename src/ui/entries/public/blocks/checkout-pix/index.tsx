@@ -7,6 +7,7 @@
 import { registerPaymentMethod } from "@woocommerce/blocks-registry";
 import { getSetting } from "@woocommerce/settings";
 import { decodeEntities } from "@wordpress/html-entities";
+import { Label } from "../shared";
 
 interface PaymentMethodSettings {
 	title: string;
@@ -20,10 +21,6 @@ const settings = getSetting<PaymentMethodSettings>("pagbank_pix_data", {
 	supports: [],
 });
 
-const Label = (): JSX.Element => {
-	return <span>{decodeEntities(settings.title)}</span>;
-};
-
 const Content = (): JSX.Element => {
 	return (
 		<div className="pagbank-pix-description">{decodeEntities(settings.description || "")}</div>
@@ -32,7 +29,7 @@ const Content = (): JSX.Element => {
 
 registerPaymentMethod({
 	name: "pagbank_pix",
-	label: <Label />,
+	label: <Label title={settings.title} baseUrl={pagbank_pix_data.plugin_url} icon="pix" />,
 	content: <Content />,
 	edit: <Content />,
 	canMakePayment: () => true,

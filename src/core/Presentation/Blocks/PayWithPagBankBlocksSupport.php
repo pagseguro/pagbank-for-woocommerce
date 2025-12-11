@@ -76,6 +76,14 @@ final class PayWithPagBankBlocksSupport extends AbstractPaymentMethodType {
 			true
 		);
 
+		wp_localize_script(
+			'pagbank-pay-with-pagbank-blocks',
+			'pagbank_pay_with_pagbank_data',
+			array(
+				'plugin_url' => plugins_url( '', PAGBANK_WOOCOMMERCE_FILE_PATH ),
+			)
+		);
+
 		if ( function_exists( 'wp_set_script_translations' ) ) {
 			wp_set_script_translations( 'pagbank-pay-with-pagbank-blocks', 'pagbank-for-woocommerce' );
 		}
