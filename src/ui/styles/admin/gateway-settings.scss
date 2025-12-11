@@ -1,0 +1,360 @@
+/**
+ * Gateway settings styles.
+ *
+ * @package PagBank_WooCommerce
+ */
+
+// Variables
+$pagbank-primary: #00a651;
+$pagbank-primary-dark: #008f46;
+$pagbank-border: #e0e0e0;
+$pagbank-bg: #f9f9f9;
+$pagbank-text: #1e1e1e;
+$pagbank-text-light: #757575;
+
+// Animation keyframes
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		max-height: 0;
+		transform: translateY(-8px);
+	}
+
+	to {
+		opacity: 1;
+		max-height: 500px;
+		transform: translateY(0);
+	}
+}
+
+@keyframes slideUp {
+	from {
+		opacity: 1;
+		max-height: 500px;
+		transform: translateY(0);
+	}
+
+	to {
+		opacity: 0;
+		max-height: 0;
+		transform: translateY(-8px);
+	}
+}
+
+// Gateway settings container
+.pagbank-gateway-settings {
+	max-width: 900px;
+	margin: 0 auto;
+	padding: 20px;
+
+	&--loading,
+	&--error {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 200px;
+		gap: 12px;
+		flex-direction: column;
+	}
+
+	&__header {
+		margin-bottom: 24px;
+	}
+
+	&__title {
+		font-size: 24px;
+		font-weight: 600;
+		color: $pagbank-text;
+		margin: 0;
+	}
+
+	&__notice {
+		margin-bottom: 20px;
+	}
+
+	&__content {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	&__actions {
+		display: flex;
+		gap: 12px;
+		margin-top: 24px;
+		padding-top: 24px;
+		border-top: 1px solid $pagbank-border;
+	}
+}
+
+// Settings card
+.pagbank-settings-card {
+	border: 1px solid $pagbank-border;
+	border-radius: 8px;
+	background: #fff;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+	.components-card__header {
+		border-bottom: 1px solid $pagbank-border;
+		padding: 16px 20px;
+	}
+
+	&__title {
+		font-size: 16px;
+		font-weight: 600;
+		color: $pagbank-text;
+		margin: 0;
+	}
+
+	.components-card__body {
+		padding: 20px;
+	}
+}
+
+// Settings field
+.pagbank-settings-field {
+	margin-bottom: 20px;
+
+	&:last-child {
+		margin-bottom: 0;
+	}
+
+	// WordPress components overrides
+	.components-base-control {
+		margin-bottom: 0;
+	}
+
+	.components-base-control__help {
+		margin-top: 4px;
+		color: $pagbank-text-light;
+		font-size: 12px;
+	}
+
+	.components-toggle-control {
+		.components-base-control__field {
+			margin-bottom: 0;
+		}
+	}
+
+	.components-text-control__input,
+	.components-textarea-control__input,
+	.components-select-control__input {
+		width: 100%;
+		max-width: 400px;
+	}
+}
+
+// Animated field
+.pagbank-animated-field {
+	overflow: hidden;
+
+	&.entering {
+		animation: slideDown 250ms ease-out forwards;
+	}
+
+	&.exiting {
+		animation: slideUp 200ms ease-in forwards;
+	}
+
+	&.idle {
+		max-height: none;
+	}
+}
+
+// PagBank Connect
+.pagbank-connect {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+
+	&__loading {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		color: $pagbank-text-light;
+	}
+
+	&__status {
+		margin: 0;
+
+		.components-notice__content {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+	}
+
+	&__account-info {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+
+	&__account-label {
+		font-weight: 500;
+		color: $pagbank-text;
+	}
+
+	&__account-name {
+		font-weight: 600;
+		color: $pagbank-text;
+	}
+
+	&__account-email {
+		font-size: 13px;
+		color: $pagbank-text-light;
+	}
+
+	&__error {
+		margin: 0;
+	}
+
+	&__scope-warning {
+		margin: 0;
+	}
+
+	&__button {
+		align-self: flex-start;
+	}
+}
+
+// Connect modal
+.pagbank-connect-modal {
+	.components-modal__content {
+		padding: 20px;
+	}
+
+	&__sandbox {
+		text-align: center;
+
+		p {
+			margin-bottom: 20px;
+		}
+
+		.components-button {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+		}
+	}
+}
+
+// Plan selector
+.pagbank-plan-selector {
+	&__intro {
+		margin-bottom: 16px;
+		color: $pagbank-text;
+
+		a {
+			color: $pagbank-primary;
+
+			&:hover {
+				color: $pagbank-primary-dark;
+			}
+		}
+	}
+
+	&__choose {
+		margin-bottom: 20px;
+		font-weight: 500;
+	}
+
+	&__plans {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 20px;
+		margin-bottom: 24px;
+
+		@media (max-width: 600px) {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	&__plan {
+		border: 1px solid $pagbank-border;
+		border-radius: 8px;
+		padding: 20px;
+		background: $pagbank-bg;
+		display: flex;
+		flex-direction: column;
+	}
+
+	&__plan-title {
+		font-size: 16px;
+		font-weight: 600;
+		margin: 0 0 16px;
+		color: $pagbank-text;
+	}
+
+	&__plan-features {
+		list-style: none;
+		padding: 0;
+		margin: 0 0 20px;
+		flex-grow: 1;
+
+		li {
+			padding: 6px 0;
+			padding-left: 20px;
+			position: relative;
+			font-size: 13px;
+			color: $pagbank-text;
+
+			&::before {
+				content: "✓";
+				position: absolute;
+				left: 0;
+				color: $pagbank-primary;
+				font-weight: bold;
+			}
+		}
+	}
+
+	&__own-condition {
+		text-align: center;
+		padding-top: 20px;
+		border-top: 1px solid $pagbank-border;
+	}
+}
+
+// WordPress components overrides for better appearance
+.pagbank-gateway-settings {
+	// Button styles
+	.components-button.is-primary {
+		background: $pagbank-primary;
+		border-color: $pagbank-primary;
+
+		&:hover:not(:disabled) {
+			background: $pagbank-primary-dark;
+			border-color: $pagbank-primary-dark;
+		}
+
+		&:focus:not(:disabled) {
+			box-shadow: 0 0 0 2px $pagbank-primary;
+		}
+	}
+
+	// Toggle styles
+	.components-form-toggle.is-checked .components-form-toggle__track {
+		background: $pagbank-primary;
+	}
+
+	// Card header
+	.components-card__header h2 {
+		font-size: 16px;
+	}
+}
+
+// Remove default WooCommerce form styling when React is active
+#pagbank-gateway-settings-root {
+	// Hide the default WooCommerce save button
+	~ .submit {
+		display: none;
+	}
+}
+
+// Hide WooCommerce form elements
+.woocommerce-save-button {
+	#pagbank-gateway-settings-root ~ & {
+		display: none;
+	}
+}

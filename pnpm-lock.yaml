@@ -11,6 +11,12 @@ importers:
       '@woocommerce/components':
         specifier: ^13.1.0
         version: 13.1.0(@babel/runtime@7.26.7)(@emotion/is-prop-valid@1.4.0)(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(@wordpress/data@10.36.0(react@18.3.1))(lodash@4.17.21)(react-dom@18.3.1(react@18.3.1))(react-with-direction@1.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(redux@5.0.1)(storybook@8.6.14(prettier@3.6.2))
+      '@wordpress/api-fetch':
+        specifier: ^7.36.0
+        version: 7.36.0
+      '@wordpress/components':
+        specifier: ^30.9.0
+        version: 30.9.0(@emotion/is-prop-valid@1.4.0)(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@wordpress/data':
         specifier: ^10.36.0
         version: 10.36.0(react@18.3.1)
@@ -26,6 +32,9 @@ importers:
       '@wordpress/i18n':
         specifier: ^6.9.0
         version: 6.9.0
+      '@wordpress/notices':
+        specifier: ^5.36.0
+        version: 5.36.0(react@18.3.1)
       autonumeric:
         specifier: ^4.10.9
         version: 4.10.9
