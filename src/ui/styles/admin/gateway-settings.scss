@@ -173,6 +173,25 @@ $pagbank-text-light: #757575;
 	}
 }
 
+// Form field wrapper
+.pagbank-form-field {
+	&--auto-width {
+		display: inline-block;
+		width: auto;
+
+		.components-select-control,
+		.components-text-control {
+			width: auto;
+		}
+
+		.components-select-control__input,
+		.components-text-control__input {
+			width: auto;
+			min-width: 120px;
+		}
+	}
+}
+
 // Settings field
 .pagbank-settings-field {
 	margin-bottom: 20px;

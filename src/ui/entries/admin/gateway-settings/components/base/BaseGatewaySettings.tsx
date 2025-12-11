@@ -44,6 +44,7 @@ export const BaseGatewaySettings = ({ children }: BaseGatewaySettingsProps) => {
 						label={__("Ambiente", TEXT_DOMAIN)}
 						options={ENVIRONMENT_OPTIONS}
 						help={__("Selecione o ambiente para processar os pagamentos.", TEXT_DOMAIN)}
+						fullWidth={false}
 					/>
 				</div>
 

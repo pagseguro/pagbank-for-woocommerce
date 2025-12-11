@@ -72,6 +72,7 @@ export const InstallmentsSection = () => {
 						label={__("Máximo de parcelas", TEXT_DOMAIN)}
 						options={INSTALLMENT_OPTIONS}
 						help={__("Número máximo de parcelas permitidas.", TEXT_DOMAIN)}
+						fullWidth={false}
 					/>
 				</div>
 
@@ -96,6 +97,7 @@ export const InstallmentsSection = () => {
 								"Número máximo de parcelas sem juros. Parcelas acima deste valor terão juros.",
 								TEXT_DOMAIN,
 							)}
+							fullWidth={false}
 						/>
 					</div>
 				</AnimatedField>

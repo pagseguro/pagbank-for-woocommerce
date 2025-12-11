@@ -19,25 +19,32 @@ interface FormSelectProps {
 	label: string;
 	options: SelectOption[];
 	help?: string;
+	fullWidth?: boolean;
 }
 
-export const FormSelect = ({ name, label, options, help }: FormSelectProps) => {
+export const FormSelect = ({ name, label, options, help, fullWidth = true }: FormSelectProps) => {
 	const { form, isSaving } = useFormContext();
+
+	const wrapperClassName = fullWidth
+		? "pagbank-form-field"
+		: "pagbank-form-field pagbank-form-field--auto-width";
 
 	return (
 		<Controller
 			name={name}
 			control={form.control}
 			render={({ field, fieldState }) => (
-				<SelectControl
-					__nextHasNoMarginBottom
-					label={label}
-					value={(field.value as string) ?? ""}
-					options={options}
-					onChange={field.onChange}
-					help={fieldState.error?.message ?? help}
-					disabled={isSaving}
-				/>
+				<div className={wrapperClassName}>
+					<SelectControl
+						__nextHasNoMarginBottom
+						label={label}
+						value={(field.value as string) ?? ""}
+						options={options}
+						onChange={field.onChange}
+						help={fieldState.error?.message ?? help}
+						disabled={isSaving}
+					/>
+				</div>
 			)}
 		/>
 	);
