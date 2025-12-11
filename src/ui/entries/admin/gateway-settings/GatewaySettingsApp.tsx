@@ -54,6 +54,7 @@ const ALL_GATEWAYS: GatewayId[] = [
 export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 	const {
 		settings,
+		methodDescription,
 		isLoading,
 		isSaving,
 		isDirty,
@@ -216,6 +217,9 @@ export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 						height={24}
 					/>
 				</div>
+				{methodDescription && (
+					<p className="pagbank-gateway-settings__subtitle">{methodDescription}</p>
+				)}
 				<nav className="pagbank-gateway-settings__nav">
 					{ALL_GATEWAYS.map((id) => {
 						const isCurrentGateway = id === gatewayId;
