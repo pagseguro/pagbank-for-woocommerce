@@ -36,11 +36,11 @@ const GATEWAY_TITLES: Record<GatewayId, string> = {
 };
 
 const GATEWAY_ICONS: Record<GatewayId, string> = {
-	pagbank_credit_card: "credit-card.svg",
-	pagbank_debit_card: "debit-card.svg",
-	pagbank_pix: "pix.svg",
-	pagbank_boleto: "boleto.svg",
-	pagbank_pay_with_pagbank: "pagbank.svg",
+	pagbank_credit_card: "card.png",
+	pagbank_debit_card: "card.svg",
+	pagbank_pix: "pix.png",
+	pagbank_boleto: "boleto.png",
+	pagbank_pay_with_pagbank: "pagbank.png",
 };
 
 const ALL_GATEWAYS: GatewayId[] = [
@@ -67,8 +67,8 @@ export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 
 	const pluginUrl = window.pagbankSettings?.pluginUrl ?? "";
 	const settingsUrl = window.pagbankSettings?.settingsUrl ?? "";
-	const iconUrl = `${pluginUrl}/images/icons/${GATEWAY_ICONS[gatewayId]}`;
-	const logoUrl = `${pluginUrl}/images/logos/logo-pagbank.png`;
+	const iconUrl = `${pluginUrl}/dist/images/icons/${GATEWAY_ICONS[gatewayId]}`;
+	const logoUrl = `${pluginUrl}/dist/images/logos/logo-pagbank.png`;
 
 	useEffect(() => {
 		if (error && noticeRef.current) {

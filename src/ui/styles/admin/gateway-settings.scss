@@ -90,6 +90,7 @@ $pagbank-text-light: #757575;
 		gap: 8px 16px;
 		padding-bottom: 16px;
 		border-bottom: 1px solid $pagbank-border;
+		margin: 0 !important;
 	}
 
 	&__nav-link {
@@ -186,8 +187,6 @@ $pagbank-text-light: #757575;
 
 // Animated field
 .pagbank-animated-field {
-	overflow: hidden;
-
 	&.entering {
 		animation: slideDown 250ms ease-out forwards;
 	}
