@@ -125,7 +125,7 @@ class PaymentGateways {
 		);
 
 		$css = implode( ', ', $selectors ) . ' {
-			content: "Oficial";
+			content: "Oficial PagBank";
 			display: inline-flex;
 			align-items: center;
 			gap: 4px;
