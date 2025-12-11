@@ -37,16 +37,6 @@ const GATEWAY_TITLES: Record<GatewayId, string> = {
 	pagbank_apple_pay: __("Apple Pay", TEXT_DOMAIN),
 };
 
-const GATEWAY_ICONS: Record<GatewayId, string> = {
-	pagbank_credit_card: "card.png",
-	pagbank_debit_card: "card.png",
-	pagbank_pix: "pix.png",
-	pagbank_boleto: "boleto.png",
-	pagbank_pay_with_pagbank: "pagbank.png",
-	pagbank_google_pay: "google-pay.png",
-	pagbank_apple_pay: "apple-pay.png",
-};
-
 const ALL_GATEWAYS: GatewayId[] = [
 	"pagbank_credit_card",
 	"pagbank_debit_card",
@@ -120,7 +110,6 @@ export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 
 	const pluginUrl = window.pagbankSettings?.pluginUrl ?? "";
 	const settingsUrl = window.pagbankSettings?.settingsUrl ?? "";
-	const iconUrl = `${pluginUrl}/dist/images/icons/${GATEWAY_ICONS[gatewayId]}`;
 	const logoUrl = `${pluginUrl}/dist/images/logos/logo-pagbank.png`;
 
 	const onSubmit = handleSubmit(
@@ -213,15 +202,17 @@ export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 			<form className="pagbank-gateway-settings" onSubmit={onSubmit}>
 				<div className="pagbank-gateway-settings__header">
 					<div className="pagbank-gateway-settings__title-row">
-						<img
-							src={iconUrl}
-							alt=""
-							className="pagbank-gateway-settings__icon"
-							width={32}
-							height={32}
-						/>
+						{data.icon && (
+							<img
+								src={data.icon}
+								alt=""
+								className="pagbank-gateway-settings__icon"
+								width={32}
+								height={32}
+							/>
+						)}
 						<h1 className="pagbank-gateway-settings__title">
-							{GATEWAY_TITLES[gatewayId]}
+							{data.methodTitle || GATEWAY_TITLES[gatewayId]}
 						</h1>
 						<img
 							src={logoUrl}

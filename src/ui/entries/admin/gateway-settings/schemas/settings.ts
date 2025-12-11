@@ -157,6 +157,7 @@ export const wcGatewayResponseSchema = z.object({
 	method_description: z.string(),
 	method_supports: z.array(z.string()),
 	settings: z.record(z.string(), wcGatewaySettingSchema),
+	icon: z.string().optional(),
 });
 
 export type WCGatewaySetting = z.infer<typeof wcGatewaySettingSchema>;

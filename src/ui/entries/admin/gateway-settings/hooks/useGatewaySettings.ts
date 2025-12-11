@@ -22,6 +22,8 @@ const EXCLUDED_FIELD_NAMES = ["pagbank_connect"];
 interface GatewayData {
 	settings: GatewaySettings;
 	methodDescription: string;
+	methodTitle: string;
+	icon: string;
 	fieldTypes: Record<string, string>;
 	fieldDefaults: Record<string, string>;
 }
@@ -71,6 +73,8 @@ const fetchGatewaySettings = async (gatewayId: GatewayId): Promise<GatewayData> 
 	return {
 		settings: settings as unknown as GatewaySettings,
 		methodDescription: response.method_description,
+		methodTitle: response.method_title,
+		icon: response.icon ?? "",
 		fieldTypes,
 		fieldDefaults,
 	};

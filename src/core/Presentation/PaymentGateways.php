@@ -44,6 +44,23 @@ class PaymentGateways {
 	public function __construct() {
 		add_filter( 'woocommerce_payment_gateways', array( $this, 'add_gateways' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+		add_filter( 'woocommerce_rest_prepare_payment_gateway', array( $this, 'add_icon_to_rest_response' ), 10, 2 );
+	}
+
+	/**
+	 * Add icon field to REST API payment gateway response.
+	 *
+	 * @param \WP_REST_Response   $response The response object.
+	 * @param \WC_Payment_Gateway $gateway  The gateway object.
+	 *
+	 * @return \WP_REST_Response
+	 */
+	public function add_icon_to_rest_response( $response, $gateway ) {
+		$data         = $response->get_data();
+		$data['icon'] = $gateway->icon ?? '';
+		$response->set_data( $data );
+
+		return $response;
 	}
 
 	/**
