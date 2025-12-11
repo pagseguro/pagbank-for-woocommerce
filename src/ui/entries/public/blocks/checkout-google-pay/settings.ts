@@ -15,6 +15,7 @@ export interface GooglePayMessages {
 export interface GooglePaySettings {
 	title: string;
 	description: string;
+	icon: string;
 	supports: string[];
 	environment: "TEST" | "PRODUCTION";
 	gateway_merchant_id: string | null;
@@ -25,6 +26,7 @@ export interface GooglePaySettings {
 const defaultSettings: GooglePaySettings = {
 	title: "Google Pay",
 	description: "",
+	icon: "",
 	supports: [],
 	environment: "TEST",
 	gateway_merchant_id: null,

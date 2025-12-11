@@ -2,14 +2,13 @@ import { decodeEntities } from "@wordpress/html-entities";
 
 type LabelProps = {
 	title: string;
-	baseUrl: string;
-	icon: "card" | "boleto" | "pix" | "pagbank" | "google-pay" | "apple-pay";
+	icon: string;
 };
 
-export const Label = ({ title, baseUrl, icon }: LabelProps): JSX.Element => {
+export const Label = ({ title, icon }: LabelProps): JSX.Element => {
 	return (
 		<span className="pagbank-block-label">
-			{icon && <img src={`${baseUrl}/dist/images/icons/${icon}.png`} alt={title} />}
+			{icon && <img src={icon} alt={title} />}
 			{decodeEntities(title)}
 		</span>
 	);

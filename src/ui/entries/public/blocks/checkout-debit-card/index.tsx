@@ -12,9 +12,7 @@ import { settings } from "./settings";
 
 registerPaymentMethod({
 	name: "pagbank_debit_card",
-	label: (
-		<Label title={settings.title} baseUrl={pagbank_debit_card_data.plugin_url} icon="card" />
-	),
+	label: <Label title={settings.title} icon={settings.icon} />,
 	// @ts-expect-error: WooCommerce Blocks injects props at runtime.
 	content: <Content />,
 	// @ts-expect-error: WooCommerce Blocks injects props at runtime.

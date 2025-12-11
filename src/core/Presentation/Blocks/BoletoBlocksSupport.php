@@ -109,6 +109,7 @@ final class BoletoBlocksSupport extends AbstractPaymentMethodType {
 		return array(
 			'title'       => $this->get_setting( 'title', __( 'Boleto', 'pagbank-for-woocommerce' ) ),
 			'description' => $this->get_setting( 'description', __( 'O boleto será gerado assim que você finalizar o pedido.', 'pagbank-for-woocommerce' ) ),
+			'icon'        => $this->gateway ? $this->gateway->icon : '',
 			'supports'    => $this->get_supported_features(),
 		);
 	}

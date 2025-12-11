@@ -109,6 +109,7 @@ final class PixBlocksSupport extends AbstractPaymentMethodType {
 		return array(
 			'title'       => $this->get_setting( 'title', __( 'Pix', 'pagbank-for-woocommerce' ) ),
 			'description' => $this->get_setting( 'description', __( 'O código Pix será gerado assim que você finalizar o pedido.', 'pagbank-for-woocommerce' ) ),
+			'icon'        => $this->gateway ? $this->gateway->icon : '',
 			'supports'    => $this->get_supported_features(),
 		);
 	}

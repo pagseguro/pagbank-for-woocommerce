@@ -15,6 +15,7 @@ export interface ApplePayMessages {
 export interface ApplePaySettings {
 	title: string;
 	description: string;
+	icon: string;
 	supports: string[];
 	environment: "sandbox" | "production";
 	gateway_merchant_id: string | null;
@@ -25,6 +26,7 @@ export interface ApplePaySettings {
 const defaultSettings: ApplePaySettings = {
 	title: "Apple Pay",
 	description: "",
+	icon: "",
 	supports: [],
 	environment: "sandbox",
 	gateway_merchant_id: null,

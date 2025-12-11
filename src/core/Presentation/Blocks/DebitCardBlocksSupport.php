@@ -134,6 +134,7 @@ final class DebitCardBlocksSupport extends AbstractPaymentMethodType {
 		return array(
 			'title'                => $this->get_setting( 'title', __( 'Cartão de débito', 'pagbank-for-woocommerce' ) ),
 			'description'          => $this->get_setting( 'description', '' ),
+			'icon'                 => $this->gateway ? $this->gateway->icon : '',
 			'supports'             => $this->get_supported_features(),
 			'card_public_key'      => isset( $connect_data['public_key'] ) ? $connect_data['public_key'] : null,
 			// Installments disabled for debit cards.

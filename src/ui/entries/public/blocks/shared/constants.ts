@@ -4,6 +4,7 @@ import type { CardPaymentMethodSettings } from "./types";
 
 export const defaultCardPaymentMethodSettings: Omit<CardPaymentMethodSettings, "title"> = {
 	description: "",
+	icon: "",
 	supports: [],
 	card_public_key: null,
 	installments_enabled: false,

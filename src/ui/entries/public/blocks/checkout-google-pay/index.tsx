@@ -12,13 +12,7 @@ import { settings } from "./settings";
 
 registerPaymentMethod({
 	name: "pagbank_google_pay",
-	label: (
-		<Label
-			title={settings.title}
-			baseUrl={pagbank_google_pay_data.plugin_url}
-			icon="google-pay"
-		/>
-	),
+	label: <Label title={settings.title} icon={settings.icon} />,
 	// @ts-expect-error: WooCommerce Blocks injects props at runtime.
 	content: <Content />,
 	// @ts-expect-error: WooCommerce Blocks injects props at runtime.

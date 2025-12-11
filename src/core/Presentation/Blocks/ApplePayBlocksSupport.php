@@ -123,6 +123,7 @@ final class ApplePayBlocksSupport extends AbstractPaymentMethodType {
 		return array(
 			'title'               => $this->get_setting( 'title', __( 'Apple Pay', 'pagbank-for-woocommerce' ) ),
 			'description'         => $this->get_setting( 'description', '' ),
+			'icon'                => $this->gateway ? $this->gateway->icon : '',
 			'supports'            => $this->get_supported_features(),
 			'environment'         => $environment,
 			'gateway_merchant_id' => isset( $connect_data['account_id'] ) ? $connect_data['account_id'] : null,

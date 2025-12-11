@@ -12,13 +12,7 @@ import { settings } from "./settings";
 
 registerPaymentMethod({
 	name: "pagbank_apple_pay",
-	label: (
-		<Label
-			title={settings.title}
-			baseUrl={pagbank_apple_pay_data.plugin_url}
-			icon="apple-pay"
-		/>
-	),
+	label: <Label title={settings.title} icon={settings.icon} />,
 	// @ts-expect-error: WooCommerce Blocks injects props at runtime.
 	content: <Content />,
 	// @ts-expect-error: WooCommerce Blocks injects props at runtime.

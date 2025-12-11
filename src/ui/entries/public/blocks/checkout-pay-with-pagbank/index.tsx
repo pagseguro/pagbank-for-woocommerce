@@ -12,12 +12,14 @@ import { Label } from "../shared";
 interface PaymentMethodSettings {
 	title: string;
 	description: string;
+	icon: string;
 	supports: string[];
 }
 
 const settings = getSetting<PaymentMethodSettings>("pagbank_pay_with_pagbank_data", {
 	title: "Pagar com PagBank",
 	description: "Pague usando sua conta PagBank: saldo, crédito à vista ou parcelado.",
+	icon: "",
 	supports: [],
 });
 
@@ -31,13 +33,7 @@ const Content = (): JSX.Element => {
 
 registerPaymentMethod({
 	name: "pagbank_pay_with_pagbank",
-	label: (
-		<Label
-			title={settings.title}
-			baseUrl={pagbank_pay_with_pagbank_data.plugin_url}
-			icon="pagbank"
-		/>
-	),
+	label: <Label title={settings.title} icon={settings.icon} />,
 	content: <Content />,
 	edit: <Content />,
 	canMakePayment: () => true,

@@ -17,6 +17,7 @@ export interface InstallmentPlan {
 export interface CardPaymentMethodSettings {
 	title: string;
 	description: string;
+	icon: string;
 	supports: string[];
 	card_public_key: string | null;
 	// 3DS settings

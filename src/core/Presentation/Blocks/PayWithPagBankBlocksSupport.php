@@ -109,6 +109,7 @@ final class PayWithPagBankBlocksSupport extends AbstractPaymentMethodType {
 		return array(
 			'title'       => $this->get_setting( 'title', __( 'Pagar com PagBank', 'pagbank-for-woocommerce' ) ),
 			'description' => $this->get_setting( 'description', __( 'Pague usando sua conta PagBank: saldo, crédito à vista ou parcelado.', 'pagbank-for-woocommerce' ) ),
+			'icon'        => $this->gateway ? $this->gateway->icon : '',
 			'supports'    => $this->get_supported_features(),
 		);
 	}

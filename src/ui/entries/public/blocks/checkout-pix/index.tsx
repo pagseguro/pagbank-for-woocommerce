@@ -12,12 +12,14 @@ import { Label } from "../shared";
 interface PaymentMethodSettings {
 	title: string;
 	description: string;
+	icon: string;
 	supports: string[];
 }
 
 const settings = getSetting<PaymentMethodSettings>("pagbank_pix_data", {
 	title: "Pix",
 	description: "O código Pix será gerado assim que você finalizar o pedido.",
+	icon: "",
 	supports: [],
 });
 
@@ -29,7 +31,7 @@ const Content = (): JSX.Element => {
 
 registerPaymentMethod({
 	name: "pagbank_pix",
-	label: <Label title={settings.title} baseUrl={pagbank_pix_data.plugin_url} icon="pix" />,
+	label: <Label title={settings.title} icon={settings.icon} />,
 	content: <Content />,
 	edit: <Content />,
 	canMakePayment: () => true,

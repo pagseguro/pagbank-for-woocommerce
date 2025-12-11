@@ -12,12 +12,14 @@ import { Label } from "../shared";
 interface PaymentMethodSettings {
 	title: string;
 	description: string;
+	icon: string;
 	supports: string[];
 }
 
 const settings = getSetting<PaymentMethodSettings>("pagbank_boleto_data", {
 	title: "Boleto",
 	description: "O boleto será gerado assim que você finalizar o pedido.",
+	icon: "",
 	supports: [],
 });
 
@@ -31,7 +33,7 @@ const Content = (): JSX.Element => {
 
 registerPaymentMethod({
 	name: "pagbank_boleto",
-	label: <Label title={settings.title} baseUrl={pagbank_boleto_data.plugin_url} icon="boleto" />,
+	label: <Label title={settings.title} icon={settings.icon} />,
 	content: <Content />,
 	edit: <Content />,
 	canMakePayment: () => true,

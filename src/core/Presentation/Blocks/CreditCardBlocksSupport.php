@@ -152,6 +152,7 @@ final class CreditCardBlocksSupport extends AbstractPaymentMethodType {
 		return array(
 			'title'                              => $this->get_setting( 'title', __( 'Cartão de crédito', 'pagbank-for-woocommerce' ) ),
 			'description'                        => $this->get_setting( 'description', '' ),
+			'icon'                               => $this->gateway ? $this->gateway->icon : '',
 			'supports'                           => $this->get_supported_features(),
 			'card_public_key'                    => isset( $connect_data['public_key'] ) ? $connect_data['public_key'] : null,
 			'installments_enabled'               => $installments_enabled,
