@@ -48,7 +48,6 @@ export const creditCardSettingsSchema = z
 		transfer_of_interest_enabled: yesNoSchema,
 		maximum_installments_interest_free: z.string().catch("1"),
 		threeds_enabled: yesNoSchema,
-		threeds_for_saved_cards: yesNoSchema,
 	})
 	.passthrough();
 

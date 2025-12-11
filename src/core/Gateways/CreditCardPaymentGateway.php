@@ -98,12 +98,6 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 */
 	public $threeds_enabled;
 
-	/**
-	 * Apply 3DS for saved cards.
-	 *
-	 * @var bool
-	 */
-	public $threeds_for_saved_cards;
 
 	/**
 	 * Card type.
@@ -151,8 +145,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		$this->transfer_of_interest_enabled       = 'yes' === $this->get_option( 'transfer_of_interest_enabled' );
 		$this->maximum_installments_interest_free = (int) $this->get_option( 'maximum_installments_interest_free' );
 
-		$this->threeds_enabled         = 'yes' === $this->get_option( 'threeds_enabled' );
-		$this->threeds_for_saved_cards = 'yes' === $this->get_option( 'threeds_for_saved_cards' );
+		$this->threeds_enabled = 'yes' === $this->get_option( 'threeds_enabled' );
 
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 		add_action( 'woocommerce_api_' . $this->id . '_installments', array( $this, 'get_installments' ) );
@@ -284,21 +277,10 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				'desc_tip'    => true,
 			),
 			'threeds_enabled'                    => array(
-				'title'             => __( 'Autenticação 3DS', 'pagbank-for-woocommerce' ),
-				'type'              => 'checkbox',
-				'label'             => __( 'Habilitar autenticação 3DS', 'pagbank-for-woocommerce' ),
-				'description'       => __( 'Adiciona uma camada extra de segurança e transfere a responsabilidade de fraude para o banco emissor em transações autenticadas.', 'pagbank-for-woocommerce' ),
-				'default'           => 'no',
-				'desc_tip'          => true,
-				'custom_attributes' => array(
-					'data-toggle' => '#' . $this->get_field_key( 'threeds_for_saved_cards' ),
-				),
-			),
-			'threeds_for_saved_cards'            => array(
-				'title'       => __( '3DS para cartões salvos', 'pagbank-for-woocommerce' ),
+				'title'       => __( 'Autenticação 3DS', 'pagbank-for-woocommerce' ),
 				'type'        => 'checkbox',
-				'label'       => __( 'Aplicar 3DS também para cartões salvos', 'pagbank-for-woocommerce' ),
-				'description' => __( 'Se habilitado, cartões tokenizados também passarão pela autenticação 3DS.', 'pagbank-for-woocommerce' ),
+				'label'       => __( 'Habilitar autenticação 3DS', 'pagbank-for-woocommerce' ),
+				'description' => __( 'Adiciona uma camada extra de segurança e transfere a responsabilidade de fraude para o banco emissor em transações autenticadas.', 'pagbank-for-woocommerce' ),
 				'default'     => 'no',
 				'desc_tip'    => true,
 			),
@@ -386,7 +368,6 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 					'card_public_key'                    => isset( $connect_data['public_key'] ) ? $connect_data['public_key'] : null,
 					// 3DS settings.
 					'threeds_enabled'                    => $this->threeds_enabled,
-					'threeds_for_saved_cards'            => $this->threeds_for_saved_cards,
 					'api_3ds_session_url'                => $this->get_api_3ds_session_url(),
 					'threeds_nonce'                      => wp_create_nonce( 'pagbank_get_3ds_session' ),
 					'environment'                        => $this->environment,

@@ -50,9 +50,8 @@ class DebitCardPaymentGateway extends CreditCardPaymentGateway {
 		$this->connect      = new Connect( $this->environment );
 		$this->api          = new Api( $this->environment, $this->logs_enabled ? $this->id : null );
 
-		$this->installments_enabled    = false;
-		$this->threeds_enabled         = true;
-		$this->threeds_for_saved_cards = false;
+		$this->installments_enabled = false;
+		$this->threeds_enabled      = true;
 
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 		add_action( 'woocommerce_api_' . $this->id . '_3ds_session', array( $this, 'get_3ds_session' ) );

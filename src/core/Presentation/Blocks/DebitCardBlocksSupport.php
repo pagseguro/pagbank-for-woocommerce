@@ -132,19 +132,18 @@ final class DebitCardBlocksSupport extends AbstractPaymentMethodType {
 		$connect_data = $connect->get_data();
 
 		return array(
-			'title'                   => $this->get_setting( 'title', __( 'Cartão de débito', 'pagbank-for-woocommerce' ) ),
-			'description'             => $this->get_setting( 'description', '' ),
-			'supports'                => $this->get_supported_features(),
-			'card_public_key'         => isset( $connect_data['public_key'] ) ? $connect_data['public_key'] : null,
+			'title'                => $this->get_setting( 'title', __( 'Cartão de débito', 'pagbank-for-woocommerce' ) ),
+			'description'          => $this->get_setting( 'description', '' ),
+			'supports'             => $this->get_supported_features(),
+			'card_public_key'      => isset( $connect_data['public_key'] ) ? $connect_data['public_key'] : null,
 			// Installments disabled for debit cards.
-			'installments_enabled'    => false,
-			'maximum_installments'    => 1,
+			'installments_enabled' => false,
+			'maximum_installments' => 1,
 			// 3DS is always enabled and mandatory for debit cards.
-			'threeds_enabled'         => true,
-			'threeds_for_saved_cards' => true,
-			'api_3ds_session_url'     => $this->gateway ? $this->gateway->get_api_3ds_session_url() : '',
-			'threeds_nonce'           => wp_create_nonce( 'pagbank_get_3ds_session' ),
-			'messages'                => array(
+			'threeds_enabled'      => true,
+			'api_3ds_session_url'  => $this->gateway ? $this->gateway->get_api_3ds_session_url() : '',
+			'threeds_nonce'        => wp_create_nonce( 'pagbank_get_3ds_session' ),
+			'messages'             => array(
 				'invalid_public_key'            => __( 'Chave pública inválida.', 'pagbank-for-woocommerce' ),
 				'invalid_holder_name'           => __( 'Nome do titular do cartão inválido.', 'pagbank-for-woocommerce' ),
 				'invalid_card_number'           => __( 'Número do cartão inválido.', 'pagbank-for-woocommerce' ),

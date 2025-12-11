@@ -5,23 +5,12 @@
  */
 
 import { __ } from "@wordpress/i18n";
-import { useWatch } from "react-hook-form";
 import { TEXT_DOMAIN } from "@/constants";
-import { useFormContext } from "../../context";
-import type { GatewaySettings, YesNo } from "../../schemas/settings";
-import { AnimatedField, SettingsCard } from "../common";
+import type { GatewaySettings } from "../../schemas/settings";
+import { SettingsCard } from "../common";
 import { FormToggle } from "../form";
 
 export const ThreeDSSection = () => {
-	const { form } = useFormContext();
-
-	const threedsEnabled = useWatch({
-		control: form.control,
-		name: "threeds_enabled" as keyof GatewaySettings,
-	}) as YesNo;
-
-	const isThreedsEnabled = threedsEnabled === "yes";
-
 	return (
 		<SettingsCard title={__("Autenticação 3DS", TEXT_DOMAIN)}>
 			<div className="pagbank-settings-field">
@@ -34,19 +23,6 @@ export const ThreeDSSection = () => {
 					)}
 				/>
 			</div>
-
-			<AnimatedField visible={isThreedsEnabled}>
-				<div className="pagbank-settings-field">
-					<FormToggle
-						name={"threeds_for_saved_cards" as keyof GatewaySettings}
-						label={__("3DS para cartões salvos", TEXT_DOMAIN)}
-						help={__(
-							"Quando ativado, exige autenticação 3DS também para cartões salvos.",
-							TEXT_DOMAIN,
-						)}
-					/>
-				</div>
-			</AnimatedField>
 		</SettingsCard>
 	);
 };
