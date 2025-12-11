@@ -1,4 +1,4 @@
-import { globSync, rmSync } from "node:fs";
+import { cpSync, globSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
 import { build } from "vite";
 import {
@@ -27,6 +27,10 @@ async function buildAll() {
 		console.log(`  Compiling ${relativePath}...`);
 		await build(getScssBuildConfig(scssFile));
 	}
+
+	// Copy images to dist
+	console.log("\nCopying images...");
+	cpSync(resolve(rootDir, "src/images"), resolve(rootDir, "dist/images"), { recursive: true });
 
 	console.log("\nAll builds completed!");
 }
