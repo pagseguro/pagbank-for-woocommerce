@@ -15,13 +15,14 @@ document.querySelectorAll("[data-select-on-click]").forEach((element) => {
 	});
 });
 
-// Pix order status polling
+// Order status polling for Pix and Pay with PagBank
 interface OrderStatusResponse {
 	order_id: number;
 	status: string;
 	payment_method: string;
 	is_paid: boolean;
 	pix_expiration_date?: string;
+	qrcode_expiration_date?: string;
 	is_expired?: boolean;
 }
 
@@ -31,16 +32,17 @@ interface PagBankOrderStatusGlobal {
 
 declare const pagbankOrderStatus: PagBankOrderStatusGlobal;
 
-const pixOrderStatusPoolingInit = (): void => {
-	const pixOrderStatusElement = document.querySelector(
-		"[data-pagbank-pix-order-status]",
+const orderStatusPoolingInit = (): void => {
+	// Support both Pix and Pay with PagBank
+	const orderStatusElement = document.querySelector(
+		"[data-pagbank-pix-order-status], [data-pagbank-pay-with-pagbank-order-status]",
 	) as HTMLElement;
 
-	if (pixOrderStatusElement) {
-		const orderId = pixOrderStatusElement.dataset.orderId;
-		const orderKey = pixOrderStatusElement.dataset.orderKey;
-		const restUrl = pixOrderStatusElement.dataset.restUrl;
-		const isPaid = pixOrderStatusElement.dataset.isPaid === "yes";
+	if (orderStatusElement) {
+		const orderId = orderStatusElement.dataset.orderId;
+		const orderKey = orderStatusElement.dataset.orderKey;
+		const restUrl = orderStatusElement.dataset.restUrl;
+		const isPaid = orderStatusElement.dataset.isPaid === "yes";
 
 		// Don't start polling if order is already paid
 		if (isPaid) {
@@ -87,9 +89,13 @@ const pixOrderStatusPoolingInit = (): void => {
 						return;
 					}
 
-					// Check if Pix has expired
-					if (data.payment_method === "pagbank_pix" && data.is_expired) {
-						// Stop polling - Pix expired
+					// Check if Pix or Pay with PagBank has expired
+					if (
+						(data.payment_method === "pagbank_pix" ||
+							data.payment_method === "pagbank_pay_with_pagbank") &&
+						data.is_expired
+					) {
+						// Stop polling - payment expired
 						if (pollingInterval !== null) {
 							clearInterval(pollingInterval);
 							pollingInterval = null;
@@ -126,4 +132,4 @@ const pixOrderStatusPoolingInit = (): void => {
 	}
 };
 
-pixOrderStatusPoolingInit();
+orderStatusPoolingInit();

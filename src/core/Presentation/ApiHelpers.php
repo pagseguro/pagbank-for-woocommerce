@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use Exception;
 use PagBank_WooCommerce\Gateways\BoletoPaymentGateway;
 use PagBank_WooCommerce\Gateways\CreditCardPaymentGateway;
+use PagBank_WooCommerce\Gateways\PayWithPagBankGateway;
 use PagBank_WooCommerce\Gateways\PixPaymentGateway;
 use WC_Order;
 use WC_Payment_Tokens;
@@ -291,6 +292,59 @@ class ApiHelpers {
 		);
 
 		return apply_filters( 'pagbank_pix_payment_data', $data, $order, $gateway );
+	}
+
+	/**
+	 * Get Pay with PagBank payment api data.
+	 *
+	 * @param PayWithPagBankGateway $gateway Gateway.
+	 * @param WC_Order              $order Order.
+	 * @param bool                  $is_mobile Whether the request is from a mobile device.
+	 * @param string|null           $redirect_url Redirect URL for deeplink (mobile only).
+	 *
+	 * @return array
+	 */
+	public static function get_pay_with_pagbank_api_data( PayWithPagBankGateway $gateway, WC_Order $order, bool $is_mobile = false, ?string $redirect_url = null ) {
+		$password = wp_generate_password( 30, false );
+
+		$data = array(
+			'reference_id'      => self::get_order_reference_id_data( $order, $password ),
+			'items'             => self::get_order_items_api_data( $order ),
+			'customer'          => self::get_order_customer_api_data( $order ),
+			'shipping'          => array(
+				'address' => self::get_order_shipping_address_api_data( $order ),
+			),
+			'notification_urls' => array(
+				WebhookHandler::get_webhook_url(),
+			),
+			'metadata'          => self::get_order_metadata_api_data( $order, array( 'password' => $password ) ),
+		);
+
+		$amount_value = Helpers::format_money_cents( $order->get_total() );
+
+		if ( $is_mobile && $redirect_url ) {
+			// Deeplink for mobile.
+			$data['deep_links'] = array(
+				array(
+					'amount'       => array(
+						'value' => $amount_value,
+					),
+					'redirect_url' => $redirect_url,
+				),
+			);
+		} else {
+			// QR Code for desktop.
+			$data['qr_codes'] = array(
+				array(
+					'amount'       => array(
+						'value' => $amount_value,
+					),
+					'arrangements' => array( 'PAGBANK' ),
+				),
+			);
+		}
+
+		return apply_filters( 'pagbank_pay_with_pagbank_payment_data', $data, $order, $gateway );
 	}
 
 	/**

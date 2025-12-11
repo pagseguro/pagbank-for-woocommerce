@@ -1,0 +1,30 @@
+.pagbank-pay-with-pagbank {
+	border: 1px solid #e3e3e3;
+	padding: 20px;
+	margin: 20px 0;
+
+	img {
+		max-width: 150px;
+		margin: 0 auto;
+	}
+
+	hr {
+		margin: 20px 0;
+		background-color: #e3e3e3;
+	}
+
+	.pagbank-copy-and-paste {
+		display: flex;
+		justify-content: center;
+
+		button {
+			margin-left: 10px;
+		}
+	}
+
+	.pagbank-expiration {
+		text-align: center;
+		font-style: italic;
+		color: #666;
+	}
+}

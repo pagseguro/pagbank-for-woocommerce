@@ -116,7 +116,7 @@ class OrderStatusApi {
 		$payment_method = $order->get_payment_method();
 
 		// Check if payment method is PagBank.
-		if ( ! in_array( $payment_method, array( 'pagbank_credit_card', 'pagbank_boleto', 'pagbank_pix' ), true ) ) {
+		if ( ! in_array( $payment_method, array( 'pagbank_credit_card', 'pagbank_boleto', 'pagbank_pix', 'pagbank_pay_with_pagbank' ), true ) ) {
 			return new WP_Error( 'invalid_payment_method', __( 'Método de pagamento inválido.', 'pagbank-for-woocommerce' ), array( 'status' => 400 ) );
 		}
 
@@ -133,6 +133,14 @@ class OrderStatusApi {
 
 			$response_data['pix_expiration_date'] = $pix_expiration_date;
 			$response_data['is_expired']          = ! empty( $pix_expiration_date ) && strtotime( $pix_expiration_date ) < time();
+		}
+
+		// Add Pay with PagBank-specific data if applicable.
+		if ( 'pagbank_pay_with_pagbank' === $payment_method ) {
+			$qrcode_expiration_date = $order->get_meta( '_pagbank_qrcode_expiration_date' );
+
+			$response_data['qrcode_expiration_date'] = $qrcode_expiration_date;
+			$response_data['is_expired']             = ! empty( $qrcode_expiration_date ) && strtotime( $qrcode_expiration_date ) < time();
 		}
 
 		return new WP_REST_Response( $response_data, 200 );

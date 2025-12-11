@@ -32,6 +32,7 @@ class PaymentGateways {
 		'pagbank_credit_card',
 		'pagbank_pix',
 		'pagbank_boleto',
+		'pagbank_pay_with_pagbank',
 	);
 
 	/**
@@ -64,6 +65,7 @@ class PaymentGateways {
 		$methods[] = 'PagBank_WooCommerce\Gateways\CreditCardPaymentGateway';
 		$methods[] = 'PagBank_WooCommerce\Gateways\BoletoPaymentGateway';
 		$methods[] = 'PagBank_WooCommerce\Gateways\PixPaymentGateway';
+		$methods[] = 'PagBank_WooCommerce\Gateways\PayWithPagBankGateway';
 
 		return $methods;
 	}
