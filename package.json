@@ -22,7 +22,6 @@
 		"lint:fix:ui": "biome check --write src scripts",
 		"test": "./scripts/phpunit.sh",
 		"todos": "leasot 'src/**/*.{php,ts,js}'",
-		"prepare": "husky install",
 		"make:pot": "./scripts/make-pot.sh",
 		"generate-md": "wp-readme-to-md --screenshot-url=https://raw.githubusercontent.com/pagseguro/pagbank-for-woocommerce/main/wordpress_org_assets/{screenshot}.png",
 		"wp": "docker compose run --rm wordpress-cli wp"
