@@ -6,7 +6,6 @@
 
 import { __ } from "@wordpress/i18n";
 import { type MouseEvent, useCallback, useState } from "react";
-import { TEXT_DOMAIN } from "@/constants";
 
 interface CopyButtonProps {
 	value: string;
@@ -42,7 +41,9 @@ export const CopyButton = ({ value, label }: CopyButtonProps): JSX.Element => {
 		<div className="pagbank-copy-field">
 			<input type="text" readOnly value={value} onClick={handleSelectAll} />
 			<button type="button" className="button" onClick={handleCopy}>
-				{copied ? __("Copiado!", TEXT_DOMAIN) : label || __("Copiar", TEXT_DOMAIN)}
+				{copied
+					? __("Copiado!", "pagbank-for-woocommerce")
+					: label || __("Copiar", "pagbank-for-woocommerce")}
 			</button>
 		</div>
 	);

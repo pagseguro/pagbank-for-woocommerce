@@ -7,7 +7,6 @@
 import { Button, Notice, Spinner } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import { useCallback, useState } from "react";
-import { TEXT_DOMAIN } from "@/constants";
 import { useConnectStatusQuery } from "../../hooks/useConnectStatusQuery";
 import type { Environment } from "../../schemas/settings";
 import { ConnectModal } from "./ConnectModal";
@@ -43,7 +42,7 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 			setConnectError(
 				__(
 					"A conexão com o PagBank não está disponível em localhost. Por favor, use um domínio válido.",
-					TEXT_DOMAIN,
+					"pagbank-for-woocommerce",
 				),
 			);
 			return;
@@ -74,13 +73,15 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 				});
 
 				if (!response.ok) {
-					throw new Error(__("Erro ao obter URL de autorização", TEXT_DOMAIN));
+					throw new Error(
+						__("Erro ao obter URL de autorização", "pagbank-for-woocommerce"),
+					);
 				}
 
 				const data = await response.json();
 
 				if (!data.oauth_url) {
-					throw new Error(__("URL de autorização inválida", TEXT_DOMAIN));
+					throw new Error(__("URL de autorização inválida", "pagbank-for-woocommerce"));
 				}
 
 				// Open OAuth popup centered on screen
@@ -99,7 +100,7 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 					throw new Error(
 						__(
 							"Não foi possível abrir a janela de autorização. Verifique se o bloqueador de pop-ups está desativado.",
-							TEXT_DOMAIN,
+							"pagbank-for-woocommerce",
 						),
 					);
 				}
@@ -116,7 +117,9 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 				}, 500);
 			} catch (err) {
 				setConnectError(
-					err instanceof Error ? err.message : __("Erro desconhecido", TEXT_DOMAIN),
+					err instanceof Error
+						? err.message
+						: __("Erro desconhecido", "pagbank-for-woocommerce"),
 				);
 				setIsConnecting(false);
 			}
@@ -128,8 +131,8 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 	const displayError = errorMessage || connectError;
 
 	const buttonText = connected
-		? __("Conectar a outra conta do PagBank", TEXT_DOMAIN)
-		: __("Conectar a uma conta do PagBank", TEXT_DOMAIN);
+		? __("Conectar a outra conta do PagBank", "pagbank-for-woocommerce")
+		: __("Conectar a uma conta do PagBank", "pagbank-for-woocommerce");
 
 	return (
 		<div className="pagbank-connect">
@@ -142,7 +145,9 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 			{isLoading ? (
 				<div className="pagbank-connect__loading">
 					<Spinner />
-					<span>{__("Verificando a sua conta do PagBank...", TEXT_DOMAIN)}</span>
+					<span>
+						{__("Verificando a sua conta do PagBank...", "pagbank-for-woocommerce")}
+					</span>
 				</div>
 			) : (
 				<div className="pagbank-connect__content">
@@ -161,7 +166,7 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 							<div className="pagbank-connect__account-info">
 								<div className="pagbank-connect__account-details">
 									<span className="pagbank-connect__account-details-label">
-										{__("ID da conta:", TEXT_DOMAIN)}
+										{__("ID da conta:", "pagbank-for-woocommerce")}
 									</span>
 									<span className="pagbank-connect__account-details-value">
 										{account_id}
@@ -169,19 +174,19 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 								</div>
 								<div className="pagbank-connect__account-details">
 									<span className="pagbank-connect__account-details-label">
-										{__("Ambiente:", TEXT_DOMAIN)}
+										{__("Ambiente:", "pagbank-for-woocommerce")}
 									</span>
 									<span className="pagbank-connect__account-details-value">
 										{environment === "sandbox" &&
-											__("Sandbox (testes)", TEXT_DOMAIN)}
+											__("Sandbox (testes)", "pagbank-for-woocommerce")}
 										{environment === "production" &&
-											__("Produção", TEXT_DOMAIN)}
+											__("Produção", "pagbank-for-woocommerce")}
 									</span>
 								</div>
 								{account?.name && (
 									<div className="pagbank-connect__account-details">
 										<span className="pagbank-connect__account-details-label">
-											{__("Nome:", TEXT_DOMAIN)}
+											{__("Nome:", "pagbank-for-woocommerce")}
 										</span>
 										<span className="pagbank-connect__account-details-value">
 											{account.name}
@@ -191,7 +196,7 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 								{account?.email && (
 									<div className="pagbank-connect__account-details">
 										<span className="pagbank-connect__account-details-label">
-											{__("Email:", TEXT_DOMAIN)}
+											{__("Email:", "pagbank-for-woocommerce")}
 										</span>
 										<span className="pagbank-connect__account-details-value">
 											{account.email}
@@ -200,7 +205,7 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 								)}
 								<div className="pagbank-connect__account-details">
 									<span className="pagbank-connect__account-details-label">
-										{__("Escopos:", TEXT_DOMAIN)}
+										{__("Escopos:", "pagbank-for-woocommerce")}
 									</span>
 									<span className="pagbank-connect__account-details-value">
 										{scopes.join(", ")}
@@ -218,7 +223,7 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 						>
 							{__(
 								"Recomendamos reconectar ao PagBank para obter novas permissões e funcionalidades.",
-								TEXT_DOMAIN,
+								"pagbank-for-woocommerce",
 							)}
 						</Notice>
 					)}
@@ -237,8 +242,8 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 							onClick={refresh}
 							disabled={isRefreshing}
 							className="pagbank-connect__refresh-button"
-							title={__("Atualizar status", TEXT_DOMAIN)}
-							aria-label={__("Atualizar status", TEXT_DOMAIN)}
+							title={__("Atualizar status", "pagbank-for-woocommerce")}
+							aria-label={__("Atualizar status", "pagbank-for-woocommerce")}
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"

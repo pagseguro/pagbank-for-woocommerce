@@ -5,7 +5,6 @@
  */
 
 import { __ } from "@wordpress/i18n";
-import { TEXT_DOMAIN } from "../../../../../constants";
 import type { InstallmentPlan } from "../../shared";
 
 interface InstallmentsSelectProps {
@@ -27,7 +26,7 @@ export const InstallmentsSelect = ({
 }: InstallmentsSelectProps): JSX.Element => {
 	return (
 		<div className="pagbank-field pagbank-field-installments">
-			<label htmlFor={id}>{__("Installments", TEXT_DOMAIN)}</label>
+			<label htmlFor={id}>{__("Installments", "pagbank-for-woocommerce")}</label>
 			<select
 				id={id}
 				value={value}
@@ -35,7 +34,7 @@ export const InstallmentsSelect = ({
 				disabled={isLoading || disabled}
 			>
 				{isLoading ? (
-					<option value="1">{__("Loading...", TEXT_DOMAIN)}</option>
+					<option value="1">{__("Loading...", "pagbank-for-woocommerce")}</option>
 				) : plans.length > 0 ? (
 					plans.map((plan) => (
 						<option key={plan.installments} value={plan.installments}>

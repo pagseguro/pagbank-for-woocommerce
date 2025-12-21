@@ -5,7 +5,6 @@
  */
 
 import { __ } from "@wordpress/i18n";
-import { TEXT_DOMAIN } from "@/constants";
 import type { BoletoInstructionsProps } from "../types";
 import { CopyButton, PaidConfirmation } from "./shared";
 
@@ -20,33 +19,33 @@ export const BoletoInstructions = ({
 
 	return (
 		<div className="pagbank-boleto">
-			<h3>{__("Opção 1: faça download do boleto", TEXT_DOMAIN)}</h3>
+			<h3>{__("Opção 1: faça download do boleto", "pagbank-for-woocommerce")}</h3>
 			<ol>
 				<li>
 					{__(
 						'Abra o aplicativo do seu banco e selecione a opção "Pagar boleto"',
-						TEXT_DOMAIN,
+						"pagbank-for-woocommerce",
 					)}
 				</li>
-				<li>{__("Escaneie o código de barras", TEXT_DOMAIN)}</li>
+				<li>{__("Escaneie o código de barras", "pagbank-for-woocommerce")}</li>
 			</ol>
 			<div className="center">
 				<a className="button" target="_blank" href={boletoLinkPdf} rel="noreferrer">
-					{__("Download boleto", TEXT_DOMAIN)}
+					{__("Download boleto", "pagbank-for-woocommerce")}
 				</a>
 			</div>
 
 			<hr />
 
-			<h3>{__("Opção 2: copie o código de barras", TEXT_DOMAIN)}</h3>
+			<h3>{__("Opção 2: copie o código de barras", "pagbank-for-woocommerce")}</h3>
 			<ol>
 				<li>
 					{__(
 						'Abra o aplicativo do seu banco e selecione a opção "Pagar boleto"',
-						TEXT_DOMAIN,
+						"pagbank-for-woocommerce",
 					)}
 				</li>
-				<li>{__("Cole o código de barras abaixo", TEXT_DOMAIN)}</li>
+				<li>{__("Cole o código de barras abaixo", "pagbank-for-woocommerce")}</li>
 			</ol>
 			<div className="boleto-barcode">
 				<CopyButton value={boletoBarcode} />
@@ -54,11 +53,11 @@ export const BoletoInstructions = ({
 
 			<hr />
 
-			<h3>{__("Quando o pagamento for concluído", TEXT_DOMAIN)}</h3>
+			<h3>{__("Quando o pagamento for concluído", "pagbank-for-woocommerce")}</h3>
 			<p>
 				{__(
 					"Quando finalizar a transação, você pode retornar à tela inicial.",
-					TEXT_DOMAIN,
+					"pagbank-for-woocommerce",
 				)}
 			</p>
 		</div>

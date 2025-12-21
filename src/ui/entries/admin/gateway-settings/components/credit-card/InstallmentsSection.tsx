@@ -7,7 +7,6 @@
 import { __ } from "@wordpress/i18n";
 import { useEffect, useMemo, useRef } from "react";
 import { useWatch } from "react-hook-form";
-import { TEXT_DOMAIN } from "@/constants";
 import { useFormContext } from "../../context";
 import type { GatewaySettings, YesNo } from "../../schemas/settings";
 import { AnimatedField, SettingsCard } from "../common";
@@ -84,12 +83,15 @@ export const InstallmentsSection = () => {
 	}, [maximumInstallments]);
 
 	return (
-		<SettingsCard title={__("Parcelamento", TEXT_DOMAIN)}>
+		<SettingsCard title={__("Parcelamento", "pagbank-for-woocommerce")}>
 			<div className="pagbank-settings-field">
 				<FormToggle
 					name={"installments_enabled" as keyof GatewaySettings}
-					label={__("Habilitar parcelamento", TEXT_DOMAIN)}
-					help={__("Permite que os clientes paguem em parcelas.", TEXT_DOMAIN)}
+					label={__("Habilitar parcelamento", "pagbank-for-woocommerce")}
+					help={__(
+						"Permite que os clientes paguem em parcelas.",
+						"pagbank-for-woocommerce",
+					)}
 				/>
 			</div>
 
@@ -97,9 +99,12 @@ export const InstallmentsSection = () => {
 				<div className="pagbank-settings-field">
 					<FormSelect
 						name={"maximum_installments" as keyof GatewaySettings}
-						label={__("Máximo de parcelas", TEXT_DOMAIN)}
+						label={__("Máximo de parcelas", "pagbank-for-woocommerce")}
 						options={INSTALLMENT_OPTIONS}
-						help={__("Número máximo de parcelas permitidas.", TEXT_DOMAIN)}
+						help={__(
+							"Número máximo de parcelas permitidas.",
+							"pagbank-for-woocommerce",
+						)}
 						fullWidth={false}
 					/>
 				</div>
@@ -107,10 +112,10 @@ export const InstallmentsSection = () => {
 				<div className="pagbank-settings-field">
 					<FormToggle
 						name={"transfer_of_interest_enabled" as keyof GatewaySettings}
-						label={__("Repasse de juros ao comprador", TEXT_DOMAIN)}
+						label={__("Repasse de juros ao comprador", "pagbank-for-woocommerce")}
 						help={__(
 							"Quando ativado, os juros do parcelamento serão repassados ao comprador.",
-							TEXT_DOMAIN,
+							"pagbank-for-woocommerce",
 						)}
 					/>
 				</div>
@@ -119,11 +124,11 @@ export const InstallmentsSection = () => {
 					<div className="pagbank-settings-field">
 						<FormSelect
 							name={"maximum_installments_interest_free" as keyof GatewaySettings}
-							label={__("Máximo de parcelas sem juros", TEXT_DOMAIN)}
+							label={__("Máximo de parcelas sem juros", "pagbank-for-woocommerce")}
 							options={interestFreeOptions}
 							help={__(
 								"Número máximo de parcelas sem juros. Parcelas acima deste valor terão juros.",
-								TEXT_DOMAIN,
+								"pagbank-for-woocommerce",
 							)}
 							fullWidth={false}
 						/>

@@ -5,7 +5,6 @@
  */
 
 import { __, sprintf } from "@wordpress/i18n";
-import { TEXT_DOMAIN } from "@/constants";
 import { useOrderStatus } from "../hooks/useOrderStatus";
 import type { PayWithPagBankInstructionsProps } from "../types";
 import { CopyButton, PaidConfirmation, QRCodeDisplay } from "./shared";
@@ -44,20 +43,26 @@ export const PayWithPagBankInstructions = ({
 
 	return (
 		<div className="pagbank-pay-with-pagbank">
-			<h2>{__("Instruções de pagamento - Pagar com PagBank", TEXT_DOMAIN)}</h2>
+			<h2>{__("Instruções de pagamento - Pagar com PagBank", "pagbank-for-woocommerce")}</h2>
 
-			<h3>{__("Escaneie o QR Code com o app PagBank", TEXT_DOMAIN)}</h3>
+			<h3>{__("Escaneie o QR Code com o app PagBank", "pagbank-for-woocommerce")}</h3>
 			<ol>
 				<li>
-					{__('Abra o aplicativo PagBank e selecione a opção "Pix/QR Code"', TEXT_DOMAIN)}
+					{__(
+						'Abra o aplicativo PagBank e selecione a opção "Pix/QR Code"',
+						"pagbank-for-woocommerce",
+					)}
 				</li>
 				<li>
-					{__('Selecione "Pagar com QR Code" e escaneie o código abaixo', TEXT_DOMAIN)}
+					{__(
+						'Selecione "Pagar com QR Code" e escaneie o código abaixo',
+						"pagbank-for-woocommerce",
+					)}
 				</li>
 				<li>
 					{__(
 						"Escolha se deseja pagar com saldo, crédito à vista ou parcelado",
-						TEXT_DOMAIN,
+						"pagbank-for-woocommerce",
 					)}
 				</li>
 			</ol>
@@ -65,8 +70,13 @@ export const PayWithPagBankInstructions = ({
 
 			<hr />
 
-			<h3>{__("Ou copie o código do QR Code", TEXT_DOMAIN)}</h3>
-			<p>{__("Copie o código abaixo e cole no aplicativo PagBank:", TEXT_DOMAIN)}</p>
+			<h3>{__("Ou copie o código do QR Code", "pagbank-for-woocommerce")}</h3>
+			<p>
+				{__(
+					"Copie o código abaixo e cole no aplicativo PagBank:",
+					"pagbank-for-woocommerce",
+				)}
+			</p>
 			<div className="pagbank-copy-and-paste">
 				<CopyButton value={qrCodeText} />
 			</div>
@@ -77,7 +87,7 @@ export const PayWithPagBankInstructions = ({
 					<p className="pagbank-expiration">
 						{sprintf(
 							/* translators: %s: expiration date */
-							__("Válido até: %s", TEXT_DOMAIN),
+							__("Válido até: %s", "pagbank-for-woocommerce"),
 							formatDate(expirationDate),
 						)}
 					</p>
@@ -86,11 +96,11 @@ export const PayWithPagBankInstructions = ({
 
 			<hr />
 
-			<h3>{__("Quando o pagamento for concluído", TEXT_DOMAIN)}</h3>
+			<h3>{__("Quando o pagamento for concluído", "pagbank-for-woocommerce")}</h3>
 			<p>
 				{__(
 					"Quando finalizar a transação, você pode retornar à tela inicial.",
-					TEXT_DOMAIN,
+					"pagbank-for-woocommerce",
 				)}
 			</p>
 		</div>

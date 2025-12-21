@@ -8,7 +8,6 @@ import { formatPrice } from "@woocommerce/price-format";
 import { getSetting } from "@woocommerce/settings";
 import { __, sprintf } from "@wordpress/i18n";
 import cardValidator from "card-validator";
-import { TEXT_DOMAIN } from "../../../../constants";
 import type { InstallmentPlan } from "./types";
 
 /**
@@ -110,7 +109,7 @@ export const calculateFixedInstallmentPlans = (
 			interest_free: true,
 			title: sprintf(
 				/* translators: %1$d: number of installments, %2$s: installment value */
-				__("%1$dx of %2$s interest-free", TEXT_DOMAIN),
+				__("%1$dx of %2$s interest-free", "pagbank-for-woocommerce"),
 				i,
 				formatPrice(displayValue),
 			),

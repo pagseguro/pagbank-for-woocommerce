@@ -1,5 +1,4 @@
 import { __ } from "@wordpress/i18n";
-import { TEXT_DOMAIN } from "../../../../constants";
 import type { CardPaymentMethodSettings } from "./types";
 
 export const defaultCardPaymentMethodSettings: Omit<CardPaymentMethodSettings, "title"> = {
@@ -19,28 +18,34 @@ export const defaultCardPaymentMethodSettings: Omit<CardPaymentMethodSettings, "
 	api_3ds_session_url: "",
 	threeds_nonce: "",
 	messages: {
-		invalid_public_key: __("Invalid public key.", TEXT_DOMAIN),
-		invalid_holder_name: __("Invalid cardholder name.", TEXT_DOMAIN),
-		invalid_card_number: __("Invalid card number.", TEXT_DOMAIN),
-		invalid_card_expiry_date: __("Invalid card expiry date.", TEXT_DOMAIN),
-		invalid_security_code: __("Invalid security code.", TEXT_DOMAIN),
-		invalid_encrypted_card: __("Encrypted card not found.", TEXT_DOMAIN),
-		invalid_card_bin: __("Card BIN not found.", TEXT_DOMAIN),
-		installments_error: __("Failed to load installments. Please try again.", TEXT_DOMAIN),
+		invalid_public_key: __("Invalid public key.", "pagbank-for-woocommerce"),
+		invalid_holder_name: __("Invalid cardholder name.", "pagbank-for-woocommerce"),
+		invalid_card_number: __("Invalid card number.", "pagbank-for-woocommerce"),
+		invalid_card_expiry_date: __("Invalid card expiry date.", "pagbank-for-woocommerce"),
+		invalid_security_code: __("Invalid security code.", "pagbank-for-woocommerce"),
+		invalid_encrypted_card: __("Encrypted card not found.", "pagbank-for-woocommerce"),
+		invalid_card_bin: __("Card BIN not found.", "pagbank-for-woocommerce"),
+		installments_error: __(
+			"Failed to load installments. Please try again.",
+			"pagbank-for-woocommerce",
+		),
 		// 3DS messages
-		threeds_session_error: __("Failed to create 3DS session. Please try again.", TEXT_DOMAIN),
+		threeds_session_error: __(
+			"Failed to create 3DS session. Please try again.",
+			"pagbank-for-woocommerce",
+		),
 		threeds_auth_error: __(
 			"3DS authentication failed. Please try again or use a different card.",
-			TEXT_DOMAIN,
+			"pagbank-for-woocommerce",
 		),
 		threeds_change_payment_method: __(
 			"This card cannot be authenticated. Please use a different payment method.",
-			TEXT_DOMAIN,
+			"pagbank-for-woocommerce",
 		),
-		invalid_cellphone: __("The cellphone informed is not valid.", TEXT_DOMAIN),
+		invalid_cellphone: __("The cellphone informed is not valid.", "pagbank-for-woocommerce"),
 		threeds_not_supported: __(
 			"The card cannot be authenticated. Please use a different payment method.",
-			TEXT_DOMAIN,
+			"pagbank-for-woocommerce",
 		),
 	},
 };

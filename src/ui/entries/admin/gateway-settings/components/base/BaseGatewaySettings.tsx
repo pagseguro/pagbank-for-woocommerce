@@ -6,7 +6,6 @@
 
 import { __ } from "@wordpress/i18n";
 import { useWatch } from "react-hook-form";
-import { TEXT_DOMAIN } from "@/constants";
 import { useFormContext } from "../../context";
 import type { Environment } from "../../schemas/settings";
 import { SettingsCard } from "../common";
@@ -18,8 +17,8 @@ interface BaseGatewaySettingsProps {
 }
 
 const ENVIRONMENT_OPTIONS = [
-	{ label: __("Sandbox (Testes)", TEXT_DOMAIN), value: "sandbox" },
-	{ label: __("Produção", TEXT_DOMAIN), value: "production" },
+	{ label: __("Sandbox (Testes)", "pagbank-for-woocommerce"), value: "sandbox" },
+	{ label: __("Produção", "pagbank-for-woocommerce"), value: "production" },
 ];
 
 export const BaseGatewaySettings = ({ children }: BaseGatewaySettingsProps) => {
@@ -28,22 +27,31 @@ export const BaseGatewaySettings = ({ children }: BaseGatewaySettingsProps) => {
 
 	return (
 		<>
-			<SettingsCard title={__("Configurações Gerais", TEXT_DOMAIN)}>
+			<SettingsCard title={__("Configurações Gerais", "pagbank-for-woocommerce")}>
 				<div className="pagbank-settings-field">
 					<FormToggle
 						name="enabled"
-						label={__("Ativar método de pagamento", TEXT_DOMAIN)}
-						helpChecked={__("Este método de pagamento está ativo.", TEXT_DOMAIN)}
-						helpUnchecked={__("Este método de pagamento está desativado.", TEXT_DOMAIN)}
+						label={__("Ativar método de pagamento", "pagbank-for-woocommerce")}
+						helpChecked={__(
+							"Este método de pagamento está ativo.",
+							"pagbank-for-woocommerce",
+						)}
+						helpUnchecked={__(
+							"Este método de pagamento está desativado.",
+							"pagbank-for-woocommerce",
+						)}
 					/>
 				</div>
 
 				<div className="pagbank-settings-field">
 					<FormSelect
 						name="environment"
-						label={__("Ambiente", TEXT_DOMAIN)}
+						label={__("Ambiente", "pagbank-for-woocommerce")}
 						options={ENVIRONMENT_OPTIONS}
-						help={__("Selecione o ambiente para processar os pagamentos.", TEXT_DOMAIN)}
+						help={__(
+							"Selecione o ambiente para processar os pagamentos.",
+							"pagbank-for-woocommerce",
+						)}
 						fullWidth={false}
 					/>
 				</div>
@@ -53,34 +61,40 @@ export const BaseGatewaySettings = ({ children }: BaseGatewaySettingsProps) => {
 				</div>
 			</SettingsCard>
 
-			<SettingsCard title={__("Configurações de Exibição", TEXT_DOMAIN)}>
+			<SettingsCard title={__("Configurações de Exibição", "pagbank-for-woocommerce")}>
 				<div className="pagbank-settings-field">
 					<FormInput
 						name="title"
-						label={__("Título", TEXT_DOMAIN)}
-						help={__("Título exibido ao cliente durante o checkout.", TEXT_DOMAIN)}
+						label={__("Título", "pagbank-for-woocommerce")}
+						help={__(
+							"Título exibido ao cliente durante o checkout.",
+							"pagbank-for-woocommerce",
+						)}
 					/>
 				</div>
 
 				<div className="pagbank-settings-field">
 					<FormTextarea
 						name="description"
-						label={__("Descrição", TEXT_DOMAIN)}
-						help={__("Descrição exibida ao cliente durante o checkout.", TEXT_DOMAIN)}
+						label={__("Descrição", "pagbank-for-woocommerce")}
+						help={__(
+							"Descrição exibida ao cliente durante o checkout.",
+							"pagbank-for-woocommerce",
+						)}
 					/>
 				</div>
 			</SettingsCard>
 
 			{children}
 
-			<SettingsCard title={__("Configurações Avançadas", TEXT_DOMAIN)}>
+			<SettingsCard title={__("Configurações Avançadas", "pagbank-for-woocommerce")}>
 				<div className="pagbank-settings-field">
 					<FormToggle
 						name="logs_enabled"
-						label={__("Habilitar logs", TEXT_DOMAIN)}
+						label={__("Habilitar logs", "pagbank-for-woocommerce")}
 						help={__(
 							"Registra eventos do gateway de pagamento para debug.",
-							TEXT_DOMAIN,
+							"pagbank-for-woocommerce",
 						)}
 					/>
 				</div>

@@ -6,7 +6,6 @@
 
 import { Button, Modal, Spinner } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
-import { TEXT_DOMAIN } from "@/constants";
 import type { Environment } from "../../schemas/settings";
 import { PlanSelector } from "./PlanSelector";
 
@@ -34,8 +33,8 @@ export const ConnectModal = ({
 
 	const title =
 		environment === "sandbox"
-			? __("Conectar ao PagBank (Sandbox)", TEXT_DOMAIN)
-			: __("Conectar ao PagBank", TEXT_DOMAIN);
+			? __("Conectar ao PagBank (Sandbox)", "pagbank-for-woocommerce")
+			: __("Conectar ao PagBank", "pagbank-for-woocommerce");
 
 	return (
 		<Modal title={title} onRequestClose={onClose} className="pagbank-connect-modal">
@@ -44,7 +43,7 @@ export const ConnectModal = ({
 					<p>
 						{__(
 							"Você está em modo de testes, portanto nenhuma taxa será aplicada. Clique no botão abaixo para continuar.",
-							TEXT_DOMAIN,
+							"pagbank-for-woocommerce",
 						)}
 					</p>
 					<Button
@@ -56,10 +55,10 @@ export const ConnectModal = ({
 						{isLoading ? (
 							<>
 								<Spinner />
-								{__("Carregando...", TEXT_DOMAIN)}
+								{__("Carregando...", "pagbank-for-woocommerce")}
 							</>
 						) : (
-							__("Continuar", TEXT_DOMAIN)
+							__("Continuar", "pagbank-for-woocommerce")
 						)}
 					</Button>
 				</div>

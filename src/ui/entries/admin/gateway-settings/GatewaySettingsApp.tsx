@@ -9,7 +9,6 @@ import { Button, Notice, Spinner } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { TEXT_DOMAIN } from "@/constants";
 import { ApplePaySettingsForm } from "./components/apple-pay";
 import { BoletoSettingsForm } from "./components/boleto";
 import { CreditCardSettingsForm } from "./components/credit-card";
@@ -28,13 +27,13 @@ interface GatewaySettingsAppProps {
 }
 
 const GATEWAY_TITLES: Record<GatewayId, string> = {
-	pagbank_credit_card: __("Cartão de Crédito", TEXT_DOMAIN),
-	pagbank_debit_card: __("Cartão de Débito", TEXT_DOMAIN),
-	pagbank_pix: __("Pix", TEXT_DOMAIN),
-	pagbank_boleto: __("Boleto", TEXT_DOMAIN),
-	pagbank_pay_with_pagbank: __("Pague com PagBank", TEXT_DOMAIN),
-	pagbank_google_pay: __("Google Pay", TEXT_DOMAIN),
-	pagbank_apple_pay: __("Apple Pay", TEXT_DOMAIN),
+	pagbank_credit_card: __("Cartão de Crédito", "pagbank-for-woocommerce"),
+	pagbank_debit_card: __("Cartão de Débito", "pagbank-for-woocommerce"),
+	pagbank_pix: __("Pix", "pagbank-for-woocommerce"),
+	pagbank_boleto: __("Boleto", "pagbank-for-woocommerce"),
+	pagbank_pay_with_pagbank: __("Pague com PagBank", "pagbank-for-woocommerce"),
+	pagbank_google_pay: __("Google Pay", "pagbank-for-woocommerce"),
+	pagbank_apple_pay: __("Apple Pay", "pagbank-for-woocommerce"),
 };
 
 const ALL_GATEWAYS: GatewayId[] = [
@@ -144,7 +143,7 @@ export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 		return (
 			<div className="pagbank-gateway-settings pagbank-gateway-settings--loading">
 				<Spinner />
-				<span>{__("Carregando configurações...", TEXT_DOMAIN)}</span>
+				<span>{__("Carregando configurações...", "pagbank-for-woocommerce")}</span>
 			</div>
 		);
 	}
@@ -166,7 +165,7 @@ export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 		return (
 			<div className="pagbank-gateway-settings pagbank-gateway-settings--error">
 				<Notice status="error" isDismissible={false}>
-					{__("Não foi possível carregar as configurações.", TEXT_DOMAIN)}
+					{__("Não foi possível carregar as configurações.", "pagbank-for-woocommerce")}
 				</Notice>
 			</div>
 		);
@@ -191,7 +190,7 @@ export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 			default:
 				return (
 					<Notice status="error" isDismissible={false}>
-						{__("Gateway não suportado.", TEXT_DOMAIN)}
+						{__("Gateway não suportado.", "pagbank-for-woocommerce")}
 					</Notice>
 				);
 		}
@@ -274,8 +273,8 @@ export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 						isBusy={mutation.isPending}
 					>
 						{mutation.isPending
-							? __("Salvando...", TEXT_DOMAIN)
-							: __("Salvar alterações", TEXT_DOMAIN)}
+							? __("Salvando...", "pagbank-for-woocommerce")
+							: __("Salvar alterações", "pagbank-for-woocommerce")}
 					</Button>
 
 					{isDirty && (
@@ -284,7 +283,7 @@ export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 							onClick={handleReset}
 							disabled={mutation.isPending}
 						>
-							{__("Descartar alterações", TEXT_DOMAIN)}
+							{__("Descartar alterações", "pagbank-for-woocommerce")}
 						</Button>
 					)}
 				</div>

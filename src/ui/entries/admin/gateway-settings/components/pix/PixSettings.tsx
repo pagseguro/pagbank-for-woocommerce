@@ -5,7 +5,6 @@
  */
 
 import { __ } from "@wordpress/i18n";
-import { TEXT_DOMAIN } from "@/constants";
 import type { GatewaySettings } from "../../schemas/settings";
 import { BaseGatewaySettings } from "../base";
 import { SettingsCard } from "../common";
@@ -14,18 +13,18 @@ import { FormNumberStepper } from "../form";
 export const PixSettingsForm = () => {
 	return (
 		<BaseGatewaySettings>
-			<SettingsCard title={__("Configurações do Pix", TEXT_DOMAIN)}>
+			<SettingsCard title={__("Configurações do Pix", "pagbank-for-woocommerce")}>
 				<div className="pagbank-settings-field">
 					<FormNumberStepper
 						name={"expiration_minutes" as keyof GatewaySettings}
-						label={__("Tempo de expiração", TEXT_DOMAIN)}
+						label={__("Tempo de expiração", "pagbank-for-woocommerce")}
 						help={__(
 							"Tempo para o QR Code do Pix expirar. Mínimo: 1 minuto.",
-							TEXT_DOMAIN,
+							"pagbank-for-woocommerce",
 						)}
 						min={1}
 						max={1440}
-						suffix={__("minutos", TEXT_DOMAIN)}
+						suffix={__("minutos", "pagbank-for-woocommerce")}
 					/>
 				</div>
 			</SettingsCard>

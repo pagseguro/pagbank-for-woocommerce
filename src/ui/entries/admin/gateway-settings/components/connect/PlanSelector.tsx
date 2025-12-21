@@ -6,7 +6,6 @@
 
 import { Button } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
-import { TEXT_DOMAIN } from "@/constants";
 
 interface Plan {
 	id: string;
@@ -22,24 +21,24 @@ interface PlanSelectorProps {
 const PLANS: Plan[] = [
 	{
 		id: "31241905-5426-4f88-a140-4416a2cab404",
-		title: __("Receba em 14 dias", TEXT_DOMAIN),
+		title: __("Receba em 14 dias", "pagbank-for-woocommerce"),
 		features: [
-			__("Sem mensalidade e taxa de adesão", TEXT_DOMAIN),
-			__("4,39% + R$ 0,40 no crédito à vista e parcelado", TEXT_DOMAIN),
-			__("0,99% no PIX com recebimento em D0", TEXT_DOMAIN),
-			__("R$ 2,99 no boleto com recebimento em D2", TEXT_DOMAIN),
-			__("Antecipe o recebimento quando quiser por +2,99%", TEXT_DOMAIN),
+			__("Sem mensalidade e taxa de adesão", "pagbank-for-woocommerce"),
+			__("4,39% + R$ 0,40 no crédito à vista e parcelado", "pagbank-for-woocommerce"),
+			__("0,99% no PIX com recebimento em D0", "pagbank-for-woocommerce"),
+			__("R$ 2,99 no boleto com recebimento em D2", "pagbank-for-woocommerce"),
+			__("Antecipe o recebimento quando quiser por +2,99%", "pagbank-for-woocommerce"),
 		],
 	},
 	{
 		id: "c8672afd-abbb-4c47-a95d-7cf9cd4cee76",
-		title: __("Receba em 30 dias", TEXT_DOMAIN),
+		title: __("Receba em 30 dias", "pagbank-for-woocommerce"),
 		features: [
-			__("Sem mensalidade e taxa de adesão", TEXT_DOMAIN),
-			__("3,79% + R$ 0,40 no crédito à vista e parcelado", TEXT_DOMAIN),
-			__("0,99% no PIX com recebimento em D0", TEXT_DOMAIN),
-			__("R$ 2,99 no boleto com recebimento em D2", TEXT_DOMAIN),
-			__("Antecipe o recebimento quando quiser por +2,99%", TEXT_DOMAIN),
+			__("Sem mensalidade e taxa de adesão", "pagbank-for-woocommerce"),
+			__("3,79% + R$ 0,40 no crédito à vista e parcelado", "pagbank-for-woocommerce"),
+			__("0,99% no PIX com recebimento em D0", "pagbank-for-woocommerce"),
+			__("R$ 2,99 no boleto com recebimento em D2", "pagbank-for-woocommerce"),
+			__("Antecipe o recebimento quando quiser por +2,99%", "pagbank-for-woocommerce"),
 		],
 	},
 ];
@@ -52,7 +51,7 @@ export const PlanSelector = ({ onSelectPlan, isLoading }: PlanSelectorProps) => 
 			<p className="pagbank-plan-selector__intro">
 				{__(
 					"Para conectar o método de pagamento, é necessário que você possua uma conta PagBank.",
-					TEXT_DOMAIN,
+					"pagbank-for-woocommerce",
 				)}{" "}
 				<a
 					href="https://cadastro.pagseguro.uol.com.br/"
@@ -61,7 +60,7 @@ export const PlanSelector = ({ onSelectPlan, isLoading }: PlanSelectorProps) => 
 				>
 					{__(
 						"Caso ainda não tenha a conta, clique aqui para criar uma nova.",
-						TEXT_DOMAIN,
+						"pagbank-for-woocommerce",
 					)}
 				</a>
 			</p>
@@ -69,7 +68,7 @@ export const PlanSelector = ({ onSelectPlan, isLoading }: PlanSelectorProps) => 
 			<p className="pagbank-plan-selector__choose">
 				{__(
 					"Escolha o plano de recebimento que mais combina com o seu negócio:",
-					TEXT_DOMAIN,
+					"pagbank-for-woocommerce",
 				)}
 			</p>
 
@@ -88,7 +87,7 @@ export const PlanSelector = ({ onSelectPlan, isLoading }: PlanSelectorProps) => 
 							disabled={isLoading}
 							isBusy={isLoading}
 						>
-							{__("Escolher este", TEXT_DOMAIN)}
+							{__("Escolher este", "pagbank-for-woocommerce")}
 						</Button>
 					</div>
 				))}
@@ -100,7 +99,10 @@ export const PlanSelector = ({ onSelectPlan, isLoading }: PlanSelectorProps) => 
 					onClick={() => onSelectPlan(OWN_CONDITION_ID)}
 					disabled={isLoading}
 				>
-					{__("Já negociei minha própria condição comercial com o PagBank", TEXT_DOMAIN)}
+					{__(
+						"Já negociei minha própria condição comercial com o PagBank",
+						"pagbank-for-woocommerce",
+					)}
 				</Button>
 			</div>
 		</div>

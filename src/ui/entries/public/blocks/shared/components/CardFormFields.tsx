@@ -5,7 +5,6 @@
  */
 
 import { __ } from "@wordpress/i18n";
-import { TEXT_DOMAIN } from "../../../../../constants";
 import { formatCardNumber, formatExpiry } from "../utils";
 
 interface CardFormFieldsProps {
@@ -35,7 +34,9 @@ export const CardFormFields = ({
 		<>
 			{/* Card Holder */}
 			<div className="pagbank-field pagbank-field-holder">
-				<label htmlFor={`${idPrefix}-holder`}>{__("Cardholder name", TEXT_DOMAIN)}</label>
+				<label htmlFor={`${idPrefix}-holder`}>
+					{__("Cardholder name", "pagbank-for-woocommerce")}
+				</label>
 				<input
 					type="text"
 					id={`${idPrefix}-holder`}
@@ -50,7 +51,9 @@ export const CardFormFields = ({
 
 			{/* Card Number */}
 			<div className="pagbank-field pagbank-field-number">
-				<label htmlFor={`${idPrefix}-number`}>{__("Card number", TEXT_DOMAIN)}</label>
+				<label htmlFor={`${idPrefix}-number`}>
+					{__("Card number", "pagbank-for-woocommerce")}
+				</label>
 				<input
 					type="text"
 					id={`${idPrefix}-number`}
@@ -68,7 +71,9 @@ export const CardFormFields = ({
 			{/* Expiry and CVC */}
 			<div className="pagbank-field-row">
 				<div className="pagbank-field pagbank-field-expiry">
-					<label htmlFor={`${idPrefix}-expiry`}>{__("Expiry date", TEXT_DOMAIN)}</label>
+					<label htmlFor={`${idPrefix}-expiry`}>
+						{__("Expiry date", "pagbank-for-woocommerce")}
+					</label>
 					<input
 						type="text"
 						id={`${idPrefix}-expiry`}
@@ -84,7 +89,9 @@ export const CardFormFields = ({
 				</div>
 
 				<div className="pagbank-field pagbank-field-cvc">
-					<label htmlFor={`${idPrefix}-cvc`}>{__("CVV", TEXT_DOMAIN)}</label>
+					<label htmlFor={`${idPrefix}-cvc`}>
+						{__("CVV", "pagbank-for-woocommerce")}
+					</label>
 					<input
 						type="text"
 						id={`${idPrefix}-cvc`}
