@@ -43,6 +43,8 @@ export const CardFormFields = ({
 					onChange={(e) => onHolderChange(e.target.value)}
 					placeholder="John Doe"
 					autoComplete="cc-name"
+					aria-required="true"
+					required
 				/>
 			</div>
 
@@ -58,6 +60,8 @@ export const CardFormFields = ({
 					autoComplete="cc-number"
 					inputMode="numeric"
 					maxLength={19}
+					aria-required="true"
+					required
 				/>
 			</div>
 
@@ -74,6 +78,8 @@ export const CardFormFields = ({
 						autoComplete="cc-exp"
 						inputMode="numeric"
 						maxLength={5}
+						aria-required="true"
+						required
 					/>
 				</div>
 
@@ -90,6 +96,8 @@ export const CardFormFields = ({
 						autoComplete="cc-csc"
 						inputMode="numeric"
 						maxLength={4}
+						aria-required="true"
+						required
 					/>
 				</div>
 			</div>
