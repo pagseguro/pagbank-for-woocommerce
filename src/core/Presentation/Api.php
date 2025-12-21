@@ -192,17 +192,16 @@ class Api {
 			return new WP_Error( 'pagbank_oauth_invalid_application_id', __( 'ID da aplicação inválida.', 'pagbank-for-woocommerce' ) );
 		}
 
-		$body = $this->json_encode(
-			array(
-				'grant_type'    => 'authorization_code',
-				'code'          => $oauth_code,
-				'redirect_uri'  => $callback_url,
-				'code_verifier' => $code_verifier,
-			)
+		$data = array(
+			'grant_type'    => 'authorization_code',
+			'code'          => $oauth_code,
+			'redirect_uri'  => $callback_url,
+			'code_verifier' => $code_verifier,
 		);
+		$body = $this->json_encode( $data );
 
 		if ( true === Helpers::get_constant_value( 'PAGBANK_LOG_OAUTH_REQUEST' ) ) {
-			$this->log_api_request( $url, $body, 'pagbank_oauth' );
+			$this->log_api_request( 'POST', $url, $data, 'pagbank_oauth' );
 		}
 
 		$response = $this->request(
@@ -267,13 +266,12 @@ class Api {
 			return new WP_Error( 'pagbank_oauth_invalid_application_id', __( 'O ID da aplicação é inválido.', 'pagbank-for-woocommerce' ) );
 		}
 
-		$body = $this->json_encode(
-			array(
-				'grant_type'    => 'refresh_token',
-				'refresh_token' => $refresh_token,
-			)
+		$data = array(
+			'grant_type'    => 'refresh_token',
+			'refresh_token' => $refresh_token,
 		);
-		$this->log_api_request( $url, $body, 'pagbank_oauth' );
+		$body = $this->json_encode( $data );
+		$this->log_api_request( 'POST', $url, $data, 'pagbank_oauth' );
 
 		$response = $this->request(
 			$url,
@@ -341,7 +339,7 @@ class Api {
 
 		$body = $this->json_encode( $data );
 
-		$this->log_api_request( $url, $body );
+		$this->log_api_request( 'POST', $url, $data );
 
 		$response = $this->request(
 			$url,
@@ -385,15 +383,14 @@ class Api {
 	public function refund( string $charge_id, float $amount ) {
 		$url = $this->get_api_url( 'charges/' . $charge_id . '/cancel' );
 
-		$body = $this->json_encode(
-			array(
-				'amount' => array(
-					'value' => Helpers::format_money_cents( $amount ),
-				),
-			)
+		$data = array(
+			'amount' => array(
+				'value' => Helpers::format_money_cents( $amount ),
+			),
 		);
+		$body = $this->json_encode( $data );
 
-		$this->log_api_request( $url, $body );
+		$this->log_api_request( 'POST', $url, $data );
 
 		$response = $this->request(
 			$url,
@@ -455,7 +452,7 @@ class Api {
 			return json_decode( $cached_response, true );
 		}
 
-		$this->log_api_request( $url, '' );
+		$this->log_api_request( 'GET', $url );
 
 		$args = array(
 			'method'  => 'GET',
@@ -513,7 +510,7 @@ class Api {
 	public function create_3ds_session() {
 		$url = $this->get_3ds_api_url( 'checkout-sdk/sessions' );
 
-		$this->log_api_request( $url, '' );
+		$this->log_api_request( 'POST', $url );
 
 		$response = $this->request(
 			$url,
@@ -558,7 +555,7 @@ class Api {
 	public function get_account_with_token( string $account_id, string $access_token ) {
 		$url = $this->get_api_url( 'accounts/' . $account_id );
 
-		$this->log_api_request( $url, '', 'pagbank_oauth' );
+		$this->log_api_request( 'GET', $url, null, 'pagbank_oauth' );
 
 		$response = $this->request(
 			$url,
@@ -607,13 +604,12 @@ class Api {
 	public function get_public_key( string $access_token = null ) {
 		$url = $this->get_api_url( 'public-keys' );
 
-		$body = $this->json_encode(
-			array(
-				'type' => 'card',
-			)
+		$data = array(
+			'type' => 'card',
 		);
+		$body = $this->json_encode( $data );
 
-		$this->log_api_request( $url, $body, 'pagbank_oauth' );
+		$this->log_api_request( 'POST', $url, $data, 'pagbank_oauth' );
 
 		$response = $this->request(
 			$url,
@@ -665,20 +661,30 @@ class Api {
 	/**
 	 * Log request begin.
 	 *
-	 * @param string $url  The request URL.
-	 * @param string $body The request body.
-	 * @param string $log_id  The log ID.
+	 * @param string       $method  The request method.
+	 * @param string       $url     The request URL.
+	 * @param string|array $body    The request body.
+	 * @param string       $log_id  The log ID.
 	 *
 	 * @return void
 	 */
-	private function log_api_request( string $url, string $body, string $log_id = null ): void {
+	private function log_api_request( string $method, string $url, $body = null, string $log_id = null ): void {
+		$context = array(
+			'method' => $method,
+			'url'    => $url,
+		);
+
+		if ( null !== $body ) {
+			$context['body'] = $body;
+			// Even with the `format_log_entry` filter, the UI breaks the `reference_id` escaped JSON, so we need to remove it from the context.
+			unset( $context['body']['reference_id'] );
+			unset( $context['body']['charges'][0]['reference_id'] );
+		}
+
 		$this->log(
-			'API Request',
+			'API Request (' . $method . ' ' . $url . ')',
 			$log_id,
-			array(
-				'url'  => $url,
-				'body' => $body,
-			)
+			$context
 		);
 	}
 
@@ -692,7 +698,7 @@ class Api {
 	 */
 	private function log_api_request_error( WP_Error $error, string $log_id = null ): void {
 		$this->log(
-			'API Request Error',
+			'API Request Error (' . $error->get_error_code() . ')',
 			$log_id,
 			array(
 				'error_code'    => $error->get_error_code(),
@@ -713,25 +719,25 @@ class Api {
 	 * @return void
 	 */
 	private function log_api_response( int $response_code, string $response_body, string $log_id = null ): void {
-		$is_success = $response_code >= 200 && $response_code < 300;
-		$level      = $is_success ? 'debug' : 'error';
-
+		$is_success   = $response_code >= 200 && $response_code < 300;
+		$level        = $is_success ? 'debug' : 'error';
 		$decoded_body = json_decode( $response_body, true );
-		$context      = array(
-			'response_code'     => $response_code,
-			'raw_response_body' => $response_body,
-		);
 
-		if ( null !== $decoded_body && json_last_error() === JSON_ERROR_NONE ) {
-			$context['response_body'] = $decoded_body;
-		} else {
-			$context['response_body'] = $response_body;
+		if(json_last_error() !== JSON_ERROR_NONE) {
+			$decoded_body = $response_body;
 		}
 
+		// Even with the `format_log_entry` filter, the UI breaks the `reference_id` escaped JSON, so we need to remove it from the context.
+		unset( $decoded_body['reference_id'] );
+		unset( $decoded_body['charges'][0]['reference_id'] );
+
 		$this->log(
-			'API Response',
+			'API Response (' . $response_code . ')',
 			$log_id,
-			$context,
+			array(
+				'response_code' => $response_code,
+				'response_body' => null !== $decoded_body && json_last_error() === JSON_ERROR_NONE ? $decoded_body : $response_body,
+			),
 			$level
 		);
 	}

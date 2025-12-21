@@ -44,6 +44,18 @@ class Hooks {
 	}
 
 	/**
+	 * Log sources used by the plugin.
+	 *
+	 * @var array
+	 */
+	private const LOG_SOURCES = array(
+		'pagbank_credit_card',
+		'pagbank_pix',
+		'pagbank_boleto',
+		'pagbank_oauth',
+	);
+
+	/**
 	 * Hooks constructor.
 	 */
 	public function __construct() {
@@ -65,6 +77,7 @@ class Hooks {
 		add_action( 'woocommerce_email_order_details', array( $this, 'add_boleto_details_to_email' ), 10, 4 );
 		add_filter( 'woocommerce_email_attachments', array( $this, 'attach_boleto_pdf_to_email' ), 10, 3 );
 		add_action( 'woocommerce_email_sent', array( $this, 'cleanup_boleto_pdfs_after_email' ), 10, 3 );
+		add_filter( 'woocommerce_format_log_entry', array( $this, 'format_log_entry' ), 10, 2 );
 
 		if ( is_admin() ) {
 			add_action( 'admin_notices', array( $this, 'check_for_plugin_dependencies' ) );
@@ -505,5 +518,51 @@ class Hooks {
 
 		// Remove from tracking array.
 		unset( $this->temp_boleto_files[ $order_id ] );
+	}
+
+	/**
+	 * Format log entry for PagBank sources.
+	 *
+	 * WooCommerce uses stripslashes() when formatting the context JSON, which breaks
+	 * JSON strings that contain escaped quotes (like reference_id containing JSON).
+	 * This filter reformats the log entry without stripslashes for PagBank log sources.
+	 *
+	 * @param string $entry   The formatted log entry.
+	 * @param array  $details The log entry details containing timestamp, level, message, and context.
+	 *
+	 * @return string The formatted log entry.
+	 */
+	public function format_log_entry( $entry, $details ) {
+		$context = $details['context'] ?? array();
+		$source  = $context['source'] ?? '';
+
+		// Only process PagBank log sources.
+		if ( ! in_array( $source, self::LOG_SOURCES, true ) ) {
+			return $entry;
+		}
+
+		// Rebuild the entry without stripslashes.
+		$timestamp    = $details['timestamp'] ?? time();
+		$level        = $details['level'] ?? 'debug';
+		$message      = $details['message'] ?? '';
+		$time_string  = gmdate( 'c', $timestamp );
+		$level_string = strtoupper( $level );
+
+		// Remove the corrupted CONTEXT from the message (WooCommerce adds it with stripslashes).
+		$context_pos = strpos( $message, ' CONTEXT: ' );
+		if ( false !== $context_pos ) {
+			$message = substr( $message, 0, $context_pos );
+		}
+
+		// Remove source from context for the entry.
+		$context_for_entry = $context;
+		unset( $context_for_entry['source'] );
+
+		if ( ! empty( $context_for_entry ) ) {
+			$formatted_context = wp_json_encode( $context_for_entry, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+			$message          .= ' CONTEXT: ' . $formatted_context;
+		}
+
+		return $time_string . ' ' . $level_string . ' ' . $message;
 	}
 }
