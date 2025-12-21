@@ -4,6 +4,7 @@
  * @package PagBank_WooCommerce
  */
 
+import apiFetch from "@wordpress/api-fetch";
 import { useCallback, useRef, useState } from "react";
 import type { CardPaymentMethodSettings, CardType } from "../types";
 
@@ -88,8 +89,9 @@ export const use3DS = ({ settings, cardType }: Use3DSOptions): Use3DSReturn => {
 				nonce: settings.threeds_nonce,
 			});
 
-			const response = await fetch(`${settings.api_3ds_session_url}?${params}`);
-			const data = await response.json();
+			const data = await apiFetch<{ success: boolean; data: SessionData }>({
+				url: `${settings.api_3ds_session_url}?${params}`,
+			});
 
 			if (data.success && data.data) {
 				sessionDataRef.current = data.data;

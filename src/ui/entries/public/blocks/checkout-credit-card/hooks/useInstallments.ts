@@ -4,6 +4,7 @@
  * @package PagBank_WooCommerce
  */
 
+import apiFetch from "@wordpress/api-fetch";
 import { useCallback, useEffect, useState } from "react";
 import { calculateFixedInstallmentPlans, type InstallmentPlan } from "../../shared";
 import { settings } from "../settings";
@@ -58,8 +59,9 @@ export const useInstallments = ({
 					params.set("card_bin", bin);
 				}
 
-				const response = await fetch(`${settings.api_installments_url}?${params}`);
-				const data = await response.json();
+				const data = await apiFetch<{ success: boolean; data: InstallmentPlan[] }>({
+					url: `${settings.api_installments_url}?${params}`,
+				});
 
 				if (data.success && data.data) {
 					setInstallmentPlans(data.data);

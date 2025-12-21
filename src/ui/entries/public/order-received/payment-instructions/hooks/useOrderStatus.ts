@@ -4,6 +4,7 @@
  * @package PagBank_WooCommerce
  */
 
+import apiFetch from "@wordpress/api-fetch";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { OrderStatusResponse } from "../types";
 
@@ -34,17 +35,12 @@ export const useOrderStatus = (options: UseOrderStatusOptions): UseOrderStatusRe
 	const checkStatus = useCallback(async (): Promise<boolean> => {
 		try {
 			const url = `${options.restUrl}pagbank/v1/order/${options.orderId}/status?key=${options.orderKey}`;
-			const response = await fetch(url, {
+			const data = await apiFetch<OrderStatusResponse>({
+				url,
 				headers: {
 					"X-WP-Nonce": pagbankOrderStatus.nonce,
 				},
 			});
-
-			if (!response.ok) {
-				return false;
-			}
-
-			const data: OrderStatusResponse = await response.json();
 
 			if (data.is_paid) {
 				setIsPaid(true);

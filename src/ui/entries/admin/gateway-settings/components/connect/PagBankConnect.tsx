@@ -4,6 +4,7 @@
  * @package PagBank_WooCommerce
  */
 
+import apiFetch from "@wordpress/api-fetch";
 import { Button, Notice, Spinner } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import { useCallback, useState } from "react";
@@ -68,17 +69,10 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 					environment,
 				});
 
-				const response = await fetch(`${ajaxUrl}?${params.toString()}`, {
+				const data = await apiFetch<{ oauth_url?: string }>({
+					url: `${ajaxUrl}?${params.toString()}`,
 					credentials: "same-origin",
 				});
-
-				if (!response.ok) {
-					throw new Error(
-						__("Erro ao obter URL de autorização", "pagbank-for-woocommerce"),
-					);
-				}
-
-				const data = await response.json();
 
 				if (!data.oauth_url) {
 					throw new Error(__("URL de autorização inválida", "pagbank-for-woocommerce"));

@@ -1,3 +1,5 @@
+import apiFetch from "@wordpress/api-fetch";
+
 document.querySelectorAll("[data-copy-clipboard]").forEach((element) => {
 	element.addEventListener("click", () => {
 		const textToCopy = element.getAttribute("data-copy-clipboard");
@@ -53,21 +55,13 @@ const orderStatusPoolingInit = (): void => {
 					const url = new URL(`pagbank/v1/order/${orderId}/status`, restUrl);
 					url.searchParams.set("key", orderKey);
 
-					const response = await fetch(url.toString(), {
+					const data = await apiFetch<OrderStatusResponse>({
+						url: url.toString(),
 						method: "GET",
 						headers: {
-							"Content-Type": "application/json",
 							"X-WP-Nonce": pagbankOrderStatus.nonce,
 						},
 					});
-
-					if (!response.ok) {
-						console.error("Error checking order status:", response.statusText);
-
-						return;
-					}
-
-					const data: OrderStatusResponse = await response.json();
 
 					// Check if order is paid
 					if (data.is_paid) {
