@@ -182,6 +182,8 @@ final class CreditCardBlocksSupport extends AbstractPaymentMethodType {
 				'invalid_cellphone'             => __( 'O celular informado não é válido.', 'pagbank-for-woocommerce' ),
 				'threeds_not_supported'         => __( 'O cartão não pode ser autenticado. Use outro método de pagamento.', 'pagbank-for-woocommerce' ),
 			),
+			// Subscription support.
+			'cart_has_subscription'              => $this->gateway ? $this->gateway->cart_contains_subscription() : false,
 		);
 	}
 

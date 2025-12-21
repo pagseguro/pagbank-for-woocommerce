@@ -60,7 +60,7 @@ export const SavedTokenContent = ({
 
 	return (
 		<div className="pagbank-credit-card-saved-token">
-			{settings.installments_enabled && (
+			{settings.installments_enabled && !settings.cart_has_subscription && (
 				<InstallmentsSelect
 					id={`pagbank-installments-${token}`}
 					value={installments}

@@ -32,6 +32,8 @@ export interface CardPaymentMethodSettings {
 	installments_plan: InstallmentPlan[];
 	api_installments_url: string;
 	nonce: string;
+	// Subscription support
+	cart_has_subscription?: boolean;
 }
 
 export interface CardMessages {

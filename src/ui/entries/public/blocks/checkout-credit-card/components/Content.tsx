@@ -330,7 +330,7 @@ export const Content = ({
 					onCvcChange={setCvc}
 				/>
 
-				{settings.installments_enabled && (
+				{settings.installments_enabled && !settings.cart_has_subscription && (
 					<InstallmentsSelect
 						id="pagbank-installments"
 						value={installments}

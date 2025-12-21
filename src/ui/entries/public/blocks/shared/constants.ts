@@ -48,4 +48,6 @@ export const defaultCardPaymentMethodSettings: Omit<CardPaymentMethodSettings, "
 			"pagbank-for-woocommerce",
 		),
 	},
+	// Subscription support
+	cart_has_subscription: false,
 };
