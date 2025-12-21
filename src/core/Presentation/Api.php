@@ -723,7 +723,7 @@ class Api {
 		$level        = $is_success ? 'debug' : 'error';
 		$decoded_body = json_decode( $response_body, true );
 
-		if(json_last_error() !== JSON_ERROR_NONE) {
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
 			$decoded_body = $response_body;
 		}
 

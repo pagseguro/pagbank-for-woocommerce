@@ -298,6 +298,10 @@ class GooglePayPaymentGateway extends WC_Payment_Gateway {
 			return false;
 		}
 
+		if ( ! is_ssl() ) {
+			return false;
+		}
+
 		return true;
 	}
 
@@ -314,15 +318,19 @@ class GooglePayPaymentGateway extends WC_Payment_Gateway {
 		$errors = array();
 
 		if ( ! $is_enabled ) {
-			$errors[] = __( '- O método de pagamento está desabilitado.', 'pagbank-for-woocommerce' );
+			$errors[] = __( 'O método de pagamento está desabilitado.', 'pagbank-for-woocommerce' );
 		}
 
 		if ( ! $is_connected ) {
-			$errors[] = __( '- A sua conta PagBank não está conectada.', 'pagbank-for-woocommerce' );
+			$errors[] = __( 'A sua conta PagBank não está conectada.', 'pagbank-for-woocommerce' );
 		}
 
 		if ( ! $is_brazilian_currency ) {
-			$errors[] = __( '- A moeda da loja não é BRL.', 'pagbank-for-woocommerce' );
+			$errors[] = __( 'A moeda da loja não é BRL.', 'pagbank-for-woocommerce' );
+		}
+
+		if ( ! is_ssl() ) {
+			$errors[] = __( 'A loja precisa usar HTTPS (SSL) para aceitar pagamentos via Google Pay.', 'pagbank-for-woocommerce' );
 		}
 
 		if ( $errors ) {

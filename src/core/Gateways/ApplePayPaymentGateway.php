@@ -298,6 +298,10 @@ class ApplePayPaymentGateway extends WC_Payment_Gateway {
 			return false;
 		}
 
+		if ( ! is_ssl() ) {
+			return false;
+		}
+
 		return true;
 	}
 
@@ -323,6 +327,10 @@ class ApplePayPaymentGateway extends WC_Payment_Gateway {
 
 		if ( ! $is_brazilian_currency ) {
 			$errors[] = __( '- A moeda da loja não é BRL.', 'pagbank-for-woocommerce' );
+		}
+
+		if ( ! is_ssl() ) {
+			$errors[] = __( '- A loja precisa usar HTTPS (SSL) para aceitar pagamentos via Apple Pay.', 'pagbank-for-woocommerce' );
 		}
 
 		if ( $errors ) {
