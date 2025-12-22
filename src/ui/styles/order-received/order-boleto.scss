@@ -12,9 +12,22 @@
 		background-color: #e3e3e3;
 	}
 
+	.pagbank-barcode-display {
+		display: flex;
+		justify-content: center;
+		margin: 15px 0;
+		overflow-x: auto;
+
+		svg {
+			max-width: 100%;
+			height: auto;
+		}
+	}
+
 	.boleto-barcode {
 		display: flex;
 		justify-content: center;
+		margin: 15px 0;
 
 		button {
 			margin-left: 10px;

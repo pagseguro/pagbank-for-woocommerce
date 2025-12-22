@@ -6,7 +6,7 @@
 
 import { __ } from "@wordpress/i18n";
 import type { BoletoInstructionsProps } from "../types";
-import { CopyButton, PaidConfirmation } from "./shared";
+import { BarcodeDisplay, CopyButton, PaidConfirmation } from "./shared";
 
 export const BoletoInstructions = ({
 	isPaid,
@@ -37,7 +37,9 @@ export const BoletoInstructions = ({
 
 			<hr />
 
-			<h3>{__("Opção 2: copie o código de barras", "pagbank-for-woocommerce")}</h3>
+			<h3>
+				{__("Opção 2: escaneie ou copie o código de barras", "pagbank-for-woocommerce")}
+			</h3>
 			<ol>
 				<li>
 					{__(
@@ -45,8 +47,14 @@ export const BoletoInstructions = ({
 						"pagbank-for-woocommerce",
 					)}
 				</li>
-				<li>{__("Cole o código de barras abaixo", "pagbank-for-woocommerce")}</li>
+				<li>
+					{__(
+						"Escaneie o código de barras abaixo ou copie o código",
+						"pagbank-for-woocommerce",
+					)}
+				</li>
 			</ol>
+			<BarcodeDisplay value={boletoBarcode} />
 			<div className="boleto-barcode">
 				<CopyButton value={boletoBarcode} />
 			</div>
