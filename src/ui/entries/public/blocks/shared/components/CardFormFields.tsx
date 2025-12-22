@@ -35,14 +35,13 @@ export const CardFormFields = ({
 			{/* Card Holder */}
 			<div className="pagbank-field pagbank-field-holder">
 				<label htmlFor={`${idPrefix}-holder`}>
-					{__("Cardholder name", "pagbank-for-woocommerce")}
+					{__("Nome do titular", "pagbank-for-woocommerce")}
 				</label>
 				<input
 					type="text"
 					id={`${idPrefix}-holder`}
 					value={holder}
 					onChange={(e) => onHolderChange(e.target.value)}
-					placeholder="John Doe"
 					autoComplete="cc-name"
 					aria-required="true"
 					required
@@ -52,7 +51,7 @@ export const CardFormFields = ({
 			{/* Card Number */}
 			<div className="pagbank-field pagbank-field-number">
 				<label htmlFor={`${idPrefix}-number`}>
-					{__("Card number", "pagbank-for-woocommerce")}
+					{__("Número do cartão", "pagbank-for-woocommerce")}
 				</label>
 				<input
 					type="text"
@@ -72,14 +71,14 @@ export const CardFormFields = ({
 			<div className="pagbank-field-row">
 				<div className="pagbank-field pagbank-field-expiry">
 					<label htmlFor={`${idPrefix}-expiry`}>
-						{__("Expiry date", "pagbank-for-woocommerce")}
+						{__("Validade", "pagbank-for-woocommerce")}
 					</label>
 					<input
 						type="text"
 						id={`${idPrefix}-expiry`}
 						value={expiry}
 						onChange={(e) => onExpiryChange(formatExpiry(e.target.value, expiry))}
-						placeholder="MM/YY"
+						placeholder="MM/AA"
 						autoComplete="cc-exp"
 						inputMode="numeric"
 						maxLength={5}

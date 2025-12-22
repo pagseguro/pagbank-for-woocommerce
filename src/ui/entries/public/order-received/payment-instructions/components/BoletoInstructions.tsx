@@ -31,7 +31,7 @@ export const BoletoInstructions = ({
 			</ol>
 			<div className="center">
 				<a className="button" target="_blank" href={boletoLinkPdf} rel="noreferrer">
-					{__("Download boleto", "pagbank-for-woocommerce")}
+					{__("Baixar boleto", "pagbank-for-woocommerce")}
 				</a>
 			</div>
 

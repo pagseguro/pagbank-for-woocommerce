@@ -109,7 +109,7 @@ export const calculateFixedInstallmentPlans = (
 			interest_free: true,
 			title: sprintf(
 				/* translators: %1$d: number of installments, %2$s: installment value */
-				__("%1$dx of %2$s interest-free", "pagbank-for-woocommerce"),
+				__("%1$dx de %2$s sem juros", "pagbank-for-woocommerce"),
 				i,
 				formatPrice(displayValue),
 			),
