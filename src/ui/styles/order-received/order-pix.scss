@@ -1,24 +1,20 @@
+/**
+ * Pix Payment Instructions Styles
+ *
+ * @package PagBank_WooCommerce
+ */
+
+@use "../public/mixins" as *;
+@use "../public/variables" as *;
+
 .pagbank-pix {
-	border: 1px solid #e3e3e3;
-	padding: 20px;
-	margin: 20px 0;
+	@include payment-card-base;
 
 	img {
-		max-width: 150px;
-		margin: 0 auto;
-	}
-
-	hr {
-		margin: 20px 0;
-		background-color: #e3e3e3;
+		@include qrcode-image;
 	}
 
 	.pix-copy-and-paste {
-		display: flex;
-		justify-content: center;
-
-		button {
-			margin-left: 10px;
-		}
+		@include copy-paste-container;
 	}
 }

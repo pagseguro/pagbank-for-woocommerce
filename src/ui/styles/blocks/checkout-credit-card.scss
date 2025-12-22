@@ -1,40 +1,51 @@
-// Shared field styles mixin
+/**
+ * Blocks Credit Card Checkout Styles
+ *
+ * @package PagBank_WooCommerce
+ */
+
+@use "variables" as *;
+
+// =============================================================================
+// Shared Field Styles Mixin
+// =============================================================================
+
 @mixin pagbank-field-styles {
 	.pagbank-field {
 		display: flex;
 		flex-direction: column;
-		gap: 0.25rem;
+		gap: $field-gap;
 
 		label {
-			font-size: 0.875rem;
-			font-weight: 500;
-			color: #333;
+			font-size: $field-label-size;
+			font-weight: $field-label-weight;
+			color: $field-label-color;
 		}
 
 		input,
 		select {
 			width: 100%;
-			padding: 0.75rem;
-			border: 1px solid #8c8f94;
-			border-radius: 4px;
-			font-size: 1rem;
+			padding: $field-padding;
+			border: 1px solid $field-border-color;
+			border-radius: $field-border-radius;
+			font-size: $field-font-size;
 			font-family: inherit;
-			background-color: #fff;
-			transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+			background-color: $color-white;
+			transition: border-color $transition-fast, box-shadow $transition-fast;
 
 			&:focus {
 				outline: none;
-				border-color: #2271b1;
-				box-shadow: 0 0 0 1px #2271b1;
+				border-color: $field-focus-color;
+				box-shadow: 0 0 0 1px $field-focus-color;
 			}
 
 			&:disabled {
-				background-color: #f0f0f1;
+				background-color: $field-disabled-bg;
 				cursor: not-allowed;
 			}
 
 			&::placeholder {
-				color: #8c8f94;
+				color: $field-placeholder-color;
 			}
 		}
 
@@ -42,31 +53,39 @@
 			appearance: none;
 			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
 			background-repeat: no-repeat;
-			background-position: right 0.75rem center;
+			background-position: right $field-padding center;
 			padding-right: 2.5rem;
 		}
 	}
 }
 
-// New credit card form
+// =============================================================================
+// Credit Card Form
+// =============================================================================
+
 .pagbank-credit-card-form {
+	// Add margin when followed by save card checkbox
+	&:has(+ .wc-block-components-checkbox.wc-block-components-payment-methods__save-card-info) {
+		margin-bottom: $card-fields-gap;
+	}
+
 	.pagbank-credit-card-description {
-		margin-bottom: 1rem;
-		font-size: 0.875rem;
-		color: #666;
+		margin-bottom: $card-fields-gap;
+		font-size: $card-description-size;
+		color: $card-description-color;
 	}
 
 	.pagbank-credit-card-fields {
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
+		gap: $card-fields-gap;
 	}
 
 	@include pagbank-field-styles;
 
 	.pagbank-field-row {
 		display: flex;
-		gap: 1rem;
+		gap: $card-row-gap;
 
 		.pagbank-field {
 			flex: 1;
@@ -89,11 +108,14 @@
 	}
 }
 
-// Saved card token form
+// =============================================================================
+// Saved Card Token Form
+// =============================================================================
+
 .pagbank-credit-card-saved-token {
-	padding: 1em;
-    box-shadow: inset 0 0 0 1.5px currentColor;
-	border-radius: 4px;
+	padding: $saved-token-padding;
+	box-shadow: inset 0 0 0 1.5px currentColor;
+	border-radius: $field-border-radius;
 
 	@include pagbank-field-styles;
 }

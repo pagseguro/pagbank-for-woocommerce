@@ -1,20 +1,16 @@
 /**
- * Gateway settings styles.
+ * Gateway Settings Styles
  *
  * @package PagBank_WooCommerce
  */
 
 @use "sass:color";
+@use "variables" as *;
 
-// Variables
-$pagbank-primary: #00a651;
-$pagbank-primary-dark: #008f46;
-$pagbank-border: #e0e0e0;
-$pagbank-bg: #f9f9f9;
-$pagbank-text: #1e1e1e;
-$pagbank-text-light: #757575;
+// =============================================================================
+// Animation Keyframes
+// =============================================================================
 
-// Animation keyframes
 @keyframes slideDown {
 	from {
 		opacity: 0;
@@ -43,11 +39,14 @@ $pagbank-text-light: #757575;
 	}
 }
 
-// Gateway settings container
+// =============================================================================
+// Gateway Settings Container
+// =============================================================================
+
 .pagbank-gateway-settings {
-	max-width: 900px;
+	max-width: $admin-max-width;
 	margin: 0 auto;
-	padding: 20px;
+	padding: $admin-card-padding;
 
 	&--loading,
 	&--error {
@@ -55,19 +54,19 @@ $pagbank-text-light: #757575;
 		align-items: center;
 		justify-content: center;
 		min-height: 200px;
-		gap: 12px;
+		gap: $spacing-md;
 		flex-direction: column;
 	}
 
 	&__header {
-		margin-bottom: 24px;
+		margin-bottom: $spacing-xl;
 	}
 
 	&__title-row {
 		display: flex;
 		align-items: center;
-		gap: 12px;
-		margin-bottom: 16px;
+		gap: $spacing-md;
+		margin-bottom: $spacing-base;
 		width: 100%;
 	}
 
@@ -76,18 +75,18 @@ $pagbank-text-light: #757575;
 	}
 
 	&__title {
-		font-size: 24px;
-		font-weight: 600;
-		color: $pagbank-text;
+		font-size: $font-size-xl;
+		font-weight: $font-weight-semibold;
+		color: $admin-text;
 		margin: 0;
 		flex-grow: 1;
 	}
 
 	&__subtitle {
-		font-size: 14px;
-		color: $pagbank-text-light;
-		margin: 4px 0 12px;
-		font-weight: 400;
+		font-size: $font-size-base;
+		color: $admin-text-light;
+		margin: $spacing-xs 0 $spacing-md;
+		font-weight: $font-weight-normal;
 	}
 
 	&__logo {
@@ -97,83 +96,89 @@ $pagbank-text-light: #757575;
 	&__nav {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 4px;
+		gap: $spacing-xs;
 		margin: 0 !important;
-		padding: 12px 16px;
-		border: 2px solid $pagbank-border;
-		border-radius: 8px;
-		background: #fff;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+		padding: $spacing-md $spacing-base;
+		border: 2px solid $admin-border;
+		border-radius: $border-radius-md;
+		background: $color-white;
+		box-shadow: $shadow-sm;
 	}
 
 	&__nav-link {
-		font-size: 13px;
-		color: $pagbank-primary;
+		font-size: $font-size-sm + 1;
+		color: $admin-primary;
 		text-decoration: none;
-		padding: 4px 8px;
-		border-radius: 4px;
-		transition: background-color 0.15s ease, color 0.15s ease;
+		padding: $spacing-xs $spacing-sm;
+		border-radius: $border-radius-sm;
+		transition: background-color $transition-fast, color $transition-fast;
 
 		&:hover {
-			color: $pagbank-primary-dark;
-			background-color: rgba($pagbank-primary, 0.1);
+			color: $admin-primary-hover;
+			background-color: rgba($admin-primary, 0.1);
 		}
 
 		&--current {
-			color: $pagbank-text-light;
+			color: $admin-text-light;
 			cursor: default;
 
 			&:hover {
-				color: $pagbank-text-light;
+				color: $admin-text-light;
 				background-color: transparent;
 			}
 		}
 	}
 
 	&__notice {
-		margin-bottom: 20px;
+		margin-bottom: $admin-card-padding;
 	}
 
 	&__content {
 		display: flex;
 		flex-direction: column;
-		gap: 20px;
+		gap: $admin-card-padding;
 	}
 
 	&__actions {
 		display: flex;
-		gap: 12px;
-		margin-top: 24px;
-		padding-top: 24px;
-		border-top: 1px solid $pagbank-border;
+		gap: $spacing-md;
+		margin-top: $spacing-xl;
+		padding-top: $spacing-xl;
+		border-top: 1px solid $admin-border;
 	}
 }
 
-// Settings card
+// =============================================================================
+// Settings Card
+// =============================================================================
+
 .pagbank-settings-card {
-	border: 1px solid $pagbank-border;
-	border-radius: 8px;
-	background: #fff;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+	border: 1px solid $admin-border;
+	border-radius: $border-radius-md;
+	background: $color-white;
+	box-shadow: $shadow-sm;
 
 	.components-card__header {
-		border-bottom: 1px solid $pagbank-border;
-		padding: 16px 20px;
+		border-bottom: 1px solid $admin-border;
+		padding: $spacing-base $admin-card-padding;
 	}
 
 	&__title {
-		font-size: 16px;
-		font-weight: 600;
-		color: $pagbank-text;
+		font-size: $font-size-lg;
+		font-weight: $font-weight-semibold;
+		color: $admin-text;
 		margin: 0;
 	}
 
 	.components-card__body {
-		padding: 20px;
+		padding: $admin-card-padding;
 	}
 }
 
-// Form field wrapper
+// =============================================================================
+// Form Field Wrapper
+// =============================================================================
+
 .pagbank-form-field {
 	&--auto-width {
 		display: inline-block;
@@ -192,9 +197,12 @@ $pagbank-text-light: #757575;
 	}
 }
 
-// Settings field
+// =============================================================================
+// Settings Field
+// =============================================================================
+
 .pagbank-settings-field {
-	margin-bottom: 20px;
+	margin-bottom: $admin-card-padding;
 
 	&:last-child {
 		margin-bottom: 0;
@@ -206,9 +214,9 @@ $pagbank-text-light: #757575;
 	}
 
 	.components-base-control__help {
-		margin-top: 4px;
-		color: $pagbank-text-light;
-		font-size: 12px;
+		margin-top: $spacing-xs;
+		color: $admin-text-light;
+		font-size: $font-size-sm;
 	}
 
 	.components-toggle-control {
@@ -224,7 +232,10 @@ $pagbank-text-light: #757575;
 	}
 }
 
-// Number stepper component
+// =============================================================================
+// Number Stepper Component
+// =============================================================================
+
 .pagbank-number-stepper-wrapper {
 	display: inline-block;
 	width: auto;
@@ -233,29 +244,29 @@ $pagbank-text-light: #757575;
 .pagbank-number-stepper {
 	display: inline-flex;
 	align-items: center;
-	border: 1px solid $pagbank-border;
-	border-radius: 4px;
-	background: #fff;
+	border: 1px solid $admin-border;
+	border-radius: $border-radius-sm;
+	background: $color-white;
 	overflow: hidden;
 
 	&__button {
-		width: 36px;
-		height: 36px;
-		min-width: 36px;
+		width: $stepper-button-size;
+		height: $stepper-button-size;
+		min-width: $stepper-button-size;
 		padding: 0;
 		border: none;
-		background: $pagbank-bg;
-		color: $pagbank-text;
+		background: $admin-bg;
+		color: $admin-text;
 		cursor: pointer;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		transition: background-color 0.15s ease, color 0.15s ease;
+		transition: background-color $transition-fast, color $transition-fast;
 		border-radius: 0;
 
 		&:hover:not(:disabled) {
-			background: color.adjust($pagbank-bg, $lightness: -5%);
-			color: $pagbank-primary;
+			background: color.adjust($admin-bg, $lightness: -5%);
+			color: $admin-primary;
 		}
 
 		&:disabled {
@@ -264,29 +275,29 @@ $pagbank-text-light: #757575;
 		}
 
 		&--minus {
-			border-right: 1px solid $pagbank-border;
+			border-right: 1px solid $admin-border;
 		}
 
 		&--plus {
-			border-left: 1px solid $pagbank-border;
+			border-left: 1px solid $admin-border;
 		}
 
 		svg {
-			width: 20px;
-			height: 20px;
+			width: $admin-card-padding;
+			height: $admin-card-padding;
 		}
 	}
 
 	&__input {
-		width: 60px;
-		height: 36px;
+		width: $stepper-input-width;
+		height: $stepper-button-size;
 		border: none;
 		text-align: center;
-		font-size: 14px;
-		font-weight: 500;
-		color: $pagbank-text;
+		font-size: $font-size-base;
+		font-weight: $font-weight-medium;
+		color: $admin-text;
 		background: transparent;
-		padding: 0 4px;
+		padding: 0 $spacing-xs;
 		-moz-appearance: textfield;
 
 		&::-webkit-outer-spin-button,
@@ -297,7 +308,7 @@ $pagbank-text-light: #757575;
 
 		&:focus {
 			outline: none;
-			background: rgba($pagbank-primary, 0.05);
+			background: rgba($admin-primary, 0.05);
 		}
 
 		&:disabled {
@@ -307,15 +318,18 @@ $pagbank-text-light: #757575;
 	}
 
 	&__suffix {
-		padding: 0 12px 0 8px;
-		font-size: 13px;
-		color: $pagbank-text-light;
+		padding: 0 $spacing-md 0 $spacing-sm;
+		font-size: $font-size-sm + 1;
+		color: $admin-text-light;
 		white-space: nowrap;
 		border: none;
 	}
 }
 
-// Animated field
+// =============================================================================
+// Animated Field
+// =============================================================================
+
 .pagbank-animated-field {
 	&.entering {
 		animation: slideDown 250ms ease-out forwards;
@@ -330,35 +344,38 @@ $pagbank-text-light: #757575;
 	}
 }
 
+// =============================================================================
 // PagBank Connect
+// =============================================================================
+
 .pagbank-connect {
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
+	gap: $spacing-md;
 
 	&__loading {
 		display: flex;
 		align-items: center;
-		gap: 8px;
-		color: $pagbank-text-light;
+		gap: $spacing-sm;
+		color: $admin-text-light;
 	}
 
 	&__content {
 		position: relative;
 		display: flex;
 		flex-direction: column;
-		gap: 12px;
+		gap: $spacing-md;
 	}
 
 	&__overlay {
 		position: absolute;
 		inset: 0;
-		background: rgba(255, 255, 255, 0.7);
+		background: rgba($color-white, 0.7);
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		z-index: 1;
-		border-radius: 4px;
+		border-radius: $border-radius-sm;
 	}
 
 	&__status {
@@ -367,7 +384,7 @@ $pagbank-text-light: #757575;
 		.components-notice__content {
 			display: flex;
 			align-items: center;
-			gap: 8px;
+			gap: $spacing-sm;
 		}
 	}
 
@@ -383,18 +400,18 @@ $pagbank-text-light: #757575;
 
 	&__account-details-label {
 		display: table-cell;
-		font-weight: 600;
-		color: $pagbank-text;
-		padding: 4px 12px 4px 0;
+		font-weight: $font-weight-semibold;
+		color: $admin-text;
+		padding: $spacing-xs $spacing-md $spacing-xs 0;
 		white-space: nowrap;
 		vertical-align: top;
 	}
 
 	&__account-details-value {
 		display: table-cell;
-		font-size: 13px;
-		color: $pagbank-text-light;
-		padding: 4px 0;
+		font-size: $font-size-sm + 1;
+		color: $admin-text-light;
+		padding: $spacing-xs 0;
 		vertical-align: top;
 		word-break: break-word;
 	}
@@ -409,7 +426,7 @@ $pagbank-text-light: #757575;
 
 	&__actions {
 		display: flex;
-		gap: 8px;
+		gap: $spacing-sm;
 		align-items: center;
 	}
 
@@ -421,18 +438,18 @@ $pagbank-text-light: #757575;
 		margin-left: auto;
 		background: none;
 		border: none;
-		padding: 4px;
+		padding: $spacing-xs;
 		cursor: pointer;
-		color: $pagbank-text-light;
-		border-radius: 4px;
+		color: $admin-text-light;
+		border-radius: $border-radius-sm;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		transition: color 0.15s ease, background-color 0.15s ease;
+		transition: color $transition-fast, background-color $transition-fast;
 
 		&:hover:not(:disabled) {
-			color: $pagbank-primary;
-			background-color: rgba(0, 0, 0, 0.04);
+			color: $admin-primary;
+			background-color: rgba($color-black, 0.04);
 		}
 
 		&:disabled {
@@ -442,52 +459,58 @@ $pagbank-text-light: #757575;
 	}
 }
 
-// Connect modal
+// =============================================================================
+// Connect Modal
+// =============================================================================
+
 .pagbank-connect-modal {
 	.components-modal__content {
-		padding: 20px;
+		padding: $admin-card-padding;
 	}
 
 	&__sandbox {
 		text-align: center;
 
 		p {
-			margin-bottom: 20px;
+			margin-bottom: $admin-card-padding;
 		}
 
 		.components-button {
 			display: inline-flex;
 			align-items: center;
-			gap: 8px;
+			gap: $spacing-sm;
 		}
 	}
 }
 
-// Plan selector
+// =============================================================================
+// Plan Selector
+// =============================================================================
+
 .pagbank-plan-selector {
 	&__intro {
-		margin-bottom: 16px;
-		color: $pagbank-text;
+		margin-bottom: $spacing-base;
+		color: $admin-text;
 
 		a {
-			color: $pagbank-primary;
+			color: $admin-primary;
 
 			&:hover {
-				color: $pagbank-primary-dark;
+				color: $admin-primary-hover;
 			}
 		}
 	}
 
 	&__choose {
-		margin-bottom: 20px;
-		font-weight: 500;
+		margin-bottom: $admin-card-padding;
+		font-weight: $font-weight-medium;
 	}
 
 	&__plans {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
-		gap: 20px;
-		margin-bottom: 24px;
+		gap: $admin-card-padding;
+		margin-bottom: $spacing-xl;
 
 		@media (max-width: 600px) {
 			grid-template-columns: 1fr;
@@ -495,39 +518,39 @@ $pagbank-text-light: #757575;
 	}
 
 	&__plan {
-		border: 1px solid $pagbank-border;
-		border-radius: 8px;
-		padding: 20px;
-		background: $pagbank-bg;
+		border: 1px solid $admin-border;
+		border-radius: $border-radius-md;
+		padding: $admin-card-padding;
+		background: $admin-bg;
 		display: flex;
 		flex-direction: column;
 	}
 
 	&__plan-title {
-		font-size: 16px;
-		font-weight: 600;
-		margin: 0 0 16px;
-		color: $pagbank-text;
+		font-size: $font-size-lg;
+		font-weight: $font-weight-semibold;
+		margin: 0 0 $spacing-base;
+		color: $admin-text;
 	}
 
 	&__plan-features {
 		list-style: none;
 		padding: 0;
-		margin: 0 0 20px;
+		margin: 0 0 $admin-card-padding;
 		flex-grow: 1;
 
 		li {
 			padding: 6px 0;
-			padding-left: 20px;
+			padding-left: $admin-card-padding;
 			position: relative;
-			font-size: 13px;
-			color: $pagbank-text;
+			font-size: $font-size-sm + 1;
+			color: $admin-text;
 
 			&::before {
 				content: "✓";
 				position: absolute;
 				left: 0;
-				color: $pagbank-primary;
+				color: $admin-primary;
 				font-weight: bold;
 			}
 		}
@@ -535,38 +558,45 @@ $pagbank-text-light: #757575;
 
 	&__own-condition {
 		text-align: center;
-		padding-top: 20px;
-		border-top: 1px solid $pagbank-border;
+		padding-top: $admin-card-padding;
+		border-top: 1px solid $admin-border;
 	}
 }
 
-// WordPress components overrides for better appearance
+// =============================================================================
+// WordPress Components Overrides
+// =============================================================================
+
 .pagbank-gateway-settings {
 	// Button styles
 	.components-button.is-primary {
-		background: $pagbank-primary;
-		border-color: $pagbank-primary;
+		background: $admin-primary;
+		border-color: $admin-primary;
 
 		&:hover:not(:disabled) {
-			background: $pagbank-primary-dark;
-			border-color: $pagbank-primary-dark;
+			background: $admin-primary-hover;
+			border-color: $admin-primary-hover;
 		}
 
 		&:focus:not(:disabled) {
-			box-shadow: 0 0 0 2px $pagbank-primary;
+			box-shadow: 0 0 0 2px $admin-primary;
 		}
 	}
 
 	// Toggle styles
 	.components-form-toggle.is-checked .components-form-toggle__track {
-		background: $pagbank-primary;
+		background: $admin-primary;
 	}
 
 	// Card header
 	.components-card__header h2 {
-		font-size: 16px;
+		font-size: $font-size-lg;
 	}
 }
+
+// =============================================================================
+// WooCommerce Form Overrides
+// =============================================================================
 
 // Remove default WooCommerce form styling when React is active
 #pagbank-gateway-settings-root {

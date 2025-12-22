@@ -1,0 +1,41 @@
+/**
+ * Admin SCSS Variables
+ *
+ * Variables specific to admin styles. Imports shared variables.
+ *
+ * @package PagBank_WooCommerce
+ */
+
+@forward "../variables";
+@use "../variables" as *;
+
+// =============================================================================
+// Admin-Specific Aliases
+// =============================================================================
+
+// Primary action color (uses PagBank primary)
+$admin-primary: $pagbank-primary;
+$admin-primary-hover: $pagbank-primary-hover;
+$admin-primary-active: $pagbank-primary-active;
+$admin-primary-contrast: $pagbank-primary-contrast;
+
+// UI colors
+$admin-border: $border-color;
+$admin-bg: $gray-50;
+$admin-text: $gray-800;
+$admin-text-light: $gray-500;
+
+// =============================================================================
+// Layout
+// =============================================================================
+
+$admin-max-width: 900px;
+$admin-card-padding: $spacing-lg;
+
+// =============================================================================
+// Components
+// =============================================================================
+
+// Number stepper
+$stepper-button-size: 36px;
+$stepper-input-width: 60px;

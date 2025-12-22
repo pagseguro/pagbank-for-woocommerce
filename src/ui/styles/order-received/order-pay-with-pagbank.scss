@@ -1,84 +1,42 @@
+/**
+ * Pay with PagBank Payment Instructions Styles
+ *
+ * @package PagBank_WooCommerce
+ */
+
+@use "../public/mixins" as *;
+@use "../public/variables" as *;
+
 .pagbank-pay-with-pagbank {
-	border: 1px solid #e3e3e3;
-	padding: 20px;
-	margin: 20px 0;
+	@include payment-card-base;
 
 	img {
-		max-width: 150px;
-		margin: 0 auto;
-	}
-
-	hr {
-		margin: 20px 0;
-		background-color: #e3e3e3;
+		@include qrcode-image;
 	}
 
 	.pagbank-alert {
-		padding: 12px 16px;
-		border-radius: 4px;
-		margin-bottom: 20px;
-		font-size: 14px;
+		@include alert-base;
 
 		&--warning {
-			background-color: #fff3cd;
-			border: 1px solid #ffc107;
-			color: #856404;
+			background-color: $alert-warning-bg;
+			border: 1px solid $alert-warning-border;
+			color: $alert-warning-text;
 		}
 	}
 
 	.pagbank-copy-and-paste {
-		display: flex;
-		justify-content: center;
-
-		button {
-			margin-left: 10px;
-		}
+		@include copy-paste-container;
 	}
 
 	.pagbank-expiration {
-		text-align: center;
-		font-style: italic;
-		color: #666;
+		@include expiration-text;
 	}
 
 	.pagbank-open-app-button {
-		display: block;
-		width: 100%;
-		padding: 15px 20px;
-		background-color: #00a650;
-		color: #fff;
-		text-align: center;
-		text-decoration: none;
-		font-size: 16px;
-		font-weight: 600;
-		border-radius: 8px;
-		border: none;
-		cursor: pointer;
-		transition: background-color 0.2s ease;
-
-		&:hover,
-		&:focus,
-		&:visited {
-			background-color: #008c44;
-			color: #fff;
-			text-decoration: none;
-		}
-
-		&:active {
-			background-color: #007a3b;
-			text-decoration: none;
-		}
+		@include button-primary;
 
 		&--disabled {
-			background-color: #ccc;
-			color: #666;
-			cursor: not-allowed;
-
-			&:hover,
-			&:focus {
-				background-color: #ccc;
-				color: #666;
-			}
+			@include button-disabled;
 		}
 	}
 }

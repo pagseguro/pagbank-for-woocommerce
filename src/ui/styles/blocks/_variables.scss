@@ -1,0 +1,36 @@
+/**
+ * Blocks SCSS Variables
+ *
+ * Variables specific to WooCommerce Blocks checkout styles.
+ *
+ * @package PagBank_WooCommerce
+ */
+
+@forward "../variables";
+@use "../variables" as *;
+
+// =============================================================================
+// Blocks-Specific Variables
+// =============================================================================
+
+// Form fields
+$field-gap: 0.25rem;
+$field-padding: 0.75rem;
+$field-border-color: $gray-400;
+$field-border-radius: $border-radius-sm;
+$field-font-size: 1rem;
+$field-label-size: 0.875rem;
+$field-label-weight: $font-weight-medium;
+$field-label-color: $gray-700;
+$field-placeholder-color: $gray-400;
+$field-disabled-bg: $gray-100;
+$field-focus-color: $color-info;
+
+// Card form
+$card-description-size: 0.875rem;
+$card-description-color: $gray-600;
+$card-fields-gap: 1rem;
+$card-row-gap: 1rem;
+
+// Saved token
+$saved-token-padding: 1em;

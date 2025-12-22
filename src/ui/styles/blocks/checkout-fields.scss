@@ -1,3 +1,17 @@
+/**
+ * Blocks Checkout Fields Styles
+ *
+ * Custom field styles for WooCommerce Blocks checkout.
+ *
+ * @package PagBank_WooCommerce
+ */
+
+@use "variables" as *;
+
+// =============================================================================
+// Address Form Field Overrides
+// =============================================================================
+
 @container (min-width: 700px) {
 	.wc-block-checkout__shipping-fields,
 	.wc-block-checkout__billing-fields {
@@ -9,7 +23,11 @@
 	}
 }
 
+// =============================================================================
+// Payment Method Label
+// =============================================================================
+
 .pagbank-block-label {
 	display: flex;
-	gap: 1em;
+	gap: $card-fields-gap;
 }

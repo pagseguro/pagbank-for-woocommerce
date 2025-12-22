@@ -1,0 +1,138 @@
+/**
+ * Public SCSS Mixins
+ *
+ * Shared mixins for public/frontend styles.
+ *
+ * @package PagBank_WooCommerce
+ */
+
+@forward "variables";
+@use "variables" as *;
+
+// =============================================================================
+// Payment Instructions Card
+// =============================================================================
+
+/// Base styles for payment instruction cards
+@mixin payment-card-base {
+	border: 1px solid $card-border;
+	padding: $card-padding;
+	margin: $card-margin;
+
+	hr {
+		margin: $card-hr-margin;
+		background-color: $card-border;
+	}
+}
+
+/// QR code image styles
+@mixin qrcode-image {
+	max-width: $qrcode-max-width;
+	margin: 0 auto;
+}
+
+/// Copy/paste button container
+@mixin copy-paste-container {
+	display: flex;
+	justify-content: center;
+
+	button {
+		margin-left: 10px;
+	}
+}
+
+// =============================================================================
+// Alerts
+// =============================================================================
+
+/// Base alert styles
+@mixin alert-base {
+	padding: $alert-padding;
+	border-radius: $alert-border-radius;
+	margin-bottom: $spacing-lg;
+	font-size: $alert-font-size;
+}
+
+/// Warning alert variant
+@mixin alert-warning {
+	@include alert-base;
+	background-color: $alert-warning-bg;
+	border: 1px solid $alert-warning-border;
+	color: $alert-warning-text;
+}
+
+// =============================================================================
+// Buttons
+// =============================================================================
+
+/// Primary action button
+@mixin button-primary {
+	display: block;
+	width: 100%;
+	padding: $button-padding;
+	background-color: $public-primary;
+	color: $public-primary-contrast;
+	text-align: center;
+	text-decoration: none !important;
+	font-size: $button-font-size;
+	font-weight: $button-font-weight;
+	border-radius: $button-border-radius;
+	border: none;
+	cursor: pointer;
+	transition: background-color $transition-base;
+
+	&:hover,
+	&:focus,
+	&:visited {
+		background-color: $public-primary-hover;
+		color: $public-primary-contrast;
+		text-decoration: none;
+	}
+
+	&:active {
+		background-color: $public-primary-active;
+		text-decoration: none;
+	}
+}
+
+/// Disabled button state
+@mixin button-disabled {
+	background-color: $disabled-bg;
+	color: $disabled-text;
+	cursor: not-allowed;
+
+	&:hover,
+	&:focus {
+		background-color: $disabled-bg;
+		color: $disabled-text;
+	}
+}
+
+// =============================================================================
+// Utilities
+// =============================================================================
+
+/// Center text
+@mixin text-center {
+	text-align: center;
+}
+
+/// Expiration text style
+@mixin expiration-text {
+	text-align: center;
+	font-style: italic;
+	color: $public-text-light;
+}
+
+/// Barcode display container
+@mixin barcode-display {
+	display: flex;
+	justify-content: center;
+	margin: $barcode-margin;
+	overflow-x: auto;
+
+	svg {
+		max-width: 100%;
+		height: auto;
+	}
+}

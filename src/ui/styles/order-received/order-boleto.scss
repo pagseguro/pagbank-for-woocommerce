@@ -1,36 +1,25 @@
+/**
+ * Boleto Payment Instructions Styles
+ *
+ * @package PagBank_WooCommerce
+ */
+
+@use "../public/mixins" as *;
+@use "../public/variables" as *;
+
 .pagbank-boleto {
-	border: 1px solid #e3e3e3;
-	padding: 20px;
-	margin: 20px 0;
+	@include payment-card-base;
 
 	.center {
-		text-align: center;
-	}
-
-	hr {
-		margin: 20px 0;
-		background-color: #e3e3e3;
+		@include text-center;
 	}
 
 	.pagbank-barcode-display {
-		display: flex;
-		justify-content: center;
-		margin: 15px 0;
-		overflow-x: auto;
-
-		svg {
-			max-width: 100%;
-			height: auto;
-		}
+		@include barcode-display;
 	}
 
 	.boleto-barcode {
-		display: flex;
-		justify-content: center;
-		margin: 15px 0;
-
-		button {
-			margin-left: 10px;
-		}
+		@include copy-paste-container;
+		margin: $barcode-margin;
 	}
 }

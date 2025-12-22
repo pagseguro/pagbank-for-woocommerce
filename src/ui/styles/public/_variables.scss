@@ -1,0 +1,64 @@
+/**
+ * Public SCSS Variables
+ *
+ * Variables specific to public/frontend styles. Imports shared variables.
+ *
+ * @package PagBank_WooCommerce
+ */
+
+@forward "../variables";
+@use "../variables" as *;
+
+// =============================================================================
+// Public-Specific Aliases
+// =============================================================================
+
+// Primary action color (uses PagBank primary)
+$public-primary: $pagbank-primary;
+$public-primary-hover: $pagbank-primary-hover;
+$public-primary-active: $pagbank-primary-active;
+$public-primary-contrast: $pagbank-primary-contrast;
+
+// UI colors
+$public-border: $border-color;
+$public-text: $gray-700;
+$public-text-light: $gray-600;
+$public-text-muted: $gray-400;
+
+// =============================================================================
+// Payment Instructions Card
+// =============================================================================
+
+$card-border: $border-color;
+$card-padding: $spacing-lg;
+$card-margin: $spacing-lg 0;
+$card-hr-margin: $spacing-lg 0;
+
+// =============================================================================
+// Alerts
+// =============================================================================
+
+$alert-padding: $spacing-md $spacing-base;
+$alert-border-radius: $border-radius-sm;
+$alert-font-size: $font-size-base;
+
+// Warning alert
+$alert-warning-bg: $color-warning-bg;
+$alert-warning-border: $color-warning-border;
+$alert-warning-text: $color-warning-text;
+
+// =============================================================================
+// Buttons
+// =============================================================================
+
+$button-padding: 15px $spacing-lg;
+$button-border-radius: $border-radius-md;
+$button-font-size: $font-size-lg;
+$button-font-weight: $font-weight-semibold;
+
+// =============================================================================
+// QR Code / Barcode
+// =============================================================================
+
+$qrcode-max-width: 150px;
+$barcode-margin: 15px 0;

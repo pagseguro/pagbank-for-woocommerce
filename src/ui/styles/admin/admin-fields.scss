@@ -1,12 +1,24 @@
+/**
+ * Admin Fields Styles (Legacy Connect Modal)
+ *
+ * @package PagBank_WooCommerce
+ */
+
+@use "variables" as *;
+
+// =============================================================================
+// Connect Modal (Legacy)
+// =============================================================================
+
 .pagbank-connect-modal {
 	position: fixed;
-	z-index: 99999;
+	z-index: $z-index-modal;
 	left: 0;
 	top: 0;
 	width: 100%;
 	height: 100%;
 	overflow: auto;
-	background-color: rgba(0, 0, 0, 0.4);
+	background-color: $shadow-overlay;
 
 	&.hidden {
 		display: none;
@@ -19,35 +31,35 @@
 
 	table {
 		width: 100%;
-		margin: 20px 0;
-		border: 1px solid #e3e3e3;
+		margin: $admin-card-padding 0;
+		border: 1px solid $admin-border;
 		border-collapse: collapse;
 
 		th,
 		td {
-			border: 1px solid #e3e3e3;
+			border: 1px solid $admin-border;
 			padding: 10px;
 			text-align: center;
 		}
 
 		td {
-			padding: 20px 10px;
+			padding: $admin-card-padding 10px;
 		}
 
 		ul {
 			list-style: disc;
 			margin-top: 0;
-			margin-left: 20px;
+			margin-left: $admin-card-padding;
 			font-size: 0.8rem;
 			text-align: left;
 		}
 
 		button {
 			text-decoration: none;
-			background-color: #1bb99a;
+			background-color: $admin-primary;
 			display: inline-block;
 			padding: 10px 15px;
-			color: #fff;
+			color: $color-white;
 			border-radius: 3px;
 			font-size: 1.2rem;
 			font-weight: 300;
@@ -57,7 +69,7 @@
 			cursor: pointer;
 
 			&:hover:not(:disabled) {
-				background-color: #1a947b;
+				background-color: $admin-primary-hover;
 			}
 
 			&:disabled {
@@ -75,11 +87,11 @@
 	.pagbank-connect-modal-own-condition button {
 		border: none;
 		background-color: transparent;
-		color: #1bb99a;
+		color: $admin-primary;
 		cursor: pointer;
 
 		&:hover:not(:disabled) {
-			color: #1a947b;
+			color: $admin-primary-hover;
 		}
 
 		&:disabled {
@@ -90,10 +102,10 @@
 
 	.pagbank-connect-modal-condition-sandbox button {
 		text-decoration: none;
-		background-color: #1bb99a;
+		background-color: $admin-primary;
 		display: inline-block;
 		padding: 10px 15px;
-		color: #fff;
+		color: $color-white;
 		border-radius: 3px;
 		font-size: 1.2rem;
 		font-weight: 300;
@@ -103,7 +115,7 @@
 		cursor: pointer;
 
 		&:hover:not(:disabled) {
-			background-color: #1a947b;
+			background-color: $admin-primary-hover;
 		}
 
 		&:disabled {
@@ -113,13 +125,17 @@
 	}
 }
 
+// =============================================================================
+// Modal Components
+// =============================================================================
+
 .pagbank-connect-modal-close-button {
 	background-color: transparent;
 	border: none;
 	position: absolute;
 	right: 0;
 	top: 0;
-	font-size: 30px;
+	font-size: $spacing-2xl;
 	cursor: pointer;
 
 	&:hover {
@@ -137,8 +153,8 @@
 .pagbank-connect-modal-content {
 	width: 100%;
 	max-width: 600px;
-	padding: 30px;
+	padding: $spacing-2xl;
 	border-radius: 5px;
-	background-color: #fff;
+	background-color: $color-white;
 	position: relative;
 }

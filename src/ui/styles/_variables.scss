@@ -1,0 +1,174 @@
+/**
+ * Shared SCSS Variables
+ *
+ * Common variables used across admin and public styles.
+ *
+ * @package PagBank_WooCommerce
+ */
+
+@use "sass:color";
+
+// =============================================================================
+// Utility Functions
+// =============================================================================
+
+/// Darkens a color by a percentage (for hover states)
+/// @param {Color} $color - The base color
+/// @param {Number} $amount - Amount to darken (0-100)
+/// @return {Color} - Darkened color
+@function darker($clr, $amount: 10%) {
+	@return color.adjust($clr, $lightness: -$amount);
+}
+
+/// Lightens a color by a percentage
+/// @param {Color} $color - The base color
+/// @param {Number} $amount - Amount to lighten (0-100)
+/// @return {Color} - Lightened color
+@function lighter($clr, $amount: 10%) {
+	@return color.adjust($clr, $lightness: $amount);
+}
+
+/// Creates a disabled version of a color (desaturated and lightened)
+/// @param {Color} $color - The base color
+/// @return {Color} - Disabled color
+@function disabled($clr) {
+	@return color.adjust($clr, $saturation: -60%, $lightness: 20%);
+}
+
+/// Gets the appropriate contrast color (black or white) for a background
+/// @param {Color} $background - The background color
+/// @return {Color} - Either black or white for best contrast
+@function contrast-color($background) {
+	$luminance: color.channel($background, "lightness", $space: hsl);
+	@if $luminance > 55% {
+		@return #1e1e1e; // Dark text for light backgrounds
+	} @else {
+		@return #fff; // Light text for dark backgrounds
+	}
+}
+
+// =============================================================================
+// Brand Colors - PagBank
+// =============================================================================
+
+// Primary - Mountain Meadow (Teal/Green)
+$pagbank-primary: #1bb99a;
+$pagbank-primary-hover: darker($pagbank-primary, 12%);
+$pagbank-primary-active: darker($pagbank-primary, 18%);
+$pagbank-primary-disabled: disabled($pagbank-primary);
+$pagbank-primary-contrast: contrast-color($pagbank-primary);
+
+// Secondary - Aqua Island (Light Teal)
+$pagbank-secondary: #a6dbd9;
+$pagbank-secondary-hover: darker($pagbank-secondary, 10%);
+$pagbank-secondary-active: darker($pagbank-secondary, 15%);
+$pagbank-secondary-disabled: disabled($pagbank-secondary);
+$pagbank-secondary-contrast: contrast-color($pagbank-secondary);
+
+// Tertiary - Starship (Yellow)
+$pagbank-tertiary: #f5de3e;
+$pagbank-tertiary-hover: darker($pagbank-tertiary, 10%);
+$pagbank-tertiary-active: darker($pagbank-tertiary, 15%);
+$pagbank-tertiary-disabled: disabled($pagbank-tertiary);
+$pagbank-tertiary-contrast: contrast-color($pagbank-tertiary);
+
+// =============================================================================
+// Neutral Colors
+// =============================================================================
+
+$color-white: #fff;
+$color-black: #000;
+
+// Grays
+$gray-50: #f9f9f9;
+$gray-100: #f0f0f1;
+$gray-200: #e3e3e3;
+$gray-300: #ccc;
+$gray-400: #8c8f94;
+$gray-500: #757575;
+$gray-600: #666;
+$gray-700: #333;
+$gray-800: #1e1e1e;
+
+// =============================================================================
+// Semantic Colors
+// =============================================================================
+
+// Warning (Yellow)
+$color-warning-bg: #fff3cd;
+$color-warning-border: #ffc107;
+$color-warning-text: #856404;
+
+// Success (Green) - uses PagBank primary
+$color-success: $pagbank-primary;
+$color-success-hover: $pagbank-primary-hover;
+
+// Error (Red)
+$color-error: #d63638;
+$color-error-hover: darker($color-error, 10%);
+
+// Info (Blue - WordPress)
+$color-info: #2271b1;
+$color-info-hover: darker($color-info, 10%);
+
+// =============================================================================
+// Spacing
+// =============================================================================
+
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 12px;
+$spacing-base: 16px;
+$spacing-lg: 20px;
+$spacing-xl: 24px;
+$spacing-2xl: 30px;
+
+// =============================================================================
+// Border
+// =============================================================================
+
+$border-color: $gray-200;
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+
+// =============================================================================
+// Typography
+// =============================================================================
+
+$font-size-xs: 11px;
+$font-size-sm: 12px;
+$font-size-base: 14px;
+$font-size-lg: 16px;
+$font-size-xl: 24px;
+
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+
+// =============================================================================
+// Transitions
+// =============================================================================
+
+$transition-fast: 0.15s ease;
+$transition-base: 0.2s ease;
+
+// =============================================================================
+// Z-Index
+// =============================================================================
+
+$z-index-modal: 99999;
+
+// =============================================================================
+// Shadows
+// =============================================================================
+
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+$shadow-overlay: rgba(0, 0, 0, 0.4);
+
+// =============================================================================
+// Disabled States
+// =============================================================================
+
+$disabled-opacity: 0.6;
+$disabled-bg: $gray-300;
+$disabled-text: $gray-600;
