@@ -199,14 +199,8 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 			// Update status to on-hold.
 			$order->update_status( 'on-hold', __( 'Aguardando pagamento via PagBank.', 'pagbank-for-woocommerce' ) );
 
-			// For mobile, redirect to deeplink.
-			if ( $is_mobile && ! empty( $response['deep_links'][0]['url'] ) ) {
-				return array(
-					'result'   => 'success',
-					'redirect' => $response['deep_links'][0]['url'],
-				);
-			}
-
+			// Always redirect to order-received page, even for mobile.
+			// Mobile users will see a button to open PagBank app.
 			return array(
 				'result'   => 'success',
 				'redirect' => $return_url,

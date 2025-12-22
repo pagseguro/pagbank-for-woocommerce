@@ -27,6 +27,7 @@ export interface PayWithPagBankInstructionsProps extends BaseInstructionsProps {
 	qrCodeImage: string;
 	qrCodeText: string;
 	expirationDate: string;
+	deeplinkUrl?: string;
 }
 
 export interface OrderStatusResponse {
