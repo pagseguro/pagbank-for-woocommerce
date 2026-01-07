@@ -141,6 +141,68 @@ class ConnectAjaxApi {
 	}
 
 	/**
+	 * Get OAuth error message from error code.
+	 *
+	 * @param string $error_code The error code from PagBank.
+	 *
+	 * @return string The error message.
+	 */
+	private function get_oauth_error_message( string $error_code ): string {
+		$error_messages = array(
+			'invalid_request'           => __( 'A requisição é inválida. Por favor, tente novamente. Caso o problema persista, entre em contato com o suporte.', 'pagbank-for-woocommerce' ),
+			'unauthorized_client'       => __( 'A aplicação não está autorizada. Por favor, entre em contato com o suporte.', 'pagbank-for-woocommerce' ),
+			'access_denied'             => __( 'Acesso negado. Você precisa autorizar o acesso para continuar.', 'pagbank-for-woocommerce' ),
+			'unsupported_response_type' => __( 'Tipo de resposta não suportado. Por favor, entre em contato com o suporte.', 'pagbank-for-woocommerce' ),
+			'invalid_scope'             => __( 'Escopo inválido. Por favor, entre em contato com o suporte.', 'pagbank-for-woocommerce' ),
+			'server_error'              => __( 'Erro no servidor do PagBank. Por favor, tente novamente mais tarde.', 'pagbank-for-woocommerce' ),
+			'temporarily_unavailable'   => __( 'O serviço está temporariamente indisponível. Por favor, tente novamente mais tarde.', 'pagbank-for-woocommerce' ),
+		);
+
+		return $error_messages[ $error_code ] ?? __( 'Ocorreu um erro durante a autenticação. Por favor, tente novamente.', 'pagbank-for-woocommerce' );
+	}
+
+	/**
+	 * Output script to close popup and optionally send error to opener.
+	 *
+	 * @param string|null $error_message The error message to send to opener, or null for success.
+	 */
+	private function output_oauth_close_script( ?string $error_message = null ): void {
+		$message = array(
+			'type'    => 'pagbank_oauth_callback',
+			'success' => null === $error_message,
+		);
+
+		if ( null !== $error_message ) {
+			$message['error'] = $error_message;
+		}
+
+		$json_message = wp_json_encode( $message );
+
+		echo '<script>';
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON is safely encoded by wp_json_encode.
+		echo 'if (window.opener) { window.opener.postMessage(' . $json_message . ', "*"); }';
+		echo 'window.close();';
+		echo '</script>';
+	}
+
+	/**
+	 * Log OAuth error.
+	 *
+	 * @param string               $message The error message.
+	 * @param array<string, mixed> $context Additional context data.
+	 */
+	private function log_oauth_error( string $message, array $context = array() ): void {
+		$logger = wc_get_logger();
+		$logger->error(
+			$message,
+			array_merge(
+				array( 'source' => 'pagbank_oauth' ),
+				$context
+			)
+		);
+	}
+
+	/**
 	 * Oauth callback response.
 	 *
 	 * Will output a window.close() script to close the popup.
@@ -155,8 +217,35 @@ class ConnectAjaxApi {
 			wp_die( 'Invalid nonce' );
 		}
 
+		// Handle OAuth errors from PagBank.
+		if ( isset( $_GET['error'] ) ) {
+			$error_code        = sanitize_text_field( wp_unslash( $_GET['error'] ) );
+			$error_description = isset( $_GET['error_description'] ) ? sanitize_text_field( wp_unslash( $_GET['error_description'] ) ) : '';
+			$error_message     = $this->get_oauth_error_message( $error_code );
+
+			$this->log_oauth_error(
+				'OAuth error from PagBank',
+				array(
+					'error_code'        => $error_code,
+					'error_description' => $error_description,
+					'callback_url'      => isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '',
+				)
+			);
+
+			$this->output_oauth_close_script( $error_message );
+			wp_die();
+		}
+
 		if ( ! isset( $_GET['code'] ) ) {
-			wp_die( 'Missing code' );
+			$this->log_oauth_error(
+				'OAuth callback missing code parameter',
+				array(
+					'callback_url' => isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '',
+				)
+			);
+
+			$this->output_oauth_close_script( __( 'Código de autorização não recebido. Por favor, tente novamente.', 'pagbank-for-woocommerce' ) );
+			wp_die();
 		}
 
 		$environment = isset( $_GET['environment'] ) && 'production' === $_GET['environment'] ? 'production' : 'sandbox';
@@ -169,15 +258,33 @@ class ConnectAjaxApi {
 		$data         = $api->get_access_token_from_oauth_code( $callback_url, $oauth_code );
 
 		if ( is_wp_error( $data ) ) {
-			wp_die( esc_html( __( 'Erro ao autorizar a aplicação', 'pagbank-for-woocommerce' ) ) );
-			return;
+			$this->log_oauth_error(
+				'Failed to exchange OAuth code for access token',
+				array(
+					'error_code'    => $data->get_error_code(),
+					'error_message' => $data->get_error_message(),
+					'error_data'    => $data->get_error_data(),
+				)
+			);
+
+			$this->output_oauth_close_script( __( 'Erro ao autorizar a aplicação. Por favor, tente novamente.', 'pagbank-for-woocommerce' ) );
+			wp_die();
 		}
 
 		$public_key = $api->get_public_key( $data['access_token'] );
 
 		if ( is_wp_error( $public_key ) ) {
-			wp_die( esc_html( __( 'Erro ao obter a public key', 'pagbank-for-woocommerce' ) ) );
-			return;
+			$this->log_oauth_error(
+				'Failed to get public key',
+				array(
+					'error_code'    => $public_key->get_error_code(),
+					'error_message' => $public_key->get_error_message(),
+					'error_data'    => $public_key->get_error_data(),
+				)
+			);
+
+			$this->output_oauth_close_script( __( 'Erro ao obter a chave pública. Por favor, tente novamente.', 'pagbank-for-woocommerce' ) );
+			wp_die();
 		}
 
 		$data['public_key'] = $public_key['public_key'];
@@ -193,7 +300,7 @@ class ConnectAjaxApi {
 
 		$connect->save( $data );
 
-		echo '<script>window.close();</script>';
+		$this->output_oauth_close_script();
 		wp_die();
 	}
 }

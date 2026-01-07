@@ -78,6 +78,8 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 					throw new Error(__("URL de autorização inválida", "pagbank-for-woocommerce"));
 				}
 
+				console.info("OAuth URL", data.oauth_url);
+
 				// Open OAuth popup centered on screen
 				const popupWidth = 600;
 				const popupHeight = 700;
@@ -99,13 +101,39 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 					);
 				}
 
-				// Check for popup close
+				let oauthError: string | null = null;
+
+				// Listen for postMessage from popup.
+				const messageHandler = (event: MessageEvent): void => {
+					const data = event.data as {
+						type?: string;
+						success?: boolean;
+						error?: string;
+					};
+
+					if (data?.type !== "pagbank_oauth_callback") {
+						return;
+					}
+
+					if (!data.success && data.error) {
+						oauthError = data.error;
+					}
+				};
+
+				window.addEventListener("message", messageHandler);
+
+				// Check for popup close.
 				const checkPopup = setInterval(() => {
 					if (popup.closed) {
 						clearInterval(checkPopup);
+						window.removeEventListener("message", messageHandler);
+
+						if (oauthError) {
+							setConnectError(oauthError);
+						}
+
 						setIsConnecting(false);
 						setIsModalOpen(false);
-						// Refresh status after popup closes
 						refresh();
 					}
 				}, 500);
