@@ -36,6 +36,7 @@ class PaymentGateways {
 		'pagbank_pay_with_pagbank',
 		'pagbank_google_pay',
 		'pagbank_apple_pay',
+		'pagbank_checkout',
 	);
 
 	/**
@@ -89,6 +90,7 @@ class PaymentGateways {
 		$methods[] = 'PagBank_WooCommerce\Gateways\PayWithPagBankGateway';
 		$methods[] = 'PagBank_WooCommerce\Gateways\GooglePayPaymentGateway';
 		$methods[] = 'PagBank_WooCommerce\Gateways\ApplePayPaymentGateway';
+		$methods[] = 'PagBank_WooCommerce\Gateways\CheckoutPaymentGateway';
 
 		return $methods;
 	}

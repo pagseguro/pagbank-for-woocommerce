@@ -58,6 +58,7 @@ export const entries: Record<string, string> = {
 	"public/blocks/checkout-google-pay":
 		"src/ui/entries/public/blocks/checkout-google-pay/index.tsx",
 	"public/blocks/checkout-apple-pay": "src/ui/entries/public/blocks/checkout-apple-pay/index.tsx",
+	"public/blocks/checkout-checkout": "src/ui/entries/public/blocks/checkout-checkout/index.tsx",
 };
 
 interface BuildConfigOptions {

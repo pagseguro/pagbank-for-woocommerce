@@ -11,6 +11,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ApplePaySettingsForm } from "./components/apple-pay";
 import { BoletoSettingsForm } from "./components/boleto";
+import { CheckoutSettingsForm } from "./components/checkout";
 import { CreditCardSettingsForm } from "./components/credit-card";
 import { DebitCardSettingsForm } from "./components/debit-card";
 import { GooglePaySettingsForm } from "./components/google-pay";
@@ -34,6 +35,7 @@ const GATEWAY_TITLES: Record<GatewayId, string> = {
 	pagbank_pay_with_pagbank: __("Pague com PagBank", "pagbank-for-woocommerce"),
 	pagbank_google_pay: __("Google Pay", "pagbank-for-woocommerce"),
 	pagbank_apple_pay: __("Apple Pay", "pagbank-for-woocommerce"),
+	pagbank_checkout: __("Checkout PagBank", "pagbank-for-woocommerce"),
 };
 
 const ALL_GATEWAYS: GatewayId[] = [
@@ -44,6 +46,7 @@ const ALL_GATEWAYS: GatewayId[] = [
 	"pagbank_pay_with_pagbank",
 	"pagbank_google_pay",
 	"pagbank_apple_pay",
+	"pagbank_checkout",
 ];
 
 export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
@@ -187,6 +190,8 @@ export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 				return <GooglePaySettingsForm />;
 			case "pagbank_apple_pay":
 				return <ApplePaySettingsForm />;
+			case "pagbank_checkout":
+				return <CheckoutSettingsForm />;
 			default:
 				return (
 					<Notice status="error" isDismissible={false}>

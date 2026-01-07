@@ -380,6 +380,53 @@ class Api {
 	}
 
 	/**
+	 * Create checkout.
+	 *
+	 * @param array $data The checkout data.
+	 *
+	 * @return array|WP_Error The checkout data.
+	 */
+	public function create_checkout( $data ) {
+		$url = $this->get_api_url( 'checkouts' );
+
+		$body = $this->json_encode( $data );
+
+		$headers = array(
+			'Authorization' => "Bearer " . $this->connect->get_access_token(),
+			'Content-Type'  => 'application/json',
+		);
+
+		$this->log_api_request( 'POST', $url, $data, $headers );
+
+		$response = $this->request(
+			$url,
+			array(
+				'method'  => 'POST',
+				'headers' => $headers,
+				'body'    => $body,
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			$this->log_api_request_error( $response );
+
+			return $response;
+		}
+
+		$response_code         = wp_remote_retrieve_response_code( $response );
+		$response_body         = wp_remote_retrieve_body( $response );
+		$decoded_response_body = json_decode( $response_body, true );
+
+		$this->log_api_response( $response_code, $response_body );
+
+		if ( 201 !== $response_code ) {
+			return new WP_Error( 'pagbank_checkout_creation_failed', 'PagBank checkout creation failed', $decoded_response_body );
+		}
+
+		return $decoded_response_body;
+	}
+
+	/**
 	 * Refund an order.
 	 *
 	 * @param string $charge_id     The order ID.

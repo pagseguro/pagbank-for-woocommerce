@@ -17,6 +17,7 @@ export const gatewayIdSchema = z.enum([
 	"pagbank_pay_with_pagbank",
 	"pagbank_google_pay",
 	"pagbank_apple_pay",
+	"pagbank_checkout",
 ]);
 
 // Installment options (1-12 or 1-18 with feature flag)
@@ -89,6 +90,18 @@ export const googlePaySettingsSchema = baseGatewaySettingsSchema;
 // Apple Pay settings schema (same as base)
 export const applePaySettingsSchema = baseGatewaySettingsSchema;
 
+// Checkout PagBank settings schema
+export const checkoutSettingsSchema = z
+	.object({
+		enabled: yesNoSchema,
+		environment: environmentSchema,
+		title: z.string().min(1, "Título é obrigatório"),
+		description: optionalString,
+		logs_enabled: yesNoSchema,
+		expiration_minutes: z.string().catch("120"),
+	})
+	.passthrough();
+
 // Union type for all gateway settings
 export const gatewaySettingsSchema = z.union([
 	creditCardSettingsSchema,
@@ -98,6 +111,7 @@ export const gatewaySettingsSchema = z.union([
 	payWithPagBankSettingsSchema,
 	googlePaySettingsSchema,
 	applePaySettingsSchema,
+	checkoutSettingsSchema,
 ]);
 
 // Type exports inferred from schemas
@@ -112,6 +126,7 @@ export type BoletoSettings = z.infer<typeof boletoSettingsSchema>;
 export type PayWithPagBankSettings = z.infer<typeof payWithPagBankSettingsSchema>;
 export type GooglePaySettings = z.infer<typeof googlePaySettingsSchema>;
 export type ApplePaySettings = z.infer<typeof applePaySettingsSchema>;
+export type CheckoutSettings = z.infer<typeof checkoutSettingsSchema>;
 export type GatewaySettings = z.infer<typeof gatewaySettingsSchema>;
 
 // Helper function to get schema by gateway ID
@@ -131,6 +146,8 @@ export const getSchemaByGatewayId = (gatewayId: GatewayId) => {
 			return googlePaySettingsSchema;
 		case "pagbank_apple_pay":
 			return applePaySettingsSchema;
+		case "pagbank_checkout":
+			return checkoutSettingsSchema;
 	}
 };
 

@@ -14,6 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 use Carbon\Carbon;
 use Exception;
 use PagBank_WooCommerce\Gateways\BoletoPaymentGateway;
+use PagBank_WooCommerce\Gateways\CheckoutPaymentGateway;
 use PagBank_WooCommerce\Gateways\CreditCardPaymentGateway;
 use PagBank_WooCommerce\Gateways\DebitCardPaymentGateway;
 use PagBank_WooCommerce\Gateways\GooglePayPaymentGateway;
@@ -348,6 +349,88 @@ class ApiHelpers {
 		}
 
 		return apply_filters( 'pagbank_pay_with_pagbank_payment_data', $data, $order, $gateway );
+	}
+
+	/**
+	 * Get Checkout PagBank api data.
+	 *
+	 * @param CheckoutPaymentGateway $gateway Gateway.
+	 * @param WC_Order               $order Order.
+	 * @param int                    $expiration_in_minutes Expiration in minutes.
+	 * @param string                 $return_url Return URL after payment.
+	 *
+	 * @return array
+	 */
+	public static function get_checkout_api_data( CheckoutPaymentGateway $gateway, WC_Order $order, int $expiration_in_minutes, string $return_url ) {
+		$password = wp_generate_password( 30, false );
+
+		$data = array(
+			'reference_id'              => self::get_order_reference_id_data( $order, $password ),
+			'items'                     => self::get_order_items_api_data( $order ),
+			'customer'                  => self::get_order_customer_api_data( $order ),
+			'expiration_date'           => Carbon::now()->addMinutes( $expiration_in_minutes )->toAtomString(),
+			'redirect_url'              => $return_url,
+			'return_url'                => $return_url,
+			'notification_urls'         => array(
+				WebhookHandler::get_webhook_url(),
+			),
+			'payment_notification_urls' => array(
+				WebhookHandler::get_webhook_url(),
+			),
+			'metadata'                  => self::get_order_metadata_api_data( $order, array( 'password' => $password ) ),
+		);
+
+		// Add shipping data if order needs shipping.
+		$shipping_data = self::get_checkout_shipping_api_data( $order );
+		if ( $shipping_data ) {
+			$data['shipping'] = $shipping_data;
+		}
+
+		return apply_filters( 'pagbank_checkout_data', $data, $order, $gateway );
+	}
+
+	/**
+	 * Get shipping data for Checkout PagBank API.
+	 *
+	 * @param WC_Order $order Order.
+	 *
+	 * @return array|null Shipping data or null if no shipping needed.
+	 */
+	private static function get_checkout_shipping_api_data( WC_Order $order ) {
+		// Check if order needs shipping.
+		$needs_shipping = false;
+		foreach ( $order->get_items() as $item ) {
+			$product = $item->get_product();
+			if ( $product && $product->needs_shipping() ) {
+				$needs_shipping = true;
+				break;
+			}
+		}
+
+		// If no shipping needed (virtual products), return null.
+		if ( ! $needs_shipping ) {
+			return null;
+		}
+
+		$shipping_total = (float) $order->get_shipping_total();
+
+		// Determine shipping type based on shipping total.
+		if ( $shipping_total > 0 ) {
+			// Fixed shipping with value.
+			return array(
+				'type'               => 'FIXED',
+				'amount'             => Helpers::format_money_cents( $shipping_total ),
+				'address_modifiable' => false,
+				'address'            => self::get_order_shipping_address_api_data( $order ),
+			);
+		}
+
+		// Free shipping.
+		return array(
+			'type'               => 'FREE',
+			'address_modifiable' => false,
+			'address'            => self::get_order_shipping_address_api_data( $order ),
+		);
 	}
 
 	/**
