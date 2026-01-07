@@ -200,18 +200,20 @@ class Api {
 		);
 		$body = $this->json_encode( $data );
 
+		$headers = array(
+			'Authorization' => 'Pub ' . $applications[ $application_id ]['access_token'],
+			'Content-Type'  => 'application/json',
+		);
+
 		if ( true === Helpers::get_constant_value( 'PAGBANK_LOG_OAUTH_REQUEST' ) ) {
-			$this->log_api_request( 'POST', $url, $data, 'pagbank_oauth' );
+			$this->log_api_request( 'POST', $url, $data, $headers, 'pagbank_oauth' );
 		}
 
 		$response = $this->request(
 			$url,
 			array(
 				'method'  => 'POST',
-				'headers' => array(
-					'Authorization' => 'Pub ' . $applications[ $application_id ]['access_token'],
-					'Content-Type'  => 'application/json',
-				),
+				'headers' => $headers,
 				'body'    => $body,
 			)
 		);
@@ -271,16 +273,19 @@ class Api {
 			'refresh_token' => $refresh_token,
 		);
 		$body = $this->json_encode( $data );
-		$this->log_api_request( 'POST', $url, $data, 'pagbank_oauth' );
+
+		$headers = array(
+			'Authorization' => 'Pub ' . $applications[ $application_id ]['access_token'],
+			'Content-Type'  => 'application/json',
+		);
+
+		$this->log_api_request( 'POST', $url, $data, $headers, 'pagbank_oauth' );
 
 		$response = $this->request(
 			$url,
 			array(
 				'method'  => 'POST',
-				'headers' => array(
-					'Authorization' => 'Pub ' . $applications[ $application_id ]['access_token'],
-					'Content-Type'  => 'application/json',
-				),
+				'headers' => $headers,
 				'body'    => $body,
 			)
 		);
@@ -339,16 +344,18 @@ class Api {
 
 		$body = $this->json_encode( $data );
 
-		$this->log_api_request( 'POST', $url, $data );
+		$headers = array(
+			'Authorization' => $this->connect->get_access_token(),
+			'Content-Type'  => 'application/json',
+		);
+
+		$this->log_api_request( 'POST', $url, $data, $headers );
 
 		$response = $this->request(
 			$url,
 			array(
 				'method'  => 'POST',
-				'headers' => array(
-					'Authorization' => $this->connect->get_access_token(),
-					'Content-Type'  => 'application/json',
-				),
+				'headers' => $headers,
 				'body'    => $body,
 			)
 		);
@@ -390,16 +397,18 @@ class Api {
 		);
 		$body = $this->json_encode( $data );
 
-		$this->log_api_request( 'POST', $url, $data );
+		$headers = array(
+			'Authorization' => $this->connect->get_access_token(),
+			'Content-Type'  => 'application/json',
+		);
+
+		$this->log_api_request( 'POST', $url, $data, $headers );
 
 		$response = $this->request(
 			$url,
 			array(
 				'method'  => 'POST',
-				'headers' => array(
-					'Authorization' => $this->connect->get_access_token(),
-					'Content-Type'  => 'application/json',
-				),
+				'headers' => $headers,
 				'body'    => $body,
 			)
 		);
@@ -452,14 +461,16 @@ class Api {
 			return json_decode( $cached_response, true );
 		}
 
-		$this->log_api_request( 'GET', $url );
+		$headers = array(
+			'Authorization' => $this->connect->get_access_token(),
+			'Content-Type'  => 'application/json',
+		);
+
+		$this->log_api_request( 'GET', $url, null, $headers );
 
 		$args = array(
 			'method'  => 'GET',
-			'headers' => array(
-				'Authorization' => $this->connect->get_access_token(),
-				'Content-Type'  => 'application/json',
-			),
+			'headers' => $headers,
 		);
 
 		$response = $this->request(
@@ -510,16 +521,18 @@ class Api {
 	public function create_3ds_session() {
 		$url = $this->get_3ds_api_url( 'checkout-sdk/sessions' );
 
-		$this->log_api_request( 'POST', $url );
+		$headers = array(
+			'Authorization' => $this->connect->get_access_token(),
+			'Content-Type'  => 'application/json',
+		);
+
+		$this->log_api_request( 'POST', $url, null, $headers );
 
 		$response = $this->request(
 			$url,
 			array(
 				'method'  => 'POST',
-				'headers' => array(
-					'Authorization' => $this->connect->get_access_token(),
-					'Content-Type'  => 'application/json',
-				),
+				'headers' => $headers,
 			)
 		);
 
@@ -555,16 +568,18 @@ class Api {
 	public function get_account_with_token( string $account_id, string $access_token ) {
 		$url = $this->get_api_url( 'accounts/' . $account_id );
 
-		$this->log_api_request( 'GET', $url, null, 'pagbank_oauth' );
+		$headers = array(
+			'Authorization' => $access_token,
+			'Content-Type'  => 'application/json',
+		);
+
+		$this->log_api_request( 'GET', $url, null, $headers, 'pagbank_oauth' );
 
 		$response = $this->request(
 			$url,
 			array(
 				'method'  => 'GET',
-				'headers' => array(
-					'Authorization' => $access_token,
-					'Content-Type'  => 'application/json',
-				),
+				'headers' => $headers,
 			)
 		);
 
@@ -609,16 +624,18 @@ class Api {
 		);
 		$body = $this->json_encode( $data );
 
-		$this->log_api_request( 'POST', $url, $data, 'pagbank_oauth' );
+		$headers = array(
+			'Authorization' => $access_token ?? $this->connect->get_access_token(),
+			'Content-Type'  => 'application/json',
+		);
+
+		$this->log_api_request( 'POST', $url, $data, $headers, 'pagbank_oauth' );
 
 		$response = $this->request(
 			$url,
 			array(
 				'method'  => 'POST',
-				'headers' => array(
-					'Authorization' => $access_token ?? $this->connect->get_access_token(),
-					'Content-Type'  => 'application/json',
-				),
+				'headers' => $headers,
 				'body'    => $body,
 			)
 		);
@@ -664,11 +681,12 @@ class Api {
 	 * @param string       $method  The request method.
 	 * @param string       $url     The request URL.
 	 * @param string|array $body    The request body.
+	 * @param array        $headers The request headers.
 	 * @param string       $log_id  The log ID.
 	 *
 	 * @return void
 	 */
-	private function log_api_request( string $method, string $url, $body = null, string $log_id = null ): void {
+	private function log_api_request( string $method, string $url, $body = null, array $headers = array(), string $log_id = null ): void {
 		$context = array(
 			'method' => $method,
 			'url'    => $url,
@@ -679,6 +697,20 @@ class Api {
 			// Even with the `format_log_entry` filter, the UI breaks the `reference_id` escaped JSON, so we need to remove it from the context.
 			unset( $context['body']['reference_id'] );
 			unset( $context['body']['charges'][0]['reference_id'] );
+		}
+
+		if ( ! empty( $headers ) ) {
+			$safe_log = false !== Helpers::get_constant_value( 'PAGBANK_SAFE_REQUEST_LOG' );
+
+			if ( $safe_log && isset( $headers['Authorization'] ) ) {
+				$headers['Authorization'] = preg_replace(
+					'/^(Bearer|Pub)\s+.+$/i',
+					'$1 *****',
+					$headers['Authorization']
+				);
+			}
+
+			$context['headers'] = $headers;
 		}
 
 		$this->log(
