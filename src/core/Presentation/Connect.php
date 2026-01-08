@@ -39,11 +39,11 @@ class Connect {
 	/**
 	 * Get connect applications.
 	 *
-	 * @param string $environment The environment.
+	 * @param string|null $environment The environment.
 	 *
 	 * @return array
 	 */
-	public static function get_connect_applications( string $environment = null ) {
+	public static function get_connect_applications( ?string $environment = null ) {
 		$applications = array(
 			'fa1553af-5f0c-4ff2-92c3-a0dd8984b6a1' => array(
 				'id'           => 'fa1553af-5f0c-4ff2-92c3-a0dd8984b6a1',

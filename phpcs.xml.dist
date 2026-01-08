@@ -4,7 +4,15 @@
 
 	<!-- Configs -->
 	<config name="minimum_supported_wp_version" value="5.3" />
-	<config name="testVersion" value="7.2-" />
+	<config name="testVersion" value="7.4-" />
+
+	<!-- Custom sniffs for PagBank -->
+	<rule ref="./phpcs-sniffs/PagBankStandard"/>
+
+	<!-- Ensure implicitly nullable parameters are detected (deprecated in PHP 8.4) -->
+	<rule ref="PagBankStandard.FunctionDeclarations.ImplicitlyNullableParam">
+		<type>error</type>
+	</rule>
 
 	<!-- Rules -->
 	<rule ref="WooCommerce-Core" />

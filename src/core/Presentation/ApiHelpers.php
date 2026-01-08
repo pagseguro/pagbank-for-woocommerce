@@ -616,20 +616,20 @@ class ApiHelpers {
 	 *
 	 * @param CreditCardPaymentGateway $gateway Gateway.
 	 * @param WC_Order                 $order Order.
-	 * @param string                   $payment_token Payment token.
-	 * @param string                   $encrypted_card Encrypted card.
-	 * @param string                   $card_holder Card holder.
+	 * @param string|null              $payment_token Payment token.
+	 * @param string|null              $encrypted_card Encrypted card.
+	 * @param string|null              $card_holder Card holder.
 	 * @param bool                     $save_card Save card.
-	 * @param string                   $cvv CVV.
+	 * @param string|null              $cvv CVV.
 	 * @param bool                     $is_subscription Is subscription.
 	 * @param int                      $installments Installments.
-	 * @param array                    $transfer_of_interest_fee Transfer of interest fee.
-	 * @param string                   $threeds_id 3DS authentication ID.
+	 * @param array|null               $transfer_of_interest_fee Transfer of interest fee.
+	 * @param string|null              $threeds_id 3DS authentication ID.
 	 *
 	 * @return array
 	 * @throws Exception Throws exception when card is not valid.
 	 */
-	public static function get_card_payment_data( CreditCardPaymentGateway $gateway, WC_Order $order, string $payment_token = null, string $encrypted_card = null, string $card_holder = null, bool $save_card = false, string $cvv = null, bool $is_subscription = false, int $installments = 1, array $transfer_of_interest_fee = null, string $threeds_id = null ) {
+	public static function get_card_payment_data( CreditCardPaymentGateway $gateway, WC_Order $order, ?string $payment_token = null, ?string $encrypted_card = null, ?string $card_holder = null, bool $save_card = false, ?string $cvv = null, bool $is_subscription = false, int $installments = 1, ?array $transfer_of_interest_fee = null, ?string $threeds_id = null ) {
 		$password = wp_generate_password( 30, false );
 
 		$data = array(
@@ -729,20 +729,20 @@ class ApiHelpers {
 	 *
 	 * @param CreditCardPaymentGateway $gateway Gateway.
 	 * @param WC_Order                 $order Order.
-	 * @param string                   $payment_token Payment token.
-	 * @param string                   $encrypted_card Encrypted card.
-	 * @param string                   $card_holder Card holder.
+	 * @param string|null              $payment_token Payment token.
+	 * @param string|null              $encrypted_card Encrypted card.
+	 * @param string|null              $card_holder Card holder.
 	 * @param bool                     $save_card Save card.
-	 * @param string                   $cvv CVV.
+	 * @param string|null              $cvv CVV.
 	 * @param bool                     $is_subscription Is subscription.
 	 * @param int                      $installments Installments.
-	 * @param array                    $transfer_of_interest_fee Transfer of interest fee.
-	 * @param string                   $threeds_id 3DS authentication ID.
+	 * @param array|null               $transfer_of_interest_fee Transfer of interest fee.
+	 * @param string|null              $threeds_id 3DS authentication ID.
 	 *
 	 * @return array
 	 * @throws Exception Throws exception when card is not valid.
 	 */
-	public static function get_card_payment_data_for_empty_value_subscription( CreditCardPaymentGateway $gateway, WC_Order $order, string $payment_token = null, string $encrypted_card = null, string $card_holder = null, bool $save_card = false, string $cvv = null, bool $is_subscription = false, int $installments = 1, array $transfer_of_interest_fee = null, string $threeds_id = null ) {
+	public static function get_card_payment_data_for_empty_value_subscription( CreditCardPaymentGateway $gateway, WC_Order $order, ?string $payment_token = null, ?string $encrypted_card = null, ?string $card_holder = null, bool $save_card = false, ?string $cvv = null, bool $is_subscription = false, int $installments = 1, ?array $transfer_of_interest_fee = null, ?string $threeds_id = null ) {
 		$data = self::get_card_payment_data( $gateway, $order, $payment_token, $encrypted_card, $card_holder, $save_card, $cvv, $is_subscription, $installments, $transfer_of_interest_fee, $threeds_id );
 
 		$data['items'] = array(

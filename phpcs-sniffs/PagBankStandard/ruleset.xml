@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<ruleset name="PagBankStandard">
+	<description>Custom PHPCS sniffs for PagBank for WooCommerce.</description>
+</ruleset>

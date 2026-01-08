@@ -70,7 +70,7 @@ class Api {
 	 * @param string      $environment The environment to use.
 	 * @param string|null $log_id The log ID.
 	 */
-	public function __construct( string $environment, string $log_id = null ) {
+	public function __construct( string $environment, ?string $log_id = null ) {
 		$this->connect    = new Connect( $environment );
 		$this->is_sandbox = $environment === 'sandbox';
 		$this->log_id     = $log_id;
@@ -659,11 +659,11 @@ class Api {
 	/**
 	 * Get public key.
 	 *
-	 * @param string $access_token The access token.
+	 * @param string|null $access_token The access token.
 	 *
 	 * @return array|WP_Error The public key data.
 	 */
-	public function get_public_key( string $access_token = null ) {
+	public function get_public_key( ?string $access_token = null ) {
 		$url = $this->get_api_url( 'public-keys' );
 
 		$data = array(
@@ -709,12 +709,12 @@ class Api {
 	/**
 	 * Log a message.
 	 *
-	 * @param string $message The message to be logged.
-	 * @param string $log_id  The log ID.
-	 * @param array  $context Additional context data.
-	 * @param string $level   Log level (debug, info, notice, warning, error, critical, alert, emergency).
+	 * @param string      $message The message to be logged.
+	 * @param string|null $log_id  The log ID.
+	 * @param array       $context Additional context data.
+	 * @param string      $level   Log level (debug, info, notice, warning, error, critical, alert, emergency).
 	 */
-	private function log( string $message, string $log_id = null, array $context = array(), string $level = 'debug' ): void {
+	private function log( string $message, ?string $log_id = null, array $context = array(), string $level = 'debug' ): void {
 		$id = $log_id ?? $this->log_id;
 		if ( $id ) {
 			$log_context = array_merge( array( 'source' => $id ), $context );
@@ -725,15 +725,15 @@ class Api {
 	/**
 	 * Log request begin.
 	 *
-	 * @param string       $method  The request method.
-	 * @param string       $url     The request URL.
-	 * @param string|array $body    The request body.
-	 * @param array        $headers The request headers.
-	 * @param string       $log_id  The log ID.
+	 * @param string            $method  The request method.
+	 * @param string            $url     The request URL.
+	 * @param string|array|null $body    The request body.
+	 * @param array             $headers The request headers.
+	 * @param string|null       $log_id  The log ID.
 	 *
 	 * @return void
 	 */
-	private function log_api_request( string $method, string $url, $body = null, array $headers = array(), string $log_id = null ): void {
+	private function log_api_request( string $method, string $url, $body = null, array $headers = array(), ?string $log_id = null ): void {
 		$context = array(
 			'method' => $method,
 			'url'    => $url,
@@ -770,12 +770,12 @@ class Api {
 	/**
 	 * Log request error.
 	 *
-	 * @param WP_Error $error The request error.
-	 * @param string   $log_id  The log ID.
+	 * @param WP_Error    $error  The request error.
+	 * @param string|null $log_id The log ID.
 	 *
 	 * @return void
 	 */
-	private function log_api_request_error( WP_Error $error, string $log_id = null ): void {
+	private function log_api_request_error( WP_Error $error, ?string $log_id = null ): void {
 		$this->log(
 			'API Request Error (' . $error->get_error_code() . ')',
 			$log_id,
@@ -791,13 +791,13 @@ class Api {
 	/**
 	 * Log request ends.
 	 *
-	 * @param int    $response_code The response code.
-	 * @param string $response_body The response body.
-	 * @param string $log_id  The log ID.
+	 * @param int         $response_code The response code.
+	 * @param string      $response_body The response body.
+	 * @param string|null $log_id        The log ID.
 	 *
 	 * @return void
 	 */
-	private function log_api_response( int $response_code, string $response_body, string $log_id = null ): void {
+	private function log_api_response( int $response_code, string $response_body, ?string $log_id = null ): void {
 		$is_success   = $response_code >= 200 && $response_code < 300;
 		$level        = $is_success ? 'debug' : 'error';
 		$decoded_body = json_decode( $response_body, true );
