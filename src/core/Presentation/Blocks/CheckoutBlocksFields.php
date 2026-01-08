@@ -207,7 +207,7 @@ class CheckoutBlocksFields {
 	 * @param string $group     Field group (billing, shipping, other).
 	 * @param object $wc_object WooCommerce object (WC_Order or WC_Customer).
 	 */
-	public function save_field_to_legacy_meta( string $key, mixed $value, string $group, object $wc_object ): void {
+	public function save_field_to_legacy_meta( string $key, $value, string $group, object $wc_object ): void {
 		if ( ! ( $wc_object instanceof WC_Order ) ) {
 			return;
 		}

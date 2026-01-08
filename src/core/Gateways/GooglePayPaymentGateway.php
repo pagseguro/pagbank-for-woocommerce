@@ -214,8 +214,10 @@ class GooglePayPaymentGateway extends WC_Payment_Gateway {
 	 * @param int         $order_id Order ID.
 	 * @param string|null $amount   Refund amount.
 	 * @param string      $reason   Refund reason.
+	 *
+	 * @return bool|WP_Error
 	 */
-	public function process_refund( $order_id, $amount = null, $reason = '' ): bool|WP_Error {
+	public function process_refund( $order_id, $amount = null, $reason = '' ) {
 		$order                       = wc_get_order( $order_id );
 		$should_process_order_refund = apply_filters( 'pagbank_should_process_order_refund', true, $order );
 

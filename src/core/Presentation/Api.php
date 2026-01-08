@@ -159,7 +159,7 @@ class Api {
 	 *
 	 * @return array|WP_Error The access token, the token expiration time (in seconds), the account ID and the refresh token.
 	 */
-	public function get_access_token_from_oauth_code( string $callback_url, string $oauth_code ): array|WP_Error {
+	public function get_access_token_from_oauth_code( string $callback_url, string $oauth_code ) {
 		$url = $this->get_api_url( 'oauth2/token' );
 
 		$code_verifier  = get_transient( 'pagbank_oauth_code_verifier' );
@@ -251,7 +251,7 @@ class Api {
 	 *
 	 * @return array|WP_Error The access token, the token expiration time (in seconds), the account ID and the refresh token.
 	 */
-	public function refresh_access_token( string $refresh_token, string $environment, string $application_id ): array|WP_Error {
+	public function refresh_access_token( string $refresh_token, string $environment, string $application_id ) {
 		$url = $this->get_api_url( 'oauth2/refresh' );
 
 		$applications = Connect::get_connect_applications( $environment );
@@ -331,7 +331,7 @@ class Api {
 	 *
 	 * @return array|WP_Error The order data.
 	 */
-	public function create_order( array $data ): array|WP_Error {
+	public function create_order( array $data ) {
 		$url = $this->get_api_url( 'orders' );
 
 		$body = $this->json_encode( $data );
@@ -378,7 +378,7 @@ class Api {
 	 *
 	 * @return array|WP_Error The checkout data.
 	 */
-	public function create_checkout( array $data ): array|WP_Error {
+	public function create_checkout( array $data ) {
 		$url = $this->get_api_url( 'checkouts' );
 
 		$body = $this->json_encode( $data );
@@ -426,7 +426,7 @@ class Api {
 	 *
 	 * @return array|WP_Error The refund data.
 	 */
-	public function refund( string $charge_id, float $amount ): array|WP_Error {
+	public function refund( string $charge_id, float $amount ) {
 		$url = $this->get_api_url( 'charges/' . $charge_id . '/cancel' );
 
 		$data = array(
@@ -481,7 +481,7 @@ class Api {
 	 *
 	 * @return array|WP_Error The fees data.
 	 */
-	public function charge_fees( float $amount, int $max_installments, int $max_installments_no_interest, string $credit_card_bin ): array|WP_Error {
+	public function charge_fees( float $amount, int $max_installments, int $max_installments_no_interest, string $credit_card_bin ) {
 		$url = add_query_arg(
 			array(
 				'payment_methods'              => 'CREDIT_CARD',
@@ -557,7 +557,7 @@ class Api {
 	 *
 	 * @return array|WP_Error The session data containing 'session' and 'expires_at'.
 	 */
-	public function create_3ds_session(): array|WP_Error {
+	public function create_3ds_session() {
 		$url = $this->get_3ds_api_url( 'checkout-sdk/sessions' );
 
 		$headers = array(
@@ -604,7 +604,7 @@ class Api {
 	 *
 	 * @return array|WP_Error The account data.
 	 */
-	public function get_account_with_token( string $account_id, string $access_token ): array|WP_Error {
+	public function get_account_with_token( string $account_id, string $access_token ) {
 		$url = $this->get_api_url( 'accounts/' . $account_id );
 
 		$headers = array(
@@ -655,7 +655,7 @@ class Api {
 	 *
 	 * @return array|WP_Error The public key data.
 	 */
-	public function get_public_key( ?string $access_token = null ): array|WP_Error {
+	public function get_public_key( ?string $access_token = null ) {
 		$url = $this->get_api_url( 'public-keys' );
 
 		$data = array(
@@ -723,7 +723,7 @@ class Api {
 	 * @param array             $headers The request headers.
 	 * @param string|null       $log_id  The log ID.
 	 */
-	private function log_api_request( string $method, string $url, string|array|null $body = null, array $headers = array(), ?string $log_id = null ): void {
+	private function log_api_request( string $method, string $url, $body = null, array $headers = array(), ?string $log_id = null ): void {
 		$context = array(
 			'method' => $method,
 			'url'    => $url,
@@ -823,8 +823,10 @@ class Api {
 	 *
 	 * @param string $url  The request URL.
 	 * @param array  $args The request args.
+	 *
+	 * @return array|WP_Error
 	 */
-	private function request( string $url, array $args = array() ): array|WP_Error {
+	private function request( string $url, array $args = array() ) {
 		$default_args = array(
 			'timeout' => 15, // timeout in seconds.
 		);

@@ -891,8 +891,10 @@ class ApiHelpers {
 	 * @param WC_Order   $order  Order.
 	 * @param float|null $amount Amount to refund.
 	 * @param string     $reason Reason for refund (not used by PagBank API).
+	 *
+	 * @return bool|WP_Error
 	 */
-	public static function process_order_refund( Api $api, WC_Order $order, ?float $amount = null, string $reason = '' ): bool|WP_Error {
+	public static function process_order_refund( Api $api, WC_Order $order, ?float $amount = null, string $reason = '' ) {
 		$amount = floatval( $amount );
 
 		if ( $amount <= 0 ) {

@@ -86,8 +86,10 @@ class SettingsApi {
 
 	/**
 	 * Check if the user has admin permissions.
+	 *
+	 * @return bool|WP_Error
 	 */
-	public function admin_permission_check(): bool|WP_Error {
+	public function admin_permission_check() {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			return new WP_Error(
 				'rest_forbidden',

@@ -427,7 +427,7 @@ class Hooks {
 	 *
 	 * @return string|false Temporary file path or false on failure.
 	 */
-	private function download_boleto_pdf( string $pdf_url, int $order_id ): string|false {
+	private function download_boleto_pdf( string $pdf_url, int $order_id ) {
 		// Create temp directory if it doesn't exist.
 		$upload_dir = wp_upload_dir();
 		$temp_dir   = $upload_dir['basedir'] . '/pagbank-boletos';

@@ -4,7 +4,7 @@ includes:
 
 parameters:
     level: 2
-    phpVersion: 80000
+    phpVersion: 74000
     paths:
         - src/core
     excludePaths:

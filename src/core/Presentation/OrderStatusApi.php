@@ -74,8 +74,10 @@ class OrderStatusApi {
 	 * Check permission for the endpoint.
 	 *
 	 * @param WP_REST_Request $request Request object.
+	 *
+	 * @return bool|WP_Error
 	 */
-	public function check_permission( WP_REST_Request $request ): bool|WP_Error {
+	public function check_permission( WP_REST_Request $request ) {
 		$order_id  = $request->get_param( 'order_id' );
 		$order_key = $request->get_param( 'key' );
 
@@ -97,8 +99,10 @@ class OrderStatusApi {
 	 * Get order status.
 	 *
 	 * @param WP_REST_Request $request Request object.
+	 *
+	 * @return WP_REST_Response|WP_Error
 	 */
-	public function get_order_status( WP_REST_Request $request ): WP_REST_Response|WP_Error {
+	public function get_order_status( WP_REST_Request $request ) {
 		$order_id = $request->get_param( 'order_id' );
 		$order    = wc_get_order( $order_id );
 

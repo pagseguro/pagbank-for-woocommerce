@@ -235,7 +235,7 @@ class Helpers {
 	 *
 	 * @return mixed The constant value or fallback.
 	 */
-	public static function get_constant_value( string $constant_name, mixed $fallback = null ): mixed {
+	public static function get_constant_value( string $constant_name, $fallback = null ) {
 		return \defined( $constant_name ) ? \constant( $constant_name ) : $fallback;
 	}
 
