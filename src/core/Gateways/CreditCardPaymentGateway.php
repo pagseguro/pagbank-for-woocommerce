@@ -36,83 +36,62 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 	/**
 	 * Api instance.
-	 *
-	 * @var Api
 	 */
-	public $api;
+	public Api $api;
 
 	/**
-	 * Api instance.
-	 *
-	 * @var Connect
+	 * Connect instance.
 	 */
-	public $connect;
+	public Connect $connect;
 
 	/**
 	 * Environment.
-	 *
-	 * @var string
 	 */
-	public $environment;
+	public string $environment;
 
 	/**
 	 * Logs enabled.
-	 *
-	 * @var bool.
 	 */
-	public $logs_enabled;
+	public bool $logs_enabled;
 
 	/**
 	 * Installments enabled.
-	 *
-	 * @var bool
 	 */
-	public $installments_enabled;
+	public bool $installments_enabled;
 
 	/**
 	 * Maximum installments.
-	 *
-	 * @var int
 	 */
-	public $maximum_installments;
+	public int $maximum_installments;
 
 	/**
 	 * Transfer of interest enabled.
-	 *
-	 * @var bool
 	 */
-	public $transfer_of_interest_enabled;
+	public bool $transfer_of_interest_enabled;
 
 	/**
 	 * Maximum installments interest free.
-	 *
-	 * @var int
 	 */
-	private $maximum_installments_interest_free;
+	private int $maximum_installments_interest_free;
 
 	/**
 	 * 3DS authentication enabled.
-	 *
-	 * @var bool
 	 */
-	public $threeds_enabled;
-
+	public bool $threeds_enabled;
 
 	/**
 	 * Card type.
 	 *
 	 * @var string (CREDIT_CARD, DEBIT_CARD)
 	 */
-	public $card_type;
+	public string $card_type;
 
 	/**
 	 * Card field prefix.
 	 *
 	 * To share gateway fields between credit and debit cards, we need to use a prefix to identify the fields.
-	 *
-	 * @var string
 	 */
-	public $card_field_prefix;
+	public string $card_field_prefix;
 
 	/**
 	 * CreditCardPaymentGateway constructor.
@@ -203,7 +182,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	/**
 	 * Initialize form fields.
 	 */
-	public function init_form_fields() {
+	public function init_form_fields(): void {
 		$this->form_fields = array(
 			'enabled'                            => array(
 				'title'   => __( 'Habilitar/Desabilitar', 'pagbank-for-woocommerce' ),
@@ -270,6 +249,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				'title'             => __( 'Repasse de juros', 'pagbank-for-woocommerce' ),
 				'type'              => 'checkbox',
 				'label'             => __( 'Ativar repasse de juros', 'pagbank-for-woocommerce' ),
+				// phpcs:ignore Generic.Files.LineLength -- Translation string cannot be split.
 				'description'       => __( 'Isso irá ativar o repasse de juros durante o checkout. Por padrão as parcelas serão sem juros. Isso irá liberar a opção de definir a quantidade de parcelas sem juros.', 'pagbank-for-woocommerce' ),
 				'default'           => 'no',
 				'desc_tip'          => true,
@@ -314,7 +294,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 *
 	 * @return string The title.
 	 */
-	public function get_title() {
+	public function get_title(): string {
 		if ( is_admin() ) {
 			$screen = get_current_screen();
 
@@ -328,10 +308,8 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 	/**
 	 * Enqueue scripts in tokenization form.
-	 *
-	 * @return void
 	 */
-	public function tokenization_script() {
+	public function tokenization_script(): void {
 		wp_enqueue_script( 'pagbank-sdk', 'https://assets.pagseguro.com.br/checkout-sdk-js/rc/dist/browser/pagseguro.min.js', array(), PAGBANK_WOOCOMMERCE_VERSION, true );
 
 		wp_enqueue_script(
@@ -514,11 +492,13 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 					'installments'      => $plan['installments'],
 					'installment_value' => $plan['installment_value'],
 					'interest_free'     => $plan['interest_free'],
+					// phpcs:disable Generic.Files.LineLength -- Translation strings with sprintf cannot be split.
 					'title'             => $plan['interest_free']
 												// translators: 1: installments, 2: installment value.
 												? sprintf( __( '%1$dx de %2$s sem juros', 'pagbank-for-woocommerce' ), $plan['installments'], Helpers::format_money( $plan['installment_value'] / 100 ) )
 												// translators: 1: installments, 2: installment value, 3: installment total.
 												: sprintf( __( '%1$dx de %2$s com juros (%3$s)', 'pagbank-for-woocommerce' ), $plan['installments'], Helpers::format_money( $plan['installment_value'] / 100 ), Helpers::format_money( $plan['amount']['value'] / 100 ) ),
+					// phpcs:enable Generic.Files.LineLength
 					'amount'            => $plan['amount']['value'],
 				);
 			},
@@ -535,7 +515,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 *
 	 * @return array Result.
 	 */
-	public function add_payment_method() {
+	public function add_payment_method(): array {
 		return array(
 			'result'   => 'failure',
 			'redirect' => wc_get_endpoint_url( 'payment-methods' ),
@@ -551,7 +531,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 *
 	 * @return array The filtered tokens.
 	 */
-	public function filter_customer_tokens( $tokens, $customer_id, $gateway_id ) {
+	public function filter_customer_tokens( array $tokens, int $customer_id, string $gateway_id ): array {
 		if ( $gateway_id !== $this->id ) {
 			return $tokens;
 		}
@@ -575,7 +555,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	/**
 	 * Checkout payment fields.
 	 */
-	public function payment_fields() {
+	public function payment_fields(): void {
 		if ( ! is_checkout() ) {
 			echo '<p>' . esc_html( __( 'Você só pode adicionar um cartão durante o checkout.', 'pagbank-for-woocommerce' ) ) . '</p>';
 			return;
@@ -596,12 +576,13 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 *
 	 * @since 2.6.0
 	 */
-	public function form() {
+	public function form(): void {
 		$cart_contains_subscription = $this->cart_contains_subscription();
 		wp_enqueue_script( 'wc-credit-card-form' );
 
 		$fields = array();
 
+		// phpcs:disable Generic.Files.LineLength -- HTML form fields cannot be reasonably split.
 		$cvc_field = '<p class="form-row form-row-wide">
 			<label for="' . esc_attr( $this->id ) . '-card-cvc">' . esc_html__( 'Código de segurança', 'pagbank-for-woocommerce' ) . '&nbsp;<span class="required">*</span></label>
 			<input id="' . esc_attr( $this->id ) . '-card-cvc" class="input-text wc-credit-card-form-card-cvc" inputmode="numeric" autocomplete="off" autocorrect="no" autocapitalize="no" spellcheck="no" type="tel" maxlength="4" placeholder="' . esc_attr__( 'CVC', 'pagbank-for-woocommerce' ) . '" name="' . esc_attr( $this->id . '-card-cvc' ) . '" />
@@ -624,6 +605,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			'card-bin-field'       => '<input id="' . esc_attr( $this->id ) . '-card-bin" type="hidden" name="' . esc_attr( $this->id ) . '-card-bin" />',
 			'threeds-id-field'     => '<input id="' . esc_attr( $this->id ) . '-threeds-id" type="hidden" name="' . esc_attr( $this->id ) . '-threeds-id" />',
 		);
+		// phpcs:enable Generic.Files.LineLength
 
 		if ( ! $cart_contains_subscription ) {
 			$default_fields['cart-cvc-field'] = $cvc_field;
@@ -654,7 +636,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	/**
 	 * Installments fields on checkout.
 	 */
-	public function installments_fields() {
+	public function installments_fields(): void {
 		$order_id    = get_query_var( 'order-pay' );
 		$is_checkout = empty( $order_id );
 		$order       = $is_checkout ? null : wc_get_order( $order_id );
@@ -690,7 +672,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	/**
 	 * Installments fields warning.
 	 */
-	public function installments_fields_warning() {
+	public function installments_fields_warning(): void {
 		if ( $this->cart_contains_subscription() ) {
 			echo '<small>' . esc_html( 'O parcelamento ocorrerá somente para o pagamento inicial. As cobranças subsquentes não haverá parcelamento.' ) . '</small>';
 		}
@@ -699,11 +681,11 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	/**
 	 * Validate fields.
 	 */
-	public function validate_fields() {
+	public function validate_fields(): bool {
 		// Disable outside checkout.
 		if ( ! is_checkout() ) {
 			wc_add_notice( __( 'Você só pode adicionar um cartão durante o checkout.', 'pagbank-for-woocommerce' ), 'error' );
-			return;
+			return false;
 		}
 
 		$cart_contains_subscriptions = $this->cart_contains_subscription();
@@ -802,19 +784,15 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 * Check if order contains a subscription.
 	 *
 	 * @param WC_Order $order Order.
-	 *
-	 * @return bool
 	 */
-	public function order_contains_subscription( WC_Order $order ) {
+	public function order_contains_subscription( WC_Order $order ): bool {
 		return function_exists( 'wcs_order_contains_subscription' ) && wcs_order_contains_subscription( $order );
 	}
 
 	/**
 	 * Check if cart contains a subscription.
-	 *
-	 * @return bool
 	 */
-	public function cart_contains_subscription() {
+	public function cart_contains_subscription(): bool {
 		return class_exists( 'WC_Subscriptions_Cart' ) && WC_Subscriptions_Cart::cart_contains_subscription();
 	}
 
@@ -823,7 +801,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 *
 	 * @return string API installments URL.
 	 */
-	public function get_api_installments_url() {
+	public function get_api_installments_url(): string {
 		return WooCommerce::instance()->api_request_url( $this->id . '_installments' );
 	}
 
@@ -832,14 +810,12 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 *
 	 * @return string API 3DS session URL.
 	 */
-	public function get_api_3ds_session_url() {
+	public function get_api_3ds_session_url(): string {
 		return WooCommerce::instance()->api_request_url( $this->id . '_3ds_session' );
 	}
 
 	/**
 	 * Get 3DS session for authentication.
-	 *
-	 * @return void
 	 */
 	public function get_3ds_session(): void {
 		$nonce = isset( $_GET['nonce'] ) ? sanitize_text_field( wp_unslash( $_GET['nonce'] ) ) : null;
@@ -890,11 +866,9 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 *
 	 * @param int $order_id Order ID.
 	 *
-	 * @return array
-	 *
 	 * @throws Exception When an error occurs.
 	 */
-	public function process_payment( $order_id ) {
+	public function process_payment( $order_id ): array {
 		try {
 
 			$order                       = wc_get_order( $order_id );
@@ -909,18 +883,28 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$card_bin = isset( $_POST[ $this->card_field_prefix . '-card-bin' ] ) ? wc_clean( wp_unslash( $_POST[ $this->card_field_prefix . '-card-bin' ] ) ) : null;
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$save_card = ( $payment_token === null || $payment_token === 'new' ) && isset( $_POST[ 'wc-' . $this->id . '-new-payment-method' ] ) && ( $_POST[ 'wc-' . $this->id . '-new-payment-method' ] === 'true' || $_POST[ 'wc-' . $this->id . '-new-payment-method' ] === '1' );
+			$save_card_field = 'wc-' . $this->id . '-new-payment-method';
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$save_card_value = isset( $_POST[ $save_card_field ] ) ? wc_clean( wp_unslash( $_POST[ $save_card_field ] ) ) : '';
+			$is_new_card     = $payment_token === null || $payment_token === 'new';
+			$save_card       = $is_new_card && ( $save_card_value === 'true' || $save_card_value === '1' );
 			// Debit cards have no installments.
 			if ( $this->card_type === 'DEBIT_CARD' ) {
 				$installments = 1;
 			} else {
+				$installments_field = $this->card_field_prefix . '-installments';
 				// phpcs:ignore WordPress.Security.NonceVerification.Missing
-				$installments = $order_contains_subscription ? 1 : ( isset( $_POST[ $this->card_field_prefix . '-installments' ] ) ? (int) wc_clean( wp_unslash( $_POST[ $this->card_field_prefix . '-installments' ] ) ) : 1 );
+				$installments_post = isset( $_POST[ $installments_field ] ) ? (int) wc_clean( wp_unslash( $_POST[ $installments_field ] ) ) : 1;
+				$installments      = $order_contains_subscription ? 1 : $installments_post;
 			}
+			$cvc_field = $this->card_field_prefix . '-card-cvc';
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$cvc = $order_contains_subscription && isset( $_POST[ $this->card_field_prefix . '-card-cvc' ] ) ? wc_clean( wp_unslash( $_POST[ $this->card_field_prefix . '-card-cvc' ] ) ) : null;
+			$cvc_post = isset( $_POST[ $cvc_field ] ) ? wc_clean( wp_unslash( $_POST[ $cvc_field ] ) ) : null;
+			$cvc      = $order_contains_subscription ? $cvc_post : null;
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$threeds_id = isset( $_POST[ $this->card_field_prefix . '-threeds-id' ] ) ? wc_clean( wp_unslash( $_POST[ $this->card_field_prefix . '-threeds-id' ] ) ) : null;
+
+			$transfer_of_interest_fee = null;
 
 			if ( $this->card_type === 'CREDIT_CARD' && $this->installments_enabled && $this->transfer_of_interest_enabled ) {
 				$amount_in_cents    = Helpers::format_money_cents( $order->get_total() );
@@ -994,8 +978,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				$order_contains_subscription,
 				$installments,
 				$transfer_of_interest_fee,
-				$threeds_id,
-				$this->card_type
+				$threeds_id
 			) : ApiHelpers::get_card_payment_data(
 				$this,
 				$order,
@@ -1054,6 +1037,8 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				);
 			}
 
+			$card_payment_token = null;
+
 			if ( ( $save_card || $order_contains_subscription ) && isset( $charge['payment_method']['card']['id'] ) ) {
 				$card_payment_token = $this->save_card( $order, $charge['payment_method']['card'], $save_card ); // Attach user only when it's saving card for the user.
 			}
@@ -1069,10 +1054,12 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			$charge_id = $charge['id'];
 
 			if ( $this->environment === 'production' ) {
+				// phpcs:disable Generic.Files.LineLength -- Translation string cannot be split.
 				$order->add_order_note(
 					sprintf(
 						/* translators: 1: charge ID, 2: payment method, 3: installments, 4: card brand, 5: card last 4 digits. */
 						__( '<ul><li><b>Cobrança:</b> %1$s.</li><li><b>Parcelas:</b> %2$d.</li><li><b>Bandeira do cartão:</b> %3$s.</li><li><b>Últimos 4 dígitos do cartão:</b> %4$s.</li><li><a href="%5$s" target="_blank" rel="noreferrer">Visualizar pagamento no PagBank</a></li>', 'pagbank-for-woocommerce' ),
+				// phpcs:enable Generic.Files.LineLength
 						$charge['id'],
 						$charge['payment_method']['installments'],
 						$charge['payment_method']['card']['brand'],
@@ -1103,8 +1090,6 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 * @param WC_Order $order Order object.
 	 * @param array    $data  Credit card data.
 	 * @param bool     $attach_user_id  Attach user ID.
-	 *
-	 * @return PaymentToken
 	 */
 	private function save_card( WC_Order $order, array $data, bool $attach_user_id = true ): PaymentToken {
 		$token        = new PaymentToken();
@@ -1144,10 +1129,8 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 * @param array             $response Response data.
 	 * @param array             $request Request data.
 	 * @param PaymentToken|null $payment_token Payment token.
-	 *
-	 * @return void
 	 */
-	private function save_order_meta_data( WC_Order $order, array $response, array $request, ?PaymentToken $payment_token ) {
+	private function save_order_meta_data( WC_Order $order, array $response, array $request, ?PaymentToken $payment_token ): void {
 		$charge = $response['charges'][0];
 
 		$order->update_meta_data( '_pagbank_order_id', $response['id'] );
@@ -1191,11 +1174,11 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	/**
 	 * Process a refund.
 	 *
-	 * @param int    $order_id Order ID.
-	 * @param string $amount   Refund amount.
-	 * @param string $reason   Refund reason.
+	 * @param int         $order_id Order ID.
+	 * @param string|null $amount   Refund amount.
+	 * @param string      $reason   Refund reason.
 	 */
-	public function process_refund( $order_id, $amount = null, $reason = '' ) {
+	public function process_refund( $order_id, $amount = null, $reason = '' ): bool|WP_Error {
 		$order                       = wc_get_order( $order_id );
 		$should_process_order_refund = apply_filters( 'pagbank_should_process_order_refund', true, $order );
 
@@ -1212,10 +1195,8 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 	/**
 	 * Check if gateway needs setup.
-	 *
-	 * @return bool
 	 */
-	public function needs_setup() {
+	public function needs_setup(): bool {
 		$is_connected = (bool) $this->connect->get_data();
 
 		return ! $is_connected;
@@ -1223,10 +1204,8 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 	/**
 	 * Check if gateway is available for use.
-	 *
-	 * @return bool
 	 */
-	public function is_available() {
+	public function is_available(): bool {
 		$is_available = ( 'yes' === $this->enabled );
 
 		if ( ! $is_available ) {
@@ -1249,10 +1228,8 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 	/**
 	 * Add errors in case of some validation error that will appear during the checkout.
-	 *
-	 * @return void
 	 */
-	public function is_available_validation() {
+	public function is_available_validation(): void {
 		$is_enabled            = ( 'yes' === $this->enabled );
 		$is_connected          = (bool) $this->connect->get_data();
 		$is_brazilian_currency = get_woocommerce_currency() === 'BRL';
@@ -1286,7 +1263,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 *
 	 * @return string If $echo_output = false, return the HTML content.
 	 */
-	public function generate_settings_html( $form_fields = array(), $echo_output = true ) {
+	public function generate_settings_html( $form_fields = array(), $echo_output = true ): string {
 		ob_start();
 		$this->display_errors();
 		$html = ob_get_clean();
@@ -1294,6 +1271,8 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		if ( $echo_output ) {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- XSS ok.
 			echo $html . parent::generate_settings_html( $form_fields, $echo_output );
+
+			return '';
 		} else {
 			return $html . parent::generate_settings_html( $form_fields, $echo_output );
 		}
@@ -1305,11 +1284,9 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 * @param string   $amount Amount.
 	 * @param WC_Order $renewal_order Renewal order.
 	 *
-	 * @return void
-	 *
 	 * @throws Exception When an error occurs.
 	 */
-	public function scheduled_subscription_payment( string $amount, WC_Order $renewal_order ) {
+	public function scheduled_subscription_payment( string $amount, WC_Order $renewal_order ): void {
 		try {
 			$payment_token = $renewal_order->get_meta( '_pagbank_payment_token_id' );
 			$token         = WC_Payment_Tokens::get( $payment_token );

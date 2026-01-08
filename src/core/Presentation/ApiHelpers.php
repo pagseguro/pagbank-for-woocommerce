@@ -40,7 +40,7 @@ class ApiHelpers {
 	 * @param WC_Order $order The order.
 	 * @return array{type: string, tax_id: string}  The data.
 	 */
-	private static function get_order_person_type( WC_Order $order ) {
+	private static function get_order_person_type( WC_Order $order ): array {
 		$is_api = wc()->is_store_api_request();
 
 		if ( $is_api ) {
@@ -83,10 +83,8 @@ class ApiHelpers {
 	 * Get order tax id.
 	 *
 	 * @param WC_Order $order Order.
-	 *
-	 * @return string
 	 */
-	private static function get_order_tax_id_api_data( WC_Order $order ) {
+	private static function get_order_tax_id_api_data( WC_Order $order ): string {
 		$data = self::get_order_person_type( $order );
 
 		return $data['tax_id'];
@@ -96,10 +94,8 @@ class ApiHelpers {
 	 * Get order items.
 	 *
 	 * @param WC_Order $order Order.
-	 *
-	 * @return array
 	 */
-	private static function get_order_items_api_data( WC_Order $order ) {
+	private static function get_order_items_api_data( WC_Order $order ): array {
 		$items = array();
 
 		if ( 0 < count( $order->get_items() ) ) {
@@ -129,10 +125,8 @@ class ApiHelpers {
 	 * Get order customer.
 	 *
 	 * @param WC_Order $order Order.
-	 *
-	 * @return array
 	 */
-	private static function get_order_customer_api_data( WC_Order $order ) {
+	private static function get_order_customer_api_data( WC_Order $order ): array {
 		$person_type = self::get_order_person_type( $order );
 		$is_cnpj     = $person_type['type'] === 'cnpj';
 
@@ -151,8 +145,6 @@ class ApiHelpers {
 	 *
 	 * @param string $value1 Value 1.
 	 * @param string $value2 Value 2.
-	 *
-	 * @return string
 	 */
 	private static function get_not_empty( string $value1, string $value2 ): string {
 		return ! empty( $value1 ) ? $value1 : $value2;
@@ -163,10 +155,8 @@ class ApiHelpers {
 	 *
 	 * @param WC_Order $order Order.
 	 * @param array    $address Address.
-	 *
-	 * @return array
 	 */
-	private static function get_order_shipping_address_api_data( WC_Order $order, array $address = array() ) {
+	private static function get_order_shipping_address_api_data( WC_Order $order, array $address = array() ): array {
 		$is_api = wc()->is_store_api_request();
 
 		$defaults = array();
@@ -174,10 +164,12 @@ class ApiHelpers {
 		if ( $is_api ) {
 			$checkout_fields = Package::container()->get( CheckoutFields::class );
 
+			// phpcs:disable Generic.Files.LineLength -- Complex nested function calls cannot be split.
 			$defaults = array(
 				'street'      => substr( self::get_not_empty( $order->get_shipping_address_1(), $order->get_billing_address_1() ), 0, 160 ),
 				'number'      => substr( self::get_not_empty( $checkout_fields->get_field_from_object( 'pagbank/address-number', $order, 'shipping' ), $checkout_fields->get_field_from_object( 'pagbank/address-number', $order, 'billing' ) ), 0, 20 ),
 				'locality'    => substr( self::get_not_empty( $checkout_fields->get_field_from_object( 'pagbank/neighborhood', $order, 'shipping' ), $checkout_fields->get_field_from_object( 'pagbank/neighborhood', $order, 'billing' ) ), 0, 60 ),
+				// phpcs:enable Generic.Files.LineLength
 				'city'        => substr( self::get_not_empty( $order->get_shipping_city(), $order->get_billing_city() ), 0, 90 ),
 				'region_code' => substr( self::get_not_empty( $order->get_shipping_state(), $order->get_billing_state() ), 0, 2 ),
 				'country'     => 'BRA',
@@ -213,10 +205,8 @@ class ApiHelpers {
 	 *
 	 * @param WC_Order $order Order.
 	 * @param array    $address Address.
-	 *
-	 * @return array
 	 */
-	private static function get_order_billing_address_api_data( WC_Order $order, array $address = array() ) {
+	private static function get_order_billing_address_api_data( WC_Order $order, array $address = array() ): array {
 		$is_api          = wc()->is_store_api_request();
 		$checkout_fields = Package::container()->get( CheckoutFields::class );
 
@@ -249,10 +239,8 @@ class ApiHelpers {
 	 *
 	 * @param WC_Order $order Order.
 	 * @param array    $metadata Metadata.
-	 *
-	 * @return array
 	 */
-	private static function get_order_metadata_api_data( WC_Order $order, array $metadata = array() ) {
+	private static function get_order_metadata_api_data( WC_Order $order, array $metadata = array() ): array {
 		$defaults = array(
 			'order_id'  => $order->get_id(),
 			'signature' => self::get_order_id_signed( $order->get_id() ),
@@ -268,10 +256,8 @@ class ApiHelpers {
 	 * @param PixPaymentGateway $gateway Gateway.
 	 * @param WC_Order          $order Order.
 	 * @param int               $expiration_in_minutes Expiration in minutes.
-	 *
-	 * @return array
 	 */
-	public static function get_pix_payment_api_data( PixPaymentGateway $gateway, WC_Order $order, int $expiration_in_minutes ) {
+	public static function get_pix_payment_api_data( PixPaymentGateway $gateway, WC_Order $order, int $expiration_in_minutes ): array {
 		$password = wp_generate_password( 30, false );
 
 		$data = array(
@@ -305,10 +291,8 @@ class ApiHelpers {
 	 * @param WC_Order              $order Order.
 	 * @param bool                  $is_mobile Whether the request is from a mobile device.
 	 * @param string|null           $redirect_url Redirect URL for deeplink (mobile only).
-	 *
-	 * @return array
 	 */
-	public static function get_pay_with_pagbank_api_data( PayWithPagBankGateway $gateway, WC_Order $order, bool $is_mobile = false, ?string $redirect_url = null ) {
+	public static function get_pay_with_pagbank_api_data( PayWithPagBankGateway $gateway, WC_Order $order, bool $is_mobile = false, ?string $redirect_url = null ): array {
 		$password = wp_generate_password( 30, false );
 
 		$data = array(
@@ -358,10 +342,8 @@ class ApiHelpers {
 	 * @param WC_Order               $order Order.
 	 * @param int                    $expiration_in_minutes Expiration in minutes.
 	 * @param string                 $return_url Return URL after payment.
-	 *
-	 * @return array
 	 */
-	public static function get_checkout_api_data( CheckoutPaymentGateway $gateway, WC_Order $order, int $expiration_in_minutes, string $return_url ) {
+	public static function get_checkout_api_data( CheckoutPaymentGateway $gateway, WC_Order $order, int $expiration_in_minutes, string $return_url ): array {
 		$password = wp_generate_password( 30, false );
 
 		$data = array(
@@ -396,7 +378,7 @@ class ApiHelpers {
 	 *
 	 * @return array|null Shipping data or null if no shipping needed.
 	 */
-	private static function get_checkout_shipping_api_data( WC_Order $order ) {
+	private static function get_checkout_shipping_api_data( WC_Order $order ): ?array {
 		// Check if order needs shipping.
 		$needs_shipping = false;
 		foreach ( $order->get_items() as $item ) {
@@ -437,10 +419,8 @@ class ApiHelpers {
 	 * Get order amount.
 	 *
 	 * @param WC_Order $order Order.
-	 *
-	 * @return array
 	 */
-	private static function get_order_amount_api_data( WC_Order $order ) {
+	private static function get_order_amount_api_data( WC_Order $order ): array {
 		return array(
 			'value'    => Helpers::format_money_cents( $order->get_total() ),
 			'currency' => $order->get_currency(),
@@ -453,10 +433,8 @@ class ApiHelpers {
 	 * @param BoletoPaymentGateway $gateway Gateway.
 	 * @param WC_Order             $order Order.
 	 * @param int                  $expiration_in_days Expiration in days.
-	 *
-	 * @return array
 	 */
-	public static function get_boleto_payment_api_data( BoletoPaymentGateway $gateway, WC_Order $order, int $expiration_in_days ) {
+	public static function get_boleto_payment_api_data( BoletoPaymentGateway $gateway, WC_Order $order, int $expiration_in_days ): array {
 		$password = wp_generate_password( 30, false );
 
 		$data = array(
@@ -506,10 +484,8 @@ class ApiHelpers {
 	 * @param GooglePayPaymentGateway $gateway Gateway.
 	 * @param WC_Order                $order Order.
 	 * @param string                  $google_pay_token Google Pay payment token (JSON string from Google Pay API).
-	 *
-	 * @return array
 	 */
-	public static function get_google_pay_payment_api_data( GooglePayPaymentGateway $gateway, WC_Order $order, string $google_pay_token ) {
+	public static function get_google_pay_payment_api_data( GooglePayPaymentGateway $gateway, WC_Order $order, string $google_pay_token ): array {
 		$password = wp_generate_password( 30, false );
 
 		$data = array(
@@ -553,10 +529,8 @@ class ApiHelpers {
 	 * @param ApplePayPaymentGateway $gateway Gateway.
 	 * @param WC_Order               $order Order.
 	 * @param string                 $apple_pay_token Apple Pay payment token (JSON string from Apple Pay API).
-	 *
-	 * @return array
 	 */
-	public static function get_apple_pay_payment_api_data( ApplePayPaymentGateway $gateway, WC_Order $order, string $apple_pay_token ) {
+	public static function get_apple_pay_payment_api_data( ApplePayPaymentGateway $gateway, WC_Order $order, string $apple_pay_token ): array {
 		$password = wp_generate_password( 30, false );
 
 		$data = array(
@@ -599,10 +573,8 @@ class ApiHelpers {
 	 *
 	 * @param WC_Order $order Order.
 	 * @param string   $password Password.
-	 *
-	 * @return string
 	 */
-	private static function get_order_reference_id_data( WC_Order $order, string $password ) {
+	private static function get_order_reference_id_data( WC_Order $order, string $password ): string {
 		return wp_json_encode(
 			array(
 				'id'       => $order->get_id(),
@@ -626,10 +598,21 @@ class ApiHelpers {
 	 * @param array|null               $transfer_of_interest_fee Transfer of interest fee.
 	 * @param string|null              $threeds_id 3DS authentication ID.
 	 *
-	 * @return array
 	 * @throws Exception Throws exception when card is not valid.
 	 */
-	public static function get_card_payment_data( CreditCardPaymentGateway $gateway, WC_Order $order, ?string $payment_token = null, ?string $encrypted_card = null, ?string $card_holder = null, bool $save_card = false, ?string $cvv = null, bool $is_subscription = false, int $installments = 1, ?array $transfer_of_interest_fee = null, ?string $threeds_id = null ) {
+	public static function get_card_payment_data( // phpcs:ignore Generic.Files.LineLength
+		CreditCardPaymentGateway $gateway,
+		WC_Order $order,
+		?string $payment_token = null,
+		?string $encrypted_card = null,
+		?string $card_holder = null,
+		bool $save_card = false,
+		?string $cvv = null,
+		bool $is_subscription = false,
+		int $installments = 1,
+		?array $transfer_of_interest_fee = null,
+		?string $threeds_id = null
+	): array {
 		$password = wp_generate_password( 30, false );
 
 		$data = array(
@@ -739,11 +722,34 @@ class ApiHelpers {
 	 * @param array|null               $transfer_of_interest_fee Transfer of interest fee.
 	 * @param string|null              $threeds_id 3DS authentication ID.
 	 *
-	 * @return array
 	 * @throws Exception Throws exception when card is not valid.
 	 */
-	public static function get_card_payment_data_for_empty_value_subscription( CreditCardPaymentGateway $gateway, WC_Order $order, ?string $payment_token = null, ?string $encrypted_card = null, ?string $card_holder = null, bool $save_card = false, ?string $cvv = null, bool $is_subscription = false, int $installments = 1, ?array $transfer_of_interest_fee = null, ?string $threeds_id = null ) {
-		$data = self::get_card_payment_data( $gateway, $order, $payment_token, $encrypted_card, $card_holder, $save_card, $cvv, $is_subscription, $installments, $transfer_of_interest_fee, $threeds_id );
+	public static function get_card_payment_data_for_empty_value_subscription(
+		CreditCardPaymentGateway $gateway,
+		WC_Order $order,
+		?string $payment_token = null,
+		?string $encrypted_card = null,
+		?string $card_holder = null,
+		bool $save_card = false,
+		?string $cvv = null,
+		bool $is_subscription = false,
+		int $installments = 1,
+		?array $transfer_of_interest_fee = null,
+		?string $threeds_id = null
+	): array {
+		$data = self::get_card_payment_data(
+			$gateway,
+			$order,
+			$payment_token,
+			$encrypted_card,
+			$card_holder,
+			$save_card,
+			$cvv,
+			$is_subscription,
+			$installments,
+			$transfer_of_interest_fee,
+			$threeds_id
+		);
 
 		$data['items'] = array(
 			array(
@@ -765,10 +771,8 @@ class ApiHelpers {
 	 * @param WC_Order                 $renewal_order Renewal order.
 	 * @param PaymentToken             $payment_token Payment token.
 	 * @param float                    $amount Amount.
-	 *
-	 * @return array
 	 */
-	public static function get_card_renewal_payment_data( CreditCardPaymentGateway $gateway, WC_Order $renewal_order, PaymentToken $payment_token, float $amount ) {
+	public static function get_card_renewal_payment_data( CreditCardPaymentGateway $gateway, WC_Order $renewal_order, PaymentToken $payment_token, float $amount ): array {
 		$password = wp_generate_password( 30, false );
 
 		$data = array(
@@ -820,7 +824,7 @@ class ApiHelpers {
 	 * @param int $installments Installments.
 	 * @param int $minimum_installment_value Minimum installment value in cents.
 	 */
-	public static function get_installments_plan_no_interest( int $value, int $installments = 1, int $minimum_installment_value = 500 ) {
+	public static function get_installments_plan_no_interest( int $value, int $installments = 1, int $minimum_installment_value = 500 ): array {
 		$installments_plan = array();
 		$installment_value = $value / $installments;
 
@@ -846,7 +850,7 @@ class ApiHelpers {
 	/**
 	 * Get a signature pair to validate webhooks.
 	 */
-	private static function get_signature_pair() {
+	private static function get_signature_pair(): array {
 		$stored_keypair = get_option( 'pagbank_stored_keypair' );
 
 		if ( ! $stored_keypair ) {
@@ -873,7 +877,7 @@ class ApiHelpers {
 	 *
 	 * @param string $order_id Order id.
 	 */
-	private static function get_order_id_signed( string $order_id ) {
+	private static function get_order_id_signed( string $order_id ): string {
 		$signature_pair = self::get_signature_pair();
 		$signature      = sodium_crypto_sign_detached( $order_id, $signature_pair['sign_secret'] );
 
@@ -883,13 +887,12 @@ class ApiHelpers {
 	/**
 	 * Process order refund.
 	 *
-	 * @param Api      $api PagBank API.
-	 * @param WC_Order $order Order.
-	 * @param float    $amount Amount to refund.
-	 *
-	 * @return bool|WP_Error
+	 * @param Api        $api    PagBank API.
+	 * @param WC_Order   $order  Order.
+	 * @param float|null $amount Amount to refund.
+	 * @param string     $reason Reason for refund (not used by PagBank API).
 	 */
-	public static function process_order_refund( Api $api, WC_Order $order, $amount = null ) {
+	public static function process_order_refund( Api $api, WC_Order $order, ?float $amount = null, string $reason = '' ): bool|WP_Error {
 		$amount = floatval( $amount );
 
 		if ( $amount <= 0 ) {

@@ -12,6 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use WC_Order;
+use WC_Payment_Token;
 
 /**
  * Class Hooks.
@@ -20,22 +21,20 @@ class Hooks {
 
 	/**
 	 * Instance.
-	 *
-	 * @var Hooks
 	 */
-	private static $instance = null;
+	private static ?Hooks $instance = null;
 
 	/**
 	 * Temporary boleto files to cleanup.
 	 *
-	 * @var array
+	 * @var array<string>
 	 */
-	private $temp_boleto_files = array();
+	private array $temp_boleto_files = array();
 
 	/**
 	 * Get instance.
 	 */
-	public static function get_instance() {
+	public static function get_instance(): Hooks {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
@@ -87,7 +86,7 @@ class Hooks {
 	/**
 	 * Load text domain.
 	 */
-	public function load_text_domain() {
+	public function load_text_domain(): void {
 		load_plugin_textdomain( 'pagbank-for-woocommerce', false, dirname( plugin_basename( PAGBANK_WOOCOMMERCE_FILE_PATH ) ) . '/languages' );
 	}
 
@@ -99,7 +98,7 @@ class Hooks {
 	 *
 	 * @return string             Filtered class name.
 	 */
-	public function filter_payment_token_class_name( $class_name, $type ) {
+	public function filter_payment_token_class_name( string $class_name, string $type ): string {
 		if ( $type === 'PagBank_CC' ) {
 			return 'PagBank_WooCommerce\Presentation\PaymentToken';
 		}
@@ -114,7 +113,7 @@ class Hooks {
 	 *
 	 * @return array        Filtered payment method types.
 	 */
-	public function filter_payment_method_types( $types ) {
+	public function filter_payment_method_types( array $types ): array {
 		$types['pagbank_cc'] = __( 'Cartão de crédito', 'pagbank-for-woocommerce' );
 
 		return $types;
@@ -127,8 +126,8 @@ class Hooks {
 	 * @param  WC_Payment_Token $payment_token The payment token associated with this method entry.
 	 * @return array                           Filtered item.
 	 */
-	public function filter_payment_methods_list_item( $item, $payment_token ) {
-		if ( 'pagbank_cc' !== strtolower( $payment_token->get_type() ) ) {
+	public function filter_payment_methods_list_item( array $item, WC_Payment_Token $payment_token ): array {
+		if ( ! $payment_token instanceof PaymentToken ) {
 			return $item;
 		}
 
@@ -149,7 +148,7 @@ class Hooks {
 	 *
 	 * @return string         Filtered script tag.
 	 */
-	public function add_type_attribute( $tag, $handle, $src ) {
+	public function add_type_attribute( string $tag, string $handle, string $src ): string {
 		$type = wp_scripts()->get_data( $handle, 'pagbank_script' );
 
 		if ( $type === true ) {
@@ -168,7 +167,7 @@ class Hooks {
 	 *
 	 * @return array                 Filtered total rows.
 	 */
-	public function filter_woocommerce_get_order_item_totals( $total_rows, WC_Order $order ) {
+	public function filter_woocommerce_get_order_item_totals( array $total_rows, WC_Order $order ): array {
 		if ( $order->get_payment_method() === 'pagbank_credit_card' ) {
 			$installments_meta = $order->get_meta( '_pagbank_credit_card_installments' );
 
@@ -191,10 +190,8 @@ class Hooks {
 	 * Action links.
 	 *
 	 * @param array $links Action links.
-	 *
-	 * @return array
 	 */
-	public function plugin_action_links( $links ) {
+	public function plugin_action_links( array $links ): array {
 		$plugin_links = array(
 			'<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&filter=pagbank' ) ) . '">' . __( 'Configurações', 'pagbank-for-woocommerce' ) . '</a>',
 		);
@@ -205,7 +202,7 @@ class Hooks {
 	/**
 	 * Filter allowed gateways.
 	 */
-	public function filter_gateways_settings() {
+	public function filter_gateways_settings(): void {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_GET['page'] ) && isset( $_GET['tab'] ) && $_GET['page'] === 'wc-settings' && $_GET['tab'] === 'checkout' && isset( $_GET['filter'] ) && $_GET['filter'] === 'pagbank' ) {
 			add_filter( 'woocommerce_payment_gateways', array( $this, 'filter_allowed_gateways' ) );
@@ -216,10 +213,8 @@ class Hooks {
 	 * Filter gateways that will be displayed in a custom settings page.
 	 *
 	 * @param  array $load_gateways Gateways.
-	 *
-	 * @return array
 	 */
-	public function filter_allowed_gateways( $load_gateways ) {
+	public function filter_allowed_gateways( array $load_gateways ): array {
 		$allowed_gateways = array(
 			'PagBank_WooCommerce\Gateways\CreditCardPaymentGateway',
 			'PagBank_WooCommerce\Gateways\BoletoPaymentGateway',
@@ -238,7 +233,7 @@ class Hooks {
 	/**
 	 * Check for plugin dependencies.
 	 */
-	public function check_for_plugin_dependencies() {
+	public function check_for_plugin_dependencies(): void {
 		if ( ! class_exists( 'Extra_Checkout_Fields_For_Brazil' ) ) {
 			include dirname( PAGBANK_WOOCOMMERCE_FILE_PATH ) . '/src/templates/admin/notices/html-notice-missing-brazilian-market-on-woocommerce.php';
 		}
@@ -251,10 +246,8 @@ class Hooks {
 	 * @param bool     $sent_to_admin Sent to admin.
 	 * @param bool     $plain_text    Plain text.
 	 * @param object   $email         Email object.
-	 *
-	 * @return void
 	 */
-	public function add_pix_details_to_email( $order, $sent_to_admin, $plain_text, $email ) {
+	public function add_pix_details_to_email( WC_Order $order, bool $sent_to_admin, bool $plain_text, object $email ): void {
 		// Only add Pix details to customer emails, not admin emails.
 		if ( $sent_to_admin ) {
 			return;
@@ -318,10 +311,8 @@ class Hooks {
 	 * @param bool     $sent_to_admin Sent to admin.
 	 * @param bool     $plain_text    Plain text.
 	 * @param object   $email         Email object.
-	 *
-	 * @return void
 	 */
-	public function add_boleto_details_to_email( $order, $sent_to_admin, $plain_text, $email ) {
+	public function add_boleto_details_to_email( WC_Order $order, bool $sent_to_admin, bool $plain_text, object $email ): void {
 		// Only add Boleto details to customer emails, not admin emails.
 		if ( $sent_to_admin ) {
 			return;
@@ -387,10 +378,8 @@ class Hooks {
 	 * @param array  $attachments Attachments array.
 	 * @param string $email_id    Email ID.
 	 * @param object $order       Order object.
-	 *
-	 * @return array
 	 */
-	public function attach_boleto_pdf_to_email( $attachments, $email_id, $order ) {
+	public function attach_boleto_pdf_to_email( array $attachments, string $email_id, object $order ): array {
 		// Only attach to customer emails.
 		if ( ! in_array( $email_id, array( 'customer_on_hold_order', 'customer_processing_order' ), true ) ) {
 			return $attachments;
@@ -438,7 +427,7 @@ class Hooks {
 	 *
 	 * @return string|false Temporary file path or false on failure.
 	 */
-	private function download_boleto_pdf( $pdf_url, $order_id ) {
+	private function download_boleto_pdf( string $pdf_url, int $order_id ): string|false {
 		// Create temp directory if it doesn't exist.
 		$upload_dir = wp_upload_dir();
 		$temp_dir   = $upload_dir['basedir'] . '/pagbank-boletos';
@@ -486,10 +475,8 @@ class Hooks {
 	 * @param bool   $sent     Whether email was sent successfully.
 	 * @param string $email_id Email ID.
 	 * @param object $email    Email object.
-	 *
-	 * @return void
 	 */
-	public function cleanup_boleto_pdfs_after_email( $sent, $email_id, $email ) {
+	public function cleanup_boleto_pdfs_after_email( bool $sent, string $email_id, object $email ): void {
 		// Only cleanup for customer emails.
 		if ( ! in_array( $email_id, array( 'customer_on_hold_order', 'customer_processing_order' ), true ) ) {
 			return;
@@ -532,7 +519,7 @@ class Hooks {
 	 *
 	 * @return string The formatted log entry.
 	 */
-	public function format_log_entry( $entry, $details ) {
+	public function format_log_entry( string $entry, array $details ): string {
 		$context = $details['context'] ?? array();
 		$source  = $context['source'] ?? '';
 
