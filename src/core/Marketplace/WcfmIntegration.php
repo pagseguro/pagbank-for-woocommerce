@@ -202,7 +202,7 @@ class WcfmIntegration {
 	public function card_payment_data( $data, WC_Order $order, CreditCardPaymentGateway $gateway ) {
 		$splits = $this->get_splits_payment_data( $order, $gateway );
 
-		if ( $splits ) {
+		if ( $splits && count( $splits['receivers'] ) > 1 ) {
 			$data['charges'][0]['splits'] = $splits;
 		}
 
