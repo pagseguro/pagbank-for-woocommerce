@@ -131,8 +131,8 @@ class WcfmIntegration {
 			return;
 		}
 
-		$receivers        = array();
-		$total_commission = 0;
+		$receivers_by_account = array();
+		$total_commission     = 0;
 
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase -- ignore for $WCFMmp
 		$vendor_wise_gross_sales = $WCFMmp->wcfmmp_commission->wcfmmp_split_pay_vendor_wise_gross_sales( $order );
@@ -146,16 +146,16 @@ class WcfmIntegration {
 			$vendor_comission = $WCFMmp->wcfmmp_commission->wcfmmp_calculate_vendor_order_commission( $vendor_id, $order->get_id(), $order );
 
 			if ( $vendor_comission['commission_amount'] >= 0 ) {
-				$receivers[] = array(
-					'account' => array(
-						'id' => get_user_meta( $vendor_id, 'pagbank_account_id', true ),
-					),
-					'amount'  => array(
-						'value' => (int) ( $vendor_comission['commission_amount'] * 100 ),
-					),
-				);
+				$account_id        = get_user_meta( $vendor_id, 'pagbank_account_id', true );
+				$commission_amount = (int) ( $vendor_comission['commission_amount'] * 100 );
 
-				$total_commission += (int) ( $vendor_comission['commission_amount'] * 100 );
+				if ( isset( $receivers_by_account[ $account_id ] ) ) {
+					$receivers_by_account[ $account_id ] += $commission_amount;
+				} else {
+					$receivers_by_account[ $account_id ] = $commission_amount;
+				}
+
+				$total_commission += $commission_amount;
 			}
 		}
 
@@ -163,17 +163,27 @@ class WcfmIntegration {
 			return;
 		}
 
-		$connect_data = $gateway->connect->get_data();
-		$account_id   = $connect_data['account_id'];
+		$connect_data     = $gateway->connect->get_data();
+		$main_account_id  = $connect_data['account_id'];
+		$main_account_amt = (int) ( $order->get_total() * 100 ) - $total_commission;
 
-		$receivers[] = array(
-			'account' => array(
-				'id' => $account_id,
-			),
-			'amount'  => array(
-				'value' => $order->get_total() * 100 - $total_commission,
-			),
-		);
+		if ( isset( $receivers_by_account[ $main_account_id ] ) ) {
+			$receivers_by_account[ $main_account_id ] += $main_account_amt;
+		} else {
+			$receivers_by_account[ $main_account_id ] = $main_account_amt;
+		}
+
+		$receivers = array();
+		foreach ( $receivers_by_account as $account_id => $amount ) {
+			$receivers[] = array(
+				'account' => array(
+					'id' => $account_id,
+				),
+				'amount'  => array(
+					'value' => $amount,
+				),
+			);
+		}
 
 		return array(
 			'method'    => 'FIXED',
