@@ -392,7 +392,7 @@ class Api {
 		$body = $this->json_encode( $data );
 
 		$headers = array(
-			'Authorization' => "Bearer " . $this->connect->get_access_token(),
+			'Authorization' => 'Bearer ' . $this->connect->get_access_token(),
 			'Content-Type'  => 'application/json',
 		);
 

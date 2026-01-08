@@ -625,12 +625,11 @@ class ApiHelpers {
 	 * @param int                      $installments Installments.
 	 * @param array                    $transfer_of_interest_fee Transfer of interest fee.
 	 * @param string                   $threeds_id 3DS authentication ID.
-	 * @param string                   $card_type Card type.
 	 *
 	 * @return array
 	 * @throws Exception Throws exception when card is not valid.
 	 */
-	public static function get_card_payment_data( CreditCardPaymentGateway $gateway, WC_Order $order, string $payment_token = null, string $encrypted_card = null, string $card_holder = null, bool $save_card = false, string $cvv = null, bool $is_subscription = false, int $installments = 1, array $transfer_of_interest_fee = null, string $threeds_id = null) {
+	public static function get_card_payment_data( CreditCardPaymentGateway $gateway, WC_Order $order, string $payment_token = null, string $encrypted_card = null, string $card_holder = null, bool $save_card = false, string $cvv = null, bool $is_subscription = false, int $installments = 1, array $transfer_of_interest_fee = null, string $threeds_id = null ) {
 		$password = wp_generate_password( 30, false );
 
 		$data = array(
@@ -739,7 +738,6 @@ class ApiHelpers {
 	 * @param int                      $installments Installments.
 	 * @param array                    $transfer_of_interest_fee Transfer of interest fee.
 	 * @param string                   $threeds_id 3DS authentication ID.
-	 * @param string                   $card_type Card type.
 	 *
 	 * @return array
 	 * @throws Exception Throws exception when card is not valid.
@@ -763,10 +761,10 @@ class ApiHelpers {
 	/**
 	 * Get Credit Card renewal payment data.
 	 *
-	 * @param WC_Order     $renewal_order Renewal order.
-	 * @param PaymentToken $payment_token Payment token.
-	 * @param float        $amount Amount.
-	 * @param string       $card_type Card type.
+	 * @param CreditCardPaymentGateway $gateway Gateway.
+	 * @param WC_Order                 $renewal_order Renewal order.
+	 * @param PaymentToken             $payment_token Payment token.
+	 * @param float                    $amount Amount.
 	 *
 	 * @return array
 	 */
