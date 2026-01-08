@@ -1006,7 +1006,6 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				$installments,
 				$transfer_of_interest_fee,
 				$threeds_id,
-				$this->card_type
 			);
 
 			$response = $this->api->create_order( $data );
@@ -1318,10 +1317,10 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			}
 
 			$data = ApiHelpers::get_card_renewal_payment_data(
+				$this,
 				$renewal_order,
 				$token,
 				$amount,
-				$this->card_type
 			);
 
 			$response = $this->api->create_order( $data );

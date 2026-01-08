@@ -400,7 +400,7 @@ class ApiHelpers {
 		// Check if order needs shipping.
 		$needs_shipping = false;
 		foreach ( $order->get_items() as $item ) {
-			$product = $item->get_product();
+			$product = wc_get_product( $item->get_id() );
 			if ( $product && $product->needs_shipping() ) {
 				$needs_shipping = true;
 				break;
@@ -630,7 +630,7 @@ class ApiHelpers {
 	 * @return array
 	 * @throws Exception Throws exception when card is not valid.
 	 */
-	public static function get_card_payment_data( CreditCardPaymentGateway $gateway, WC_Order $order, string $payment_token = null, string $encrypted_card = null, string $card_holder = null, bool $save_card = false, string $cvv = null, bool $is_subscription = false, int $installments = 1, array $transfer_of_interest_fee = null, string $threeds_id = null, string $card_type = 'CREDIT_CARD' ) {
+	public static function get_card_payment_data( CreditCardPaymentGateway $gateway, WC_Order $order, string $payment_token = null, string $encrypted_card = null, string $card_holder = null, bool $save_card = false, string $cvv = null, bool $is_subscription = false, int $installments = 1, array $transfer_of_interest_fee = null, string $threeds_id = null) {
 		$password = wp_generate_password( 30, false );
 
 		$data = array(
@@ -647,7 +647,7 @@ class ApiHelpers {
 					'description'    => sprintf( esc_html__( 'Pedido %1$s - %2$s', 'pagbank-for-woocommerce' ), $order->get_id(), get_bloginfo( 'name' ) ),
 					'amount'         => self::get_order_amount_api_data( $order ),
 					'payment_method' => array(
-						'type'         => $card_type,
+						'type'         => $gateway->card_type,
 						'installments' => $installments,
 						'capture'      => true,
 						'holder'       => array(
@@ -722,7 +722,7 @@ class ApiHelpers {
 			);
 		}
 
-		return apply_filters( 'pagbank_card_payment_data', $data, $order, $card_type );
+		return apply_filters( 'pagbank_card_payment_data', $data, $order, $gateway );
 	}
 
 	/**
@@ -744,8 +744,8 @@ class ApiHelpers {
 	 * @return array
 	 * @throws Exception Throws exception when card is not valid.
 	 */
-	public static function get_card_payment_data_for_empty_value_subscription( CreditCardPaymentGateway $gateway, WC_Order $order, string $payment_token = null, string $encrypted_card = null, string $card_holder = null, bool $save_card = false, string $cvv = null, bool $is_subscription = false, int $installments = 1, array $transfer_of_interest_fee = null, string $threeds_id = null, string $card_type = 'CREDIT_CARD' ) {
-		$data = self::get_card_payment_data( $gateway, $order, $payment_token, $encrypted_card, $card_holder, $save_card, $cvv, $is_subscription, $installments, $transfer_of_interest_fee, $threeds_id, $card_type );
+	public static function get_card_payment_data_for_empty_value_subscription( CreditCardPaymentGateway $gateway, WC_Order $order, string $payment_token = null, string $encrypted_card = null, string $card_holder = null, bool $save_card = false, string $cvv = null, bool $is_subscription = false, int $installments = 1, array $transfer_of_interest_fee = null, string $threeds_id = null ) {
+		$data = self::get_card_payment_data( $gateway, $order, $payment_token, $encrypted_card, $card_holder, $save_card, $cvv, $is_subscription, $installments, $transfer_of_interest_fee, $threeds_id );
 
 		$data['items'] = array(
 			array(
@@ -770,7 +770,7 @@ class ApiHelpers {
 	 *
 	 * @return array
 	 */
-	public static function get_card_renewal_payment_data( WC_Order $renewal_order, PaymentToken $payment_token, float $amount, string $card_type = 'CREDIT_CARD' ) {
+	public static function get_card_renewal_payment_data( CreditCardPaymentGateway $gateway, WC_Order $renewal_order, PaymentToken $payment_token, float $amount ) {
 		$password = wp_generate_password( 30, false );
 
 		$data = array(
@@ -790,7 +790,7 @@ class ApiHelpers {
 						'currency' => $renewal_order->get_currency(),
 					),
 					'payment_method' => array(
-						'type'         => $card_type,
+						'type'         => $gateway->card_type,
 						'installments' => 1,
 						'capture'      => true,
 						'card'         => array(
@@ -812,7 +812,7 @@ class ApiHelpers {
 			'metadata'          => self::get_order_metadata_api_data( $renewal_order, array( 'password' => $password ) ),
 		);
 
-		return apply_filters( 'pagbank_card_payment_data', $data, $renewal_order, $card_type );
+		return apply_filters( 'pagbank_card_payment_data', $data, $renewal_order, $gateway );
 	}
 
 	/**
