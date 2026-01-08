@@ -1,0 +1,25 @@
+includes:
+    - vendor/szepeviktor/phpstan-wordpress/extension.neon
+    - phpstan-baseline.neon
+
+parameters:
+    level: 2
+    phpVersion: 80000
+    paths:
+        - src/core
+    excludePaths:
+        - tests
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+        - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
+    ignoreErrors:
+        # Action/filter callbacks can return values that are ignored
+        - '#Action callback returns .+ but should not return anything#'
+        # WooCommerce Subscriptions is optional
+        - '#(Call to static method|class) .+WC_Subscriptions.+#'
+        # generate_settings_html echoes output when $echo is true (method override)
+        -
+            message: '#should return string but return statement is missing#'
+            reportUnmatched: false
+        # WooCommerce global properties accessed dynamically
+        - '#Access to an undefined property WooCommerce::\$payment_gateways#'

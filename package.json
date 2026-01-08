@@ -20,6 +20,7 @@
 		"lint:fix:core": "./scripts/phpcbf.sh",
 		"lint:ui": "biome check src scripts",
 		"lint:fix:ui": "biome check --write src scripts",
+		"analyse": "./scripts/phpstan.sh",
 		"test": "./scripts/phpunit.sh",
 		"todos": "leasot 'src/**/*.{php,ts,js}'",
 		"make:pot": "./scripts/make-pot.sh",
