@@ -29,31 +29,25 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 
 	/**
 	 * Api instance.
-	 *
-	 * @var Api
 	 */
-	private $api;
+	private Api $api;
 
 	/**
-	 * Api instance.
-	 *
-	 * @var Connect
+	 * Connect instance.
 	 */
-	public $connect;
+	public Connect $connect;
 
 	/**
 	 * Environment.
-	 *
-	 * @var string
 	 */
-	public $environment;
+	public string $environment;
 
 	/**
 	 * Logs enabled.
 	 *
 	 * @var string yes|no.
 	 */
-	private $logs_enabled;
+	private string $logs_enabled;
 
 	/**
 	 * PixPaymentGateway constructor.
@@ -90,7 +84,7 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 	/**
 	 * Initialize form fields.
 	 */
-	public function init_form_fields() {
+	public function init_form_fields(): void {
 		$this->form_fields = array(
 			'enabled'            => array(
 				'title'   => __( 'Habilitar/Desabilitar', 'pagbank-for-woocommerce' ),
@@ -154,7 +148,7 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 	 *
 	 * @return string The title.
 	 */
-	public function get_title() {
+	public function get_title(): string {
 		if ( is_admin() ) {
 			$screen = get_current_screen();
 
@@ -171,11 +165,9 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 	 *
 	 * @param int $order_id Order ID.
 	 *
-	 * @return array
-	 *
 	 * @throws Exception When an error occurs.
 	 */
-	public function process_payment( $order_id ) {
+	public function process_payment( $order_id ): array {
 		try {
 			$order                 = wc_get_order( $order_id );
 			$expiration_in_minutes = $this->get_option( 'expiration_minutes' );
@@ -214,11 +206,11 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 	/**
 	 * Process a refund.
 	 *
-	 * @param int    $order_id Order ID.
-	 * @param string $amount   Refund amount.
-	 * @param string $reason   Refund reason.
+	 * @param int         $order_id Order ID.
+	 * @param string|null $amount   Refund amount.
+	 * @param string      $reason   Refund reason.
 	 */
-	public function process_refund( $order_id, $amount = null, $reason = '' ) {
+	public function process_refund( $order_id, $amount = null, $reason = '' ): bool|WP_Error {
 		$order                       = wc_get_order( $order_id );
 		$should_process_order_refund = apply_filters( 'pagbank_should_process_order_refund', true, $order );
 
@@ -239,10 +231,8 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 	 * @param WC_Order $order Order object.
 	 * @param array    $response Response data.
 	 * @param array    $request Request data.
-	 *
-	 * @return void
 	 */
-	private function save_order_meta_data( WC_Order $order, array $response, array $request ) {
+	private function save_order_meta_data( WC_Order $order, array $response, array $request ): void {
 		$charge = $response['charges'][0];
 
 		$order->update_meta_data( '_pagbank_order_id', $response['id'] );
@@ -261,10 +251,8 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 	 * Thanks you page HTML content.
 	 *
 	 * @param int $order_id Order ID.
-	 *
-	 * @return void
 	 */
-	public function thankyou_page( $order_id ) {
+	public function thankyou_page( int $order_id ): void {
 		$order = wc_get_order( $order_id );
 
 		$pix_expiration_date = $order->get_meta( '_pagbank_pix_expiration_date' );
@@ -290,10 +278,8 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 	 * View order page HTML content.
 	 *
 	 * @param int $order_id Order ID.
-	 *
-	 * @return void
 	 */
-	public function view_order_page( $order_id ) {
+	public function view_order_page( int $order_id ): void {
 		$order = wc_get_order( $order_id );
 
 		// Only show for Pix payment method.
@@ -310,10 +296,8 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 
 	/**
 	 * Check if gateway needs setup.
-	 *
-	 * @return bool
 	 */
-	public function needs_setup() {
+	public function needs_setup(): bool {
 		$is_connected = (bool) $this->connect->get_data();
 
 		return ! $is_connected;
@@ -321,10 +305,8 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 
 	/**
 	 * Check if gateway is available for use.
-	 *
-	 * @return bool
 	 */
-	public function is_available() {
+	public function is_available(): bool {
 		$is_available = ( 'yes' === $this->enabled );
 
 		if ( ! $is_available ) {
@@ -347,10 +329,8 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 
 	/**
 	 * Add errors in case of some validation error that will appear during the checkout.
-	 *
-	 * @return void
 	 */
-	public function is_available_validation() {
+	public function is_available_validation(): void {
 		$is_enabled            = ( 'yes' === $this->enabled );
 		$is_connected          = (bool) $this->connect->get_data();
 		$is_brazilian_currency = get_woocommerce_currency() === 'BRL';
@@ -384,7 +364,7 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 	 *
 	 * @return string If $echo = false, return the HTML content.
 	 */
-	public function generate_settings_html( $form_fields = array(), $echo_output = true ) {
+	public function generate_settings_html( $form_fields = array(), $echo_output = true ): string {
 		ob_start();
 		$this->display_errors();
 		$html = ob_get_clean();
@@ -392,6 +372,8 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 		if ( $echo_output ) {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- XSS ok.
 			echo $html . parent::generate_settings_html( $form_fields, $echo_output );
+
+			return '';
 		} else {
 			return $html . parent::generate_settings_html( $form_fields, $echo_output );
 		}
@@ -400,7 +382,7 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 	/**
 	 * Enqueue scripts.
 	 */
-	public function enqueue_styles() {
+	public function enqueue_styles(): void {
 		$is_order_received_page = is_checkout() && ! empty( is_wc_endpoint_url( 'order-received' ) );
 
 		if ( ! $is_order_received_page ) {
@@ -421,10 +403,8 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 
 	/**
 	 * Enqueue Pix scripts and styles.
-	 *
-	 * @return void
 	 */
-	private function enqueue_pix_scripts() {
+	private function enqueue_pix_scripts(): void {
 		wp_enqueue_style(
 			'pagbank-order-pix',
 			plugins_url( 'dist/styles/order-received/order-pix.css', PAGBANK_WOOCOMMERCE_FILE_PATH ),

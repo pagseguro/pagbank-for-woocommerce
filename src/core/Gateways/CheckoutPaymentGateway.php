@@ -31,46 +31,39 @@ class CheckoutPaymentGateway extends WC_Payment_Gateway {
 
 	/**
 	 * Api instance.
-	 *
-	 * @var Api
 	 */
-	private $api;
+	private Api $api;
 
 	/**
 	 * Connect instance.
-	 *
-	 * @var Connect
 	 */
-	public $connect;
+	public Connect $connect;
 
 	/**
 	 * Environment.
-	 *
-	 * @var string
 	 */
-	public $environment;
+	public string $environment;
 
 	/**
 	 * Logs enabled.
 	 *
 	 * @var string yes|no.
 	 */
-	private $logs_enabled;
+	private string $logs_enabled;
 
 	/**
 	 * Expiration time in minutes.
-	 *
-	 * @var int
 	 */
-	private $expiration_minutes;
+	private int $expiration_minutes;
 
 	/**
 	 * CheckoutPaymentGateway constructor.
 	 */
 	public function __construct() {
-		$this->id                 = 'pagbank_checkout';
-		$this->icon               = plugins_url( 'dist/images/icons/pagbank.png', PAGBANK_WOOCOMMERCE_FILE_PATH );
-		$this->method_title       = __( 'Checkout PagBank', 'pagbank-for-woocommerce' );
+		$this->id           = 'pagbank_checkout';
+		$this->icon         = plugins_url( 'dist/images/icons/pagbank.png', PAGBANK_WOOCOMMERCE_FILE_PATH );
+		$this->method_title = __( 'Checkout PagBank', 'pagbank-for-woocommerce' );
+		// phpcs:ignore Generic.Files.LineLength -- Translation string cannot be split.
 		$this->method_description = __( 'Redirecione o cliente para a página de checkout do PagBank para concluir o pagamento. Aceita cartão de crédito, Pix, boleto e saldo PagBank.', 'pagbank-for-woocommerce' );
 		$this->description        = $this->get_option( 'description' );
 		$this->has_fields         = ! empty( $this->description );
@@ -97,7 +90,7 @@ class CheckoutPaymentGateway extends WC_Payment_Gateway {
 	/**
 	 * Initialize form fields.
 	 */
-	public function init_form_fields() {
+	public function init_form_fields(): void {
 		$this->form_fields = array(
 			'enabled'            => array(
 				'title'   => __( 'Habilitar/Desabilitar', 'pagbank-for-woocommerce' ),
@@ -163,7 +156,7 @@ class CheckoutPaymentGateway extends WC_Payment_Gateway {
 	 *
 	 * @return string The title.
 	 */
-	public function get_title() {
+	public function get_title(): string {
 		if ( is_admin() ) {
 			$screen = get_current_screen();
 
@@ -180,11 +173,9 @@ class CheckoutPaymentGateway extends WC_Payment_Gateway {
 	 *
 	 * @param int $order_id Order ID.
 	 *
-	 * @return array
-	 *
 	 * @throws Exception When an error occurs.
 	 */
-	public function process_payment( $order_id ) {
+	public function process_payment( $order_id ): array {
 		try {
 			$order      = wc_get_order( $order_id );
 			$return_url = $this->get_return_url( $order );
@@ -243,8 +234,6 @@ class CheckoutPaymentGateway extends WC_Payment_Gateway {
 	 * Get checkout redirect URL from response.
 	 *
 	 * @param array $response API response.
-	 *
-	 * @return string|null
 	 */
 	private function get_checkout_redirect_url( array $response ): ?string {
 		if ( empty( $response['links'] ) ) {
@@ -263,11 +252,11 @@ class CheckoutPaymentGateway extends WC_Payment_Gateway {
 	/**
 	 * Process a refund.
 	 *
-	 * @param int    $order_id Order ID.
-	 * @param string $amount   Refund amount.
-	 * @param string $reason   Refund reason.
+	 * @param int         $order_id Order ID.
+	 * @param string|null $amount   Refund amount.
+	 * @param string      $reason   Refund reason.
 	 */
-	public function process_refund( $order_id, $amount = null, $reason = '' ) {
+	public function process_refund( $order_id, $amount = null, $reason = '' ): bool|WP_Error {
 		$order                       = wc_get_order( $order_id );
 		$should_process_order_refund = apply_filters( 'pagbank_should_process_order_refund', true, $order );
 
@@ -288,10 +277,8 @@ class CheckoutPaymentGateway extends WC_Payment_Gateway {
 	 * @param WC_Order $order    Order object.
 	 * @param array    $response Response data.
 	 * @param array    $request  Request data.
-	 *
-	 * @return void
 	 */
-	private function save_order_meta_data( WC_Order $order, array $response, array $request ) {
+	private function save_order_meta_data( WC_Order $order, array $response, array $request ): void {
 		$order->update_meta_data( '_pagbank_checkout_id', $response['id'] );
 		$order->update_meta_data( '_pagbank_password', $request['metadata']['password'] );
 		$order->update_meta_data( '_pagbank_environment', $this->environment );
@@ -305,10 +292,8 @@ class CheckoutPaymentGateway extends WC_Payment_Gateway {
 
 	/**
 	 * Check if gateway needs setup.
-	 *
-	 * @return bool
 	 */
-	public function needs_setup() {
+	public function needs_setup(): bool {
 		$is_connected = (bool) $this->connect->get_data();
 
 		return ! $is_connected;
@@ -316,10 +301,8 @@ class CheckoutPaymentGateway extends WC_Payment_Gateway {
 
 	/**
 	 * Check if gateway is available for use.
-	 *
-	 * @return bool
 	 */
-	public function is_available() {
+	public function is_available(): bool {
 		$is_available = ( 'yes' === $this->enabled );
 
 		if ( ! $is_available ) {
@@ -342,10 +325,8 @@ class CheckoutPaymentGateway extends WC_Payment_Gateway {
 
 	/**
 	 * Add errors in case of some validation error that will appear during the checkout.
-	 *
-	 * @return void
 	 */
-	public function is_available_validation() {
+	public function is_available_validation(): void {
 		$is_enabled            = ( 'yes' === $this->enabled );
 		$is_connected          = (bool) $this->connect->get_data();
 		$is_brazilian_currency = get_woocommerce_currency() === 'BRL';
@@ -379,14 +360,17 @@ class CheckoutPaymentGateway extends WC_Payment_Gateway {
 	 *
 	 * @return string If $echo = false, return the HTML content.
 	 */
-	public function generate_settings_html( $form_fields = array(), $echo_output = true ) {
+	public function generate_settings_html( $form_fields = array(), $echo_output = true ): string {
 		ob_start();
 		$this->display_errors();
 		$html = ob_get_clean();
 
 		if ( $echo_output ) {
+			$data = $html . parent::generate_settings_html( $form_fields, $echo_output );
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- XSS ok.
-			echo $html . parent::generate_settings_html( $form_fields, $echo_output );
+			echo $data;
+
+			return $data;
 		} else {
 			return $html . parent::generate_settings_html( $form_fields, $echo_output );
 		}

@@ -38,7 +38,7 @@ class PaymentToken extends WC_Payment_Token {
 	/**
 	 * Stores Credit Card payment token data.
 	 *
-	 * @var array
+	 * @var array<string, string>
 	 */
 	protected $extra_data = array(
 		'bin'                => '',
@@ -55,9 +55,8 @@ class PaymentToken extends WC_Payment_Token {
 	 *
 	 * @since  2.6.0
 	 * @param  string $deprecated Deprecated since WooCommerce 3.0.
-	 * @return string
 	 */
-	public function get_display_name( $deprecated = '' ) {
+	public function get_display_name( $deprecated = '' ): string {
 		$card_mode = $this->get_type() === self::TYPE_DEBIT_CARD
 			? __( 'Débito', 'pagbank-for-woocommerce' )
 			: __( 'Crédito', 'pagbank-for-woocommerce' );
@@ -79,7 +78,7 @@ class PaymentToken extends WC_Payment_Token {
 	 *
 	 * @param string $type Token type (PagBank_CC or PagBank_DC).
 	 */
-	public function set_type( $type ) {
+	public function set_type( $type ): void {
 		$this->type = $type;
 	}
 
@@ -88,7 +87,7 @@ class PaymentToken extends WC_Payment_Token {
 	 *
 	 * @since 3.0.0
 	 */
-	protected function get_hook_prefix() {
+	protected function get_hook_prefix(): string {
 		return 'woocommerce_payment_token_pagbank_cc_get_';
 	}
 
@@ -103,7 +102,7 @@ class PaymentToken extends WC_Payment_Token {
 	 *
 	 * @return boolean True if the passed data is valid
 	 */
-	public function validate() {
+	public function validate(): bool {
 		if ( false === parent::validate() ) {
 			return false;
 		}
@@ -148,7 +147,7 @@ class PaymentToken extends WC_Payment_Token {
 	 *
 	 * @param string $bin The card bin.
 	 */
-	public function set_bin( $bin ) {
+	public function set_bin( string $bin ): void {
 		$this->set_prop( 'bin', $bin );
 	}
 
@@ -159,7 +158,7 @@ class PaymentToken extends WC_Payment_Token {
 	 *
 	 * @return string Card bin.
 	 */
-	public function get_bin( $context = 'view' ) {
+	public function get_bin( string $context = 'view' ): string {
 		return $this->get_prop( 'bin', $context );
 	}
 
@@ -168,7 +167,7 @@ class PaymentToken extends WC_Payment_Token {
 	 *
 	 * @param string $holder The card holder.
 	 */
-	public function set_holder( $holder ) {
+	public function set_holder( string $holder ): void {
 		$this->set_prop( 'holder', $holder );
 	}
 
@@ -179,7 +178,7 @@ class PaymentToken extends WC_Payment_Token {
 	 *
 	 * @return string Card holder.
 	 */
-	public function get_holder( $context = 'view' ) {
+	public function get_holder( string $context = 'view' ): string {
 		return $this->get_prop( 'holder', $context );
 	}
 
@@ -190,7 +189,7 @@ class PaymentToken extends WC_Payment_Token {
 	 * @param  string $context What the value is for. Valid values are view and edit.
 	 * @return string Card type
 	 */
-	public function get_card_type( $context = 'view' ) {
+	public function get_card_type( string $context = 'view' ): string {
 		return $this->get_prop( 'card_type', $context );
 	}
 
@@ -199,7 +198,7 @@ class PaymentToken extends WC_Payment_Token {
 	 *
 	 * @param string $type Credit card type (mastercard, visa, ...).
 	 */
-	public function set_card_type( $type ) {
+	public function set_card_type( string $type ): void {
 		$this->set_prop( 'card_type', $type );
 	}
 
@@ -210,7 +209,7 @@ class PaymentToken extends WC_Payment_Token {
 	 * @param  string $context What the value is for. Valid values are view and edit.
 	 * @return string Expiration year
 	 */
-	public function get_expiry_year( $context = 'view' ) {
+	public function get_expiry_year( string $context = 'view' ): string {
 		return $this->get_prop( 'expiry_year', $context );
 	}
 
@@ -219,7 +218,7 @@ class PaymentToken extends WC_Payment_Token {
 	 *
 	 * @param string $year Credit card expiration year.
 	 */
-	public function set_expiry_year( $year ) {
+	public function set_expiry_year( string $year ): void {
 		$this->set_prop( 'expiry_year', $year );
 	}
 
@@ -230,7 +229,7 @@ class PaymentToken extends WC_Payment_Token {
 	 * @param  string $context What the value is for. Valid values are view and edit.
 	 * @return string Expiration month
 	 */
-	public function get_expiry_month( $context = 'view' ) {
+	public function get_expiry_month( string $context = 'view' ): string {
 		return $this->get_prop( 'expiry_month', $context );
 	}
 
@@ -239,7 +238,7 @@ class PaymentToken extends WC_Payment_Token {
 	 *
 	 * @param string $month Credit card expiration month.
 	 */
-	public function set_expiry_month( $month ) {
+	public function set_expiry_month( string $month ): void {
 		$this->set_prop( 'expiry_month', str_pad( $month, 2, '0', STR_PAD_LEFT ) );
 	}
 
@@ -250,7 +249,7 @@ class PaymentToken extends WC_Payment_Token {
 	 * @param  string $context What the value is for. Valid values are view and edit.
 	 * @return string Last 4 digits
 	 */
-	public function get_last4( $context = 'view' ) {
+	public function get_last4( string $context = 'view' ): string {
 		return $this->get_prop( 'last4', $context );
 	}
 
@@ -259,7 +258,7 @@ class PaymentToken extends WC_Payment_Token {
 	 *
 	 * @param string $last4 Credit card last four digits.
 	 */
-	public function set_last4( $last4 ) {
+	public function set_last4( string $last4 ): void {
 		$this->set_prop( 'last4', $last4 );
 	}
 
@@ -270,7 +269,7 @@ class PaymentToken extends WC_Payment_Token {
 	 * @param  string $context What the value is for. Valid values are view and edit.
 	 * @return string Last 4 digits
 	 */
-	public function get_connect_account_id( $context = 'view' ) {
+	public function get_connect_account_id( string $context = 'view' ): string {
 		return $this->get_prop( 'connect_account_id', $context );
 	}
 
@@ -279,7 +278,7 @@ class PaymentToken extends WC_Payment_Token {
 	 *
 	 * @param string $connect_account_id Credit card account connect id.
 	 */
-	public function set_connect_account_id( $connect_account_id ) {
+	public function set_connect_account_id( string $connect_account_id ): void {
 		$this->set_prop( 'connect_account_id', $connect_account_id );
 	}
 }

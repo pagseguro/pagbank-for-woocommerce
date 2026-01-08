@@ -29,31 +29,23 @@ class GooglePayPaymentGateway extends WC_Payment_Gateway {
 
 	/**
 	 * Api instance.
-	 *
-	 * @var Api
 	 */
-	private $api;
+	private Api $api;
 
 	/**
 	 * Connect instance.
-	 *
-	 * @var Connect
 	 */
-	public $connect;
+	public Connect $connect;
 
 	/**
 	 * Environment.
-	 *
-	 * @var string
 	 */
-	public $environment;
+	public string $environment;
 
 	/**
 	 * Logs enabled.
-	 *
-	 * @var bool
 	 */
-	private $logs_enabled;
+	private bool $logs_enabled;
 
 	/**
 	 * GooglePayPaymentGateway constructor.
@@ -87,7 +79,7 @@ class GooglePayPaymentGateway extends WC_Payment_Gateway {
 	/**
 	 * Initialize form fields.
 	 */
-	public function init_form_fields() {
+	public function init_form_fields(): void {
 		$this->form_fields = array(
 			'enabled'         => array(
 				'title'   => __( 'Habilitar/Desabilitar', 'pagbank-for-woocommerce' ),
@@ -141,7 +133,7 @@ class GooglePayPaymentGateway extends WC_Payment_Gateway {
 	 *
 	 * @return string The title.
 	 */
-	public function get_title() {
+	public function get_title(): string {
 		if ( is_admin() ) {
 			$screen = get_current_screen();
 
@@ -158,11 +150,9 @@ class GooglePayPaymentGateway extends WC_Payment_Gateway {
 	 *
 	 * @param int $order_id Order ID.
 	 *
-	 * @return array
-	 *
 	 * @throws Exception When an error occurs.
 	 */
-	public function process_payment( $order_id ) {
+	public function process_payment( $order_id ): array {
 		try {
 			$order = wc_get_order( $order_id );
 
@@ -221,13 +211,11 @@ class GooglePayPaymentGateway extends WC_Payment_Gateway {
 	/**
 	 * Process a refund.
 	 *
-	 * @param int    $order_id Order ID.
-	 * @param string $amount   Refund amount.
-	 * @param string $reason   Refund reason.
-	 *
-	 * @return bool|WP_Error
+	 * @param int         $order_id Order ID.
+	 * @param string|null $amount   Refund amount.
+	 * @param string      $reason   Refund reason.
 	 */
-	public function process_refund( $order_id, $amount = null, $reason = '' ) {
+	public function process_refund( $order_id, $amount = null, $reason = '' ): bool|WP_Error {
 		$order                       = wc_get_order( $order_id );
 		$should_process_order_refund = apply_filters( 'pagbank_should_process_order_refund', true, $order );
 
@@ -248,10 +236,8 @@ class GooglePayPaymentGateway extends WC_Payment_Gateway {
 	 * @param WC_Order $order Order object.
 	 * @param array    $response Response data.
 	 * @param array    $request Request data.
-	 *
-	 * @return void
 	 */
-	private function save_order_meta_data( WC_Order $order, array $response, array $request ) {
+	private function save_order_meta_data( WC_Order $order, array $response, array $request ): void {
 		$charge = $response['charges'][0];
 
 		$order->update_meta_data( '_pagbank_order_id', $response['id'] );
@@ -265,10 +251,8 @@ class GooglePayPaymentGateway extends WC_Payment_Gateway {
 
 	/**
 	 * Check if gateway needs setup.
-	 *
-	 * @return bool
 	 */
-	public function needs_setup() {
+	public function needs_setup(): bool {
 		$is_connected = (bool) $this->connect->get_data();
 
 		return ! $is_connected;
@@ -276,10 +260,8 @@ class GooglePayPaymentGateway extends WC_Payment_Gateway {
 
 	/**
 	 * Check if gateway is available for use.
-	 *
-	 * @return bool
 	 */
-	public function is_available() {
+	public function is_available(): bool {
 		$is_available = ( 'yes' === $this->enabled );
 
 		if ( ! $is_available ) {
@@ -306,10 +288,8 @@ class GooglePayPaymentGateway extends WC_Payment_Gateway {
 
 	/**
 	 * Add errors in case of some validation error that will appear during the checkout.
-	 *
-	 * @return void
 	 */
-	public function is_available_validation() {
+	public function is_available_validation(): void {
 		$is_enabled            = ( 'yes' === $this->enabled );
 		$is_connected          = (bool) $this->connect->get_data();
 		$is_brazilian_currency = get_woocommerce_currency() === 'BRL';
@@ -347,7 +327,7 @@ class GooglePayPaymentGateway extends WC_Payment_Gateway {
 	 *
 	 * @return string If $echo = false, return the HTML content.
 	 */
-	public function generate_settings_html( $form_fields = array(), $echo_output = true ) {
+	public function generate_settings_html( $form_fields = array(), $echo_output = true ): string {
 		ob_start();
 		$this->display_errors();
 		$html = ob_get_clean();
@@ -355,6 +335,8 @@ class GooglePayPaymentGateway extends WC_Payment_Gateway {
 		if ( $echo_output ) {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- XSS ok.
 			echo $html . parent::generate_settings_html( $form_fields, $echo_output );
+
+			return '';
 		} else {
 			return $html . parent::generate_settings_html( $form_fields, $echo_output );
 		}
@@ -362,10 +344,8 @@ class GooglePayPaymentGateway extends WC_Payment_Gateway {
 
 	/**
 	 * Get the gateway merchant ID for Google Pay.
-	 *
-	 * @return string|null
 	 */
-	public function get_gateway_merchant_id() {
+	public function get_gateway_merchant_id(): ?string {
 		$connect_data = $this->connect->get_data();
 
 		return $connect_data['account_id'] ?? null;

@@ -29,15 +29,13 @@ final class ApplePayBlocksSupport extends AbstractPaymentMethodType {
 
 	/**
 	 * Gateway instance.
-	 *
-	 * @var ApplePayPaymentGateway
 	 */
-	private $gateway;
+	private ApplePayPaymentGateway $gateway;
 
 	/**
 	 * Initializes the payment method.
 	 */
-	public function initialize() {
+	public function initialize(): void {
 		$this->settings = get_option( 'woocommerce_pagbank_apple_pay_settings', array() );
 
 		$gateways      = WC()->payment_gateways->payment_gateways();
@@ -46,10 +44,8 @@ final class ApplePayBlocksSupport extends AbstractPaymentMethodType {
 
 	/**
 	 * Returns if this payment method should be active.
-	 *
-	 * @return boolean
 	 */
-	public function is_active() {
+	public function is_active(): bool {
 		if ( ! $this->gateway ) {
 			return false;
 		}
@@ -59,10 +55,8 @@ final class ApplePayBlocksSupport extends AbstractPaymentMethodType {
 
 	/**
 	 * Returns an array of scripts/handles to be registered for this payment method.
-	 *
-	 * @return array
 	 */
-	public function get_payment_method_script_handles() {
+	public function get_payment_method_script_handles(): array {
 		$asset_path = plugin_dir_path( PAGBANK_WOOCOMMERCE_FILE_PATH ) . 'dist/public/blocks/checkout-apple-pay.js';
 
 		if ( ! file_exists( $asset_path ) ) {
@@ -103,19 +97,15 @@ final class ApplePayBlocksSupport extends AbstractPaymentMethodType {
 
 	/**
 	 * Returns an array of script handles to enqueue for the admin.
-	 *
-	 * @return array
 	 */
-	public function get_payment_method_script_handles_for_admin() {
+	public function get_payment_method_script_handles_for_admin(): array {
 		return $this->get_payment_method_script_handles();
 	}
 
 	/**
 	 * Returns an array of data to be exposed to the payment method script.
-	 *
-	 * @return array
 	 */
-	public function get_payment_method_data() {
+	public function get_payment_method_data(): array {
 		$environment  = $this->get_setting( 'environment', 'sandbox' );
 		$connect      = new Connect( $environment );
 		$connect_data = $connect->get_data();
@@ -138,10 +128,8 @@ final class ApplePayBlocksSupport extends AbstractPaymentMethodType {
 
 	/**
 	 * Returns an array of supported features.
-	 *
-	 * @return array
 	 */
-	public function get_supported_features() {
+	public function get_supported_features(): array {
 		$gateway = $this->gateway;
 
 		if ( ! $gateway ) {

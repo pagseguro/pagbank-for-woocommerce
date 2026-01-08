@@ -28,15 +28,13 @@ final class PayWithPagBankBlocksSupport extends AbstractPaymentMethodType {
 
 	/**
 	 * Gateway instance.
-	 *
-	 * @var PayWithPagBankGateway
 	 */
-	private $gateway;
+	private PayWithPagBankGateway $gateway;
 
 	/**
 	 * Initializes the payment method.
 	 */
-	public function initialize() {
+	public function initialize(): void {
 		$this->settings = get_option( 'woocommerce_pagbank_pay_with_pagbank_settings', array() );
 
 		$gateways      = WC()->payment_gateways->payment_gateways();
@@ -45,10 +43,8 @@ final class PayWithPagBankBlocksSupport extends AbstractPaymentMethodType {
 
 	/**
 	 * Returns if this payment method should be active.
-	 *
-	 * @return boolean
 	 */
-	public function is_active() {
+	public function is_active(): bool {
 		if ( ! $this->gateway ) {
 			return false;
 		}
@@ -58,10 +54,8 @@ final class PayWithPagBankBlocksSupport extends AbstractPaymentMethodType {
 
 	/**
 	 * Returns an array of scripts/handles to be registered for this payment method.
-	 *
-	 * @return array
 	 */
-	public function get_payment_method_script_handles() {
+	public function get_payment_method_script_handles(): array {
 		$asset_path = plugin_dir_path( PAGBANK_WOOCOMMERCE_FILE_PATH ) . 'dist/public/blocks/checkout-pay-with-pagbank.js';
 
 		if ( ! file_exists( $asset_path ) ) {
@@ -93,19 +87,15 @@ final class PayWithPagBankBlocksSupport extends AbstractPaymentMethodType {
 
 	/**
 	 * Returns an array of script handles to enqueue for the admin.
-	 *
-	 * @return array
 	 */
-	public function get_payment_method_script_handles_for_admin() {
+	public function get_payment_method_script_handles_for_admin(): array {
 		return $this->get_payment_method_script_handles();
 	}
 
 	/**
 	 * Returns an array of data to be exposed to the payment method script.
-	 *
-	 * @return array
 	 */
-	public function get_payment_method_data() {
+	public function get_payment_method_data(): array {
 		return array(
 			'title'       => $this->get_setting( 'title', __( 'Pagar com PagBank', 'pagbank-for-woocommerce' ) ),
 			'description' => $this->get_setting( 'description', __( 'Pague usando sua conta PagBank: saldo, crédito à vista ou parcelado.', 'pagbank-for-woocommerce' ) ),
@@ -116,10 +106,8 @@ final class PayWithPagBankBlocksSupport extends AbstractPaymentMethodType {
 
 	/**
 	 * Returns an array of supported features.
-	 *
-	 * @return array
 	 */
-	public function get_supported_features() {
+	public function get_supported_features(): array {
 		$gateway = $this->gateway;
 
 		if ( ! $gateway ) {

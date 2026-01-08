@@ -56,7 +56,7 @@ class DebitCardPaymentGateway extends CreditCardPaymentGateway {
 	/**
 	 * Initialize form fields.
 	 */
-	public function init_form_fields() {
+	public function init_form_fields(): void {
 		$this->form_fields = array(
 			'enabled'         => array(
 				'title'   => __( 'Habilitar/Desabilitar', 'pagbank-for-woocommerce' ),
@@ -108,7 +108,7 @@ class DebitCardPaymentGateway extends CreditCardPaymentGateway {
 	/**
 	 * Checkout payment fields.
 	 */
-	public function payment_fields() {
+	public function payment_fields(): void {
 		if ( ! is_checkout() ) {
 			echo '<p>' . esc_html( __( 'Você só pode adicionar um cartão de débito durante o checkout.', 'pagbank-for-woocommerce' ) ) . '</p>';
 			return;

@@ -29,31 +29,25 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 
 	/**
 	 * Api instance.
-	 *
-	 * @var Api
 	 */
-	private $api;
+	private Api $api;
 
 	/**
 	 * Connect instance.
-	 *
-	 * @var Connect
 	 */
-	public $connect;
+	public Connect $connect;
 
 	/**
 	 * Environment.
-	 *
-	 * @var string
 	 */
-	public $environment;
+	public string $environment;
 
 	/**
 	 * Logs enabled.
 	 *
 	 * @var string yes|no.
 	 */
-	private $logs_enabled;
+	private string $logs_enabled;
 
 	/**
 	 * PayWithPagBankGateway constructor.
@@ -62,6 +56,7 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 		$this->id                 = 'pagbank_pay_with_pagbank';
 		$this->icon               = plugins_url( 'dist/images/icons/pagbank.png', PAGBANK_WOOCOMMERCE_FILE_PATH );
 		$this->method_title       = __( 'Pagar com PagBank', 'pagbank-for-woocommerce' );
+		// phpcs:ignore Generic.Files.LineLength -- Translation string cannot be split.
 		$this->method_description = __( 'Aceite pagamentos usando a carteira digital PagBank. O cliente pode pagar usando saldo da conta ou cartão de crédito pelo app PagBank.', 'pagbank-for-woocommerce' );
 		$this->description        = $this->get_option( 'description' );
 		$this->has_fields         = ! empty( $this->description );
@@ -90,7 +85,7 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 	/**
 	 * Initialize form fields.
 	 */
-	public function init_form_fields() {
+	public function init_form_fields(): void {
 		$this->form_fields = array(
 			'enabled'         => array(
 				'title'   => __( 'Habilitar/Desabilitar', 'pagbank-for-woocommerce' ),
@@ -144,7 +139,7 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 	 *
 	 * @return string The title.
 	 */
-	public function get_title() {
+	public function get_title(): string {
 		if ( is_admin() ) {
 			$screen = get_current_screen();
 
@@ -158,8 +153,6 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 
 	/**
 	 * Check if current request is from a mobile device.
-	 *
-	 * @return bool
 	 */
 	private function is_mobile(): bool {
 		return wp_is_mobile();
@@ -170,11 +163,9 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 	 *
 	 * @param int $order_id Order ID.
 	 *
-	 * @return array
-	 *
 	 * @throws Exception When an error occurs.
 	 */
-	public function process_payment( $order_id ) {
+	public function process_payment( $order_id ): array {
 		try {
 			$order      = wc_get_order( $order_id );
 			$is_mobile  = $this->is_mobile();
@@ -217,11 +208,11 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 	/**
 	 * Process a refund.
 	 *
-	 * @param int    $order_id Order ID.
-	 * @param string $amount   Refund amount.
-	 * @param string $reason   Refund reason.
+	 * @param int         $order_id Order ID.
+	 * @param string|null $amount   Refund amount.
+	 * @param string      $reason   Refund reason.
 	 */
-	public function process_refund( $order_id, $amount = null, $reason = '' ) {
+	public function process_refund( $order_id, $amount = null, $reason = '' ): bool|WP_Error {
 		$order                       = wc_get_order( $order_id );
 		$should_process_order_refund = apply_filters( 'pagbank_should_process_order_refund', true, $order );
 
@@ -243,10 +234,8 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 	 * @param array    $response  Response data.
 	 * @param array    $request   Request data.
 	 * @param bool     $is_mobile Whether is mobile request.
-	 *
-	 * @return void
 	 */
-	private function save_order_meta_data( WC_Order $order, array $response, array $request, bool $is_mobile ) {
+	private function save_order_meta_data( WC_Order $order, array $response, array $request, bool $is_mobile ): void {
 		$order->update_meta_data( '_pagbank_order_id', $response['id'] );
 		$order->update_meta_data( '_pagbank_password', $request['metadata']['password'] );
 		$order->update_meta_data( '_pagbank_environment', $this->environment );
@@ -278,10 +267,8 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 	 * Thanks you page HTML content.
 	 *
 	 * @param int $order_id Order ID.
-	 *
-	 * @return void
 	 */
-	public function thankyou_page( $order_id ) {
+	public function thankyou_page( int $order_id ): void {
 		$order = wc_get_order( $order_id );
 
 		$is_mobile       = $order->get_meta( '_pagbank_pay_with_pagbank_is_mobile' ) === 'yes';
@@ -311,10 +298,8 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 	 * View order page HTML content.
 	 *
 	 * @param int $order_id Order ID.
-	 *
-	 * @return void
 	 */
-	public function view_order_page( $order_id ) {
+	public function view_order_page( int $order_id ): void {
 		$order = wc_get_order( $order_id );
 
 		// Only show for Pay with PagBank payment method.
@@ -331,10 +316,8 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 
 	/**
 	 * Check if gateway needs setup.
-	 *
-	 * @return bool
 	 */
-	public function needs_setup() {
+	public function needs_setup(): bool {
 		$is_connected = (bool) $this->connect->get_data();
 
 		return ! $is_connected;
@@ -342,10 +325,8 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 
 	/**
 	 * Check if gateway is available for use.
-	 *
-	 * @return bool
 	 */
-	public function is_available() {
+	public function is_available(): bool {
 		$is_available = ( 'yes' === $this->enabled );
 
 		if ( ! $is_available ) {
@@ -368,10 +349,8 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 
 	/**
 	 * Add errors in case of some validation error that will appear during the checkout.
-	 *
-	 * @return void
 	 */
-	public function is_available_validation() {
+	public function is_available_validation(): void {
 		$is_enabled            = ( 'yes' === $this->enabled );
 		$is_connected          = (bool) $this->connect->get_data();
 		$is_brazilian_currency = get_woocommerce_currency() === 'BRL';
@@ -405,7 +384,7 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 	 *
 	 * @return string If $echo = false, return the HTML content.
 	 */
-	public function generate_settings_html( $form_fields = array(), $echo_output = true ) {
+	public function generate_settings_html( $form_fields = array(), $echo_output = true ): string {
 		ob_start();
 		$this->display_errors();
 		$html = ob_get_clean();
@@ -413,6 +392,8 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 		if ( $echo_output ) {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- XSS ok.
 			echo $html . parent::generate_settings_html( $form_fields, $echo_output );
+
+			return '';
 		} else {
 			return $html . parent::generate_settings_html( $form_fields, $echo_output );
 		}
@@ -421,7 +402,7 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 	/**
 	 * Enqueue scripts.
 	 */
-	public function enqueue_styles() {
+	public function enqueue_styles(): void {
 		$is_order_received_page = is_checkout() && ! empty( is_wc_endpoint_url( 'order-received' ) );
 
 		if ( ! $is_order_received_page ) {
@@ -442,10 +423,8 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 
 	/**
 	 * Enqueue payment scripts and styles.
-	 *
-	 * @return void
 	 */
-	private function enqueue_payment_scripts() {
+	private function enqueue_payment_scripts(): void {
 		wp_enqueue_style(
 			'pagbank-order-pay-with-pagbank',
 			plugins_url( 'dist/styles/order-received/order-pay-with-pagbank.css', PAGBANK_WOOCOMMERCE_FILE_PATH ),
