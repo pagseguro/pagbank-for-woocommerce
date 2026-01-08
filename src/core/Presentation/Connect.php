@@ -25,7 +25,7 @@ class Connect {
 	 *
 	 * @var string production or sandbox.
 	 */
-	private $environment;
+	private string $environment;
 
 	/**
 	 * The connect data key.
@@ -40,10 +40,9 @@ class Connect {
 	 * Get connect applications.
 	 *
 	 * @param string|null $environment The environment.
-	 *
-	 * @return array
 	 */
-	public static function get_connect_applications( ?string $environment = null ) {
+	public static function get_connect_applications( ?string $environment = null ): array {
+		// phpcs:disable Generic.Files.LineLength -- Access tokens are encoded strings that can't be split.
 		$applications = array(
 			'fa1553af-5f0c-4ff2-92c3-a0dd8984b6a1' => array(
 				'id'           => 'fa1553af-5f0c-4ff2-92c3-a0dd8984b6a1',
@@ -74,6 +73,7 @@ class Connect {
 				'environment'  => 'production',
 			),
 		);
+		// phpcs:enable Generic.Files.LineLength
 
 		if ( $environment ) {
 			return array_filter(
@@ -94,14 +94,14 @@ class Connect {
 	 *
 	 * @return array|null
 	 */
-	public function get_connect_application( string $id ) {
+	public function get_connect_application( string $id ): ?array {
 		return isset( $this->get_connect_applications()[ $id ] ) ? $this->get_connect_applications()[ $id ] : null;
 	}
 
 	/**
 	 * Get the connect data key.
 	 */
-	private function get_connect_data_key() {
+	private function get_connect_data_key(): string {
 		return 'woocommerce_pagbank_connect_data_' . ( $this->environment === 'production' ? 'production' : 'sandbox' );
 	}
 
@@ -110,11 +110,9 @@ class Connect {
 	 *
 	 * @param array $data The data to be saved.
 	 *
-	 * @return bool
-	 *
 	 * @throws Exception If any of the required keys are empty.
 	 */
-	public function save( $data ): bool {
+	public function save( array $data ): bool {
 		$default = array(
 			'application_id'  => '',
 			'environment'     => '',
@@ -166,8 +164,6 @@ class Connect {
 
 	/**
 	 * Get the access token from the database.
-	 *
-	 * @return string|null
 	 */
 	public function get_access_token(): ?string {
 		$data = $this->get_data();
@@ -180,10 +176,9 @@ class Connect {
 	 *
 	 * @param array $data The old token data.
 	 *
-	 * @return array
 	 * @throws Exception If the refresh token fails.
 	 */
-	private function refresh_token( $data ) {
+	private function refresh_token( array $data ): array {
 		$api = new Api(
 			$data['environment']
 		);

@@ -27,10 +27,8 @@ class CheckoutBlocksFields {
 
 	/**
 	 * Instance.
-	 *
-	 * @var CheckoutBlocksFields
 	 */
-	private static $instance = null;
+	private static ?CheckoutBlocksFields $instance = null;
 
 	/**
 	 * Constructor.
@@ -43,10 +41,8 @@ class CheckoutBlocksFields {
 
 	/**
 	 * Get instance.
-	 *
-	 * @return CheckoutBlocksFields
 	 */
-	public static function get_instance() {
+	public static function get_instance(): CheckoutBlocksFields {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
@@ -56,10 +52,8 @@ class CheckoutBlocksFields {
 
 	/**
 	 * Enqueue scripts and styles for checkout blocks fields.
-	 *
-	 * @return void
 	 */
-	public function enqueue_scripts() {
+	public function enqueue_scripts(): void {
 		wp_register_style(
 			'pagbank-checkout-blocks-fields',
 			plugins_url( 'dist/styles/blocks/checkout-fields.css', PAGBANK_WOOCOMMERCE_FILE_PATH ),
@@ -73,10 +67,8 @@ class CheckoutBlocksFields {
 
 	/**
 	 * Register additional checkout fields for Blocks.
-	 *
-	 * @return void
 	 */
-	public function register_additional_checkout_fields() {
+	public function register_additional_checkout_fields(): void {
 		if ( ! function_exists( 'woocommerce_register_additional_checkout_field' ) ) {
 			return;
 		}
@@ -210,14 +202,12 @@ class CheckoutBlocksFields {
 	 * This method maps the new checkout block fields to legacy meta keys used by
 	 * the classic checkout and other parts of the plugin.
 	 *
-	 * @param string                        $key       Field key.
-	 * @param mixed                         $value     Field value.
-	 * @param string                        $group     Field group (billing, shipping, other).
-	 * @param \WC_Order|\WC_Customer|object $wc_object WooCommerce object.
-	 *
-	 * @return void
+	 * @param string $key       Field key.
+	 * @param mixed  $value     Field value.
+	 * @param string $group     Field group (billing, shipping, other).
+	 * @param object $wc_object WooCommerce object (WC_Order or WC_Customer).
 	 */
-	public function save_field_to_legacy_meta( $key, $value, $group, $wc_object ) {
+	public function save_field_to_legacy_meta( string $key, mixed $value, string $group, object $wc_object ): void {
 		if ( ! ( $wc_object instanceof WC_Order ) ) {
 			return;
 		}

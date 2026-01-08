@@ -21,17 +21,13 @@ class WebhookHandler {
 
 	/**
 	 * Instance.
-	 *
-	 * @var WebhookHandler
 	 */
-	private static $instance = null;
+	private static ?WebhookHandler $instance = null;
 
 	/**
 	 * Logger.
-	 *
-	 * @var \WC_Logger_Interface
 	 */
-	private $logger;
+	private \WC_Logger_Interface $logger;
 
 	/**
 	 * Initialize webhook handler.
@@ -44,14 +40,14 @@ class WebhookHandler {
 	/**
 	 * Initialize logs.
 	 */
-	public function init_logs() {
+	public function init_logs(): void {
 		$this->logger = wc_get_logger();
 	}
 
 	/**
 	 * Get instance.
 	 */
-	public static function get_instance() {
+	public static function get_instance(): WebhookHandler {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
@@ -90,7 +86,7 @@ class WebhookHandler {
 	/**
 	 * Handle webhook.
 	 */
-	public function handle() {
+	public function handle(): void {
 		try {
 			$input   = file_get_contents( 'php://input' );
 			$headers = array_change_key_case( getallheaders(), CASE_LOWER );
@@ -107,7 +103,7 @@ class WebhookHandler {
 					)
 				);
 
-				return wp_send_json_error(
+				wp_send_json_error(
 					array(
 						'message' => 'Content type inválido. O webhook não será processado.',
 					),
@@ -135,7 +131,7 @@ class WebhookHandler {
 						'reference' => $reference,
 					)
 				);
-				return wp_send_json_error(
+				wp_send_json_error(
 					array(
 						'message' => __( 'Pedido não encontrado.', 'pagbank-for-woocommerce' ),
 					),
@@ -152,7 +148,7 @@ class WebhookHandler {
 						'order_id' => $order_id,
 					)
 				);
-				return wp_send_json_error(
+				wp_send_json_error(
 					array(
 						'message' => __( 'Pedido não encontrado.', 'pagbank-for-woocommerce' ),
 					),
@@ -168,7 +164,7 @@ class WebhookHandler {
 						'payment_method' => $order->get_payment_method(),
 					)
 				);
-				return wp_send_json_error(
+				wp_send_json_error(
 					array(
 						'message' => __( 'Pedido inválido', 'pagbank-for-woocommerce' ),
 					),
@@ -186,7 +182,7 @@ class WebhookHandler {
 						'order_id' => $order_id,
 					)
 				);
-				return wp_send_json_error(
+				wp_send_json_error(
 					array(
 						'message' => __( 'Assinatura não encontrada.', 'pagbank-for-woocommerce' ),
 					),
@@ -204,7 +200,7 @@ class WebhookHandler {
 						'signature' => $signature,
 					)
 				);
-				return wp_send_json_error(
+				wp_send_json_error(
 					array(
 						'message' => __( 'Assinatura inválida.', 'pagbank-for-woocommerce' ),
 					),
@@ -247,14 +243,14 @@ class WebhookHandler {
 				)
 			);
 
-			return wp_send_json_success(
+			wp_send_json_success(
 				array(
 					'message' => 'Webhook processed successfully',
 				),
 				200
 			);
 		} catch ( Exception $e ) {
-			return wp_send_json_error(
+			wp_send_json_error(
 				array(
 					'message' => 'Erro ao processar o webhook.',
 				),

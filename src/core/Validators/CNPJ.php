@@ -39,17 +39,13 @@ class CNPJ {
 
 	/**
 	 * The raw CNPJ value (only numeric characters).
-	 *
-	 * @var string
 	 */
-	private $value;
+	private string $value;
 
 	/**
 	 * The original input value.
-	 *
-	 * @var string
 	 */
-	private $original;
+	private string $original;
 
 	/**
 	 * Constructor.
@@ -170,8 +166,6 @@ class CNPJ {
 	 * Static factory method for fluent API.
 	 *
 	 * @param string $cnpj The CNPJ value.
-	 *
-	 * @return self
 	 */
 	public static function make( string $cnpj ): self {
 		return new self( $cnpj );

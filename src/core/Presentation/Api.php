@@ -38,31 +38,23 @@ class Api {
 
 	/**
 	 * The Connect instance.
-	 *
-	 * @var Connect
 	 */
-	private $connect;
+	private Connect $connect;
 
 	/**
 	 * The log ID.
-	 *
-	 * @var string|null;
 	 */
-	private $log_id;
+	private ?string $log_id;
 
 	/**
 	 * The logger instance.
-	 *
-	 * @var \WC_Logger_Interface;
 	 */
-	private $logger;
+	private \WC_Logger_Interface $logger;
 
 	/**
 	 * Whether to use the sandbox environment.
-	 *
-	 * @var bool
 	 */
-	private $is_sandbox;
+	private bool $is_sandbox;
 
 	/**
 	 * Api constructor.
@@ -104,7 +96,7 @@ class Api {
 	 *
 	 * @return string The environment.
 	 */
-	private function get_environment() {
+	private function get_environment(): string {
 		return $this->is_sandbox ? 'sandbox.' : '';
 	}
 
@@ -167,7 +159,7 @@ class Api {
 	 *
 	 * @return array|WP_Error The access token, the token expiration time (in seconds), the account ID and the refresh token.
 	 */
-	public function get_access_token_from_oauth_code( string $callback_url, string $oauth_code ) {
+	public function get_access_token_from_oauth_code( string $callback_url, string $oauth_code ): array|WP_Error {
 		$url = $this->get_api_url( 'oauth2/token' );
 
 		$code_verifier  = get_transient( 'pagbank_oauth_code_verifier' );
@@ -259,7 +251,7 @@ class Api {
 	 *
 	 * @return array|WP_Error The access token, the token expiration time (in seconds), the account ID and the refresh token.
 	 */
-	public function refresh_access_token( string $refresh_token, string $environment, string $application_id ) {
+	public function refresh_access_token( string $refresh_token, string $environment, string $application_id ): array|WP_Error {
 		$url = $this->get_api_url( 'oauth2/refresh' );
 
 		$applications = Connect::get_connect_applications( $environment );
@@ -323,7 +315,7 @@ class Api {
 	 *
 	 * @return array The code verifier and the code challenge.
 	 */
-	public function generate_code_challenge() {
+	public function generate_code_challenge(): array {
 		$pkce = Generator::generate();
 
 		return array(
@@ -339,7 +331,7 @@ class Api {
 	 *
 	 * @return array|WP_Error The order data.
 	 */
-	public function create_order( $data ) {
+	public function create_order( array $data ): array|WP_Error {
 		$url = $this->get_api_url( 'orders' );
 
 		$body = $this->json_encode( $data );
@@ -386,7 +378,7 @@ class Api {
 	 *
 	 * @return array|WP_Error The checkout data.
 	 */
-	public function create_checkout( $data ) {
+	public function create_checkout( array $data ): array|WP_Error {
 		$url = $this->get_api_url( 'checkouts' );
 
 		$body = $this->json_encode( $data );
@@ -434,7 +426,7 @@ class Api {
 	 *
 	 * @return array|WP_Error The refund data.
 	 */
-	public function refund( string $charge_id, float $amount ) {
+	public function refund( string $charge_id, float $amount ): array|WP_Error {
 		$url = $this->get_api_url( 'charges/' . $charge_id . '/cancel' );
 
 		$data = array(
@@ -489,7 +481,7 @@ class Api {
 	 *
 	 * @return array|WP_Error The fees data.
 	 */
-	public function charge_fees( float $amount, int $max_installments, int $max_installments_no_interest, string $credit_card_bin ) {
+	public function charge_fees( float $amount, int $max_installments, int $max_installments_no_interest, string $credit_card_bin ): array|WP_Error {
 		$url = add_query_arg(
 			array(
 				'payment_methods'              => 'CREDIT_CARD',
@@ -565,7 +557,7 @@ class Api {
 	 *
 	 * @return array|WP_Error The session data containing 'session' and 'expires_at'.
 	 */
-	public function create_3ds_session() {
+	public function create_3ds_session(): array|WP_Error {
 		$url = $this->get_3ds_api_url( 'checkout-sdk/sessions' );
 
 		$headers = array(
@@ -612,7 +604,7 @@ class Api {
 	 *
 	 * @return array|WP_Error The account data.
 	 */
-	public function get_account_with_token( string $account_id, string $access_token ) {
+	public function get_account_with_token( string $account_id, string $access_token ): array|WP_Error {
 		$url = $this->get_api_url( 'accounts/' . $account_id );
 
 		$headers = array(
@@ -663,7 +655,7 @@ class Api {
 	 *
 	 * @return array|WP_Error The public key data.
 	 */
-	public function get_public_key( ?string $access_token = null ) {
+	public function get_public_key( ?string $access_token = null ): array|WP_Error {
 		$url = $this->get_api_url( 'public-keys' );
 
 		$data = array(
@@ -730,10 +722,8 @@ class Api {
 	 * @param string|array|null $body    The request body.
 	 * @param array             $headers The request headers.
 	 * @param string|null       $log_id  The log ID.
-	 *
-	 * @return void
 	 */
-	private function log_api_request( string $method, string $url, $body = null, array $headers = array(), ?string $log_id = null ): void {
+	private function log_api_request( string $method, string $url, string|array|null $body = null, array $headers = array(), ?string $log_id = null ): void {
 		$context = array(
 			'method' => $method,
 			'url'    => $url,
@@ -772,8 +762,6 @@ class Api {
 	 *
 	 * @param WP_Error    $error  The request error.
 	 * @param string|null $log_id The log ID.
-	 *
-	 * @return void
 	 */
 	private function log_api_request_error( WP_Error $error, ?string $log_id = null ): void {
 		$this->log(
@@ -794,8 +782,6 @@ class Api {
 	 * @param int         $response_code The response code.
 	 * @param string      $response_body The response body.
 	 * @param string|null $log_id        The log ID.
-	 *
-	 * @return void
 	 */
 	private function log_api_response( int $response_code, string $response_body, ?string $log_id = null ): void {
 		$is_success   = $response_code >= 200 && $response_code < 300;
@@ -828,7 +814,7 @@ class Api {
 	 *
 	 * @return string The encoded data.
 	 */
-	private function json_encode( $data ) {
+	private function json_encode( array $data ): string {
 		return wp_json_encode( $data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
 	}
 
@@ -838,7 +824,7 @@ class Api {
 	 * @param string $url  The request URL.
 	 * @param array  $args The request args.
 	 */
-	private function request( string $url, array $args = array() ) {
+	private function request( string $url, array $args = array() ): array|WP_Error {
 		$default_args = array(
 			'timeout' => 15, // timeout in seconds.
 		);

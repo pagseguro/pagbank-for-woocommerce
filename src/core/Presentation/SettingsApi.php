@@ -22,15 +22,13 @@ class SettingsApi {
 
 	/**
 	 * Instance.
-	 *
-	 * @var SettingsApi
 	 */
-	private static $instance = null;
+	private static ?SettingsApi $instance = null;
 
 	/**
 	 * Get instance.
 	 */
-	public static function get_instance() {
+	public static function get_instance(): SettingsApi {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
@@ -48,7 +46,7 @@ class SettingsApi {
 	/**
 	 * Register REST API routes.
 	 */
-	public function register_routes() {
+	public function register_routes(): void {
 		register_rest_route(
 			'pagbank/v1',
 			'/connect-status',
@@ -88,10 +86,8 @@ class SettingsApi {
 
 	/**
 	 * Check if the user has admin permissions.
-	 *
-	 * @return bool|WP_Error
 	 */
-	public function admin_permission_check() {
+	public function admin_permission_check(): bool|WP_Error {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			return new WP_Error(
 				'rest_forbidden',
@@ -107,10 +103,8 @@ class SettingsApi {
 	 * Get PagBank connection status.
 	 *
 	 * @param WP_REST_Request $request Request object.
-	 *
-	 * @return WP_REST_Response
 	 */
-	public function get_connect_status( WP_REST_Request $request ) {
+	public function get_connect_status( WP_REST_Request $request ): WP_REST_Response {
 		$environment = $request->get_param( 'environment' );
 		$connect     = new Connect( $environment );
 		$data        = $connect->get_data();
@@ -147,10 +141,8 @@ class SettingsApi {
 	 * Disconnect PagBank account.
 	 *
 	 * @param WP_REST_Request $request Request object.
-	 *
-	 * @return WP_REST_Response
 	 */
-	public function disconnect( WP_REST_Request $request ) {
+	public function disconnect( WP_REST_Request $request ): WP_REST_Response {
 		$environment = $request->get_param( 'environment' );
 		$option_key  = 'woocommerce_pagbank_connect_data_' . $environment;
 

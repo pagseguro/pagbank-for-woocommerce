@@ -22,15 +22,13 @@ class OrderStatusApi {
 
 	/**
 	 * Instance.
-	 *
-	 * @var OrderStatusApi
 	 */
-	private static $instance = null;
+	private static ?OrderStatusApi $instance = null;
 
 	/**
 	 * Get instance.
 	 */
-	public static function get_instance() {
+	public static function get_instance(): OrderStatusApi {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
@@ -48,7 +46,7 @@ class OrderStatusApi {
 	/**
 	 * Register REST API routes.
 	 */
-	public function register_routes() {
+	public function register_routes(): void {
 		register_rest_route(
 			'pagbank/v1',
 			'/order/(?P<order_id>\d+)/status',
@@ -76,10 +74,8 @@ class OrderStatusApi {
 	 * Check permission for the endpoint.
 	 *
 	 * @param WP_REST_Request $request Request object.
-	 *
-	 * @return bool|WP_Error
 	 */
-	public function check_permission( WP_REST_Request $request ) {
+	public function check_permission( WP_REST_Request $request ): bool|WP_Error {
 		$order_id  = $request->get_param( 'order_id' );
 		$order_key = $request->get_param( 'key' );
 
@@ -101,10 +97,8 @@ class OrderStatusApi {
 	 * Get order status.
 	 *
 	 * @param WP_REST_Request $request Request object.
-	 *
-	 * @return WP_REST_Response|WP_Error
 	 */
-	public function get_order_status( WP_REST_Request $request ) {
+	public function get_order_status( WP_REST_Request $request ): WP_REST_Response|WP_Error {
 		$order_id = $request->get_param( 'order_id' );
 		$order    = wc_get_order( $order_id );
 

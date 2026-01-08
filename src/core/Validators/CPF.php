@@ -24,17 +24,13 @@ class CPF {
 
 	/**
 	 * The raw CPF value (only numeric characters).
-	 *
-	 * @var string
 	 */
-	private $value;
+	private string $value;
 
 	/**
 	 * The original input value.
-	 *
-	 * @var string
 	 */
-	private $original;
+	private string $original;
 
 	/**
 	 * Constructor.
@@ -155,8 +151,6 @@ class CPF {
 	 * Static factory method for fluent API.
 	 *
 	 * @param string $cpf The CPF value.
-	 *
-	 * @return self
 	 */
 	public static function make( string $cpf ): self {
 		return new self( $cpf );

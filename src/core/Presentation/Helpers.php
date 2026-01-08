@@ -24,10 +24,8 @@ class Helpers {
 	 * Format money to cents.
 	 *
 	 * @param float $value Value.
-	 *
-	 * @return int
 	 */
-	public static function format_money_cents( $value ) {
+	public static function format_money_cents( float $value ): int {
 		return (int) ( $value * 100 );
 	}
 
@@ -35,10 +33,8 @@ class Helpers {
 	 * Format money from cents.
 	 *
 	 * @param int $value Value.
-	 *
-	 * @return float
 	 */
-	public static function format_money_from_cents( $value ) {
+	public static function format_money_from_cents( int $value ): float {
 		return (float) ( $value / 100 );
 	}
 
@@ -46,8 +42,6 @@ class Helpers {
 	 * Format money to string.
 	 *
 	 * @param float $value Value.
-	 *
-	 * @return string
 	 */
 	public static function format_money( float $value ): string {
 		$currency_symbol    = get_woocommerce_currency_symbol();
@@ -65,10 +59,8 @@ class Helpers {
 	 * Base64 encode text.
 	 *
 	 * @param string $text Text.
-	 *
-	 * @return string
 	 */
-	public static function encode_text( string $text ) {
+	public static function encode_text( string $text ): string {
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 		return base64_encode( $text );
 	}
@@ -77,10 +69,8 @@ class Helpers {
 	 * Base64 decode text.
 	 *
 	 * @param string $text Text.
-	 *
-	 * @return string
 	 */
-	public static function decode_text( string $text ) {
+	public static function decode_text( string $text ): string {
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 		return base64_decode( $text );
 	}
@@ -92,7 +82,7 @@ class Helpers {
 	 *
 	 * @return string Sanitized HTML content.
 	 */
-	public static function sanitize_checkout_field( string $html ) {
+	public static function sanitize_checkout_field( string $html ): string {
 		return wp_kses(
 			html_entity_decode( $html ?? '' ),
 			array(
@@ -129,7 +119,7 @@ class Helpers {
 	 *
 	 * @return bool If WooCommerce is activated.
 	 */
-	public static function is_woocommerce_activated() {
+	public static function is_woocommerce_activated(): bool {
 		return class_exists( 'WooCommerce' ) || in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true );
 	}
 
@@ -138,7 +128,7 @@ class Helpers {
 	 *
 	 * @return bool If WCFM is activated.
 	 */
-	public static function is_wcfm_activated() {
+	public static function is_wcfm_activated(): bool {
 		return class_exists( 'WCFM' ) || in_array( 'wc-frontend-manager/wc_frontend_manager.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true );
 	}
 
@@ -147,7 +137,7 @@ class Helpers {
 	 *
 	 * @return bool If is localhost.
 	 */
-	public static function is_localhost() {
+	public static function is_localhost(): bool {
 		return wp_parse_url( get_site_url() )['host'] === 'localhost';
 	}
 
@@ -158,7 +148,7 @@ class Helpers {
 	 *
 	 * @return bool True if valid, false otherwise.
 	 */
-	public static function is_valid_cpf( $cpf ) {
+	public static function is_valid_cpf( string $cpf ): bool {
 		$validator = new CPF( $cpf );
 
 		return $validator->is_valid();
@@ -171,7 +161,7 @@ class Helpers {
 	 *
 	 * @return string Formatted CPF (000.000.000-00).
 	 */
-	public static function format_cpf( $cpf ) {
+	public static function format_cpf( string $cpf ): string {
 		$validator = new CPF( $cpf );
 
 		return $validator->format();
@@ -187,7 +177,7 @@ class Helpers {
 	 *
 	 * @return bool True if valid, false otherwise.
 	 */
-	public static function is_valid_cnpj( $cnpj ) {
+	public static function is_valid_cnpj( string $cnpj ): bool {
 		if ( self::get_constant_value( 'PAGBANK_FEATURE_FLAG_ALPHANUMERIC_CNPJ_ENABLED', false ) ) {
 			$validator = new AlphanumericCNPJ( $cnpj );
 
@@ -209,7 +199,7 @@ class Helpers {
 	 *
 	 * @return string Formatted CNPJ (00.000.000/0000-00 or XX.XXX.XXX/XXXX-XX).
 	 */
-	public static function format_cnpj( $cnpj ) {
+	public static function format_cnpj( string $cnpj ): string {
 		if ( self::get_constant_value( 'PAGBANK_FEATURE_FLAG_ALPHANUMERIC_CNPJ_ENABLED', false ) ) {
 			$validator = new AlphanumericCNPJ( $cnpj );
 
@@ -228,7 +218,7 @@ class Helpers {
 	 *
 	 * @return string|null Formatted CPF/CNPJ or null if invalid.
 	 */
-	public static function format_cpf_or_cnpj( $value ) {
+	public static function format_cpf_or_cnpj( string $value ): ?string {
 		$is_valid_cpf  = self::is_valid_cpf( $value );
 		$is_valid_cnpj = self::is_valid_cnpj( $value );
 
@@ -245,7 +235,7 @@ class Helpers {
 	 *
 	 * @return mixed The constant value or fallback.
 	 */
-	public static function get_constant_value( string $constant_name, $fallback = null ) {
+	public static function get_constant_value( string $constant_name, mixed $fallback = null ): mixed {
 		return \defined( $constant_name ) ? \constant( $constant_name ) : $fallback;
 	}
 
@@ -256,7 +246,7 @@ class Helpers {
 	 *
 	 * @return string String containing only numbers.
 	 */
-	public static function filter_only_numbers( string $value ) {
+	public static function filter_only_numbers( string $value ): string {
 		return preg_replace( '/[^0-9]/', '', $value );
 	}
 
@@ -303,17 +293,30 @@ class Helpers {
 	 *
 	 * @return array{type: string, value: string|null, is_valid: bool, error_message: string|null} Parsed data.
 	 */
-	public static function parse_cpf_or_cnpj( string $value ) {
+	public static function parse_cpf_or_cnpj( string $value ): array {
+		$digits        = self::filter_only_numbers( $value );
 		$is_valid_cpf  = self::is_valid_cpf( $value );
 		$is_valid_cnpj = self::is_valid_cnpj( $value );
 
 		$is_valid = $is_valid_cpf || $is_valid_cnpj;
 
+		// Determine error message based on validation result.
+		$error_message = null;
+		if ( ! $is_valid ) {
+			if ( strlen( $digits ) === 11 ) {
+				$error_message = __( 'CPF inválido. Verifique os dígitos informados.', 'pagbank-for-woocommerce' );
+			} elseif ( strlen( $digits ) === 14 ) {
+				$error_message = __( 'CNPJ inválido. Verifique os dígitos informados.', 'pagbank-for-woocommerce' );
+			} else {
+				$error_message = __( 'CPF/CNPJ inválido. Informe 11 dígitos para CPF ou 14 para CNPJ.', 'pagbank-for-woocommerce' );
+			}
+		}
+
 		return array(
 			'type'          => $is_valid_cpf ? 'cpf' : ( $is_valid_cnpj ? 'cnpj' : 'unknown' ),
-			'value'         => $is_valid_cpf ? self::filter_only_numbers( $value ) : ( $is_valid_cnpj ? self::filter_only_numbers( $value ) : null ),
+			'value'         => $is_valid ? $digits : null,
 			'is_valid'      => $is_valid,
-			'error_message' => $is_valid ? null : ( $is_valid_cpf ? __( 'CPF inválido. Verifique os dígitos informados.', 'pagbank-for-woocommerce' ) : ( $is_valid_cnpj ? __( 'CNPJ inválido. Verifique os dígitos informados.', 'pagbank-for-woocommerce' ) : __( 'CPF/CNPJ inválido. Informe 11 dígitos para CPF ou 14 para CNPJ.', 'pagbank-for-woocommerce' ) ) ),
+			'error_message' => $error_message,
 		);
 	}
 }

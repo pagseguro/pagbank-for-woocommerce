@@ -18,17 +18,15 @@ class PaymentGateways {
 
 	/**
 	 * Instance.
-	 *
-	 * @var PaymentGateways
 	 */
-	private static $instance = null;
+	private static ?PaymentGateways $instance = null;
 
 	/**
 	 * Gateway ids.
 	 *
-	 * @var array
+	 * @var array<string>
 	 */
-	public static $gateway_ids = array(
+	public static array $gateway_ids = array(
 		'pagbank_credit_card',
 		'pagbank_debit_card',
 		'pagbank_pix',
@@ -53,10 +51,8 @@ class PaymentGateways {
 	 *
 	 * @param \WP_REST_Response   $response The response object.
 	 * @param \WC_Payment_Gateway $gateway  The gateway object.
-	 *
-	 * @return \WP_REST_Response
 	 */
-	public function add_icon_to_rest_response( $response, $gateway ) {
+	public function add_icon_to_rest_response( \WP_REST_Response $response, \WC_Payment_Gateway $gateway ): \WP_REST_Response {
 		$data         = $response->get_data();
 		$data['icon'] = $gateway->icon ?? '';
 		$response->set_data( $data );
@@ -67,7 +63,7 @@ class PaymentGateways {
 	/**
 	 * Get instance.
 	 */
-	public static function get_instance() {
+	public static function get_instance(): PaymentGateways {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
@@ -79,10 +75,8 @@ class PaymentGateways {
 	 * Add gateways.
 	 *
 	 * @param array $methods Payment gateways.
-	 *
-	 * @return array
 	 */
-	public function add_gateways( $methods ): array {
+	public function add_gateways( array $methods ): array {
 		$methods[] = 'PagBank_WooCommerce\Gateways\CreditCardPaymentGateway';
 		$methods[] = 'PagBank_WooCommerce\Gateways\DebitCardPaymentGateway';
 		$methods[] = 'PagBank_WooCommerce\Gateways\BoletoPaymentGateway';
@@ -99,10 +93,8 @@ class PaymentGateways {
 	 * Enqueue scripts in admin.
 	 *
 	 * @param string $hook Hook.
-	 *
-	 * @return void
 	 */
-	public function admin_enqueue_scripts( $hook ) {
+	public function admin_enqueue_scripts( string $hook ): void {
 		if ( 'woocommerce_page_wc-settings' !== $hook ) {
 			return;
 		}
@@ -128,8 +120,6 @@ class PaymentGateways {
 
 	/**
 	 * Enqueue styles for gateway list page.
-	 *
-	 * @return void
 	 */
 	private function enqueue_gateway_list_styles(): void {
 		wp_enqueue_style(
@@ -153,8 +143,6 @@ class PaymentGateways {
 	 * Enqueue React gateway settings scripts.
 	 *
 	 * @param string $gateway_id Gateway ID.
-	 *
-	 * @return void
 	 */
 	private function enqueue_gateway_settings_scripts( string $gateway_id ): void {
 		$dependencies = array(

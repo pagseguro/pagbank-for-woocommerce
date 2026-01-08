@@ -20,10 +20,8 @@ class BlocksPaymentMethods {
 
 	/**
 	 * Instance.
-	 *
-	 * @var BlocksPaymentMethods
 	 */
-	private static $instance = null;
+	private static ?BlocksPaymentMethods $instance = null;
 
 	/**
 	 * Constructor.
@@ -34,10 +32,8 @@ class BlocksPaymentMethods {
 
 	/**
 	 * Get instance.
-	 *
-	 * @return BlocksPaymentMethods
 	 */
-	public static function get_instance() {
+	public static function get_instance(): BlocksPaymentMethods {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
@@ -48,14 +44,14 @@ class BlocksPaymentMethods {
 	/**
 	 * Register payment methods for WooCommerce Blocks.
 	 */
-	public function register_payment_methods() {
+	public function register_payment_methods(): void {
 		if ( ! class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
 			return;
 		}
 
 		add_action(
 			'woocommerce_blocks_payment_method_type_registration',
-			function ( PaymentMethodRegistry $payment_method_registry ) {
+			function ( PaymentMethodRegistry $payment_method_registry ): void {
 				$payment_method_registry->register( new PixBlocksSupport() );
 				$payment_method_registry->register( new BoletoBlocksSupport() );
 				$payment_method_registry->register( new CreditCardBlocksSupport() );

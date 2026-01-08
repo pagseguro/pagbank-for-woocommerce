@@ -30,7 +30,6 @@ use PagBank_WooCommerce\Presentation\Hooks;
 use PagBank_WooCommerce\Presentation\OrderStatusApi;
 use PagBank_WooCommerce\Presentation\PaymentGateways;
 use PagBank_WooCommerce\Presentation\SettingsApi;
-use PagBank_WooCommerce\Presentation\PaymentGatewaysFields;
 use PagBank_WooCommerce\Presentation\WebhookHandler;
 
 define( 'PAGBANK_WOOCOMMERCE_FILE_PATH', __FILE__ );
@@ -39,14 +38,14 @@ define( 'PAGBANK_WOOCOMMERCE_TEMPLATES_PATH', plugin_dir_path( PAGBANK_WOOCOMMER
 
 add_action(
 	'before_woocommerce_init',
-	function () {
+	function (): void {
 		if ( class_exists( FeaturesUtil::class ) ) {
 			FeaturesUtil::declare_compatibility( 'custom_order_tables', PAGBANK_WOOCOMMERCE_FILE_PATH, true );
 		}
 	}
 );
 
-( function () {
+( function (): void {
 	$autoload_filepath = __DIR__ . '/vendor/autoload.php';
 
 	if ( file_exists( $autoload_filepath ) ) {
@@ -57,7 +56,6 @@ add_action(
 		return;
 	}
 
-	PaymentGatewaysFields::get_instance();
 	PaymentGateways::get_instance();
 	Hooks::get_instance();
 	ConnectAjaxApi::get_instance();

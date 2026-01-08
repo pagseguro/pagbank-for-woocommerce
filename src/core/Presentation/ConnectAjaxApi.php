@@ -24,10 +24,8 @@ class ConnectAjaxApi {
 
 	/**
 	 * Instance.
-	 *
-	 * @var ConnectAjaxApi
 	 */
-	private static $instance = null;
+	private static ?ConnectAjaxApi $instance = null;
 
 	/**
 	 * Init.
@@ -41,7 +39,7 @@ class ConnectAjaxApi {
 	/**
 	 * Get instance.
 	 */
-	public static function get_instance() {
+	public static function get_instance(): ConnectAjaxApi {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}

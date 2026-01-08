@@ -25,10 +25,8 @@ class WcfmIntegration {
 
 	/**
 	 * Instance.
-	 *
-	 * @var WcfmIntegration
 	 */
-	private static $instance = null;
+	private static ?WcfmIntegration $instance = null;
 
 	/**
 	 * Constructor.
@@ -47,7 +45,7 @@ class WcfmIntegration {
 	/**
 	 * Get instance.
 	 */
-	public static function get_instance() {
+	public static function get_instance(): WcfmIntegration {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
@@ -59,10 +57,8 @@ class WcfmIntegration {
 	 * Display the vendor settings in WCFM dashboard.
 	 *
 	 * @param int $user_id The user ID.
-	 *
-	 * @return void
 	 */
-	public function payments_settings( $user_id ) {
+	public function payments_settings( int $user_id ): void {
 		wc_get_template(
 			'my-account/legacy/wcfm-payment-settings.php',
 			array(
@@ -79,10 +75,8 @@ class WcfmIntegration {
 	 *
 	 * @param int   $user_id    The user ID.
 	 * @param array $form       The form data.
-	 *
-	 * @return void
 	 */
-	public function save_vendor_settings( $user_id, $form ) {
+	public function save_vendor_settings( int $user_id, array $form ): void {
 		if ( isset( $form['payment']['pagbank']['account_id'] ) ) {
 			update_user_meta( $user_id, 'pagbank_account_id', sanitize_text_field( $form['payment']['pagbank']['account_id'] ) );
 		}
@@ -93,9 +87,8 @@ class WcfmIntegration {
 	 *
 	 * @param bool       $is_purchasable Whether the product is purchasable.
 	 * @param WC_Product $product     The product object.
-	 * @return bool
 	 */
-	public function disable_disconnected_users_product( bool $is_purchasable, WC_Product $product ) {
+	public function disable_disconnected_users_product( bool $is_purchasable, WC_Product $product ): bool {
 		if ( ! $is_purchasable ) {
 			return $is_purchasable;
 		}
@@ -120,15 +113,14 @@ class WcfmIntegration {
 	 *
 	 * @param WC_Order                                                          $order The order object.
 	 * @param (CreditCardPaymentGateway|BoletoPaymentGateway|PixPaymentGateway) $gateway The gateway class.
-	 * @return mixed
 	 */
-	private function get_splits_payment_data( WC_Order $order, $gateway ) {
+	private function get_splits_payment_data( WC_Order $order, CreditCardPaymentGateway|BoletoPaymentGateway|PixPaymentGateway $gateway ): mixed {
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase -- ignore for $WCFMmp
 		global $WCFMmp;
 
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase -- ignore for $WCFMmp
 		if ( ! $WCFMmp ) {
-			return;
+			return null;
 		}
 
 		$receivers_by_account = array();
@@ -138,7 +130,7 @@ class WcfmIntegration {
 		$vendor_wise_gross_sales = $WCFMmp->wcfmmp_commission->wcfmmp_split_pay_vendor_wise_gross_sales( $order );
 
 		if ( count( $vendor_wise_gross_sales ) === 0 ) {
-			return;
+			return null;
 		}
 
 		foreach ( $vendor_wise_gross_sales as $vendor_id => $gross_sales ) {
@@ -160,7 +152,7 @@ class WcfmIntegration {
 		}
 
 		if ( $total_commission === 0 ) {
-			return;
+			return null;
 		}
 
 		$connect_data     = $gateway->connect->get_data();
@@ -197,9 +189,8 @@ class WcfmIntegration {
 	 * @param mixed                    $data  The order data.
 	 * @param WC_Order                 $order The order object.
 	 * @param CreditCardPaymentGateway $gateway The credit card gateway class.
-	 * @return mixed
 	 */
-	public function card_payment_data( $data, WC_Order $order, CreditCardPaymentGateway $gateway ) {
+	public function card_payment_data( mixed $data, WC_Order $order, CreditCardPaymentGateway $gateway ): mixed {
 		$splits = $this->get_splits_payment_data( $order, $gateway );
 
 		if ( $splits && count( $splits['receivers'] ) > 1 ) {
@@ -215,9 +206,8 @@ class WcfmIntegration {
 	 * @param mixed             $data  The order data.
 	 * @param WC_Order          $order   The order object.
 	 * @param PixPaymentGateway $gateway The Pix gateway class.
-	 * @return mixed
 	 */
-	public function pix_payment_data( $data, WC_Order $order, PixPaymentGateway $gateway ) {
+	public function pix_payment_data( mixed $data, WC_Order $order, PixPaymentGateway $gateway ): mixed {
 		$splits = $this->get_splits_payment_data( $order, $gateway );
 
 		if ( $splits ) {
@@ -233,9 +223,8 @@ class WcfmIntegration {
 	 * @param mixed                $data    The order data.
 	 * @param WC_Order             $order   The order object.
 	 * @param BoletoPaymentGateway $gateway The Boleto gateway class.
-	 * @return mixed
 	 */
-	public function boleto_payment_data( $data, WC_Order $order, BoletoPaymentGateway $gateway ) {
+	public function boleto_payment_data( mixed $data, WC_Order $order, BoletoPaymentGateway $gateway ): mixed {
 		$splits = $this->get_splits_payment_data( $order, $gateway );
 
 		if ( $splits ) {
@@ -249,9 +238,8 @@ class WcfmIntegration {
 	 * Process the withdrawal of the vendor commission.
 	 *
 	 * @param WC_Order $order The order that was completed.
-	 * @return void
 	 */
-	public function process_withdraw( WC_Order $order ) {
+	public function process_withdraw( WC_Order $order ): void {
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase -- ignore for $WCFMmp
 		global $wpdb, $WCFMmp;
 
@@ -299,9 +287,8 @@ class WcfmIntegration {
 	 *
 	 * @param mixed    $should_process_order_refund The result of the previous checks.
 	 * @param WC_Order $order                       The order to be refunded.
-	 * @return mixed
 	 */
-	public function should_process_order_refund( $should_process_order_refund, WC_Order $order ) {
+	public function should_process_order_refund( mixed $should_process_order_refund, WC_Order $order ): mixed {
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase -- ignore for $WCFMmp
 		global $WCFMmp;
 
