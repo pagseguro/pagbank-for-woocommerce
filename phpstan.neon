@@ -3,7 +3,7 @@ includes:
     - phpstan-baseline.neon
 
 parameters:
-    level: 2
+    level: 3
     phpVersion: 74000
     paths:
         - src/core
@@ -12,6 +12,10 @@ parameters:
     bootstrapFiles:
         - phpstan-bootstrap.php
         - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
+    # WordPress functions that terminate execution (call wp_die internally)
+    earlyTerminatingFunctionCalls:
+        - wp_send_json_error
+        - wp_send_json_success
     ignoreErrors:
         # Action/filter callbacks can return values that are ignored
         - '#Action callback returns .+ but should not return anything#'
