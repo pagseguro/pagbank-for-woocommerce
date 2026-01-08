@@ -6,15 +6,158 @@
 	<config name="minimum_supported_wp_version" value="5.3" />
 	<config name="testVersion" value="7.4-" />
 
-	<!-- Custom sniffs for PagBank -->
-	<rule ref="./phpcs-sniffs/PagBankStandard"/>
-
 	<!-- Ensure implicitly nullable parameters are detected (deprecated in PHP 8.4) -->
-	<rule ref="PagBankStandard.FunctionDeclarations.ImplicitlyNullableParam">
+	<rule ref="SlevomatCodingStandard.TypeHints.NullableTypeForNullDefaultValue">
 		<type>error</type>
 	</rule>
 
-	<!-- Rules -->
+	<!-- ======================= -->
+	<!-- SECURITY RULES          -->
+	<!-- ======================= -->
+
+	<!-- Ensure all output is properly escaped -->
+	<rule ref="WordPress.Security.EscapeOutput">
+		<type>error</type>
+	</rule>
+
+	<!-- Ensure nonces are verified in form/AJAX handlers -->
+	<rule ref="WordPress.Security.NonceVerification">
+		<type>error</type>
+	</rule>
+
+	<!-- Ensure all input is validated and sanitized -->
+	<rule ref="WordPress.Security.ValidatedSanitizedInput">
+		<type>error</type>
+	</rule>
+
+	<!-- Ensure SQL queries use prepared statements -->
+	<rule ref="WordPress.DB.PreparedSQL">
+		<type>error</type>
+	</rule>
+
+	<!-- ======================= -->
+	<!-- CODE QUALITY RULES      -->
+	<!-- ======================= -->
+
+	<!-- Limit cyclomatic complexity (max 10, absolute max 35 for legacy complex functions) -->
+	<rule ref="Generic.Metrics.CyclomaticComplexity">
+		<properties>
+			<property name="complexity" value="10"/>
+			<property name="absoluteComplexity" value="35"/>
+		</properties>
+	</rule>
+
+	<!-- Limit nesting level (max 4) -->
+	<rule ref="Generic.Metrics.NestingLevel">
+		<properties>
+			<property name="absoluteNestingLevel" value="4"/>
+		</properties>
+	</rule>
+
+	<!-- Limit line length (120 chars warning, 200 chars error) -->
+	<rule ref="Generic.Files.LineLength">
+		<properties>
+			<property name="lineLimit" value="120"/>
+			<property name="absoluteLineLimit" value="200"/>
+		</properties>
+	</rule>
+
+	<!-- Ensure consistent function argument spacing -->
+	<rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing">
+		<properties>
+			<property name="equalsSpacing" value="1"/>
+		</properties>
+	</rule>
+
+	<!-- ======================= -->
+	<!-- MODERN PHP RULES        -->
+	<!-- ======================= -->
+
+	<!-- Require return type hints -->
+	<rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint">
+		<properties>
+			<property name="enableObjectTypeHint" value="true"/>
+		</properties>
+		<exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification"/>
+	</rule>
+
+	<!-- Require property type hints (except when overriding parent properties) -->
+	<rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint">
+		<properties>
+			<property name="enableNativeTypeHint" value="true"/>
+		</properties>
+		<exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingTraversableTypeHintSpecification"/>
+		<!-- Don't require type hints when parent property doesn't have them -->
+		<exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint"/>
+	</rule>
+
+	<!-- Require parameter type hints (except when overriding parent methods) -->
+	<rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint">
+		<properties>
+			<property name="enableObjectTypeHint" value="true"/>
+			<property name="enableMixedTypeHint" value="false"/>
+		</properties>
+		<exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingTraversableTypeHintSpecification"/>
+		<!-- Don't require type hints when parent method doesn't have them -->
+		<exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint"/>
+	</rule>
+
+	<!-- Use ::class instead of strings for class names -->
+	<rule ref="SlevomatCodingStandard.Classes.ModernClassNameReference"/>
+
+	<!-- ======================= -->
+	<!-- WORDPRESS/WOOCOMMERCE   -->
+	<!-- ======================= -->
+
+	<!-- Warn about deprecated WordPress functions -->
+	<rule ref="WordPress.WP.DeprecatedFunctions">
+		<type>error</type>
+	</rule>
+
+	<!-- Prevent overriding global variables -->
+	<rule ref="WordPress.WP.GlobalVariablesOverride">
+		<type>error</type>
+	</rule>
+
+	<!-- Use WordPress date functions -->
+	<rule ref="WordPress.DateTime.RestrictedFunctions">
+		<type>warning</type>
+	</rule>
+
+	<!-- Alert about debug functions in production -->
+	<rule ref="WordPress.PHP.DevelopmentFunctions">
+		<type>error</type>
+	</rule>
+
+	<!-- ======================= -->
+	<!-- DOCUMENTATION RULES     -->
+	<!-- ======================= -->
+
+	<!-- Require docblocks for public functions, but don't require @return/@param when native types exist -->
+	<rule ref="Squiz.Commenting.FunctionComment">
+		<properties>
+			<property name="skipIfInheritdoc" value="true"/>
+		</properties>
+		<!-- Don't require @return when native return type exists -->
+		<exclude name="Squiz.Commenting.FunctionComment.MissingReturn"/>
+		<!-- Don't require @param descriptions -->
+		<exclude name="Squiz.Commenting.FunctionComment.MissingParamComment"/>
+		<!-- Don't require @param tags when native param types exist -->
+		<exclude name="Squiz.Commenting.FunctionComment.MissingParamTag"/>
+	</rule>
+
+	<!-- Require docblocks for classes -->
+	<rule ref="Squiz.Commenting.ClassComment"/>
+
+	<!-- Don't require @var for member variables when native type exists -->
+	<rule ref="Squiz.Commenting.VariableComment">
+		<exclude name="Squiz.Commenting.VariableComment.MissingVar"/>
+	</rule>
+
+	<!-- ======================= -->
+	<!-- BASE RULES              -->
+	<!-- ======================= -->
+
 	<rule ref="WooCommerce-Core" />
 
 	<rule ref="WordPress.WP.Capabilities">
@@ -48,11 +191,9 @@
 		<exclude name="WooCommerce.Commenting.CommentHooks.MissingSinceComment" />
 	</rule>
 
-	<rule ref="Squiz.Commenting.FunctionComment">
-		<properties>
-			<property name="skipIfInheritdoc" value="true" />
-		</properties>
-	</rule>
+	<!-- ======================= -->
+	<!-- FILE CONFIGURATION      -->
+	<!-- ======================= -->
 
 	<arg name="extensions" value="php" />
 	<file>src/core</file>
