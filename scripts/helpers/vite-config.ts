@@ -42,7 +42,6 @@ export const externals: Record<string, string> = {
 };
 
 export const entries: Record<string, string> = {
-	"admin/admin-settings": "src/ui/entries/admin/admin-settings.ts",
 	"admin/gateway-settings": "src/ui/entries/admin/gateway-settings/index.tsx",
 	"public/order-received/payment-instructions":
 		"src/ui/entries/public/order-received/payment-instructions/index.tsx",

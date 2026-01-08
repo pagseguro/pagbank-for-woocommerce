@@ -11,17 +11,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use Exception;
 use PagBank_WooCommerce\Presentation\Api;
-use PagBank_WooCommerce\Presentation\ApiHelpers;
 use PagBank_WooCommerce\Presentation\Connect;
-use PagBank_WooCommerce\Presentation\PaymentGatewaysFields;
-use PagBank_WooCommerce\Presentation\PaymentToken;
-use WC_Order;
-use WC_Payment_Gateway_CC;
-use WC_Payment_Tokens;
-use WooCommerce;
-use WP_Error;
 /**
  * Class DebitCardPaymentGateway.
  */
@@ -86,7 +77,7 @@ class DebitCardPaymentGateway extends CreditCardPaymentGateway {
 			),
 			'pagbank_connect' => array(
 				'title'       => __( 'Conta PagBank', 'pagbank-for-woocommerce' ),
-				'type'        => 'pagbank_connect',
+				'type'        => 'text',
 				'description' => __( 'Conecte a sua conta PagBank para aceitar pagamentos.', 'pagbank-for-woocommerce' ),
 			),
 			'title'           => array(

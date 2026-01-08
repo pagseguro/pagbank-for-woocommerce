@@ -18,7 +18,6 @@ use PagBank_WooCommerce\Gateways\Traits\ReactSettingsTrait;
 use PagBank_WooCommerce\Presentation\Api;
 use PagBank_WooCommerce\Presentation\ApiHelpers;
 use PagBank_WooCommerce\Presentation\Connect;
-use PagBank_WooCommerce\Presentation\PaymentGatewaysFields;
 use WC_Order;
 use WC_Payment_Gateway;
 use WP_Error;
@@ -119,7 +118,7 @@ class CheckoutPaymentGateway extends WC_Payment_Gateway {
 			),
 			'pagbank_connect'    => array(
 				'title'       => __( 'Conta PagBank', 'pagbank-for-woocommerce' ),
-				'type'        => 'pagbank_connect',
+				'type'        => 'text',
 				'description' => __( 'Conecte a sua conta PagBank para aceitar pagamentos.', 'pagbank-for-woocommerce' ),
 			),
 			'title'              => array(
@@ -391,19 +390,5 @@ class CheckoutPaymentGateway extends WC_Payment_Gateway {
 		} else {
 			return $html . parent::generate_settings_html( $form_fields, $echo_output );
 		}
-	}
-
-	/**
-	 * Generate HTML for PagBank Connect field.
-	 *
-	 * @param string $key   Field key.
-	 * @param mixed  $value Field value.
-	 *
-	 * @return string HTML output.
-	 */
-	public function generate_pagbank_connect_html( $key, $value ) {
-		$pagbank_gateways_fields = PaymentGatewaysFields::get_instance();
-
-		return $pagbank_gateways_fields->generate_pagbank_connect_html( '', $key, $value, $this );
 	}
 }
