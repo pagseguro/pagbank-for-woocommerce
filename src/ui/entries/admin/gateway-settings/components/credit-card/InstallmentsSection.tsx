@@ -27,6 +27,21 @@ const INSTALLMENT_OPTIONS = [
 	{ label: "12x", value: "12" },
 ];
 
+const INTEREST_FREE_OPTIONS = [
+	{ label: "1x", value: "0" },
+	{ label: "2x", value: "2" },
+	{ label: "3x", value: "3" },
+	{ label: "4x", value: "4" },
+	{ label: "5x", value: "5" },
+	{ label: "6x", value: "6" },
+	{ label: "7x", value: "7" },
+	{ label: "8x", value: "8" },
+	{ label: "9x", value: "9" },
+	{ label: "10x", value: "10" },
+	{ label: "11x", value: "11" },
+	{ label: "12x", value: "12" },
+];
+
 export const InstallmentsSection = () => {
 	const { form } = useFormContext();
 
@@ -51,21 +66,32 @@ export const InstallmentsSection = () => {
 	}) as string;
 
 	const isInstallmentsEnabled = installmentsEnabled === "yes";
-	const isTransferOfInterestEnabled = transferOfInterestEnabled === "yes";
+	const canTransferInterest = maximumInstallments !== "1";
+	const isTransferOfInterestEnabled = transferOfInterestEnabled === "yes" && canTransferInterest;
 
 	// Track if this is the initial render to avoid adjusting values on load
 	const isInitialRender = useRef(true);
 
-	// Adjust interest-free installments when max installments decreases
+	// Disable transfer of interest when max installments is 1
 	useEffect(() => {
-		// Skip adjustment on initial render
 		if (isInitialRender.current) {
 			isInitialRender.current = false;
 			return;
 		}
 
+		if (!canTransferInterest && transferOfInterestEnabled === "yes") {
+			form.setValue(
+				"transfer_of_interest_enabled" as keyof GatewaySettings,
+				"no",
+			);
+			form.setValue(
+				"maximum_installments_interest_free" as keyof GatewaySettings,
+				"0",
+			);
+		}
+
 		const maxInstallments = Number.parseInt(maximumInstallments, 10) || 12;
-		const currentInterestFree = Number.parseInt(maximumInstallmentsInterestFree, 10) || 1;
+		const currentInterestFree = Number.parseInt(maximumInstallmentsInterestFree, 10) || 0;
 
 		// Only adjust if current interest-free value exceeds the new max
 		if (currentInterestFree > maxInstallments) {
@@ -74,12 +100,15 @@ export const InstallmentsSection = () => {
 				String(maxInstallments),
 			);
 		}
-	}, [maximumInstallments, maximumInstallmentsInterestFree, form]);
+	}, [maximumInstallments, maximumInstallmentsInterestFree, form, canTransferInterest, transferOfInterestEnabled]);
 
 	// Filter options for interest-free installments (can't be more than max installments)
 	const interestFreeOptions = useMemo(() => {
 		const maxValue = Number.parseInt(maximumInstallments, 10) || 12;
-		return INSTALLMENT_OPTIONS.filter((opt) => Number.parseInt(opt.value, 10) <= maxValue);
+		return INTEREST_FREE_OPTIONS.filter((opt) => {
+			const val = Number.parseInt(opt.value, 10);
+			return val === 0 || val <= maxValue;
+		});
 	}, [maximumInstallments]);
 
 	return (
@@ -109,16 +138,18 @@ export const InstallmentsSection = () => {
 					/>
 				</div>
 
-				<div className="pagbank-settings-field">
-					<FormToggle
-						name={"transfer_of_interest_enabled" as keyof GatewaySettings}
-						label={__("Repasse de juros ao comprador", "pagbank-for-woocommerce")}
-						help={__(
-							"Quando ativado, os juros do parcelamento serão repassados ao comprador.",
-							"pagbank-for-woocommerce",
-						)}
-					/>
-				</div>
+				<AnimatedField visible={canTransferInterest}>
+					<div className="pagbank-settings-field">
+						<FormToggle
+							name={"transfer_of_interest_enabled" as keyof GatewaySettings}
+							label={__("Repasse de juros ao comprador", "pagbank-for-woocommerce")}
+							help={__(
+								"Quando ativado, os juros do parcelamento serão repassados ao comprador.",
+								"pagbank-for-woocommerce",
+							)}
+						/>
+					</div>
+				</AnimatedField>
 
 				<AnimatedField visible={isTransferOfInterestEnabled}>
 					<div className="pagbank-settings-field">

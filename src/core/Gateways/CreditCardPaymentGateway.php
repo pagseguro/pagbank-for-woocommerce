@@ -132,7 +132,8 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 		$this->installments_enabled               = 'yes' === $this->get_option( 'installments_enabled' );
 		$this->maximum_installments               = (int) $this->get_option( 'maximum_installments' );
 		$this->transfer_of_interest_enabled       = 'yes' === $this->get_option( 'transfer_of_interest_enabled' );
-		$this->maximum_installments_interest_free = (int) $this->get_option( 'maximum_installments_interest_free' );
+		$maximum_installments_interest_free       = (int) $this->get_option( 'maximum_installments_interest_free' );
+		$this->maximum_installments_interest_free = 1 === $maximum_installments_interest_free ? 0 : $maximum_installments_interest_free;
 
 		$this->threeds_enabled = 'yes' === $this->get_option( 'threeds_enabled' );
 
@@ -156,21 +157,19 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 * If PAGBANK_FEATURE_FLAG_18X_INSTALLMENTS_ENABLED constant is defined,
 	 * extends the options to include 13x through 18x.
 	 *
-	 * @param bool $include_zero_option Whether to include a '0' option that maps to '1x' (for interest-free field).
-	 *
 	 * @return array Associative array of installment options.
 	 */
-	private function get_installment_options( bool $include_zero_option = false ): array {
+	private function get_installment_options( bool $is_interest_free = false ): array {
 		$options = array();
+		$max     = true === Helpers::get_constant_value( 'PAGBANK_FEATURE_FLAG_18X_INSTALLMENTS_ENABLED' ) ? 18 : 12;
 
-		if ( $include_zero_option ) {
+		if ( $is_interest_free ) {
 			$options['0'] = '1x';
+			$options['1'] = '1x'; // Kept for backwards compatibility (converted to 0 at runtime).
 			$start        = 2;
 		} else {
 			$start = 1;
 		}
-
-		$max = true === Helpers::get_constant_value( 'PAGBANK_FEATURE_FLAG_18X_INSTALLMENTS_ENABLED' ) ? 18 : 12;
 
 		for ( $i = $start; $i <= $max; $i++ ) {
 			$options[ (string) $i ] = "{$i}x";
@@ -266,7 +265,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				'title'       => __( 'Máximo de parcelas sem juros', 'pagbank-for-woocommerce' ),
 				'type'        => 'select',
 				'description' => __( 'Isso irá definir a quantidade de parcelas que serão sem juros.', 'pagbank-for-woocommerce' ),
-				'default'     => '12',
+				'default'     => '0',
 				'options'     => $this->get_installment_options( true ),
 				'desc_tip'    => true,
 			),
