@@ -287,6 +287,27 @@ class Helpers {
 	}
 
 	/**
+	 * Check if the checkout page uses WooCommerce Blocks.
+	 *
+	 * @return bool True if using Blocks checkout, false for legacy checkout.
+	 */
+	public static function is_checkout_block(): bool {
+		$checkout_page_id = wc_get_page_id( 'checkout' );
+
+		if ( $checkout_page_id <= 0 ) {
+			return false;
+		}
+
+		$checkout_page = get_post( $checkout_page_id );
+
+		if ( ! $checkout_page ) {
+			return false;
+		}
+
+		return has_block( 'woocommerce/checkout', $checkout_page );
+	}
+
+	/**
 	 * Parse CPF or CNPJ value and return structured data.
 	 *
 	 * @param string $value CPF or CNPJ number (with or without formatting).
