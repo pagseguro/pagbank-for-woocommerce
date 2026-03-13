@@ -474,7 +474,6 @@ wcForms.checkout.on("checkout_place_order_pagbank_credit_card", async () => {
 });
 
 const bootstrapCheckout = () => {
-	console.log("bootstrapCheckout");
 	try {
 		const shouldContinue =
 			PagBankCheckoutCreditCardVariables.settings.installments_enabled &&
@@ -612,15 +611,12 @@ const bootstrapCheckout = () => {
 
 		paymentTokensInputs.forEach((paymentTokenInput) => {
 			paymentTokenInput.addEventListener("change", (event) => {
-				console.log("change payment token", event);
 				const target = event.target as HTMLInputElement;
 				if (target.checked) {
 					handleChangePaymentToken(target.value);
 				}
 			});
 		});
-
-		console.log("paymentTokensInputs", paymentTokensInputs);
 
 		const init = (): void => {
 			const selectedPaymentToken = document.querySelector(
