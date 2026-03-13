@@ -320,14 +320,6 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			true
 		);
 
-		wp_enqueue_style(
-			'pagbank-checkout-credit-card',
-			plugins_url( 'dist/styles/legacy/checkout-credit-card.css', PAGBANK_WOOCOMMERCE_FILE_PATH ),
-			array(),
-			PAGBANK_WOOCOMMERCE_VERSION,
-			'all'
-		);
-
 		wp_scripts()->add_data( 'pagbank-checkout-credit-card', 'pagbank_script', true );
 
 		$connect_data = $this->connect->get_data();
