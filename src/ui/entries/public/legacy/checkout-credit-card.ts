@@ -465,37 +465,15 @@ wcForms.orderReview.on("submit", async (event: JQuery.SubmitEvent) => {
 	}
 });
 
-let isProcessing = false;
-let cardProcessed = false;
+wcForms.checkout.on("checkout_place_order_pagbank_credit_card", async () => {
+	const success = await processEncryptedCard();
 
-wcForms.checkout.on("checkout_place_order_pagbank_credit_card", () => {
-	if (cardProcessed) {
-		cardProcessed = false;
-		return true;
+	if (success) {
+		wcForms.checkout.trigger("submit");
 	}
-
-	if (isProcessing) {
-		return false;
-	}
-
-	isProcessing = true;
-
-	processEncryptedCard()
-		.then((success) => {
-			isProcessing = false;
-			if (success) {
-				cardProcessed = true;
-				wcForms.checkout.trigger("submit");
-			}
-		})
-		.catch(() => {
-			isProcessing = false;
-		});
-
-	return false;
 });
 
-const bootstrap = () => {
+const bootstrapOrderReview = () => {
 	try {
 		const shouldContinue =
 			PagBankCheckoutCreditCardVariables.settings.installments_enabled &&
@@ -664,12 +642,12 @@ const bootstrap = () => {
 	}
 };
 
-jQuery(document.body).on("updated_checkout", bootstrap);
+jQuery(document.body).on("updated_checkout", bootstrapOrderReview);
 
-jQuery(document).ready(() => {
+jQuery(() => {
 	const isOrderReview = jQuery(document.body).hasClass("woocommerce-order-pay");
 
 	if (isOrderReview) {
-		bootstrap();
+		bootstrapOrderReview();
 	}
 });
