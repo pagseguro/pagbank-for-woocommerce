@@ -793,8 +793,10 @@ class Api {
 		}
 
 		// Even with the `format_log_entry` filter, the UI breaks the `reference_id` escaped JSON, so we need to remove it from the context.
-		unset( $decoded_body['reference_id'] );
-		unset( $decoded_body['charges'][0]['reference_id'] );
+		if ( is_array( $decoded_body ) ) {
+			unset( $decoded_body['reference_id'] );
+			unset( $decoded_body['charges'][0]['reference_id'] );
+		}
 
 		$this->log(
 			'API Response (' . $response_code . ')',
