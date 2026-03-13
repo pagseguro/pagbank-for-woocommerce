@@ -16,6 +16,7 @@ use PagBank_WooCommerce\Gateways\Traits\ReactSettingsTrait;
 use PagBank_WooCommerce\Presentation\Api;
 use PagBank_WooCommerce\Presentation\ApiHelpers;
 use PagBank_WooCommerce\Presentation\Connect;
+use PagBank_WooCommerce\Presentation\Helpers;
 use WC_Order;
 use WC_Payment_Gateway;
 use WP_Error;
@@ -267,6 +268,11 @@ class ApplePayPaymentGateway extends WC_Payment_Gateway {
 		$is_available = ( 'yes' === $this->enabled );
 
 		if ( ! $is_available ) {
+			return false;
+		}
+
+		// Apple Pay is only available on Blocks checkout.
+		if ( ! Helpers::is_checkout_block() ) {
 			return false;
 		}
 
