@@ -21,6 +21,13 @@ use Exception;
 class Connect {
 
 	/**
+	 * The default sandbox application ID.
+	 *
+	 * @var string
+	 */
+	private const DEFAULT_SANDBOX_APPLICATION_ID = 'fa1553af-5f0c-4ff2-92c3-a0dd8984b6a1';
+
+	/**
 	 * The environment.
 	 *
 	 * @var string production or sandbox.
@@ -75,6 +82,12 @@ class Connect {
 		);
 		// phpcs:enable Generic.Files.LineLength
 
+		// Merge custom applications if defined.
+		$custom_applications = Helpers::get_constant_value( 'PAGBANK_CUSTOM_APPLICATIONS', array() );
+		if ( is_array( $custom_applications ) && ! empty( $custom_applications ) ) {
+			$applications = array_merge( $applications, $custom_applications );
+		}
+
 		if ( $environment ) {
 			return array_filter(
 				$applications,
@@ -85,6 +98,21 @@ class Connect {
 		}
 
 		return $applications;
+	}
+
+	/**
+	 * Get the default sandbox application ID.
+	 *
+	 * This method allows customization of the default sandbox application ID
+	 * via the PAGBANK_SANDBOX_APPLICATION_ID constant.
+	 *
+	 * @return string The default sandbox application ID.
+	 */
+	public static function get_default_sandbox_application_id(): string {
+		return Helpers::get_constant_value(
+			'PAGBANK_SANDBOX_APPLICATION_ID',
+			self::DEFAULT_SANDBOX_APPLICATION_ID
+		);
 	}
 
 	/**

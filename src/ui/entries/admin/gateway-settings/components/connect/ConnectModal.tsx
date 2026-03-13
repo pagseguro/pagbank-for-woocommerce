@@ -17,9 +17,6 @@ interface ConnectModalProps {
 	isLoading: boolean;
 }
 
-// TODO: Get this application id from the localized settings.
-const SANDBOX_APPLICATION_ID = "fa1553af-5f0c-4ff2-92c3-a0dd8984b6a1";
-
 export const ConnectModal = ({
 	isOpen,
 	onClose,
@@ -48,7 +45,9 @@ export const ConnectModal = ({
 					</p>
 					<Button
 						variant="primary"
-						onClick={() => onConnect(SANDBOX_APPLICATION_ID)}
+						onClick={() =>
+							onConnect(window.pagbankSettings?.defaultSandboxApplicationId ?? "")
+						}
 						disabled={isLoading}
 						isBusy={isLoading}
 					>

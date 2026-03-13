@@ -173,15 +173,16 @@ class PaymentGateways {
 			'pagbank-gateway-settings',
 			'pagbankSettings',
 			array(
-				'gatewayId'           => $gateway_id,
-				'restUrl'             => rest_url(),
-				'nonce'               => wp_create_nonce( 'wp_rest' ),
-				'oauthNonce'          => wp_create_nonce( 'pagbank_woocommerce_oauth' ),
-				'ajaxUrl'             => admin_url( 'admin-ajax.php' ),
-				'isLocalhost'         => Helpers::is_localhost(),
-				'connectApplications' => Connect::get_connect_applications(),
-				'pluginUrl'           => plugins_url( '', PAGBANK_WOOCOMMERCE_FILE_PATH ),
-				'settingsUrl'         => admin_url( 'admin.php?page=wc-settings&tab=checkout&section=' ),
+				'gatewayId'                   => $gateway_id,
+				'restUrl'                     => rest_url(),
+				'nonce'                       => wp_create_nonce( 'wp_rest' ),
+				'oauthNonce'                  => wp_create_nonce( 'pagbank_woocommerce_oauth' ),
+				'ajaxUrl'                     => admin_url( 'admin-ajax.php' ),
+				'isLocalhost'                 => Helpers::is_localhost(),
+				'connectApplications'         => Connect::get_connect_applications(),
+				'defaultSandboxApplicationId' => Connect::get_default_sandbox_application_id(),
+				'pluginUrl'                   => plugins_url( '', PAGBANK_WOOCOMMERCE_FILE_PATH ),
+				'settingsUrl'                 => admin_url( 'admin.php?page=wc-settings&tab=checkout&section=' ),
 			)
 		);
 

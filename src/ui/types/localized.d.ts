@@ -55,6 +55,7 @@ interface PagBankSettingsData {
 		description: string;
 		fee: string;
 	}>;
+	defaultSandboxApplicationId?: string;
 }
 
 interface Window {
