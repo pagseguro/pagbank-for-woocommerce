@@ -7,6 +7,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 export const rootDir = resolve(__dirname, "../..");
 
 export const externals: Record<string, string> = {
+	// jQuery (use WooCommerce's global instance)
+	jquery: "jQuery",
 	// React dependencies
 	react: "React",
 	"react-dom": "ReactDOM",
