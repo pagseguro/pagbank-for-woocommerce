@@ -32,10 +32,27 @@ class PaymentGateways {
 		'pagbank_pix',
 		'pagbank_boleto',
 		'pagbank_pay_with_pagbank',
-		'pagbank_google_pay',
-		'pagbank_apple_pay',
 		'pagbank_checkout',
 	);
+
+	/**
+	 * Get all active gateway IDs, including feature-flagged gateways.
+	 *
+	 * @return array<string>
+	 */
+	public static function get_gateway_ids(): array {
+		$ids = self::$gateway_ids;
+
+		if ( Helpers::get_constant_value( 'PAGBANK_FEATURE_FLAG_GOOGLE_PAY_ENABLED', false ) ) {
+			$ids[] = 'pagbank_google_pay';
+		}
+
+		if ( Helpers::get_constant_value( 'PAGBANK_FEATURE_FLAG_APPLE_PAY_ENABLED', false ) ) {
+			$ids[] = 'pagbank_apple_pay';
+		}
+
+		return $ids;
+	}
 
 	/**
 	 * Init.
@@ -82,8 +99,15 @@ class PaymentGateways {
 		$methods[] = 'PagBank_WooCommerce\Gateways\BoletoPaymentGateway';
 		$methods[] = 'PagBank_WooCommerce\Gateways\PixPaymentGateway';
 		$methods[] = 'PagBank_WooCommerce\Gateways\PayWithPagBankGateway';
-		$methods[] = 'PagBank_WooCommerce\Gateways\GooglePayPaymentGateway';
-		$methods[] = 'PagBank_WooCommerce\Gateways\ApplePayPaymentGateway';
+
+		if ( Helpers::get_constant_value( 'PAGBANK_FEATURE_FLAG_GOOGLE_PAY_ENABLED', false ) ) {
+			$methods[] = 'PagBank_WooCommerce\Gateways\GooglePayPaymentGateway';
+		}
+
+		if ( Helpers::get_constant_value( 'PAGBANK_FEATURE_FLAG_APPLE_PAY_ENABLED', false ) ) {
+			$methods[] = 'PagBank_WooCommerce\Gateways\ApplePayPaymentGateway';
+		}
+
 		$methods[] = 'PagBank_WooCommerce\Gateways\CheckoutPaymentGateway';
 
 		return $methods;
@@ -110,7 +134,7 @@ class PaymentGateways {
 			return;
 		}
 
-		if ( ! in_array( $section, self::$gateway_ids, true ) ) {
+		if ( ! in_array( $section, self::get_gateway_ids(), true ) ) {
 			return;
 		}
 

@@ -8,6 +8,7 @@
 namespace PagBank_WooCommerce\Presentation\Blocks;
 
 use Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry;
+use PagBank_WooCommerce\Presentation\Helpers;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -57,8 +58,15 @@ class BlocksPaymentMethods {
 				$payment_method_registry->register( new CreditCardBlocksSupport() );
 				$payment_method_registry->register( new DebitCardBlocksSupport() );
 				$payment_method_registry->register( new PayWithPagBankBlocksSupport() );
-				$payment_method_registry->register( new GooglePayBlocksSupport() );
-				$payment_method_registry->register( new ApplePayBlocksSupport() );
+
+				if ( Helpers::get_constant_value( 'PAGBANK_FEATURE_FLAG_GOOGLE_PAY_ENABLED', false ) ) {
+					$payment_method_registry->register( new GooglePayBlocksSupport() );
+				}
+
+				if ( Helpers::get_constant_value( 'PAGBANK_FEATURE_FLAG_APPLE_PAY_ENABLED', false ) ) {
+					$payment_method_registry->register( new ApplePayBlocksSupport() );
+				}
+
 				$payment_method_registry->register( new CheckoutBlocksSupport() );
 			}
 		);
