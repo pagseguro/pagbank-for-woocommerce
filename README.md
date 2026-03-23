@@ -209,3 +209,24 @@ Caso o lojista não possua o identificador da conta preenchido, os produtos cada
 
 ### 1.2.6 - 2025-10-12 ###
 * Corrigido webhook em algumas instalações.
+
+### 2.0.0 - 2026-03-23 ###
+* Adicionado suporte ao WooCommerce Checkout Blocks para todos os métodos de pagamento.
+* Adicionado método de pagamento Cartão de Débito.
+* Adicionado método de pagamento "Pagar com PagBank" (redirecionamento).
+* Adicionado método de pagamento "Checkout PagBank" (redirecionamento).
+* Adicionado autenticação 3D Secure para pagamentos com cartão.
+* Adicionado exibição do Pix e boleto na página do pedido e no e-mail do cliente.
+* Adicionado código de barras escaneável nas instruções de pagamento do boleto.
+* Adicionado campo de celular com validação no checkout.
+* Adicionado validadores nativos de CPF e CNPJ.
+* Adicionado suporte a parcelamento em até 18x (necessário aprovação).
+* Adicionado página de configurações dos gateways com design moderno.
+* Adicionado ícones nos métodos de pagamento no checkout.
+* Melhorado sistema de logs.
+* Melhorado fluxo de checkout mobile para "Pagar com PagBank".
+* Melhorado tratamento de erros na conexão OAuth com PagBank.
+* Melhorado acessibilidade nos campos de cartão no checkout.
+* Corrigido processamento de webhook para status CANCELED.
+* Corrigido agregação de splits por conta no marketplace.
+* Corrigido compatibilidade com PHP 7.4.
