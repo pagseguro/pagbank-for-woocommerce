@@ -80,14 +80,8 @@ export const InstallmentsSection = () => {
 		}
 
 		if (!canTransferInterest && transferOfInterestEnabled === "yes") {
-			form.setValue(
-				"transfer_of_interest_enabled" as keyof GatewaySettings,
-				"no",
-			);
-			form.setValue(
-				"maximum_installments_interest_free" as keyof GatewaySettings,
-				"0",
-			);
+			form.setValue("transfer_of_interest_enabled" as keyof GatewaySettings, "no");
+			form.setValue("maximum_installments_interest_free" as keyof GatewaySettings, "0");
 		}
 
 		const maxInstallments = Number.parseInt(maximumInstallments, 10) || 12;
@@ -100,7 +94,13 @@ export const InstallmentsSection = () => {
 				String(maxInstallments),
 			);
 		}
-	}, [maximumInstallments, maximumInstallmentsInterestFree, form, canTransferInterest, transferOfInterestEnabled]);
+	}, [
+		maximumInstallments,
+		maximumInstallmentsInterestFree,
+		form,
+		canTransferInterest,
+		transferOfInterestEnabled,
+	]);
 
 	// Filter options for interest-free installments (can't be more than max installments)
 	const interestFreeOptions = useMemo(() => {

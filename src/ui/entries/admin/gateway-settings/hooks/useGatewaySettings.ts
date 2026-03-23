@@ -12,6 +12,7 @@ import type {
 	WCGatewayResponse,
 	WCGatewaySetting,
 } from "../schemas/settings";
+import { getSubmissionSchemaByGatewayId } from "../schemas/settings";
 
 // Field types that should not be saved via REST API (custom/display-only fields)
 const EXCLUDED_FIELD_TYPES = ["pagbank_connect"];
@@ -90,11 +91,15 @@ const saveGatewaySettings = async ({
 	fieldTypes,
 	fieldDefaults,
 }: SaveSettingsParams): Promise<WCGatewayResponse> => {
+	// Normalize settings through submission schema (resets hidden fields to defaults)
+	const submissionSchema = getSubmissionSchemaByGatewayId(gatewayId);
+	const normalizedSettings = submissionSchema.parse(settings);
+
 	// Filter out fields that should not be saved via REST API
 	const filteredSettings: Record<string, string> = {};
 	const rootLevelData: Record<string, string | boolean> = {};
 
-	for (const [key, value] of Object.entries(settings) as [string, string][]) {
+	for (const [key, value] of Object.entries(normalizedSettings) as [string, string][]) {
 		// Skip excluded field names
 		if (EXCLUDED_FIELD_NAMES.includes(key)) {
 			continue;
@@ -117,7 +122,8 @@ const saveGatewaySettings = async ({
 
 		// Use default value if field is empty (required for select fields)
 		const fieldDefault = fieldDefaults[key];
-		filteredSettings[key] = value === "" && fieldDefault ? fieldDefault : value;
+		filteredSettings[key] =
+			value === "" && fieldDefault != null && fieldDefault !== "" ? fieldDefault : value;
 	}
 
 	return apiFetch<WCGatewayResponse>({

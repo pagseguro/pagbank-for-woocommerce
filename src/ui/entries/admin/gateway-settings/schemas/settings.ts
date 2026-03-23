@@ -49,10 +49,29 @@ export const creditCardSettingsSchema = z
 		installments_enabled: yesNoSchema,
 		maximum_installments: z.string().catch("12"),
 		transfer_of_interest_enabled: yesNoSchema,
-		maximum_installments_interest_free: z.string().catch("1"),
+		maximum_installments_interest_free: z.string().catch("0"),
 		threeds_enabled: yesNoSchema,
 	})
 	.passthrough();
+
+// Credit Card submission schema — normalizes hidden fields before API call
+export const creditCardSubmissionSchema = creditCardSettingsSchema.transform((data) => {
+	if (data.installments_enabled === "no") {
+		return {
+			...data,
+			maximum_installments: "12",
+			transfer_of_interest_enabled: "no",
+			maximum_installments_interest_free: "0",
+		};
+	}
+	if (data.transfer_of_interest_enabled === "no") {
+		return {
+			...data,
+			maximum_installments_interest_free: "0",
+		};
+	}
+	return data;
+});
 
 // Debit Card settings schema (same as base)
 export const debitCardSettingsSchema = baseGatewaySettingsSchema;
@@ -129,7 +148,7 @@ export type ApplePaySettings = z.infer<typeof applePaySettingsSchema>;
 export type CheckoutSettings = z.infer<typeof checkoutSettingsSchema>;
 export type GatewaySettings = z.infer<typeof gatewaySettingsSchema>;
 
-// Helper function to get schema by gateway ID
+// Helper function to get schema by gateway ID (for form validation)
 export const getSchemaByGatewayId = (gatewayId: GatewayId) => {
 	switch (gatewayId) {
 		case "pagbank_credit_card":
@@ -148,6 +167,18 @@ export const getSchemaByGatewayId = (gatewayId: GatewayId) => {
 			return applePaySettingsSchema;
 		case "pagbank_checkout":
 			return checkoutSettingsSchema;
+	}
+};
+
+// Helper function to get submission schema by gateway ID (normalizes hidden fields)
+export const getSubmissionSchemaByGatewayId = (
+	gatewayId: GatewayId,
+): z.ZodType<GatewaySettings> => {
+	switch (gatewayId) {
+		case "pagbank_credit_card":
+			return creditCardSubmissionSchema as unknown as z.ZodType<GatewaySettings>;
+		default:
+			return getSchemaByGatewayId(gatewayId) as z.ZodType<GatewaySettings>;
 	}
 };
 
