@@ -152,7 +152,12 @@ export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 	}
 
 	const error = fetchError || mutation.error;
-	const errorMessage = error instanceof Error ? error.message : null;
+	const errorMessage =
+		error instanceof Error
+			? error.message
+			: error && typeof error === "object" && "message" in error
+				? (error as { message: string }).message
+				: null;
 
 	if (errorMessage && !data) {
 		return (
