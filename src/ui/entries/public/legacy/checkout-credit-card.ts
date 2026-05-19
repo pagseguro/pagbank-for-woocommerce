@@ -642,7 +642,29 @@ const bootstrapCheckout = () => {
 	}
 };
 
+const resetEncryptedCardFields = (): void => {
+	const ids = [
+		"pagbank_credit_card-encrypted-card",
+		"pagbank_credit_card-card-bin",
+		"pagbank_credit_card-threeds-id",
+	];
+
+	ids.forEach((id) => {
+		const input = document.getElementById(id) as HTMLInputElement | null;
+		if (input) {
+			input.value = "";
+		}
+	});
+};
+
 jQuery(document.body).on("updated_checkout", bootstrapCheckout);
+jQuery(document.body).on("checkout_error updated_checkout", resetEncryptedCardFields);
+
+window.addEventListener("pageshow", (event) => {
+	if (event.persisted) {
+		resetEncryptedCardFields();
+	}
+});
 
 jQuery(() => {
 	const isOrderReview = jQuery(document.body).hasClass("woocommerce-order-pay");
