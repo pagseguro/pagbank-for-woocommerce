@@ -1046,17 +1046,18 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			}
 
 			if ( $this->environment === 'production' ) {
+				$charge_url = 'https://minhaconta.pagseguro.uol.com.br/transacao/detalhes/' . str_replace( 'CHAR_', '', $charge_id );
 				// phpcs:disable Generic.Files.LineLength -- Translation string cannot be split.
 				$order->add_order_note(
 					sprintf(
-						/* translators: 1: charge ID, 2: payment method, 3: installments, 4: card brand, 5: card last 4 digits. */
-						__( '<ul><li><b>Cobrança:</b> %1$s.</li><li><b>Parcelas:</b> %2$d.</li><li><b>Bandeira do cartão:</b> %3$s.</li><li><b>Últimos 4 dígitos do cartão:</b> %4$s.</li><li><a href="%5$s" target="_blank" rel="noreferrer">Visualizar pagamento no PagBank</a></li>', 'pagbank-for-woocommerce' ),
+						/* translators: 1: charge ID, 2: installments, 3: card brand, 4: card last 4 digits, 5: PagBank charge URL. */
+						__( '<b>Cobrança:</b> %1$s.<br><b>Parcelas:</b> %2$d.<br><b>Bandeira do cartão:</b> %3$s.<br><b>Últimos 4 dígitos do cartão:</b> %4$s.<br><a href="%5$s" target="_blank" rel="noreferrer">Visualizar pagamento no PagBank</a>', 'pagbank-for-woocommerce' ),
 				// phpcs:enable Generic.Files.LineLength
-						$charge['id'],
-						$charge['payment_method']['installments'],
-						$charge['payment_method']['card']['brand'],
-						$charge['payment_method']['card']['last_digits'],
-						str_replace( 'CHAR_', '', "https://minhaconta.pagseguro.uol.com.br/transacao/detalhes/$charge_id" )
+						esc_html( $charge['id'] ),
+						(int) $charge['payment_method']['installments'],
+						esc_html( $charge['payment_method']['card']['brand'] ),
+						esc_html( $charge['payment_method']['card']['last_digits'] ),
+						esc_url( $charge_url )
 					),
 					false
 				);
