@@ -287,15 +287,6 @@ class ConnectAjaxApi {
 
 		$data['public_key'] = $public_key['public_key'];
 
-		// Fetch account data to store alongside the token.
-		if ( ! empty( $data['account_id'] ) ) {
-			$account_data = $api->get_account_with_token( $data['account_id'], $data['access_token'] );
-
-			if ( ! is_wp_error( $account_data ) ) {
-				$data['account'] = $account_data;
-			}
-		}
-
 		$connect->save( $data );
 
 		$this->output_oauth_close_script();

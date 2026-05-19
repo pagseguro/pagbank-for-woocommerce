@@ -115,7 +115,6 @@ class SettingsApi {
 			'connected'      => false,
 			'account_id'     => null,
 			'environment'    => $environment,
-			'account'        => null,
 			'scopes'         => array(),
 			'missing_scopes' => array(),
 		);
@@ -128,12 +127,6 @@ class SettingsApi {
 			$current_scopes                  = ! empty( $data['scope'] ) ? explode( ' ', $data['scope'] ) : array();
 			$response_data['scopes']         = array_values( $current_scopes );
 			$response_data['missing_scopes'] = array_values( array_diff( Api::REQUIRED_SCOPES, $current_scopes ) );
-
-			// Use stored account data if available.
-			// For older connections without account data, it will remain null.
-			if ( ! empty( $data['account'] ) ) {
-				$response_data['account'] = $data['account'];
-			}
 		}
 
 		return new WP_REST_Response( $response_data, 200 );

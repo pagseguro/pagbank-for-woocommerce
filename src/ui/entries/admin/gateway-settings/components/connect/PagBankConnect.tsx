@@ -19,7 +19,6 @@ interface PagBankConnectProps {
 export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 	const {
 		connected,
-		account,
 		account_id,
 		isLoading,
 		isRefreshing,
@@ -179,7 +178,7 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 						</div>
 					)}
 
-					{connected && (account || account_id) && (
+					{connected && account_id && (
 						<Notice
 							status="info"
 							isDismissible={false}
@@ -205,26 +204,6 @@ export const PagBankConnect = ({ environment }: PagBankConnectProps) => {
 											__("Produção", "pagbank-for-woocommerce")}
 									</span>
 								</div>
-								{account?.name && (
-									<div className="pagbank-connect__account-details">
-										<span className="pagbank-connect__account-details-label">
-											{__("Nome:", "pagbank-for-woocommerce")}
-										</span>
-										<span className="pagbank-connect__account-details-value">
-											{account.name}
-										</span>
-									</div>
-								)}
-								{account?.email && (
-									<div className="pagbank-connect__account-details">
-										<span className="pagbank-connect__account-details-label">
-											{__("Email:", "pagbank-for-woocommerce")}
-										</span>
-										<span className="pagbank-connect__account-details-value">
-											{account.email}
-										</span>
-									</div>
-								)}
 								<div className="pagbank-connect__account-details">
 									<span className="pagbank-connect__account-details-label">
 										{__("Escopos:", "pagbank-for-woocommerce")}

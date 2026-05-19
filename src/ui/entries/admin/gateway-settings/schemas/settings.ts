@@ -211,21 +211,13 @@ export const wcGatewayResponseSchema = z.object({
 export type WCGatewaySetting = z.infer<typeof wcGatewaySettingSchema>;
 export type WCGatewayResponse = z.infer<typeof wcGatewayResponseSchema>;
 
-// Account info schema
-export const accountInfoSchema = z.object({
-	email: z.string().nullable(),
-	name: z.string().nullable(),
-});
-
 // Connect status schema
 export const connectStatusSchema = z.object({
 	connected: z.boolean(),
 	account_id: z.string().nullable(),
 	environment: environmentSchema,
-	account: accountInfoSchema.nullable(),
 	scopes: z.array(z.string()),
 	missing_scopes: z.array(z.string()),
 });
 
-export type AccountInfo = z.infer<typeof accountInfoSchema>;
 export type ConnectStatus = z.infer<typeof connectStatusSchema>;

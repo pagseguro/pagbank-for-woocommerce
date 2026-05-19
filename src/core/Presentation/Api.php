@@ -26,7 +26,6 @@ class Api {
 	 * @var array
 	 */
 	public const REQUIRED_SCOPES = array(
-		'accounts.read',
 		'payments.read',
 		'payments.create',
 		'payments.refund',
@@ -589,60 +588,6 @@ class Api {
 
 		if ( 201 !== $response_code ) {
 			return new WP_Error( 'pagbank_3ds_session_failed', 'PagBank 3DS session creation failed', $decoded_response_body );
-		}
-
-		return $decoded_response_body;
-	}
-
-	/**
-	 * Get account data using a provided access token.
-	 *
-	 * This method is used during OAuth callback when the token is not yet saved.
-	 *
-	 * @param string $account_id   The account ID.
-	 * @param string $access_token The access token.
-	 *
-	 * @return array|WP_Error The account data.
-	 */
-	public function get_account_with_token( string $account_id, string $access_token ) {
-		$url = $this->get_api_url( 'accounts/' . $account_id );
-
-		$headers = array(
-			'Authorization' => $access_token,
-			'Content-Type'  => 'application/json',
-		);
-
-		$this->log_api_request( 'GET', $url, null, $headers, 'pagbank_oauth' );
-
-		$response = $this->request(
-			$url,
-			array(
-				'method'  => 'GET',
-				'headers' => $headers,
-			)
-		);
-
-		if ( is_wp_error( $response ) ) {
-			$this->log_api_request_error( $response, 'pagbank_oauth' );
-
-			return $response;
-		}
-
-		$response_code         = wp_remote_retrieve_response_code( $response );
-		$response_body         = wp_remote_retrieve_body( $response );
-		$decoded_response_body = json_decode( $response_body, true );
-
-		$this->log_api_response( $response_code, $response_body, 'pagbank_oauth' );
-
-		if ( 200 !== $response_code ) {
-			return new WP_Error(
-				'pagbank_get_account_failed',
-				'PagBank get account failed',
-				array(
-					'http_code' => $response_code,
-					'response'  => $decoded_response_body,
-				)
-			);
 		}
 
 		return $decoded_response_body;
