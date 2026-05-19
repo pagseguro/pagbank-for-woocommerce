@@ -1037,13 +1037,13 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 			$this->save_order_meta_data( $order, $response, $data, $card_payment_token );
 
-			$order->payment_complete();
+			$charge_id = $charge['id'];
+
+			$order->payment_complete( $charge_id );
 
 			if ( $charge['status'] === 'PAID' ) {
 				do_action( 'pagbank_order_completed', $order );
 			}
-
-			$charge_id = $charge['id'];
 
 			if ( $this->environment === 'production' ) {
 				// phpcs:disable Generic.Files.LineLength -- Translation string cannot be split.
@@ -1316,7 +1316,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 			$this->save_order_meta_data( $renewal_order, $response, $data, null );
 
-			$renewal_order->payment_complete();
+			$renewal_order->payment_complete( $charge['id'] );
 
 			WC_Subscriptions_Manager::process_subscription_payments_on_order( $renewal_order );
 		} catch ( Exception $ex ) {
