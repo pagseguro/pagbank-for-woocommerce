@@ -134,10 +134,24 @@ class ApiHelpers {
 		$name         = $company_name ? $company_name : $order->get_formatted_billing_full_name();
 
 		return array(
-			'name'   => $name,
+			'name'   => self::sanitize_pagbank_name( $name ),
 			'email'  => $order->get_billing_email(),
 			'tax_id' => self::get_order_tax_id_api_data( $order ),
 		);
+	}
+
+	/**
+	 * Strip characters rejected by the PagBank API from a person/company name.
+	 *
+	 * A API recusa nomes contendo `! @ # $ % ¨ * ( ) " ” \ | { } [ ] < > ;`
+	 * com erro 40002. WC permite esses caracteres em billing_name/company,
+	 * então sanitiza-se logo antes do envio para evitar checkout perdido.
+	 */
+	private static function sanitize_pagbank_name( string $name ): string {
+		$cleaned = preg_replace( '/[!@#\$%¨\*\(\)"”\\\\|\{\}\[\]<>;]+/u', ' ', $name );
+		$cleaned = is_string( $cleaned ) ? preg_replace( '/\s+/', ' ', $cleaned ) : $name;
+
+		return trim( is_string( $cleaned ) ? $cleaned : $name );
 	}
 
 	/**
@@ -460,7 +474,7 @@ class ApiHelpers {
 								'line_2' => __( 'PagBank', 'pagbank-for-woocommerce' ),
 							),
 							'holder'            => array(
-								'name'    => $order->get_formatted_billing_full_name(),
+								'name'    => self::sanitize_pagbank_name( $order->get_formatted_billing_full_name() ),
 								'tax_id'  => self::get_order_tax_id_api_data( $order ),
 								'email'   => $order->get_billing_email(),
 								'address' => self::get_order_billing_address_api_data( $order ),
@@ -645,7 +659,7 @@ class ApiHelpers {
 		);
 
 		if ( $card_holder ) {
-			$data['charges'][0]['payment_method']['holder']['name'] = $card_holder;
+			$data['charges'][0]['payment_method']['holder']['name'] = self::sanitize_pagbank_name( $card_holder );
 		}
 
 		if ( null !== $transfer_of_interest_fee ) {
@@ -684,7 +698,7 @@ class ApiHelpers {
 			$data['charges'][0]['payment_method']['card'] = array(
 				'id' => $card_id,
 			);
-			$data['charges'][0]['payment_method']['holder']['name'] = $token->get_holder();
+			$data['charges'][0]['payment_method']['holder']['name'] = self::sanitize_pagbank_name( $token->get_holder() );
 		}
 
 		if ( $cvv ) {
@@ -799,7 +813,7 @@ class ApiHelpers {
 							'id' => $payment_token->get_token(),
 						),
 						'holder'       => array(
-							'name'   => $payment_token->get_holder(),
+							'name'   => self::sanitize_pagbank_name( $payment_token->get_holder() ),
 							'tax_id' => self::get_order_tax_id_api_data( $renewal_order ),
 						),
 					),
