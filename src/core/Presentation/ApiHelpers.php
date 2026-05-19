@@ -179,7 +179,7 @@ class ApiHelpers {
 	 * fields. Keep only Unicode letters, digits and whitespace before
 	 * sending the payload.
 	 */
-	private static function sanitize_pagbank_name( string $name ): string {
+	public static function sanitize_pagbank_name( string $name ): string {
 		$cleaned = preg_replace( '/[^\p{L}\p{N}\s]+/u', ' ', $name );
 		$cleaned = is_string( $cleaned ) ? preg_replace( '/\s+/', ' ', $cleaned ) : $name;
 
