@@ -26,7 +26,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 			id="<?php echo esc_attr($gateway->id); ?>-installments"
 			class="select"
 			data-amount="<?php echo esc_attr($total / 100); ?>"
-			data-nonce="<?php echo esc_attr(wp_create_nonce('pagbank_get_installments'));  ?>"
+			data-amount-cents="<?php echo esc_attr($total); ?>"
+			data-nonce="<?php echo esc_attr(wp_create_nonce('pagbank_get_installments')); ?>"
 			data-url="<?php echo esc_attr($gateway->get_api_installments_url()); ?>"
 			disabled="disabled"
 		></select>

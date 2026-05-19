@@ -407,9 +407,16 @@ const processEncryptedCard = async (): Promise<boolean> => {
 			const installments = installmentsSelect
 				? Number.parseInt(installmentsSelect.value, 10)
 				: 1;
-			const amount = installmentsSelect
-				? Number.parseInt(installmentsSelect.getAttribute("data-amount") || "0", 10)
-				: 0;
+
+			// PagBank's 3DS SDK expects amount.value in cents, matching the order POST.
+			// Prefer the selected option's data-amount-cents (set per-plan in
+			// setInstallments for transfer-of-interest, so the WITH-interest total is
+			// authenticated). Fall back to the select-level data-amount-cents (cart
+			// total in cents) which the templates always emit.
+			const selectedOption = installmentsSelect?.options[installmentsSelect.selectedIndex];
+			const optionAmountCents = selectedOption?.getAttribute("data-amount-cents");
+			const selectAmountCents = installmentsSelect?.getAttribute("data-amount-cents");
+			const amount = Number.parseInt(optionAmountCents || selectAmountCents || "0", 10);
 
 			const result = await authenticate3DS({
 				cardNumber: card.number,
@@ -538,9 +545,16 @@ const bootstrapCheckout = () => {
 			installmentsSelect.innerHTML = "";
 
 			plans.forEach((plan) => {
-				installmentsSelect.appendChild(
-					new Option(plan.title, plan.installments.toString(), plan.installments === 1),
+				const option = new Option(
+					plan.title,
+					plan.installments.toString(),
+					plan.installments === 1,
 				);
+				// Backend returns plan.amount in cents (charge_fees response). Carry it
+				// per-option so 3DS authentication uses the WITH-interest amount that
+				// will actually be charged.
+				option.setAttribute("data-amount-cents", plan.amount.toString());
+				installmentsSelect.appendChild(option);
 			});
 
 			installmentsSelect.removeAttribute("disabled");

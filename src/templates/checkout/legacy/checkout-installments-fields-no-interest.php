@@ -29,6 +29,7 @@ $installments_plan = ApiHelpers::get_installments_plan_no_interest($total, $gate
 			name="<?php echo esc_attr($gateway->id); ?>-installments"
 			id="<?php echo esc_attr($gateway->id); ?>-installments"
 			class="select"
+			data-amount-cents="<?php echo esc_attr($total); ?>"
 		>
 			<?php foreach($installments_plan as $plan): ?>
 				<option value="<?php echo esc_attr($plan['installments']); ?>">
