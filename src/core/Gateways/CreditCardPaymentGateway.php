@@ -985,7 +985,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				$threeds_id
 			);
 
-			$response = $this->api->create_order( $data );
+			$response = $this->api->create_order( $data, ApiHelpers::get_create_order_idempotency_key( $data ) );
 
 			if ( is_wp_error( $response ) ) {
 				wc_add_notice( __( 'Houve um erro durante o pagamento. Tente novamente.', 'pagbank-for-woocommerce' ), 'error' );
@@ -999,7 +999,12 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 			$charge = $response['charges'][0];
 
 			if ( $is_empty_order_with_subscription ) {
-				$refund_response = $this->api->refund( $charge['id'], Helpers::format_money_from_cents( $charge['amount']['value'] ) );
+				$refund_amount   = Helpers::format_money_from_cents( $charge['amount']['value'] );
+				$refund_response = $this->api->refund(
+					$charge['id'],
+					$refund_amount,
+					ApiHelpers::get_refund_idempotency_key( $charge['id'], $refund_amount )
+				);
 
 				if ( is_wp_error( $refund_response ) ) {
 					wc_add_notice( __( 'Houve um erro durante o reembolso da cobrança inicial. Contate o administrador.', 'pagbank-for-woocommerce' ), 'error' );
@@ -1297,7 +1302,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				$amount
 			);
 
-			$response = $this->api->create_order( $data );
+			$response = $this->api->create_order( $data, ApiHelpers::get_create_order_idempotency_key( $data ) );
 
 			if ( is_wp_error( $response ) ) {
 				throw new Exception( 'Houve um erro no pagamento da renovação.' );

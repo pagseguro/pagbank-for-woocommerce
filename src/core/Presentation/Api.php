@@ -326,11 +326,12 @@ class Api {
 	/**
 	 * Create order.
 	 *
-	 * @param array $data The order data.
+	 * @param array       $data            The order data.
+	 * @param string|null $idempotency_key Optional idempotency key sent as `x-idempotency-key`.
 	 *
 	 * @return array|WP_Error The order data.
 	 */
-	public function create_order( array $data ) {
+	public function create_order( array $data, ?string $idempotency_key = null ) {
 		$url = $this->get_api_url( 'orders' );
 
 		$body = $this->json_encode( $data );
@@ -339,6 +340,10 @@ class Api {
 			'Authorization' => $this->connect->get_access_token(),
 			'Content-Type'  => 'application/json',
 		);
+
+		if ( ! empty( $idempotency_key ) ) {
+			$headers['x-idempotency-key'] = $idempotency_key;
+		}
 
 		$this->log_api_request( 'POST', $url, $data, $headers );
 
@@ -373,11 +378,12 @@ class Api {
 	/**
 	 * Create checkout.
 	 *
-	 * @param array $data The checkout data.
+	 * @param array       $data            The checkout data.
+	 * @param string|null $idempotency_key Optional idempotency key sent as `x-idempotency-key`.
 	 *
 	 * @return array|WP_Error The checkout data.
 	 */
-	public function create_checkout( array $data ) {
+	public function create_checkout( array $data, ?string $idempotency_key = null ) {
 		$url = $this->get_api_url( 'checkouts' );
 
 		$body = $this->json_encode( $data );
@@ -386,6 +392,10 @@ class Api {
 			'Authorization' => 'Bearer ' . $this->connect->get_access_token(),
 			'Content-Type'  => 'application/json',
 		);
+
+		if ( ! empty( $idempotency_key ) ) {
+			$headers['x-idempotency-key'] = $idempotency_key;
+		}
 
 		$this->log_api_request( 'POST', $url, $data, $headers );
 
@@ -420,12 +430,13 @@ class Api {
 	/**
 	 * Refund an order.
 	 *
-	 * @param string $charge_id     The order ID.
-	 * @param float  $amount The amount to be refunded.
+	 * @param string      $charge_id       The order ID.
+	 * @param float       $amount          The amount to be refunded.
+	 * @param string|null $idempotency_key Optional idempotency key sent as `x-idempotency-key`.
 	 *
 	 * @return array|WP_Error The refund data.
 	 */
-	public function refund( string $charge_id, float $amount ) {
+	public function refund( string $charge_id, float $amount, ?string $idempotency_key = null ) {
 		$url = $this->get_api_url( 'charges/' . $charge_id . '/cancel' );
 
 		$data = array(
@@ -439,6 +450,10 @@ class Api {
 			'Authorization' => $this->connect->get_access_token(),
 			'Content-Type'  => 'application/json',
 		);
+
+		if ( ! empty( $idempotency_key ) ) {
+			$headers['x-idempotency-key'] = $idempotency_key;
+		}
 
 		$this->log_api_request( 'POST', $url, $data, $headers );
 

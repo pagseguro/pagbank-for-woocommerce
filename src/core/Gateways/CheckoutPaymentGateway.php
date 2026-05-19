@@ -181,7 +181,7 @@ class CheckoutPaymentGateway extends WC_Payment_Gateway {
 			$return_url = $this->get_return_url( $order );
 
 			$data     = ApiHelpers::get_checkout_api_data( $this, $order, $this->expiration_minutes, $return_url );
-			$response = $this->api->create_checkout( $data );
+			$response = $this->api->create_checkout( $data, ApiHelpers::get_create_order_idempotency_key( $data ) );
 
 			if ( is_wp_error( $response ) ) {
 				wc_add_notice( __( 'Houve um erro ao processar o pagamento. Tente novamente.', 'pagbank-for-woocommerce' ), 'error' );

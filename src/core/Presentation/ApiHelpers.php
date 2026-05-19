@@ -141,6 +141,37 @@ class ApiHelpers {
 	}
 
 	/**
+	 * Compute an idempotency key for a create-order request.
+	 *
+	 * Derives a stable hash from the payment intent (customer identity,
+	 * total, items and payment method). Two retries of the same cart by
+	 * the same customer produce the same key, allowing PagBank to dedupe
+	 * the request server-side and avoid duplicate charges across WC orders.
+	 *
+	 * The card encrypted blob is intentionally excluded because RSA-OAEP
+	 * produces a different ciphertext on every call, which would defeat
+	 * deduplication.
+	 */
+	public static function get_create_order_idempotency_key( array $data ): string {
+		$parts = array(
+			$data['customer']['email'] ?? '',
+			$data['customer']['tax_id']['value'] ?? '',
+			(string) ( $data['charges'][0]['amount']['value'] ?? '' ),
+			$data['charges'][0]['payment_method']['type'] ?? '',
+			(string) wp_json_encode( $data['items'] ?? array() ),
+		);
+
+		return md5( implode( '|', $parts ) );
+	}
+
+	/**
+	 * Compute an idempotency key for a refund request.
+	 */
+	public static function get_refund_idempotency_key( string $charge_id, float $amount ): string {
+		return md5( $charge_id . '|' . Helpers::format_money_cents( $amount ) );
+	}
+
+	/**
 	 * Strip characters rejected by the PagBank API from a person/company name.
 	 *
 	 * The PagBank API rejects names containing special characters with error
@@ -919,7 +950,7 @@ class ApiHelpers {
 		$pagbank_charge_id = $order->get_meta( '_pagbank_charge_id' );
 
 		try {
-			$refund = $api->refund( $pagbank_charge_id, $amount );
+			$refund = $api->refund( $pagbank_charge_id, $amount, self::get_refund_idempotency_key( $pagbank_charge_id, $amount ) );
 
 			if ( is_wp_error( $refund ) ) {
 				return $refund;
