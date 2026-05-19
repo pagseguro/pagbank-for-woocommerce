@@ -143,12 +143,13 @@ class ApiHelpers {
 	/**
 	 * Strip characters rejected by the PagBank API from a person/company name.
 	 *
-	 * A API recusa nomes contendo `! @ # $ % ¨ * ( ) " ” \ | { } [ ] < > ;`
-	 * com erro 40002. WC permite esses caracteres em billing_name/company,
-	 * então sanitiza-se logo antes do envio para evitar checkout perdido.
+	 * The PagBank API rejects names containing special characters with error
+	 * 40002, while WooCommerce accepts them in billing names and company
+	 * fields. Keep only Unicode letters, digits and whitespace before
+	 * sending the payload.
 	 */
 	private static function sanitize_pagbank_name( string $name ): string {
-		$cleaned = preg_replace( '/[!@#\$%¨\*\(\)"”\\\\|\{\}\[\]<>;]+/u', ' ', $name );
+		$cleaned = preg_replace( '/[^\p{L}\p{N}\s]+/u', ' ', $name );
 		$cleaned = is_string( $cleaned ) ? preg_replace( '/\s+/', ' ', $cleaned ) : $name;
 
 		return trim( is_string( $cleaned ) ? $cleaned : $name );
