@@ -208,6 +208,15 @@ class WebhookHandler {
 				);
 			}
 
+			$order->add_order_note(
+				sprintf(
+					/* translators: 1: webhook status, 2: charge ID. */
+					__( 'Webhook PagBank recebido: status %1$s. Cobrança: %2$s.', 'pagbank-for-woocommerce' ),
+					$charge['status'],
+					$charge['id']
+				)
+			);
+
 			switch ( $charge['status'] ) {
 				case 'IN_ANALYSIS':
 				case 'WAITING':
