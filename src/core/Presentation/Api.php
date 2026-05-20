@@ -553,6 +553,53 @@ class Api {
 	}
 
 	/**
+	 * Get a single charge by ID.
+	 *
+	 * Used by the webhook handler to verify the charge status against the canonical
+	 * source — webhook bodies are not trusted; this API response is.
+	 *
+	 * @param string      $charge_id    The PagBank charge ID.
+	 * @param string|null $access_token Optional override; defaults to the configured connect token.
+	 *
+	 * @return array|WP_Error Decoded charge payload, or WP_Error on non-200 / network failure.
+	 */
+	public function get_charge( string $charge_id, ?string $access_token = null ) {
+		$url = $this->get_api_url( 'charges/' . rawurlencode( $charge_id ) );
+
+		$headers = array(
+			'Authorization' => $access_token ?? $this->connect->get_access_token(),
+			'Content-Type'  => 'application/json',
+		);
+
+		$this->log_api_request( 'GET', $url, null, $headers );
+
+		$args = array(
+			'method'  => 'GET',
+			'headers' => $headers,
+		);
+
+		$response = $this->request( $url, $args );
+
+		if ( is_wp_error( $response ) ) {
+			$this->log_api_request_error( $response );
+
+			return $response;
+		}
+
+		$response_code         = wp_remote_retrieve_response_code( $response );
+		$response_body         = wp_remote_retrieve_body( $response );
+		$decoded_response_body = json_decode( $response_body, true );
+
+		$this->log_api_response( $response_code, $response_body );
+
+		if ( 200 !== $response_code ) {
+			return new WP_Error( 'pagbank_get_charge_failed', 'PagBank get charge failed', $decoded_response_body );
+		}
+
+		return $decoded_response_body;
+	}
+
+	/**
 	 * Get the 3DS SDK API URL.
 	 *
 	 * @param string $path The path to append to the API URL.
