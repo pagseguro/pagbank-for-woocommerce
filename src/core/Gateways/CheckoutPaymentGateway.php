@@ -282,7 +282,6 @@ class CheckoutPaymentGateway extends WC_Payment_Gateway {
 	 */
 	private function save_order_meta_data( WC_Order $order, array $response, array $request ): void {
 		$order->update_meta_data( '_pagbank_checkout_id', $response['id'] );
-		$order->update_meta_data( '_pagbank_password', $request['metadata']['password'] );
 		$order->update_meta_data( '_pagbank_environment', $this->environment );
 
 		if ( ! empty( $response['expiration_date'] ) ) {

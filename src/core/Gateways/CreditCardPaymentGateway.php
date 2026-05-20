@@ -97,11 +97,11 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 	 * CreditCardPaymentGateway constructor.
 	 */
 	public function __construct() {
-		$this->id                 = 'pagbank_credit_card';
-		$this->icon               = plugins_url( 'dist/images/icons/card.png', PAGBANK_WOOCOMMERCE_FILE_PATH );
-		$this->card_type          = 'CREDIT_CARD';
-		$this->card_field_prefix  = 'pagbank_credit_card';
-		$this->method_title       = __( 'PagBank Cartão de Crédito', 'pagbank-for-woocommerce' );
+		$this->id                = 'pagbank_credit_card';
+		$this->icon              = plugins_url( 'dist/images/icons/card.png', PAGBANK_WOOCOMMERCE_FILE_PATH );
+		$this->card_type         = 'CREDIT_CARD';
+		$this->card_field_prefix = 'pagbank_credit_card';
+		$this->method_title      = __( 'PagBank Cartão de Crédito', 'pagbank-for-woocommerce' );
 		// phpcs:ignore Generic.Files.LineLength -- Translation string cannot be split.
 		$this->method_description = __( 'Aceite pagamentos via cartão de crédito em checkout transparente, com parcelamento em até 18x (mediante aprovação), autenticação 3D Secure, tokenização para compras futuras e reembolso online total ou parcial.', 'pagbank-for-woocommerce' );
 		$this->has_fields         = true;
@@ -1133,7 +1133,6 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 
 		$order->update_meta_data( '_pagbank_order_id', $response['id'] );
 		$order->update_meta_data( '_pagbank_charge_id', $charge['id'] );
-		$order->update_meta_data( '_pagbank_password', $request['metadata']['password'] );
 
 		$order->update_meta_data( '_' . $this->card_field_prefix . '_brand', $charge['payment_method']['card']['brand'] );
 		if ( isset( $charge['payment_method']['installments'] ) ) {

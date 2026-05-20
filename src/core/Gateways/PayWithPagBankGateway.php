@@ -53,9 +53,9 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 	 * PayWithPagBankGateway constructor.
 	 */
 	public function __construct() {
-		$this->id                 = 'pagbank_pay_with_pagbank';
-		$this->icon               = plugins_url( 'dist/images/icons/pagbank.png', PAGBANK_WOOCOMMERCE_FILE_PATH );
-		$this->method_title       = __( 'Pagar com PagBank', 'pagbank-for-woocommerce' );
+		$this->id           = 'pagbank_pay_with_pagbank';
+		$this->icon         = plugins_url( 'dist/images/icons/pagbank.png', PAGBANK_WOOCOMMERCE_FILE_PATH );
+		$this->method_title = __( 'Pagar com PagBank', 'pagbank-for-woocommerce' );
 		// phpcs:ignore Generic.Files.LineLength -- Translation string cannot be split.
 		$this->method_description = __( 'Aceite pagamentos através da carteira digital PagBank. O cliente é redirecionado para concluir a compra usando saldo da conta ou cartão de crédito pelo app PagBank, com fluxo otimizado para celular. Inclui confirmação automática via webhook e reembolso online total ou parcial.', 'pagbank-for-woocommerce' );
 		$this->description        = $this->get_option( 'description' );
@@ -239,7 +239,6 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 	 */
 	private function save_order_meta_data( WC_Order $order, array $response, array $request, bool $is_mobile ): void {
 		$order->update_meta_data( '_pagbank_order_id', $response['id'] );
-		$order->update_meta_data( '_pagbank_password', $request['metadata']['password'] );
 		$order->update_meta_data( '_pagbank_environment', $this->environment );
 		$order->update_meta_data( '_pagbank_pay_with_pagbank_is_mobile', $is_mobile ? 'yes' : 'no' );
 
