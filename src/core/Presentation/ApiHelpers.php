@@ -281,21 +281,6 @@ class ApiHelpers {
 	}
 
 	/**
-	 * Get order metadata.
-	 *
-	 * @param WC_Order $order Order.
-	 * @param array    $metadata Metadata.
-	 */
-	private static function get_order_metadata_api_data( WC_Order $order, array $metadata = array() ): array {
-		$defaults = array(
-			'order_id'  => $order->get_id(),
-			'signature' => self::get_order_id_signed( $order->get_id() ),
-		);
-
-		return wp_parse_args( $metadata, $defaults );
-	}
-
-	/**
 	 * Get pix payment api data.
 	 *
 	 * @param PixPaymentGateway $gateway Gateway.
@@ -321,7 +306,6 @@ class ApiHelpers {
 			'notification_urls' => array(
 				WebhookHandler::get_webhook_url(),
 			),
-			'metadata'          => self::get_order_metadata_api_data( $order ),
 		);
 
 		return apply_filters( 'pagbank_pix_payment_data', $data, $order, $gateway );
@@ -346,7 +330,6 @@ class ApiHelpers {
 			'notification_urls' => array(
 				WebhookHandler::get_webhook_url(),
 			),
-			'metadata'          => self::get_order_metadata_api_data( $order ),
 		);
 
 		$amount_value = Helpers::format_money_cents( $order->get_total() );
@@ -398,7 +381,6 @@ class ApiHelpers {
 			'payment_notification_urls' => array(
 				WebhookHandler::get_webhook_url(),
 			),
-			'metadata'                  => self::get_order_metadata_api_data( $order ),
 		);
 
 		// Add shipping data if order needs shipping.
@@ -509,7 +491,6 @@ class ApiHelpers {
 			'notification_urls' => array(
 				WebhookHandler::get_webhook_url(),
 			),
-			'metadata'          => self::get_order_metadata_api_data( $order ),
 		);
 
 		return apply_filters( 'pagbank_boleto_payment_data', $data, $order, $gateway );
@@ -552,7 +533,6 @@ class ApiHelpers {
 			'notification_urls' => array(
 				WebhookHandler::get_webhook_url(),
 			),
-			'metadata'          => self::get_order_metadata_api_data( $order ),
 		);
 
 		return apply_filters( 'pagbank_google_pay_payment_data', $data, $order, $gateway );
@@ -595,7 +575,6 @@ class ApiHelpers {
 			'notification_urls' => array(
 				WebhookHandler::get_webhook_url(),
 			),
-			'metadata'          => self::get_order_metadata_api_data( $order ),
 		);
 
 		return apply_filters( 'pagbank_apple_pay_payment_data', $data, $order, $gateway );
@@ -670,7 +649,6 @@ class ApiHelpers {
 			'notification_urls' => array(
 				WebhookHandler::get_webhook_url(),
 			),
-			'metadata'          => self::get_order_metadata_api_data( $order ),
 		);
 
 		if ( $card_holder ) {
@@ -838,7 +816,6 @@ class ApiHelpers {
 			'notification_urls' => array(
 				WebhookHandler::get_webhook_url(),
 			),
-			'metadata'          => self::get_order_metadata_api_data( $renewal_order ),
 		);
 
 		return apply_filters( 'pagbank_card_payment_data', $data, $renewal_order, $gateway );
@@ -872,43 +849,6 @@ class ApiHelpers {
 		}
 
 		return $installments_plan;
-	}
-
-	/**
-	 * Get a signature pair to validate webhooks.
-	 */
-	private static function get_signature_pair(): array {
-		$stored_keypair = get_option( 'pagbank_stored_keypair' );
-
-		if ( ! $stored_keypair ) {
-			$sign_pair   = sodium_crypto_sign_keypair();
-			$sign_secret = sodium_crypto_sign_secretkey( $sign_pair );
-			$sign_public = sodium_crypto_sign_publickey( $sign_pair );
-
-			update_option( 'pagbank_stored_keypair', Helpers::encode_text( $sign_pair ) );
-		} else {
-			$sign_pair   = Helpers::decode_text( $stored_keypair );
-			$sign_secret = sodium_crypto_sign_secretkey( $sign_pair );
-			$sign_public = sodium_crypto_sign_publickey( $sign_pair );
-		}
-
-		return array(
-			'sign_pair'   => $sign_pair,
-			'sign_secret' => $sign_secret,
-			'sign_public' => $sign_public,
-		);
-	}
-
-	/**
-	 * Get a signed order id.
-	 *
-	 * @param string $order_id Order id.
-	 */
-	private static function get_order_id_signed( string $order_id ): string {
-		$signature_pair = self::get_signature_pair();
-		$signature      = sodium_crypto_sign_detached( $order_id, $signature_pair['sign_secret'] );
-
-		return Helpers::encode_text( $signature );
 	}
 
 	/**
