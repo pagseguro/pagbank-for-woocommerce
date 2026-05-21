@@ -16,32 +16,63 @@ use PHPUnit\Framework\TestCase;
 class WebhookHandlerTest extends TestCase {
 
 	/**
-	 * The parser accepts both the new format (plain order_id) and the legacy
-	 * JSON-wrapped format used before the API-verification refactor.
+	 * The parser returns a discriminated structure: legacy JSON payloads carry
+	 * id+password, the new `{order_id}:{hash}` form returns the order id with
+	 * the 32-char hex signature, and anything else is rejected.
 	 *
 	 * @dataProvider reference_id_provider
 	 *
 	 * @param string|null $raw      Raw reference_id as sent by the webhook payload.
-	 * @param int|null    $expected Expected parsed order id (null = should not parse).
+	 * @param array|null  $expected Expected parse result (null = should not parse).
 	 */
-	public function test_parse_reference_id( ?string $raw, ?int $expected ): void {
+	public function test_parse_reference_id( ?string $raw, ?array $expected ): void {
 		$this->assertSame( $expected, WebhookHandler::parse_reference_id( $raw ) );
 	}
 
 	public function reference_id_provider(): array {
+		$hash = str_repeat( 'a1b2c3d4', 4 );
+
 		return array(
-			'plain numeric string (new format)'      => array( '123', 123 ),
-			'legacy json with id and password'       => array( '{"id":"456","password":"secret"}', 456 ),
-			'legacy json with integer id'            => array( '{"id":789}', 789 ),
-			'legacy json with id only no password'   => array( '{"id":"42"}', 42 ),
-			'json without id key'                    => array( '{"foo":"bar"}', null ),
-			'empty json object'                      => array( '{}', null ),
-			'empty string'                           => array( '', null ),
-			'null'                                   => array( null, null ),
-			'non-numeric string'                     => array( 'abc', null ),
-			'zero'                                   => array( '0', null ),
-			'negative number'                        => array( '-5', null ),
-			'numeric with leading zeros'             => array( '007', 7 ),
+			'legacy json with id and password'    => array(
+				'{"id":"456","password":"secret"}',
+				array(
+					'kind'     => 'json',
+					'order_id' => 456,
+					'password' => 'secret',
+				),
+			),
+			'legacy json with integer id'         => array(
+				'{"id":789,"password":"x"}',
+				array(
+					'kind'     => 'json',
+					'order_id' => 789,
+					'password' => 'x',
+				),
+			),
+			'legacy json without password'        => array( '{"id":"42"}', null ),
+			'legacy json with empty password'     => array( '{"id":"42","password":""}', null ),
+			'json without id key'                 => array( '{"password":"x"}', null ),
+			'json with zero id'                   => array( '{"id":0,"password":"x"}', null ),
+			'json with negative id'               => array( '{"id":-5,"password":"x"}', null ),
+			'empty json object'                   => array( '{}', null ),
+			'signed id:hash'                      => array(
+				"123:{$hash}",
+				array(
+					'kind'     => 'signed',
+					'order_id' => 123,
+					'hash'     => $hash,
+				),
+			),
+			'signed hash too short'               => array( '123:' . str_repeat( 'a', 16 ), null ),
+			'signed hash too long'                => array( '123:' . str_repeat( 'a', 33 ), null ),
+			'signed uppercase hex rejected'       => array( '123:' . strtoupper( $hash ), null ),
+			'signed with zero id'                 => array( "0:{$hash}", null ),
+			'signed missing separator'            => array( '123' . $hash, null ),
+			'signed bare hash without id'         => array( $hash, null ),
+			'plain numeric string rejected'       => array( '123', null ),
+			'non-numeric non-hex string rejected' => array( 'abc', null ),
+			'empty string'                        => array( '', null ),
+			'null'                                => array( null, null ),
 		);
 	}
 

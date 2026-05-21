@@ -16,7 +16,6 @@ use Exception;
 use PagBank_WooCommerce\Gateways\BoletoPaymentGateway;
 use PagBank_WooCommerce\Gateways\CheckoutPaymentGateway;
 use PagBank_WooCommerce\Gateways\CreditCardPaymentGateway;
-use PagBank_WooCommerce\Gateways\DebitCardPaymentGateway;
 use PagBank_WooCommerce\Gateways\GooglePayPaymentGateway;
 use PagBank_WooCommerce\Gateways\ApplePayPaymentGateway;
 use PagBank_WooCommerce\Gateways\PayWithPagBankGateway;
@@ -583,14 +582,26 @@ class ApiHelpers {
 	/**
 	 * Reference ID data.
 	 *
-	 * Returns the WC order ID as a plain string. The webhook handler verifies
-	 * each event against the PagBank API instead of trusting the payload, so
-	 * no shared secret is embedded here anymore.
+	 * Returns `{order_id}:{signature}`. The order id lets the webhook handler
+	 * load the WC order by primary key; the 32-char hex signature (128 bits of
+	 * entropy) is persisted as `_pagbank_reference_signature` meta and checked
+	 * with hash_equals so a forged reference_id cannot bind to someone else's
+	 * order. The PagBank API remains the source of truth for status.
+	 *
+	 * Idempotent: subsequent calls (retries, renewals) return the same value.
 	 *
 	 * @param WC_Order $order Order.
 	 */
 	private static function get_order_reference_id_data( WC_Order $order ): string {
-		return (string) $order->get_id();
+		$signature = (string) $order->get_meta( '_pagbank_reference_signature' );
+
+		if ( '' === $signature ) {
+			$signature = bin2hex( random_bytes( 16 ) );
+			$order->update_meta_data( '_pagbank_reference_signature', $signature );
+			$order->save_meta_data();
+		}
+
+		return $order->get_id() . ':' . $signature;
 	}
 
 	/**

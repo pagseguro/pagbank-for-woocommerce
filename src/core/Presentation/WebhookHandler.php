@@ -74,13 +74,20 @@ class WebhookHandler {
 	/**
 	 * Parse the reference_id sent on the webhook payload.
 	 *
-	 * Supports the new format (plain wc_order_id as string) and the legacy
-	 * format (JSON-encoded { id, password } used before this refactor).
-	 * Returns null when no valid order id could be extracted.
+	 * Two formats are accepted:
+	 *
+	 *  - Legacy JSON `{ id, password }` issued before the signature refactor.
+	 *    Returns `[ 'kind' => 'json', 'order_id' => int, 'password' => string ]`.
+	 *    Both fields are required; missing password rejects the payload.
+	 *  - Signed form `{order_id}:{hash}` where hash is 32 chars hex. Returns
+	 *    `[ 'kind' => 'signed', 'order_id' => int, 'hash' => string ]`.
+	 *
+	 * Returns null for any other shape (plain integers, malformed JSON, etc).
 	 *
 	 * @param string|null $raw The raw reference_id from the webhook payload.
+	 * @return array{kind:string,order_id:int,password?:string,hash?:string}|null
 	 */
-	public static function parse_reference_id( ?string $raw ): ?int {
+	public static function parse_reference_id( ?string $raw ): ?array {
 		if ( null === $raw || '' === $raw ) {
 			return null;
 		}
@@ -88,22 +95,86 @@ class WebhookHandler {
 		$decoded = json_decode( $raw, true );
 
 		if ( is_array( $decoded ) ) {
-			if ( ! isset( $decoded['id'] ) ) {
+			if ( ! isset( $decoded['id'] ) || ! is_numeric( $decoded['id'] ) ) {
 				return null;
 			}
 
-			$candidate = $decoded['id'];
-		} else {
-			$candidate = $raw;
+			$password = isset( $decoded['password'] ) ? $decoded['password'] : null;
+
+			if ( ! is_string( $password ) || '' === $password ) {
+				return null;
+			}
+
+			$id = (int) $decoded['id'];
+
+			if ( $id <= 0 ) {
+				return null;
+			}
+
+			return array(
+				'kind'     => 'json',
+				'order_id' => $id,
+				'password' => $password,
+			);
 		}
 
-		if ( ! is_numeric( $candidate ) ) {
+		if ( 1 === preg_match( '/^(\d+):([a-f0-9]{32})$/', $raw, $matches ) ) {
+			$id = (int) $matches[1];
+
+			if ( $id <= 0 ) {
+				return null;
+			}
+
+			return array(
+				'kind'     => 'signed',
+				'order_id' => $id,
+				'hash'     => $matches[2],
+			);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Resolve the WC order from a parsed reference_id payload.
+	 *
+	 * Both kinds load the order by primary key and then verify a secret
+	 * persisted on the order meta with `hash_equals`. JSON-legacy checks
+	 * `_pagbank_password`, written by older plugin versions; signed checks
+	 * `_pagbank_reference_signature`. Missing or mismatched secrets reject.
+	 *
+	 * Returns null on any mismatch; the caller turns that into a 400.
+	 *
+	 * @param array $parsed Parsed reference_id from parse_reference_id().
+	 */
+	private static function resolve_order_from_reference( array $parsed ): ?\WC_Order {
+		$order = wc_get_order( $parsed['order_id'] );
+
+		if ( ! $order ) {
 			return null;
 		}
 
-		$id = (int) $candidate;
+		if ( 'json' === $parsed['kind'] ) {
+			$stored = (string) $order->get_meta( '_pagbank_password' );
 
-		return $id > 0 ? $id : null;
+			if ( '' === $stored || ! hash_equals( $stored, $parsed['password'] ) ) {
+				return null;
+			}
+
+			return $order;
+		}
+
+		if ( 'signed' === $parsed['kind'] ) {
+			$stored = (string) $order->get_meta( '_pagbank_reference_signature' );
+
+			if ( '' === $stored || ! hash_equals( $stored, $parsed['hash'] ) ) {
+				return null;
+			}
+
+			return $order;
+		}
+
+		return null;
 	}
 
 	/**
@@ -182,13 +253,14 @@ class WebhookHandler {
 
 			$payload = json_decode( $input, true );
 
-			$order_id = self::parse_reference_id( isset( $payload['reference_id'] ) ? $payload['reference_id'] : null );
+			$raw_reference_id = isset( $payload['reference_id'] ) ? $payload['reference_id'] : null;
+			$parsed           = self::parse_reference_id( $raw_reference_id );
 
-			if ( null === $order_id ) {
+			if ( null === $parsed ) {
 				$this->log(
-					'Webhook validation failed: order_id could not be parsed from reference_id',
+					'Webhook validation failed: reference_id could not be parsed',
 					array(
-						'reference_id' => isset( $payload['reference_id'] ) ? $payload['reference_id'] : null,
+						'reference_id' => $raw_reference_id,
 					)
 				);
 				wp_send_json_error(
@@ -199,13 +271,13 @@ class WebhookHandler {
 				);
 			}
 
-			$order = wc_get_order( $order_id );
+			$order = self::resolve_order_from_reference( $parsed );
 
 			if ( ! $order ) {
 				$this->log(
 					'Webhook validation failed: order not found',
 					array(
-						'order_id' => $order_id,
+						'reference_kind' => $parsed['kind'],
 					)
 				);
 				wp_send_json_error(
@@ -215,6 +287,8 @@ class WebhookHandler {
 					400
 				);
 			}
+
+			$order_id = $order->get_id();
 
 			if ( ! in_array( $order->get_payment_method(), array( 'pagbank_credit_card', 'pagbank_boleto', 'pagbank_pix' ), true ) ) {
 				$this->log(
