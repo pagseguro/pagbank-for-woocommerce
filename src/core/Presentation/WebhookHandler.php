@@ -290,7 +290,7 @@ class WebhookHandler {
 
 			$order_id = $order->get_id();
 
-			if ( ! in_array( $order->get_payment_method(), array( 'pagbank_credit_card', 'pagbank_boleto', 'pagbank_pix' ), true ) ) {
+			if ( ! in_array( $order->get_payment_method(), PaymentGateways::get_gateway_ids(), true ) ) {
 				$this->log(
 					'Webhook validation failed: invalid payment method',
 					array(
