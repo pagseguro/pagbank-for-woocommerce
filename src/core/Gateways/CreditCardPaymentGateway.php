@@ -1070,7 +1070,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				$threeds_id
 			);
 
-			$response = $this->api->create_order( $data, ApiHelpers::get_create_order_idempotency_key( $data ) );
+			$response = $this->api->create_order( $data, ApiHelpers::get_create_order_idempotency_key( $data, $order->get_id() ) );
 
 			if ( is_wp_error( $response ) ) {
 				wc_add_notice( __( 'Houve um erro durante o pagamento. Tente novamente.', 'pagbank-for-woocommerce' ), 'error' );
@@ -1386,7 +1386,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 				$amount
 			);
 
-			$response = $this->api->create_order( $data, ApiHelpers::get_create_order_idempotency_key( $data ) );
+			$response = $this->api->create_order( $data, ApiHelpers::get_create_order_idempotency_key( $data, $renewal_order->get_id() ) );
 
 			if ( is_wp_error( $response ) ) {
 				throw new Exception( 'Houve um erro no pagamento da renovação.' );
