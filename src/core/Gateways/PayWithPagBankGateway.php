@@ -172,7 +172,7 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 			$return_url = $this->get_return_url( $order );
 
 			$data     = ApiHelpers::get_pay_with_pagbank_api_data( $this, $order, $is_mobile, $return_url );
-			$response = $this->api->create_order( $data, ApiHelpers::get_create_order_idempotency_key( $data ) );
+			$response = $this->api->create_order( $data, ApiHelpers::get_create_order_idempotency_key( $data, $order->get_id() ) );
 
 			if ( is_wp_error( $response ) ) {
 				wc_add_notice( __( 'Houve um erro ao processar o pagamento. Tente novamente.', 'pagbank-for-woocommerce' ), 'error' );

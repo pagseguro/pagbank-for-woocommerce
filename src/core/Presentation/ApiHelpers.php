@@ -142,21 +142,32 @@ class ApiHelpers {
 	/**
 	 * Compute an idempotency key for a create-order request.
 	 *
-	 * Derives a stable hash from the payment intent (customer identity,
-	 * total, items and payment method). Two retries of the same cart by
-	 * the same customer produce the same key, allowing PagBank to dedupe
-	 * the request server-side and avoid duplicate charges across WC orders.
+	 * Scoped to a single WC order and a single 3DS authentication: two
+	 * parallel processings of the same order (e.g. a network glitch causing
+	 * a double-submit) collide and PagBank dedupes them, but a legitimate
+	 * retry — which produces a new WC order, or at least a fresh 3DS ID —
+	 * gets a new key and is accepted.
 	 *
-	 * The card encrypted blob is intentionally excluded because RSA-OAEP
-	 * produces a different ciphertext on every call, which would defeat
-	 * deduplication.
+	 * Previously the key was a hash of cart shape (email + tax_id + amount
+	 * + type + items) so two distinct WC orders for the same cart shared a
+	 * key, and PagBank rejected the second attempt with
+	 * IDEMPOTENCY_CONFLICT whenever the request body shifted (different
+	 * 3DS ID, different shipping locality, new encrypted blob, etc).
+	 *
+	 * The card encrypted blob is still intentionally excluded because
+	 * RSA-OAEP produces a different ciphertext on every call.
+	 *
+	 * @param array    $data     The create-order payload.
+	 * @param int|null $order_id Owning WC order ID.
 	 */
-	public static function get_create_order_idempotency_key( array $data ): string {
+	public static function get_create_order_idempotency_key( array $data, ?int $order_id = null ): string {
 		$parts = array(
+			(string) ( $order_id ?? '' ),
 			$data['customer']['email'] ?? '',
 			$data['customer']['tax_id']['value'] ?? '',
 			(string) ( $data['charges'][0]['amount']['value'] ?? '' ),
 			$data['charges'][0]['payment_method']['type'] ?? '',
+			$data['charges'][0]['payment_method']['authentication_method']['id'] ?? '',
 			(string) wp_json_encode( $data['items'] ?? array() ),
 		);
 
