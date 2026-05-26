@@ -264,8 +264,11 @@ const readFieldValue = (id: string): string => {
 };
 
 const buildCustomerPhones = (raw: string, cellphoneErrorMsg: string): ThreeDSCustomerPhone[] => {
+	// PagBank's 3DS endpoint requires at least one phone in customer.phones —
+	// an empty array makes the authentication call fail. Treat "no phone" the
+	// same as "invalid phone" so the user gets a clear error and fills it in.
 	if (!raw) {
-		return [];
+		throw new Error(cellphoneErrorMsg);
 	}
 	const parsed = parsePhoneNumber(raw, "BR");
 	if (!parsed) {
