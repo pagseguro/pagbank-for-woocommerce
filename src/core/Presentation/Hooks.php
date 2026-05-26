@@ -149,14 +149,25 @@ class Hooks {
 	 * @return string         Filtered script tag.
 	 */
 	public function add_type_attribute( string $tag, string $handle, string $src ): string {
+		unset( $src ); // Required by WP `script_loader_tag` filter signature; we read src from $tag via regex.
+
 		$type = wp_scripts()->get_data( $handle, 'pagbank_script' );
 
-		if ( $type === true ) {
-			// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-			$tag = '<script src="' . esc_url( $src ) . '" type="module"></script>';
+		if ( $type !== true ) {
+			return $tag;
 		}
 
-		return $tag;
+		// $tag here also contains any before/after inline script blocks that
+		// WP_Scripts::do_item concatenates with the main tag before filtering
+		// (see wp-includes/class-wp-scripts.php). Rewriting $tag wholesale
+		// would drop those inline blocks, so inject type="module" only into
+		// the main <script src=...> tag and leave the rest untouched.
+		return (string) preg_replace(
+			'/<script(?=\s+[^>]*\bsrc=)(?![^>]*\btype=)/i',
+			'<script type="module"',
+			$tag,
+			1
+		);
 	}
 
 	/**
