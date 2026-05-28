@@ -261,6 +261,14 @@ Caso o lojista não possua o identificador da conta preenchido, os produtos cada
 * Corrigido agregação de splits por conta no marketplace.
 * Corrigido compatibilidade com PHP 7.4.
 
-= 2.0.1 - 2026-04-14 =
-* Corrigido textos.
-* Atualizado documentação.
+= 2.0.1 - 2026-05-28 =
+* Corrigido suporte ao pagamento com Cartão de Débito no checkout clássico.
+* Adicionado suporte ao WooCommerce 10.8.
+* Melhorado mensagens de erro da autenticação 3D Secure para serem mais claras ao cliente.
+* Melhorado validação do campo de celular no checkout, evitando falhas durante o pagamento.
+* Melhorado processamento de webhooks, com confirmação de status mais confiável e registro de notas no pedido a cada evento recebido.
+* Melhorado tratamento de nomes com caracteres especiais ao enviar dados ao PagBank.
+* Corrigido raros casos de duplicação de cobranças e pedidos em situações de instabilidade.
+* Corrigido limpeza dos campos de cartão após erro ou ao retornar para a página de pagamento.
+* Corrigido pequenos problemas no checkout e nas configurações do plugin.
+* Atualizado textos e documentação.
