@@ -738,9 +738,6 @@ class Api {
 
 		if ( null !== $body ) {
 			$context['body'] = $body;
-			// Even with the `format_log_entry` filter, the UI breaks the `reference_id` escaped JSON, so we need to remove it from the context.
-			unset( $context['body']['reference_id'] );
-			unset( $context['body']['charges'][0]['reference_id'] );
 		}
 
 		if ( ! empty( $headers ) ) {
@@ -797,12 +794,6 @@ class Api {
 
 		if ( json_last_error() !== JSON_ERROR_NONE ) {
 			$decoded_body = $response_body;
-		}
-
-		// Even with the `format_log_entry` filter, the UI breaks the `reference_id` escaped JSON, so we need to remove it from the context.
-		if ( is_array( $decoded_body ) ) {
-			unset( $decoded_body['reference_id'] );
-			unset( $decoded_body['charges'][0]['reference_id'] );
 		}
 
 		$this->log(
