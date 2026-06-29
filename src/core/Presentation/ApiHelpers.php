@@ -378,9 +378,11 @@ class ApiHelpers {
 	 * @param string                 $return_url Return URL after payment.
 	 */
 	public static function get_checkout_api_data( CheckoutPaymentGateway $gateway, WC_Order $order, int $expiration_in_minutes, string $return_url ): array {
+		$items = self::get_order_items_api_data( $order );
+
 		$data = array(
 			'reference_id'              => self::get_order_reference_id_data( $order ),
-			'items'                     => self::get_order_items_api_data( $order ),
+			'items'                     => $items,
 			'customer'                  => self::get_order_customer_api_data( $order ),
 			'expiration_date'           => Carbon::now()->addMinutes( $expiration_in_minutes )->toAtomString(),
 			'redirect_url'              => $return_url,
@@ -399,6 +401,30 @@ class ApiHelpers {
 			$data['shipping'] = $shipping_data;
 		}
 
+		// The Checkout API has no explicit total field: PagBank computes it as
+		// sum(items) + shipping.amount + additional_amount - discount_amount.
+		// The items use the pre-discount subtotal (excluding tax) and shipping
+		// carries only the shipping cost, so coupons, fees and taxes would
+		// otherwise make the charged amount diverge from the order total.
+		// Reconcile the breakdown against the authoritative order total and push
+		// the remainder into additional_amount (charge more) or discount_amount
+		// (charge less). This also absorbs any per-item rounding drift.
+		$items_total = 0;
+		foreach ( $items as $item ) {
+			$items_total += $item['unit_amount'] * $item['quantity'];
+		}
+
+		$shipping_total = isset( $data['shipping']['amount'] ) ? $data['shipping']['amount'] : 0;
+
+		$order_total = Helpers::format_money_cents( $order->get_total() );
+		$difference  = $order_total - $items_total - $shipping_total;
+
+		if ( $difference > 0 ) {
+			$data['additional_amount'] = $difference;
+		} elseif ( $difference < 0 ) {
+			$data['discount_amount'] = abs( $difference );
+		}
+
 		return apply_filters( 'pagbank_checkout_data', $data, $order, $gateway );
 	}
 
@@ -413,7 +439,7 @@ class ApiHelpers {
 		// Check if order needs shipping.
 		$needs_shipping = false;
 		foreach ( $order->get_items() as $item ) {
-			$product = wc_get_product( $item->get_id() );
+			$product = $item->get_product();
 			if ( $product && $product->needs_shipping() ) {
 				$needs_shipping = true;
 				break;
