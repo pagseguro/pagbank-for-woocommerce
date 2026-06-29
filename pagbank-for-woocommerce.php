@@ -36,6 +36,12 @@ define( 'PAGBANK_WOOCOMMERCE_FILE_PATH', __FILE__ );
 define( 'PAGBANK_WOOCOMMERCE_VERSION', '2.0.1' );
 define( 'PAGBANK_WOOCOMMERCE_TEMPLATES_PATH', plugin_dir_path( PAGBANK_WOOCOMMERCE_FILE_PATH ) . 'src/templates/' );
 
+// Enable support for the new Brazilian alphanumeric CNPJ format (starting July 2026).
+// Can be overridden (e.g. set to false) via wp-config.php if needed.
+if ( ! defined( 'PAGBANK_FEATURE_FLAG_ALPHANUMERIC_CNPJ_ENABLED' ) ) {
+	define( 'PAGBANK_FEATURE_FLAG_ALPHANUMERIC_CNPJ_ENABLED', true );
+}
+
 add_action(
 	'before_woocommerce_init',
 	function (): void {

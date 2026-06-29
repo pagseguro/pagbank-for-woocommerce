@@ -117,13 +117,14 @@ class CheckoutBlocksFields {
 					),
 				),
 				'sanitize_callback'          => function ( $field_value ) {
-					$filtered_value = preg_replace( '/[^0-9]/', '', $field_value );
+					// Keep the raw value (letters preserved for the new alphanumeric
+					// CNPJ); Helpers handles sanitization based on the active format.
+					$formatted = Helpers::format_cpf_or_cnpj( (string) $field_value );
 
-					return Helpers::format_cpf_or_cnpj( $filtered_value );
+					return null !== $formatted ? $formatted : $field_value;
 				},
 				'validate_callback'          => function ( $field_value ) {
-					$digits = preg_replace( '/[^0-9]/', '', $field_value );
-					$parsed = Helpers::parse_cpf_or_cnpj( $digits );
+					$parsed = Helpers::parse_cpf_or_cnpj( (string) $field_value );
 
 					if ( ! $parsed['is_valid'] ) {
 						return new WP_Error( 'invalid_tax_id', $parsed['error_message'] );
@@ -216,18 +217,18 @@ class CheckoutBlocksFields {
 
 		switch ( $key ) {
 			case 'pagbank/tax-id':
-				$digits = Helpers::filter_only_numbers( $value );
+				$parsed = Helpers::parse_cpf_or_cnpj( (string) $value );
 
-				if ( strlen( $digits ) === 11 ) {
+				if ( 'cpf' === $parsed['type'] ) {
 					// CPF.
 					$wc_object->update_meta_data( $prefix . 'persontype', '1' );
-					$wc_object->update_meta_data( $prefix . 'cpf', Helpers::format_cpf( $digits ) );
+					$wc_object->update_meta_data( $prefix . 'cpf', Helpers::format_cpf( $parsed['value'] ) );
 					$wc_object->update_meta_data( $prefix . 'cnpj', '' );
-				} elseif ( strlen( $digits ) === 14 ) {
-					// CNPJ.
+				} elseif ( 'cnpj' === $parsed['type'] ) {
+					// CNPJ (numeric or new alphanumeric format).
 					$wc_object->update_meta_data( $prefix . 'persontype', '2' );
 					$wc_object->update_meta_data( $prefix . 'cpf', '' );
-					$wc_object->update_meta_data( $prefix . 'cnpj', Helpers::format_cnpj( $digits ) );
+					$wc_object->update_meta_data( $prefix . 'cnpj', Helpers::format_cnpj( $parsed['value'] ) );
 				}
 				break;
 

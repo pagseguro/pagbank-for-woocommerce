@@ -55,7 +55,7 @@ class ApiHelpers {
 
 		$person_type = $order->get_meta( '_billing_person_type' );
 		$cpf         = Helpers::filter_only_numbers( $order->get_meta( '_billing_cpf' ) );
-		$cnpj        = Helpers::filter_only_numbers( $order->get_meta( '_billing_cnpj' ) );
+		$cnpj        = Helpers::sanitize_cnpj( $order->get_meta( '_billing_cnpj' ) );
 
 		switch ( $person_type ) {
 			case '2':

@@ -251,6 +251,25 @@ class Helpers {
 	}
 
 	/**
+	 * Sanitize a CNPJ value, preserving its raw characters.
+	 *
+	 * When PAGBANK_FEATURE_FLAG_ALPHANUMERIC_CNPJ_ENABLED is true, letters are
+	 * preserved and uppercased to support the new alphanumeric CNPJ format
+	 * (starting July 2026). Otherwise, only digits are kept (legacy behavior).
+	 *
+	 * @param string $value CNPJ number (with or without formatting).
+	 *
+	 * @return string The sanitized CNPJ (alphanumeric uppercase or digits only).
+	 */
+	public static function sanitize_cnpj( string $value ): string {
+		if ( self::get_constant_value( 'PAGBANK_FEATURE_FLAG_ALPHANUMERIC_CNPJ_ENABLED', false ) ) {
+			return strtoupper( preg_replace( '/[^A-Za-z0-9]/', '', $value ) );
+		}
+
+		return self::filter_only_numbers( $value );
+	}
+
+	/**
 	 * Validate alphanumeric CNPJ (new format starting July 2026).
 	 *
 	 * The alphanumeric CNPJ has 14 positions:
@@ -315,18 +334,23 @@ class Helpers {
 	 * @return array{type: string, value: string|null, is_valid: bool, error_message: string|null} Parsed data.
 	 */
 	public static function parse_cpf_or_cnpj( string $value ): array {
-		$digits        = self::filter_only_numbers( $value );
 		$is_valid_cpf  = self::is_valid_cpf( $value );
 		$is_valid_cnpj = self::is_valid_cnpj( $value );
 
 		$is_valid = $is_valid_cpf || $is_valid_cnpj;
 
+		// Sanitize keeping the characters relevant to each document type. CPF is
+		// always numeric; CNPJ may be alphanumeric when the new format is enabled.
+		$sanitized = $is_valid_cpf ? self::filter_only_numbers( $value ) : self::sanitize_cnpj( $value );
+
 		// Determine error message based on validation result.
 		$error_message = null;
 		if ( ! $is_valid ) {
-			if ( strlen( $digits ) === 11 ) {
+			$length = strlen( $sanitized );
+
+			if ( 11 === $length ) {
 				$error_message = __( 'CPF inválido. Verifique os dígitos informados.', 'pagbank-for-woocommerce' );
-			} elseif ( strlen( $digits ) === 14 ) {
+			} elseif ( 14 === $length ) {
 				$error_message = __( 'CNPJ inválido. Verifique os dígitos informados.', 'pagbank-for-woocommerce' );
 			} else {
 				$error_message = __( 'CPF/CNPJ inválido. Informe 11 dígitos para CPF ou 14 para CNPJ.', 'pagbank-for-woocommerce' );
@@ -335,7 +359,7 @@ class Helpers {
 
 		return array(
 			'type'          => $is_valid_cpf ? 'cpf' : ( $is_valid_cnpj ? 'cnpj' : 'unknown' ),
-			'value'         => $is_valid ? $digits : null,
+			'value'         => $is_valid ? $sanitized : null,
 			'is_valid'      => $is_valid,
 			'error_message' => $error_message,
 		);
