@@ -53,10 +53,11 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 	 * BoletoPaymentGateway constructor.
 	 */
 	public function __construct() {
-		$this->id                 = 'pagbank_boleto';
-		$this->icon               = plugins_url( 'dist/images/icons/boleto.png', PAGBANK_WOOCOMMERCE_FILE_PATH );
-		$this->method_title       = __( 'PagBank Boleto', 'pagbank-for-woocommerce' );
-		$this->method_description = __( 'Aceite pagamentos via Boleto através do PagBank.', 'pagbank-for-woocommerce' );
+		$this->id           = 'pagbank_boleto';
+		$this->icon         = plugins_url( 'dist/images/icons/boleto.png', PAGBANK_WOOCOMMERCE_FILE_PATH );
+		$this->method_title = __( 'PagBank Boleto', 'pagbank-for-woocommerce' );
+		// phpcs:ignore Generic.Files.LineLength -- Translation string cannot be split.
+		$this->method_description = __( 'Aceite pagamentos via boleto bancário com vencimento configurável. O boleto e o código de barras escaneável ficam disponíveis na página do pedido e no e-mail do cliente. Inclui confirmação automática via webhook e reembolso online total ou parcial.', 'pagbank-for-woocommerce' );
 		$this->description        = $this->get_option( 'description' );
 		$this->has_fields         = ! empty( $this->description );
 		$this->supports           = array(
@@ -172,7 +173,7 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 			$order              = wc_get_order( $order_id );
 			$expiration_in_days = $this->get_option( 'expiration_days' );
 			$data               = ApiHelpers::get_boleto_payment_api_data( $this, $order, $expiration_in_days );
-			$response           = $this->api->create_order( $data );
+			$response           = $this->api->create_order( $data, ApiHelpers::get_create_order_idempotency_key( $data, $order->get_id() ) );
 
 			if ( is_wp_error( $response ) ) {
 				wc_add_notice( __( 'Houve um erro ao processar o pagamento. Tente novamente.', 'pagbank-for-woocommerce' ), 'error' );
@@ -239,7 +240,6 @@ class BoletoPaymentGateway extends WC_Payment_Gateway {
 
 		$order->update_meta_data( '_pagbank_order_id', $response['id'] );
 		$order->update_meta_data( '_pagbank_charge_id', $charge['id'] );
-		$order->update_meta_data( '_pagbank_password', $request['metadata']['password'] );
 
 		$order->update_meta_data( '_pagbank_boleto_expiration_date', $charge['payment_method']['boleto']['due_date'] );
 		$order->update_meta_data( '_pagbank_boleto_barcode', $charge['payment_method']['boleto']['barcode'] );

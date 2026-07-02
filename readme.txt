@@ -2,13 +2,13 @@
 Contributors: eliasjnior
 Tags: woocommerce, pagseguro, pagbank, pagamento, brasil
 Requires at least: 6.7
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Aceite pagamentos via cartão de crédito, boleto e Pix no checkout do WooCommerce através do PagBank.
+Aceite pagamentos via cartão de crédito, cartão de débito, Pix, boleto e redirecionamento (Pagar com PagBank e Checkout PagBank) no WooCommerce através do PagBank.
 
 == Description ==
 
@@ -24,12 +24,15 @@ Nosso módulo oferece uma integração completa com a sua loja. Receba e gerenci
 
 Aqui estão alguns dos benefícios dessa integração:
 
-1. Fácil instalação e configuração para integrar **pagamentos no Cartão de Crédito, Pix e Boleto** em sua loja virtual Woocommerce, proporcionando flexibilidade aos seus clientes.
-2. **Parcelamento personalizável:** Ofereça a opção de parcelamento com ou sem juros, permitindo que você configure essa opção de acordo com suas preferências através do plugin.
-3. **Reembolso fácil:** Realize reembolsos totais ou parciais diretamente na plataforma, proporcionando uma experiência satisfatória aos seus clientes.
-4. **Segurança do cliente:** Dê aos seus clientes a opção de salvar seu método de pagamento, sem a necessidade de armazenar o número do cartão, garantindo a segurança de dados sensíveis.
-5. **Checkout Transparente:** Permita que seus clientes façam o pagamento sem sair do seu site, proporcionando uma experiência de compra fluida e conveniente.
-6. **Status de pedidos atualizados automaticamente:** Através do Webhook de retorno de dados do PagSeguro, os status dos pedidos são atualizados automaticamente, permitindo que você acompanhe o processo de cada transação (aprovado, negado, cancelado, etc).
+1. Fácil instalação e configuração para integrar **pagamentos no Cartão de Crédito, Cartão de Débito, Pix, Boleto, Pagar com PagBank e Checkout PagBank** em sua loja virtual WooCommerce, proporcionando flexibilidade aos seus clientes.
+2. **Compatível com Legacy Checkout e Checkout Blocks:** Todos os métodos de pagamento funcionam tanto no checkout clássico (shortcode) quanto no novo checkout em blocos do WooCommerce.
+3. **Parcelamento personalizável:** Ofereça parcelamento em até 18x (mediante aprovação), com ou sem juros, permitindo que você configure essa opção de acordo com suas preferências através do plugin.
+4. **Autenticação 3D Secure:** Adicione uma camada extra de segurança nas transações com cartão, transferindo a responsabilidade de fraude para o banco emissor em transações autenticadas.
+5. **Reembolso fácil:** Realize reembolsos totais ou parciais diretamente na plataforma, proporcionando uma experiência satisfatória aos seus clientes.
+6. **Segurança do cliente:** Dê aos seus clientes a opção de salvar seu método de pagamento, sem a necessidade de armazenar o número do cartão, garantindo a segurança de dados sensíveis.
+7. **Checkout Transparente:** Permita que seus clientes façam o pagamento sem sair do seu site, proporcionando uma experiência de compra fluida e conveniente.
+8. **Instruções de pagamento no pedido e e-mail:** Pix e boleto são exibidos na página do pedido e no e-mail do cliente, com código de barras escaneável para o boleto.
+9. **Status de pedidos atualizados automaticamente:** Através do Webhook de retorno de dados do PagBank, os status dos pedidos são atualizados automaticamente, permitindo que você acompanhe o processo de cada transação (aprovado, negado, cancelado, etc).
 
 = Cartão de Crédito =
 
@@ -38,9 +41,23 @@ Receba e gerencie transações de cartão de crédito em sua loja.
 Principais Recursos:
 
 * Método transparente
+* Autenticação 3D Secure
+* Parcelamento em até 18x (mediante aprovação)
+* Tokenização de cartão para compras futuras
 * Reembolso online total ou parcial
 * Personalização de regras para juros e parcelamento
 * Informação ao cliente dos juros cobrados com atualização do total do pedido
+* Consolidação de status (cancelamento e confirmação de pagamento automática)
+
+= Cartão de Débito =
+
+Receba e gerencie transações de cartão de débito em sua loja.
+
+Principais Recursos:
+
+* Método transparente
+* Autenticação 3D Secure obrigatória, transferindo a responsabilidade por fraude ao banco emissor
+* Reembolso online total ou parcial
 * Consolidação de status (cancelamento e confirmação de pagamento automática)
 
 = Pix =
@@ -50,6 +67,8 @@ Receba e gerencie transações por Pix totalmente integrado a sua conta do PagBa
 Principais Recursos:
 
 * Método transparente
+* QR code e código copia e cola exibidos na página do pedido e no e-mail do cliente
+* Tempo de expiração configurável
 * Reembolso online total ou parcial
 * Consolidação de status (cancelamento e confirmação de pagamento automática)
 
@@ -62,10 +81,34 @@ Receba e gerencie transações por Boleto totalmente integrado a sua conta do Pa
 Principais Recursos:
 
 * Método transparente
-* Reembolso online total e parcial.
+* Vencimento configurável
+* Exibição do boleto e do código de barras escaneável na página do pedido e no e-mail do cliente
+* Reembolso online total ou parcial
 * Consolidação de status (cancelamento e confirmação de pagamento automática)
 
-Essa integração oferece uma série de recursos que vão facilitar e aprimorar a experiência de pagamento em sua loja virtual. 
+= Pagar com PagBank =
+
+Aceite pagamentos através da carteira digital PagBank. O cliente é redirecionado para concluir a compra usando saldo da conta ou cartão de crédito pelo app PagBank.
+
+Principais Recursos:
+
+* Pagamento por redirecionamento
+* Fluxo otimizado para celular
+* Reembolso online total ou parcial
+* Consolidação de status (cancelamento e confirmação de pagamento automática)
+
+= Checkout PagBank =
+
+Opção "tudo em um": o cliente é redirecionado para uma página única de pagamento do PagBank que aceita cartão de crédito, Pix, boleto e saldo PagBank.
+
+Principais Recursos:
+
+* Pagamento por redirecionamento em página única
+* Tempo de expiração configurável
+* Reembolso online total ou parcial
+* Consolidação de status (cancelamento e confirmação de pagamento automática)
+
+Essa integração oferece uma série de recursos que vão facilitar e aprimorar a experiência de pagamento em sua loja virtual.
 
 Tem alguma dúvida sobre o funcionamento ou está com algum problema técnico relacionado ao nosso plugin WooCommerce PagBank? Entre em contato com nosso [Time de integração](https://app.pipefy.com/public/form/sBlh9Nq6).
 
@@ -84,6 +127,7 @@ Para instalar o PagBank for WooCommerce, você precisa:
 * PHP versão 7.4 ou superior
 * Conta no PagBank ([cadastre-se](https://cadastro.pagseguro.uol.com.br/))
 * [Brazilian Market on WooCommerce](https://br.wordpress.org/plugins/woocommerce-extra-checkout-fields-for-brazil/) instalado e ativado
+* Compatível com o checkout clássico (shortcode) e com o WooCommerce Checkout Blocks
 
 = Instructions =
 
@@ -99,7 +143,7 @@ Siga os passos abaixo para conectar o plugin à sua conta PagBank:
 
 1. Após ter ativado o plugin PagBank for WooCommerce, vá em **WooCommerce > Configurações**.
 2. Clique na aba **Pagamentos**.
-3. A lista de métodos de pagamento incluirá três opções de pagamento: PagBank Cartão de Crédito, PagBank Boleto e PagBank Pix.
+3. A lista de métodos de pagamento incluirá as seguintes opções: PagBank Cartão de Crédito, PagBank Cartão de Débito, PagBank Boleto, PagBank Pix, Pagar com PagBank e Checkout PagBank.
 4. Clique no método de pagamento que você deseja ativar.
 5. Clique no botão **Conectar ao PagBank** para associar a sua conta. Assim que você conectar ela em qualquer método de pagamento, ela conectará todos os outros métodos de pagamento na mesma conta, porém não ativará o método de pagamento automaticamente.
 6. Depois que você conectar a sua conta PagBank, configure as outras opções de cada método, como parcelamento e prazo para pagamento.
@@ -216,3 +260,15 @@ Caso o lojista não possua o identificador da conta preenchido, os produtos cada
 * Corrigido processamento de webhook para status CANCELED.
 * Corrigido agregação de splits por conta no marketplace.
 * Corrigido compatibilidade com PHP 7.4.
+
+= 2.0.1 - 2026-05-28 =
+* Corrigido suporte ao pagamento com Cartão de Débito no checkout clássico.
+* Adicionado suporte ao WooCommerce 10.8.
+* Melhorado mensagens de erro da autenticação 3D Secure para serem mais claras ao cliente.
+* Melhorado validação do campo de celular no checkout, evitando falhas durante o pagamento.
+* Melhorado processamento de webhooks, com confirmação de status mais confiável e registro de notas no pedido a cada evento recebido.
+* Melhorado tratamento de nomes com caracteres especiais ao enviar dados ao PagBank.
+* Corrigido raros casos de duplicação de cobranças e pedidos em situações de instabilidade.
+* Corrigido limpeza dos campos de cartão após erro ou ao retornar para a página de pagamento.
+* Corrigido pequenos problemas no checkout e nas configurações do plugin.
+* Atualizado textos e documentação.

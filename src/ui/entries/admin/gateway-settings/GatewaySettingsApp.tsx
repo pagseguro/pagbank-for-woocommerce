@@ -49,6 +49,14 @@ const ALL_GATEWAYS: GatewayId[] = [
 	"pagbank_checkout",
 ];
 
+const getRegisteredGateways = (): GatewayId[] => {
+	const registered = window.pagbankSettings?.registeredGatewayIds;
+	if (!registered || registered.length === 0) {
+		return ALL_GATEWAYS;
+	}
+	return ALL_GATEWAYS.filter((id) => registered.includes(id));
+};
+
 export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 	const noticeRef = useRef<HTMLDivElement>(null);
 	const [isInitialized, setIsInitialized] = useState(false);
@@ -113,6 +121,7 @@ export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 	const pluginUrl = window.pagbankSettings?.pluginUrl ?? "";
 	const settingsUrl = window.pagbankSettings?.settingsUrl ?? "";
 	const logoUrl = `${pluginUrl}/dist/images/logos/logo-pagbank.png`;
+	const registeredGateways = useMemo(getRegisteredGateways, []);
 
 	const onSubmit = handleSubmit(
 		async (formData) => {
@@ -236,7 +245,7 @@ export const GatewaySettingsApp = ({ gatewayId }: GatewaySettingsAppProps) => {
 						</p>
 					)}
 					<nav className="pagbank-gateway-settings__nav">
-						{ALL_GATEWAYS.map((id) => {
+						{registeredGateways.map((id) => {
 							const isCurrentGateway = id === gatewayId;
 							if (isCurrentGateway) {
 								return (

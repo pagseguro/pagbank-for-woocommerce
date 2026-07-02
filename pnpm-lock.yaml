@@ -41,9 +41,6 @@ importers:
       '@wordpress/notices':
         specifier: ^5.36.0
         version: 5.36.0(react@18.3.1)
-      '@wordpress/viewport':
-        specifier: ^6.36.0
-        version: 6.36.0(react@18.3.1)
       autonumeric:
         specifier: ^4.10.9
         version: 4.10.9
@@ -99,9 +96,6 @@ importers:
       '@types/jquery.blockui':
         specifier: ^0.0.33
         version: 0.0.33
-      '@types/jsbarcode':
-        specifier: ^3.11.4
-        version: 3.11.4
       '@types/node':
         specifier: ^24.10.2
         version: 24.10.2
@@ -111,9 +105,6 @@ importers:
       '@types/react-dom':
         specifier: ^18.3.7
         version: 18.3.7(@types/react@18.3.27)
-      '@types/wordpress__viewport':
-        specifier: ^5.5.3
-        version: 5.5.3(react@18.3.1)
       concurrently:
         specifier: ^9.2.1
         version: 9.2.1
@@ -1930,9 +1921,6 @@ packages:
   '@types/jquery@3.5.33':
     resolution: {integrity: sha512-SeyVJXlCZpEki5F0ghuYe+L+PprQta6nRZqhONt9F13dWBtR/ftoaIbdRQ7cis7womE+X2LKhsDdDtkkDhJS6g==}
 
-  '@types/jsbarcode@3.11.4':
-    resolution: {integrity: sha512-VBcpTAnEMH0Gbh8JpV14CgOtJjCYjsvR2FoDRyoYPE0gUxtApf8N4c+HKEOyz/iiIZkMzqrzBA3XX7+KgKxxsA==}
-
   '@types/lodash@4.17.20':
     resolution: {integrity: sha512-H3MHACvFUEiujabxhaI/ImO6gUrd8oOurg7LQtS7mbwIXA/cUqWrvBsaeJ23aZEPk1TAYkurjfMbSELfoCXlGA==}
 
@@ -2014,9 +2002,6 @@ packages:
 
   '@types/wordpress__rich-text@3.4.6':
     resolution: {integrity: sha512-MeLSATBHrcN3fp8cVylbpx+BKRJ1aootPNtbTblcUAHcuRo6avKu1kaDLxIZb/8YbsD+/3Wm8d1uldeNz9/lhw==}
-
-  '@types/wordpress__viewport@5.5.3':
-    resolution: {integrity: sha512-ZVCNZ4LccDf8nYa9y7nI1cmKpNxDy28WieKpmj3pxXhjVyXzKQ4VM/otqHAo7NMckMVDoLXaZLvKUtaLDZ+QwQ==}
 
   '@use-gesture/core@10.3.1':
     resolution: {integrity: sha512-WcINiDt8WjqBdUXye25anHiNxPc0VOrlT8F6LLkU6cycrOGUDyY/yyFmsg3k8i5OLvv25llc0QC45GhR/C8llw==}
@@ -2111,8 +2096,8 @@ packages:
     resolution: {integrity: sha512-hmmknzXVOS5/zxkmjtEH1ONeXV/hWGV/MUrj1KhcOoskbyErYjE2hiEDlgpxJofyT/EcH6bawCoAHlVSnH7txw==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
 
-  '@wordpress/babel-preset-default@8.36.1-next.6deb34194.0':
-    resolution: {integrity: sha512-ovs5qayqLTnGh8g8mAKuTzo65/tMPRBZ1MOCyiWdmqsrN8U8KsI85CMlePLYSf05MlKx+bTIZ6aL4LVLQGLBsA==}
+  '@wordpress/babel-preset-default@8.45.1-next.v.202605131032.0':
+    resolution: {integrity: sha512-bQ4JI2zIQKZ0BVYsWNBqSe8Etz+kelfmwJ2NVv5UarLiBb8P397JALmlDtd7RdqIoUY3fcHvZ1Fg2/lyDSbcUA==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
 
   '@wordpress/base-styles@4.49.0':
@@ -2177,8 +2162,8 @@ packages:
     peerDependencies:
       react: ^18.0.0
 
-  '@wordpress/browserslist-config@6.36.1-next.8b30e05b0.0':
-    resolution: {integrity: sha512-PHr4MLZVV6iCyegsX3a9bYIIytsrigXoPydnKsmIspwfDAkA+31PtZRwY/wj/GjeFO8DR86XFC+G1JrcHBxAnw==}
+  '@wordpress/browserslist-config@6.46.0':
+    resolution: {integrity: sha512-FV/CN/Qjvu0Ts1h63w0xuZyhKzipyePMFGXPmbZawu+fHpib/2D/JyAHb0wVpOD4qz8XOfB8Tyi9iMPJzAI87w==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
 
   '@wordpress/commands@1.36.0':
@@ -2690,8 +2675,8 @@ packages:
     resolution: {integrity: sha512-iCh9laMVxFHg/pcp4s7FN7g4Z4lLFLPBN2vAZ7JlglPHMr2kjw34MnkUNZZiqyis7tzHVkww5E7WohUcooKO5Q==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
 
-  '@wordpress/warning@3.36.1-next.8b30e05b0.0':
-    resolution: {integrity: sha512-f3IiQTPdEQzXmU47IrhDx0Ifc2tWRRvT1RHG7t3c4toej9jdV/ngoKDwm//l/OaRu5/mPwQcXLTH60MjuNjWSA==}
+  '@wordpress/warning@3.46.0':
+    resolution: {integrity: sha512-Z1CE6x732iMD+NcWziitqWUyhxVy1JlioHDtQUU2oqhDcA0d/P2ifOc/af02dDYFIuLh7umurU19LqpBX6EoWw==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
 
   '@wordpress/wordcount@4.36.0':
@@ -4977,6 +4962,7 @@ packages:
 
   uuid@8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
+    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
   uuid@9.0.1:
@@ -7033,10 +7019,6 @@ snapshots:
     dependencies:
       '@types/sizzle': 2.3.9
 
-  '@types/jsbarcode@3.11.4':
-    dependencies:
-      '@types/node': 24.10.2
-
   '@types/lodash@4.17.20': {}
 
   '@types/mousetrap@1.6.15': {}
@@ -7145,13 +7127,6 @@ snapshots:
     dependencies:
       '@types/react': 18.3.27
       '@types/wordpress__data': 7.0.0(react@18.3.1)
-    transitivePeerDependencies:
-      - react
-
-  '@types/wordpress__viewport@5.5.3(react@18.3.1)':
-    dependencies:
-      '@types/react': 18.3.27
-      '@wordpress/data': 9.28.0(react@18.3.1)
     transitivePeerDependencies:
       - react
 
@@ -7363,7 +7338,7 @@ snapshots:
 
   '@wordpress/autop@4.36.0': {}
 
-  '@wordpress/babel-preset-default@8.36.1-next.6deb34194.0':
+  '@wordpress/babel-preset-default@8.45.1-next.v.202605131032.0':
     dependencies:
       '@babel/core': 7.25.7
       '@babel/plugin-syntax-import-attributes': 7.26.0(@babel/core@7.25.7)
@@ -7371,8 +7346,8 @@ snapshots:
       '@babel/plugin-transform-runtime': 7.25.7(@babel/core@7.25.7)
       '@babel/preset-env': 7.25.7(@babel/core@7.25.7)
       '@babel/preset-typescript': 7.25.7(@babel/core@7.25.7)
-      '@wordpress/browserslist-config': 6.36.1-next.8b30e05b0.0
-      '@wordpress/warning': 3.36.1-next.8b30e05b0.0
+      '@wordpress/browserslist-config': 6.46.0
+      '@wordpress/warning': 3.46.0
       browserslist: 4.28.1
       core-js: 3.47.0
       react: 18.3.1
@@ -7656,7 +7631,7 @@ snapshots:
       simple-html-tokenizer: 0.5.11
       uuid: 9.0.1
 
-  '@wordpress/browserslist-config@6.36.1-next.8b30e05b0.0': {}
+  '@wordpress/browserslist-config@6.46.0': {}
 
   '@wordpress/commands@1.36.0(@emotion/is-prop-valid@1.4.0)(@types/react-dom@18.3.7(@types/react@18.3.27))(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
@@ -8832,7 +8807,7 @@ snapshots:
 
   '@wordpress/warning@3.36.0': {}
 
-  '@wordpress/warning@3.36.1-next.8b30e05b0.0': {}
+  '@wordpress/warning@3.46.0': {}
 
   '@wordpress/wordcount@4.36.0': {}
 
@@ -11484,7 +11459,7 @@ snapshots:
   woocommerce-monorepo@https://codeload.github.com/woocommerce/woocommerce/tar.gz/3bc97a1c649b35a2bb2b550a446329eaca3e7e0c:
     dependencies:
       '@babel/core': 7.25.7
-      '@wordpress/babel-preset-default': 8.36.1-next.6deb34194.0
+      '@wordpress/babel-preset-default': 8.45.1-next.v.202605131032.0
       lodash: 4.17.21
       wp-textdomain: 1.0.1
     transitivePeerDependencies:

@@ -31,11 +31,11 @@ export const defaultCardPaymentMethodSettings: Omit<CardPaymentMethodSettings, "
 		),
 		// 3DS messages
 		threeds_session_error: __(
-			"Failed to create 3DS session. Please try again.",
+			"Unable to start card validation. Please try again.",
 			"pagbank-for-woocommerce",
 		),
 		threeds_auth_error: __(
-			"3DS authentication failed. Please try again or use a different card.",
+			"Unable to validate your card. Please try again or use a different card.",
 			"pagbank-for-woocommerce",
 		),
 		threeds_change_payment_method: __(

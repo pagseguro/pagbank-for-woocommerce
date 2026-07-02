@@ -22,12 +22,13 @@ class DebitCardPaymentGateway extends CreditCardPaymentGateway {
 	 * DebitCardPaymentGateway constructor.
 	 */
 	public function __construct() {
-		$this->id                 = 'pagbank_debit_card';
-		$this->icon               = plugins_url( 'dist/images/icons/card.png', PAGBANK_WOOCOMMERCE_FILE_PATH );
-		$this->card_type          = 'DEBIT_CARD';
-		$this->card_field_prefix  = 'pagbank_debit_card';
-		$this->method_title       = __( 'PagBank Cartão de Débito', 'pagbank-for-woocommerce' );
-		$this->method_description = __( 'Aceite pagamentos via cartão de débito através do PagBank. A autenticação 3DS é obrigatória.', 'pagbank-for-woocommerce' );
+		$this->id                = 'pagbank_debit_card';
+		$this->icon              = plugins_url( 'dist/images/icons/card.png', PAGBANK_WOOCOMMERCE_FILE_PATH );
+		$this->card_type         = 'DEBIT_CARD';
+		$this->card_field_prefix = 'pagbank_debit_card';
+		$this->method_title      = __( 'PagBank Cartão de Débito', 'pagbank-for-woocommerce' );
+		// phpcs:ignore Generic.Files.LineLength -- Translation string cannot be split.
+		$this->method_description = __( 'Aceite pagamentos via cartão de débito em checkout transparente. A autenticação 3D Secure é obrigatória e transfere a responsabilidade por fraude ao banco emissor. Inclui reembolso online total ou parcial.', 'pagbank-for-woocommerce' );
 		$this->has_fields         = true;
 		$this->supports           = array(
 			'products',
@@ -43,8 +44,13 @@ class DebitCardPaymentGateway extends CreditCardPaymentGateway {
 		$this->connect      = new Connect( $this->environment );
 		$this->api          = new Api( $this->environment, $this->logs_enabled ? $this->id : null );
 
-		$this->installments_enabled = false;
-		$this->threeds_enabled      = true;
+		// DebitCardPaymentGateway doesn't call parent::__construct(), so every
+		// typed property declared on CreditCardPaymentGateway must be set here.
+		$this->installments_enabled               = false;
+		$this->maximum_installments               = 1;
+		$this->transfer_of_interest_enabled       = false;
+		$this->maximum_installments_interest_free = 0;
+		$this->threeds_enabled                    = true;
 
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 		add_action( 'woocommerce_api_' . $this->id . '_3ds_session', array( $this, 'get_3ds_session' ) );
@@ -114,6 +120,7 @@ class DebitCardPaymentGateway extends CreditCardPaymentGateway {
 			return;
 		}
 
+		$this->tokenization_script();
 		$this->form();
 	}
 }

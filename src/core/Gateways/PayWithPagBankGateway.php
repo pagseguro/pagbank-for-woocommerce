@@ -53,11 +53,11 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 	 * PayWithPagBankGateway constructor.
 	 */
 	public function __construct() {
-		$this->id                 = 'pagbank_pay_with_pagbank';
-		$this->icon               = plugins_url( 'dist/images/icons/pagbank.png', PAGBANK_WOOCOMMERCE_FILE_PATH );
-		$this->method_title       = __( 'Pagar com PagBank', 'pagbank-for-woocommerce' );
+		$this->id           = 'pagbank_pay_with_pagbank';
+		$this->icon         = plugins_url( 'dist/images/icons/pagbank.png', PAGBANK_WOOCOMMERCE_FILE_PATH );
+		$this->method_title = __( 'Pagar com PagBank', 'pagbank-for-woocommerce' );
 		// phpcs:ignore Generic.Files.LineLength -- Translation string cannot be split.
-		$this->method_description = __( 'Aceite pagamentos usando a carteira digital PagBank. O cliente pode pagar usando saldo da conta ou cartão de crédito pelo app PagBank.', 'pagbank-for-woocommerce' );
+		$this->method_description = __( 'Aceite pagamentos através da carteira digital PagBank. O cliente é redirecionado para concluir a compra usando saldo da conta ou cartão de crédito pelo app PagBank, com fluxo otimizado para celular. Inclui confirmação automática via webhook e reembolso online total ou parcial.', 'pagbank-for-woocommerce' );
 		$this->description        = $this->get_option( 'description' );
 		$this->has_fields         = ! empty( $this->description );
 		$this->supports           = array(
@@ -172,7 +172,7 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 			$return_url = $this->get_return_url( $order );
 
 			$data     = ApiHelpers::get_pay_with_pagbank_api_data( $this, $order, $is_mobile, $return_url );
-			$response = $this->api->create_order( $data );
+			$response = $this->api->create_order( $data, ApiHelpers::get_create_order_idempotency_key( $data, $order->get_id() ) );
 
 			if ( is_wp_error( $response ) ) {
 				wc_add_notice( __( 'Houve um erro ao processar o pagamento. Tente novamente.', 'pagbank-for-woocommerce' ), 'error' );
@@ -239,7 +239,6 @@ class PayWithPagBankGateway extends WC_Payment_Gateway {
 	 */
 	private function save_order_meta_data( WC_Order $order, array $response, array $request, bool $is_mobile ): void {
 		$order->update_meta_data( '_pagbank_order_id', $response['id'] );
-		$order->update_meta_data( '_pagbank_password', $request['metadata']['password'] );
 		$order->update_meta_data( '_pagbank_environment', $this->environment );
 		$order->update_meta_data( '_pagbank_pay_with_pagbank_is_mobile', $is_mobile ? 'yes' : 'no' );
 

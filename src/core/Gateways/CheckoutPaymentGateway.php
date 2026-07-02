@@ -64,7 +64,7 @@ class CheckoutPaymentGateway extends WC_Payment_Gateway {
 		$this->icon         = plugins_url( 'dist/images/icons/pagbank.png', PAGBANK_WOOCOMMERCE_FILE_PATH );
 		$this->method_title = __( 'Checkout PagBank', 'pagbank-for-woocommerce' );
 		// phpcs:ignore Generic.Files.LineLength -- Translation string cannot be split.
-		$this->method_description = __( 'Redirecione o cliente para a página de checkout do PagBank para concluir o pagamento. Aceita cartão de crédito, Pix, boleto e saldo PagBank.', 'pagbank-for-woocommerce' );
+		$this->method_description = __( 'Opção "tudo em um": o cliente é redirecionado para uma página única de pagamento do PagBank que aceita cartão de crédito, Pix, boleto e saldo PagBank. Tempo de expiração configurável, confirmação automática via webhook e reembolso online total ou parcial.', 'pagbank-for-woocommerce' );
 		$this->description        = $this->get_option( 'description' );
 		$this->has_fields         = ! empty( $this->description );
 		$this->supports           = array(
@@ -181,7 +181,7 @@ class CheckoutPaymentGateway extends WC_Payment_Gateway {
 			$return_url = $this->get_return_url( $order );
 
 			$data     = ApiHelpers::get_checkout_api_data( $this, $order, $this->expiration_minutes, $return_url );
-			$response = $this->api->create_checkout( $data );
+			$response = $this->api->create_checkout( $data, ApiHelpers::get_create_order_idempotency_key( $data, $order->get_id() ) );
 
 			if ( is_wp_error( $response ) ) {
 				wc_add_notice( __( 'Houve um erro ao processar o pagamento. Tente novamente.', 'pagbank-for-woocommerce' ), 'error' );
@@ -282,7 +282,6 @@ class CheckoutPaymentGateway extends WC_Payment_Gateway {
 	 */
 	private function save_order_meta_data( WC_Order $order, array $response, array $request ): void {
 		$order->update_meta_data( '_pagbank_checkout_id', $response['id'] );
-		$order->update_meta_data( '_pagbank_password', $request['metadata']['password'] );
 		$order->update_meta_data( '_pagbank_environment', $this->environment );
 
 		if ( ! empty( $response['expiration_date'] ) ) {

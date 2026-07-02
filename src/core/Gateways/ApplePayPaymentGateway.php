@@ -166,7 +166,7 @@ class ApplePayPaymentGateway extends WC_Payment_Gateway {
 			}
 
 			$data     = ApiHelpers::get_apple_pay_payment_api_data( $this, $order, $apple_pay_token );
-			$response = $this->api->create_order( $data );
+			$response = $this->api->create_order( $data, ApiHelpers::get_create_order_idempotency_key( $data, $order->get_id() ) );
 
 			if ( is_wp_error( $response ) ) {
 				wc_add_notice( __( 'Houve um erro ao processar o pagamento. Tente novamente.', 'pagbank-for-woocommerce' ), 'error' );
@@ -245,7 +245,6 @@ class ApplePayPaymentGateway extends WC_Payment_Gateway {
 
 		$order->update_meta_data( '_pagbank_order_id', $response['id'] );
 		$order->update_meta_data( '_pagbank_charge_id', $charge['id'] );
-		$order->update_meta_data( '_pagbank_password', $request['metadata']['password'] );
 		$order->update_meta_data( '_pagbank_environment', $this->environment );
 		$order->update_meta_data( '_pagbank_payment_method', 'apple_pay' );
 

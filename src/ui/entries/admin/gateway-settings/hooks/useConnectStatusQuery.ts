@@ -19,7 +19,6 @@ interface ConnectStatusResponse {
 	connected: boolean;
 	account_id: string | null;
 	environment: Environment;
-	account: { email: string | null; name: string | null } | null;
 	scopes: string[];
 	missing_scopes: string[];
 }
@@ -72,7 +71,6 @@ export const useConnectStatusQuery = (environment: Environment) => {
 		// Convenience properties
 		connected: query.data?.connected ?? false,
 		account_id: query.data?.account_id ?? null,
-		account: query.data?.account ?? null,
 		scopes: query.data?.scopes ?? [],
 		missing_scopes: query.data?.missing_scopes ?? [],
 		isRefreshing: query.isFetching && !query.isLoading,

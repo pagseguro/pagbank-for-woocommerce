@@ -42,6 +42,7 @@ declare const pagbankOrderStatus: {
  */
 interface PagBankSettingsData {
 	gatewayId?: string;
+	registeredGatewayIds?: string[];
 	pluginUrl?: string;
 	settingsUrl?: string;
 	iconUrl?: string;

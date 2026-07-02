@@ -39,6 +39,13 @@ export const baseGatewaySettingsSchema = z
 	.passthrough();
 
 // Credit Card settings schema
+//
+// NOTE: select fields use `.min(1).catch(default)` so that empty strings get
+// normalized to a valid default. The WC REST API returns the field value as
+// "" whenever PHP's `empty()` considers the stored value falsy — and `'0'`
+// is one of those falsy values. Without `.min(1)`, the catch wouldn't fire,
+// the empty string would be POSTed back, and WC would reject the save with
+// "rest_setting_value_invalid".
 export const creditCardSettingsSchema = z
 	.object({
 		enabled: yesNoSchema,
@@ -47,9 +54,9 @@ export const creditCardSettingsSchema = z
 		description: optionalString,
 		logs_enabled: yesNoSchema,
 		installments_enabled: yesNoSchema,
-		maximum_installments: z.string().catch("12"),
+		maximum_installments: z.string().min(1).catch("12"),
 		transfer_of_interest_enabled: yesNoSchema,
-		maximum_installments_interest_free: z.string().catch("0"),
+		maximum_installments_interest_free: z.string().min(1).catch("0"),
 		threeds_enabled: yesNoSchema,
 	})
 	.passthrough();
@@ -84,7 +91,7 @@ export const pixSettingsSchema = z
 		title: z.string().min(1, "Título é obrigatório"),
 		description: optionalString,
 		logs_enabled: yesNoSchema,
-		expiration_minutes: z.string().catch("30"),
+		expiration_minutes: z.string().min(1).catch("30"),
 	})
 	.passthrough();
 
@@ -96,7 +103,7 @@ export const boletoSettingsSchema = z
 		title: z.string().min(1, "Título é obrigatório"),
 		description: optionalString,
 		logs_enabled: yesNoSchema,
-		expiration_days: z.string().catch("3"),
+		expiration_days: z.string().min(1).catch("3"),
 	})
 	.passthrough();
 
@@ -117,7 +124,7 @@ export const checkoutSettingsSchema = z
 		title: z.string().min(1, "Título é obrigatório"),
 		description: optionalString,
 		logs_enabled: yesNoSchema,
-		expiration_minutes: z.string().catch("120"),
+		expiration_minutes: z.string().min(1).catch("120"),
 	})
 	.passthrough();
 
@@ -211,21 +218,13 @@ export const wcGatewayResponseSchema = z.object({
 export type WCGatewaySetting = z.infer<typeof wcGatewaySettingSchema>;
 export type WCGatewayResponse = z.infer<typeof wcGatewayResponseSchema>;
 
-// Account info schema
-export const accountInfoSchema = z.object({
-	email: z.string().nullable(),
-	name: z.string().nullable(),
-});
-
 // Connect status schema
 export const connectStatusSchema = z.object({
 	connected: z.boolean(),
 	account_id: z.string().nullable(),
 	environment: environmentSchema,
-	account: accountInfoSchema.nullable(),
 	scopes: z.array(z.string()),
 	missing_scopes: z.array(z.string()),
 });
 
-export type AccountInfo = z.infer<typeof accountInfoSchema>;
 export type ConnectStatus = z.infer<typeof connectStatusSchema>;

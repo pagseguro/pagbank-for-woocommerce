@@ -16,7 +16,6 @@ use Exception;
 use PagBank_WooCommerce\Gateways\BoletoPaymentGateway;
 use PagBank_WooCommerce\Gateways\CheckoutPaymentGateway;
 use PagBank_WooCommerce\Gateways\CreditCardPaymentGateway;
-use PagBank_WooCommerce\Gateways\DebitCardPaymentGateway;
 use PagBank_WooCommerce\Gateways\GooglePayPaymentGateway;
 use PagBank_WooCommerce\Gateways\ApplePayPaymentGateway;
 use PagBank_WooCommerce\Gateways\PayWithPagBankGateway;
@@ -134,10 +133,67 @@ class ApiHelpers {
 		$name         = $company_name ? $company_name : $order->get_formatted_billing_full_name();
 
 		return array(
-			'name'   => $name,
+			'name'   => self::sanitize_pagbank_name( $name ),
 			'email'  => $order->get_billing_email(),
 			'tax_id' => self::get_order_tax_id_api_data( $order ),
 		);
+	}
+
+	/**
+	 * Compute an idempotency key for a create-order request.
+	 *
+	 * Scoped to a single WC order and a single 3DS authentication: two
+	 * parallel processings of the same order (e.g. a network glitch causing
+	 * a double-submit) collide and PagBank dedupes them, but a legitimate
+	 * retry — which produces a new WC order, or at least a fresh 3DS ID —
+	 * gets a new key and is accepted.
+	 *
+	 * Previously the key was a hash of cart shape (email + tax_id + amount
+	 * + type + items) so two distinct WC orders for the same cart shared a
+	 * key, and PagBank rejected the second attempt with
+	 * IDEMPOTENCY_CONFLICT whenever the request body shifted (different
+	 * 3DS ID, different shipping locality, new encrypted blob, etc).
+	 *
+	 * The card encrypted blob is still intentionally excluded because
+	 * RSA-OAEP produces a different ciphertext on every call.
+	 *
+	 * @param array    $data     The create-order payload.
+	 * @param int|null $order_id Owning WC order ID.
+	 */
+	public static function get_create_order_idempotency_key( array $data, ?int $order_id = null ): string {
+		$parts = array(
+			(string) ( $order_id ?? '' ),
+			$data['customer']['email'] ?? '',
+			$data['customer']['tax_id']['value'] ?? '',
+			(string) ( $data['charges'][0]['amount']['value'] ?? '' ),
+			$data['charges'][0]['payment_method']['type'] ?? '',
+			$data['charges'][0]['payment_method']['authentication_method']['id'] ?? '',
+			(string) wp_json_encode( $data['items'] ?? array() ),
+		);
+
+		return md5( implode( '|', $parts ) );
+	}
+
+	/**
+	 * Compute an idempotency key for a refund request.
+	 */
+	public static function get_refund_idempotency_key( string $charge_id, float $amount ): string {
+		return md5( $charge_id . '|' . Helpers::format_money_cents( $amount ) );
+	}
+
+	/**
+	 * Strip characters rejected by the PagBank API from a person/company name.
+	 *
+	 * The PagBank API rejects names containing special characters with error
+	 * 40002, while WooCommerce accepts them in billing names and company
+	 * fields. Keep only Unicode letters, digits and whitespace before
+	 * sending the payload.
+	 */
+	public static function sanitize_pagbank_name( string $name ): string {
+		$cleaned = preg_replace( '/[^\p{L}\p{N}\s]+/u', ' ', $name );
+		$cleaned = is_string( $cleaned ) ? preg_replace( '/\s+/', ' ', $cleaned ) : $name;
+
+		return trim( is_string( $cleaned ) ? $cleaned : $name );
 	}
 
 	/**
@@ -235,22 +291,6 @@ class ApiHelpers {
 	}
 
 	/**
-	 * Get order metadata.
-	 *
-	 * @param WC_Order $order Order.
-	 * @param array    $metadata Metadata.
-	 */
-	private static function get_order_metadata_api_data( WC_Order $order, array $metadata = array() ): array {
-		$defaults = array(
-			'order_id'  => $order->get_id(),
-			'signature' => self::get_order_id_signed( $order->get_id() ),
-			'password'  => wp_generate_password( 30, false ),
-		);
-
-		return wp_parse_args( $metadata, $defaults );
-	}
-
-	/**
 	 * Get pix payment api data.
 	 *
 	 * @param PixPaymentGateway $gateway Gateway.
@@ -258,10 +298,8 @@ class ApiHelpers {
 	 * @param int               $expiration_in_minutes Expiration in minutes.
 	 */
 	public static function get_pix_payment_api_data( PixPaymentGateway $gateway, WC_Order $order, int $expiration_in_minutes ): array {
-		$password = wp_generate_password( 30, false );
-
 		$data = array(
-			'reference_id'      => self::get_order_reference_id_data( $order, $password ),
+			'reference_id'      => self::get_order_reference_id_data( $order ),
 			'items'             => self::get_order_items_api_data( $order ),
 			'customer'          => self::get_order_customer_api_data( $order ),
 			'shipping'          => array(
@@ -278,7 +316,6 @@ class ApiHelpers {
 			'notification_urls' => array(
 				WebhookHandler::get_webhook_url(),
 			),
-			'metadata'          => self::get_order_metadata_api_data( $order, array( 'password' => $password ) ),
 		);
 
 		return apply_filters( 'pagbank_pix_payment_data', $data, $order, $gateway );
@@ -293,10 +330,8 @@ class ApiHelpers {
 	 * @param string|null           $redirect_url Redirect URL for deeplink (mobile only).
 	 */
 	public static function get_pay_with_pagbank_api_data( PayWithPagBankGateway $gateway, WC_Order $order, bool $is_mobile = false, ?string $redirect_url = null ): array {
-		$password = wp_generate_password( 30, false );
-
 		$data = array(
-			'reference_id'      => self::get_order_reference_id_data( $order, $password ),
+			'reference_id'      => self::get_order_reference_id_data( $order ),
 			'items'             => self::get_order_items_api_data( $order ),
 			'customer'          => self::get_order_customer_api_data( $order ),
 			'shipping'          => array(
@@ -305,7 +340,6 @@ class ApiHelpers {
 			'notification_urls' => array(
 				WebhookHandler::get_webhook_url(),
 			),
-			'metadata'          => self::get_order_metadata_api_data( $order, array( 'password' => $password ) ),
 		);
 
 		$amount_value = Helpers::format_money_cents( $order->get_total() );
@@ -344,10 +378,8 @@ class ApiHelpers {
 	 * @param string                 $return_url Return URL after payment.
 	 */
 	public static function get_checkout_api_data( CheckoutPaymentGateway $gateway, WC_Order $order, int $expiration_in_minutes, string $return_url ): array {
-		$password = wp_generate_password( 30, false );
-
 		$data = array(
-			'reference_id'              => self::get_order_reference_id_data( $order, $password ),
+			'reference_id'              => self::get_order_reference_id_data( $order ),
 			'items'                     => self::get_order_items_api_data( $order ),
 			'customer'                  => self::get_order_customer_api_data( $order ),
 			'expiration_date'           => Carbon::now()->addMinutes( $expiration_in_minutes )->toAtomString(),
@@ -359,7 +391,6 @@ class ApiHelpers {
 			'payment_notification_urls' => array(
 				WebhookHandler::get_webhook_url(),
 			),
-			'metadata'                  => self::get_order_metadata_api_data( $order, array( 'password' => $password ) ),
 		);
 
 		// Add shipping data if order needs shipping.
@@ -435,10 +466,8 @@ class ApiHelpers {
 	 * @param int                  $expiration_in_days Expiration in days.
 	 */
 	public static function get_boleto_payment_api_data( BoletoPaymentGateway $gateway, WC_Order $order, int $expiration_in_days ): array {
-		$password = wp_generate_password( 30, false );
-
 		$data = array(
-			'reference_id'      => self::get_order_reference_id_data( $order, $password ),
+			'reference_id'      => self::get_order_reference_id_data( $order ),
 			'items'             => self::get_order_items_api_data( $order ),
 			'customer'          => self::get_order_customer_api_data( $order ),
 			'shipping'          => array(
@@ -446,7 +475,7 @@ class ApiHelpers {
 			),
 			'charges'           => array(
 				array(
-					'reference_id'   => self::get_order_reference_id_data( $order, $password ),
+					'reference_id'   => self::get_order_reference_id_data( $order ),
 					// translators: %1$s: order id, %2$s: blog name.
 					'description'    => sprintf( __( 'Pedido %1$s - %2$s', 'pagbank-for-woocommerce' ), $order->get_id(), get_bloginfo( 'name' ) ),
 					'amount'         => self::get_order_amount_api_data( $order ),
@@ -460,7 +489,7 @@ class ApiHelpers {
 								'line_2' => __( 'PagBank', 'pagbank-for-woocommerce' ),
 							),
 							'holder'            => array(
-								'name'    => $order->get_formatted_billing_full_name(),
+								'name'    => self::sanitize_pagbank_name( $order->get_formatted_billing_full_name() ),
 								'tax_id'  => self::get_order_tax_id_api_data( $order ),
 								'email'   => $order->get_billing_email(),
 								'address' => self::get_order_billing_address_api_data( $order ),
@@ -472,7 +501,6 @@ class ApiHelpers {
 			'notification_urls' => array(
 				WebhookHandler::get_webhook_url(),
 			),
-			'metadata'          => self::get_order_metadata_api_data( $order, array( 'password' => $password ) ),
 		);
 
 		return apply_filters( 'pagbank_boleto_payment_data', $data, $order, $gateway );
@@ -486,10 +514,8 @@ class ApiHelpers {
 	 * @param string                  $google_pay_token Google Pay payment token (JSON string from Google Pay API).
 	 */
 	public static function get_google_pay_payment_api_data( GooglePayPaymentGateway $gateway, WC_Order $order, string $google_pay_token ): array {
-		$password = wp_generate_password( 30, false );
-
 		$data = array(
-			'reference_id'      => self::get_order_reference_id_data( $order, $password ),
+			'reference_id'      => self::get_order_reference_id_data( $order ),
 			'items'             => self::get_order_items_api_data( $order ),
 			'customer'          => self::get_order_customer_api_data( $order ),
 			'shipping'          => array(
@@ -497,7 +523,7 @@ class ApiHelpers {
 			),
 			'charges'           => array(
 				array(
-					'reference_id'   => self::get_order_reference_id_data( $order, $password ),
+					'reference_id'   => self::get_order_reference_id_data( $order ),
 					// translators: %1$s: order id, %2$s: blog name.
 					'description'    => sprintf( __( 'Pedido %1$s - %2$s', 'pagbank-for-woocommerce' ), $order->get_id(), get_bloginfo( 'name' ) ),
 					'amount'         => self::get_order_amount_api_data( $order ),
@@ -517,7 +543,6 @@ class ApiHelpers {
 			'notification_urls' => array(
 				WebhookHandler::get_webhook_url(),
 			),
-			'metadata'          => self::get_order_metadata_api_data( $order, array( 'password' => $password ) ),
 		);
 
 		return apply_filters( 'pagbank_google_pay_payment_data', $data, $order, $gateway );
@@ -531,10 +556,8 @@ class ApiHelpers {
 	 * @param string                 $apple_pay_token Apple Pay payment token (JSON string from Apple Pay API).
 	 */
 	public static function get_apple_pay_payment_api_data( ApplePayPaymentGateway $gateway, WC_Order $order, string $apple_pay_token ): array {
-		$password = wp_generate_password( 30, false );
-
 		$data = array(
-			'reference_id'      => self::get_order_reference_id_data( $order, $password ),
+			'reference_id'      => self::get_order_reference_id_data( $order ),
 			'items'             => self::get_order_items_api_data( $order ),
 			'customer'          => self::get_order_customer_api_data( $order ),
 			'shipping'          => array(
@@ -542,7 +565,7 @@ class ApiHelpers {
 			),
 			'charges'           => array(
 				array(
-					'reference_id'   => self::get_order_reference_id_data( $order, $password ),
+					'reference_id'   => self::get_order_reference_id_data( $order ),
 					// translators: %1$s: order id, %2$s: blog name.
 					'description'    => sprintf( __( 'Pedido %1$s - %2$s', 'pagbank-for-woocommerce' ), $order->get_id(), get_bloginfo( 'name' ) ),
 					'amount'         => self::get_order_amount_api_data( $order ),
@@ -562,7 +585,6 @@ class ApiHelpers {
 			'notification_urls' => array(
 				WebhookHandler::get_webhook_url(),
 			),
-			'metadata'          => self::get_order_metadata_api_data( $order, array( 'password' => $password ) ),
 		);
 
 		return apply_filters( 'pagbank_apple_pay_payment_data', $data, $order, $gateway );
@@ -571,16 +593,26 @@ class ApiHelpers {
 	/**
 	 * Reference ID data.
 	 *
+	 * Returns `{order_id}:{signature}`. The order id lets the webhook handler
+	 * load the WC order by primary key; the 32-char hex signature (128 bits of
+	 * entropy) is persisted as `_pagbank_reference_signature` meta and checked
+	 * with hash_equals so a forged reference_id cannot bind to someone else's
+	 * order. The PagBank API remains the source of truth for status.
+	 *
+	 * Idempotent: subsequent calls (retries, renewals) return the same value.
+	 *
 	 * @param WC_Order $order Order.
-	 * @param string   $password Password.
 	 */
-	private static function get_order_reference_id_data( WC_Order $order, string $password ): string {
-		return wp_json_encode(
-			array(
-				'id'       => $order->get_id(),
-				'password' => $password,
-			)
-		);
+	private static function get_order_reference_id_data( WC_Order $order ): string {
+		$signature = (string) $order->get_meta( '_pagbank_reference_signature' );
+
+		if ( '' === $signature ) {
+			$signature = bin2hex( random_bytes( 16 ) );
+			$order->update_meta_data( '_pagbank_reference_signature', $signature );
+			$order->save_meta_data();
+		}
+
+		return $order->get_id() . ':' . $signature;
 	}
 
 	/**
@@ -613,10 +645,8 @@ class ApiHelpers {
 		?array $transfer_of_interest_fee = null,
 		?string $threeds_id = null
 	): array {
-		$password = wp_generate_password( 30, false );
-
 		$data = array(
-			'reference_id'      => self::get_order_reference_id_data( $order, $password ),
+			'reference_id'      => self::get_order_reference_id_data( $order ),
 			'items'             => self::get_order_items_api_data( $order ),
 			'customer'          => self::get_order_customer_api_data( $order ),
 			'shipping'          => array(
@@ -624,7 +654,7 @@ class ApiHelpers {
 			),
 			'charges'           => array(
 				array(
-					'reference_id'   => self::get_order_reference_id_data( $order, $password ),
+					'reference_id'   => self::get_order_reference_id_data( $order ),
 					// translators: %1$s: order id, %2$s: blog name.
 					'description'    => sprintf( esc_html__( 'Pedido %1$s - %2$s', 'pagbank-for-woocommerce' ), $order->get_id(), get_bloginfo( 'name' ) ),
 					'amount'         => self::get_order_amount_api_data( $order ),
@@ -641,11 +671,10 @@ class ApiHelpers {
 			'notification_urls' => array(
 				WebhookHandler::get_webhook_url(),
 			),
-			'metadata'          => self::get_order_metadata_api_data( $order, array( 'password' => $password ) ),
 		);
 
 		if ( $card_holder ) {
-			$data['charges'][0]['payment_method']['holder']['name'] = $card_holder;
+			$data['charges'][0]['payment_method']['holder']['name'] = self::sanitize_pagbank_name( $card_holder );
 		}
 
 		if ( null !== $transfer_of_interest_fee ) {
@@ -684,7 +713,7 @@ class ApiHelpers {
 			$data['charges'][0]['payment_method']['card'] = array(
 				'id' => $card_id,
 			);
-			$data['charges'][0]['payment_method']['holder']['name'] = $token->get_holder();
+			$data['charges'][0]['payment_method']['holder']['name'] = self::sanitize_pagbank_name( $token->get_holder() );
 		}
 
 		if ( $cvv ) {
@@ -773,10 +802,8 @@ class ApiHelpers {
 	 * @param float                    $amount Amount.
 	 */
 	public static function get_card_renewal_payment_data( CreditCardPaymentGateway $gateway, WC_Order $renewal_order, PaymentToken $payment_token, float $amount ): array {
-		$password = wp_generate_password( 30, false );
-
 		$data = array(
-			'reference_id'      => self::get_order_reference_id_data( $renewal_order, $password ),
+			'reference_id'      => self::get_order_reference_id_data( $renewal_order ),
 			'items'             => self::get_order_items_api_data( $renewal_order ),
 			'customer'          => self::get_order_customer_api_data( $renewal_order ),
 			'shipping'          => array(
@@ -784,7 +811,7 @@ class ApiHelpers {
 			),
 			'charges'           => array(
 				array(
-					'reference_id'   => self::get_order_reference_id_data( $renewal_order, $password ),
+					'reference_id'   => self::get_order_reference_id_data( $renewal_order ),
 					// translators: %1$s: order id, %2$s: blog name.
 					'description'    => sprintf( __( 'Pedido %1$s - %2$s', 'pagbank-for-woocommerce' ), $renewal_order->get_id(), get_bloginfo( 'name' ) ),
 					'amount'         => array(
@@ -799,7 +826,7 @@ class ApiHelpers {
 							'id' => $payment_token->get_token(),
 						),
 						'holder'       => array(
-							'name'   => $payment_token->get_holder(),
+							'name'   => self::sanitize_pagbank_name( $payment_token->get_holder() ),
 							'tax_id' => self::get_order_tax_id_api_data( $renewal_order ),
 						),
 					),
@@ -811,7 +838,6 @@ class ApiHelpers {
 			'notification_urls' => array(
 				WebhookHandler::get_webhook_url(),
 			),
-			'metadata'          => self::get_order_metadata_api_data( $renewal_order, array( 'password' => $password ) ),
 		);
 
 		return apply_filters( 'pagbank_card_payment_data', $data, $renewal_order, $gateway );
@@ -848,43 +874,6 @@ class ApiHelpers {
 	}
 
 	/**
-	 * Get a signature pair to validate webhooks.
-	 */
-	private static function get_signature_pair(): array {
-		$stored_keypair = get_option( 'pagbank_stored_keypair' );
-
-		if ( ! $stored_keypair ) {
-			$sign_pair   = sodium_crypto_sign_keypair();
-			$sign_secret = sodium_crypto_sign_secretkey( $sign_pair );
-			$sign_public = sodium_crypto_sign_publickey( $sign_pair );
-
-			update_option( 'pagbank_stored_keypair', Helpers::encode_text( $sign_pair ) );
-		} else {
-			$sign_pair   = Helpers::decode_text( $stored_keypair );
-			$sign_secret = sodium_crypto_sign_secretkey( $sign_pair );
-			$sign_public = sodium_crypto_sign_publickey( $sign_pair );
-		}
-
-		return array(
-			'sign_pair'   => $sign_pair,
-			'sign_secret' => $sign_secret,
-			'sign_public' => $sign_public,
-		);
-	}
-
-	/**
-	 * Get a signed order id.
-	 *
-	 * @param string $order_id Order id.
-	 */
-	private static function get_order_id_signed( string $order_id ): string {
-		$signature_pair = self::get_signature_pair();
-		$signature      = sodium_crypto_sign_detached( $order_id, $signature_pair['sign_secret'] );
-
-		return Helpers::encode_text( $signature );
-	}
-
-	/**
 	 * Process order refund.
 	 *
 	 * @param Api        $api    PagBank API.
@@ -904,7 +893,7 @@ class ApiHelpers {
 		$pagbank_charge_id = $order->get_meta( '_pagbank_charge_id' );
 
 		try {
-			$refund = $api->refund( $pagbank_charge_id, $amount );
+			$refund = $api->refund( $pagbank_charge_id, $amount, self::get_refund_idempotency_key( $pagbank_charge_id, $amount ) );
 
 			if ( is_wp_error( $refund ) ) {
 				return $refund;

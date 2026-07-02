@@ -198,6 +198,7 @@ class PaymentGateways {
 			'pagbankSettings',
 			array(
 				'gatewayId'                   => $gateway_id,
+				'registeredGatewayIds'        => self::get_gateway_ids(),
 				'restUrl'                     => rest_url(),
 				'nonce'                       => wp_create_nonce( 'wp_rest' ),
 				'oauthNonce'                  => wp_create_nonce( 'pagbank_woocommerce_oauth' ),

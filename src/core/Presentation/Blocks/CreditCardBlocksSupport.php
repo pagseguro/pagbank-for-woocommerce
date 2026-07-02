@@ -166,8 +166,8 @@ final class CreditCardBlocksSupport extends AbstractPaymentMethodType {
 				'invalid_card_bin'              => __( 'O bin do cartão não foi encontrado.', 'pagbank-for-woocommerce' ),
 				'installments_error'            => __( 'Erro ao carregar parcelas. Tente novamente.', 'pagbank-for-woocommerce' ),
 				// 3DS messages.
-				'threeds_session_error'         => __( 'Erro ao criar sessão 3DS. Tente novamente.', 'pagbank-for-woocommerce' ),
-				'threeds_auth_error'            => __( 'Falha na autenticação 3DS. Tente novamente ou use outro cartão.', 'pagbank-for-woocommerce' ),
+				'threeds_session_error'         => __( 'Não foi possível iniciar a validação do cartão. Tente novamente.', 'pagbank-for-woocommerce' ),
+				'threeds_auth_error'            => __( 'Não foi possível validar seu cartão. Tente novamente ou utilize outro cartão.', 'pagbank-for-woocommerce' ),
 				'threeds_change_payment_method' => __( 'Este cartão não pode ser autenticado. Use outro método de pagamento.', 'pagbank-for-woocommerce' ),
 				'invalid_cellphone'             => __( 'O celular informado não é válido.', 'pagbank-for-woocommerce' ),
 				'threeds_not_supported'         => __( 'O cartão não pode ser autenticado. Use outro método de pagamento.', 'pagbank-for-woocommerce' ),

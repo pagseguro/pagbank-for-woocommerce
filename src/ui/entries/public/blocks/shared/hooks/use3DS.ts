@@ -170,14 +170,14 @@ export const use3DS = ({ settings, cardType }: Use3DSOptions): Use3DSReturn => {
 					id: result.id,
 				};
 			} catch (err) {
-				// Handle PagSeguro errors
+				// Log SDK-internal details for debugging but show a friendly,
+				// non-technical message to the user.
 				if (err instanceof PagSeguro.PagSeguroError) {
 					console.error("3DS Authentication error:", err.detail);
-					setError(err.detail?.message || settings.messages.threeds_auth_error);
 				} else {
 					console.error("3DS Authentication error:", err);
-					setError(settings.messages.threeds_auth_error);
 				}
+				setError(settings.messages.threeds_auth_error);
 
 				return { status: "CHANGE_PAYMENT_METHOD" };
 			} finally {

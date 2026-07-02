@@ -53,10 +53,11 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 	 * PixPaymentGateway constructor.
 	 */
 	public function __construct() {
-		$this->id                 = 'pagbank_pix';
-		$this->icon               = plugins_url( 'dist/images/icons/pix.png', PAGBANK_WOOCOMMERCE_FILE_PATH );
-		$this->method_title       = __( 'PagBank Pix', 'pagbank-for-woocommerce' );
-		$this->method_description = __( 'Aceite pagamentos via Pix através do PagBank.', 'pagbank-for-woocommerce' );
+		$this->id           = 'pagbank_pix';
+		$this->icon         = plugins_url( 'dist/images/icons/pix.png', PAGBANK_WOOCOMMERCE_FILE_PATH );
+		$this->method_title = __( 'PagBank Pix', 'pagbank-for-woocommerce' );
+		// phpcs:ignore Generic.Files.LineLength -- Translation string cannot be split.
+		$this->method_description = __( 'Aceite pagamentos via Pix com QR code e código copia e cola exibidos na página do pedido e no e-mail do cliente. Tempo de expiração configurável, confirmação automática via webhook e reembolso online total ou parcial. É necessário ter uma chave Pix cadastrada na sua conta PagBank.', 'pagbank-for-woocommerce' );
 		$this->description        = $this->get_option( 'description' );
 		$this->has_fields         = ! empty( $this->description );
 		$this->supports           = array(
@@ -172,7 +173,7 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 			$order                 = wc_get_order( $order_id );
 			$expiration_in_minutes = $this->get_option( 'expiration_minutes' );
 			$data                  = ApiHelpers::get_pix_payment_api_data( $this, $order, $expiration_in_minutes );
-			$response              = $this->api->create_order( $data );
+			$response              = $this->api->create_order( $data, ApiHelpers::get_create_order_idempotency_key( $data, $order->get_id() ) );
 
 			if ( is_wp_error( $response ) ) {
 				wc_add_notice( __( 'Houve um erro ao processar o pagamento. Tente novamente.', 'pagbank-for-woocommerce' ), 'error' );
@@ -239,7 +240,6 @@ class PixPaymentGateway extends WC_Payment_Gateway {
 
 		$order->update_meta_data( '_pagbank_order_id', $response['id'] );
 		$order->update_meta_data( '_pagbank_charge_id', $charge['id'] );
-		$order->update_meta_data( '_pagbank_password', $request['metadata']['password'] );
 
 		$order->update_meta_data( '_pagbank_pix_expiration_date', $response['qr_codes'][0]['expiration_date'] );
 		$order->update_meta_data( '_pagbank_pix_text', $response['qr_codes'][0]['text'] );
