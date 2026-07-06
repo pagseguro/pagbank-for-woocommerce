@@ -111,12 +111,12 @@ class WcfmIntegration {
 	/**
 	 * Get the split data for the order.
 	 *
-	 * @param WC_Order                                                          $order   The order object.
-	 * @param CreditCardPaymentGateway|BoletoPaymentGateway|PixPaymentGateway   $gateway The gateway class.
+	 * @param WC_Order                                                        $order   The order object.
+	 * @param CreditCardPaymentGateway|BoletoPaymentGateway|PixPaymentGateway $gateway The gateway class.
 	 *
 	 * @return array|null
 	 */
-	private function get_splits_payment_data( WC_Order $order, object $gateway ) {
+	private function get_splits_payment_data( WC_Order $order, object $gateway ): ?array {
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase -- ignore for $WCFMmp
 		global $WCFMmp;
 
@@ -191,10 +191,8 @@ class WcfmIntegration {
 	 * @param array                    $data    The order data.
 	 * @param WC_Order                 $order   The order object.
 	 * @param CreditCardPaymentGateway $gateway The credit card gateway class.
-	 *
-	 * @return array
 	 */
-	public function card_payment_data( $data, WC_Order $order, CreditCardPaymentGateway $gateway ) {
+	public function card_payment_data( $data, WC_Order $order, CreditCardPaymentGateway $gateway ): array {
 		$splits = $this->get_splits_payment_data( $order, $gateway );
 
 		if ( $splits && count( $splits['receivers'] ) > 1 ) {
@@ -210,10 +208,8 @@ class WcfmIntegration {
 	 * @param array             $data    The order data.
 	 * @param WC_Order          $order   The order object.
 	 * @param PixPaymentGateway $gateway The Pix gateway class.
-	 *
-	 * @return array
 	 */
-	public function pix_payment_data( $data, WC_Order $order, PixPaymentGateway $gateway ) {
+	public function pix_payment_data( $data, WC_Order $order, PixPaymentGateway $gateway ): array {
 		$splits = $this->get_splits_payment_data( $order, $gateway );
 
 		if ( $splits ) {
@@ -229,10 +225,8 @@ class WcfmIntegration {
 	 * @param array                $data    The order data.
 	 * @param WC_Order             $order   The order object.
 	 * @param BoletoPaymentGateway $gateway The Boleto gateway class.
-	 *
-	 * @return array
 	 */
-	public function boleto_payment_data( $data, WC_Order $order, BoletoPaymentGateway $gateway ) {
+	public function boleto_payment_data( $data, WC_Order $order, BoletoPaymentGateway $gateway ): array {
 		$splits = $this->get_splits_payment_data( $order, $gateway );
 
 		if ( $splits ) {
