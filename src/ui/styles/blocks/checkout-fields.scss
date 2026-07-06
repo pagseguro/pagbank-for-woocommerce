@@ -16,8 +16,24 @@
 	.wc-block-checkout__shipping-fields,
 	.wc-block-checkout__billing-fields {
 		.wc-block-components-address-form {
-			.wc-block-components-text-input.wc-block-components-address-form__pagbank-tax-id {
+			.wc-block-components-address-form__pagbank-persontype,
+			.wc-block-components-text-input.wc-block-components-address-form__pagbank-cpf,
+			.wc-block-components-text-input.wc-block-components-address-form__pagbank-cnpj,
+			.wc-block-components-text-input.wc-block-components-address-form__pagbank-company {
 				flex: 0 0 100%;
+			}
+
+			// WooCommerce removes the top margin from a text input adjacent to
+			// the form's first child (`.wc-block-components-select-input:first-child
+			// + .wc-block-components-text-input { margin-top: 0 }`), assuming a
+			// side-by-side first row (e.g. first/last name). Our person type
+			// select renders first and the CPF/CNPJ fields are full-width rows
+			// right after it, so restore the standard field gap.
+			.wc-block-components-select-input:first-child
+				+ .wc-block-components-text-input.wc-block-components-address-form__pagbank-cpf,
+			.wc-block-components-select-input:first-child
+				+ .wc-block-components-text-input.wc-block-components-address-form__pagbank-cnpj {
+				margin-top: 12px;
 			}
 		}
 	}

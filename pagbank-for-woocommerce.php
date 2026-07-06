@@ -8,7 +8,7 @@
  * Author URI: https://pagseguro.uol.com.br/
  * License: GPL-2.0
  * Requires PHP: 7.4
- * Requires Plugins: woocommerce, woocommerce-extra-checkout-fields-for-brazil
+ * Requires Plugins: woocommerce
  * WC requires at least: 3.9
  * WC tested up to: 10.8
  * Text Domain: pagbank-for-woocommerce
@@ -27,6 +27,7 @@ use PagBank_WooCommerce\Presentation\Blocks\CheckoutBlocksFields;
 use PagBank_WooCommerce\Presentation\ConnectAjaxApi;
 use PagBank_WooCommerce\Presentation\Helpers;
 use PagBank_WooCommerce\Presentation\Hooks;
+use PagBank_WooCommerce\Presentation\LegacyCheckoutFields;
 use PagBank_WooCommerce\Presentation\OrderStatusApi;
 use PagBank_WooCommerce\Presentation\PaymentGateways;
 use PagBank_WooCommerce\Presentation\SettingsApi;
@@ -69,6 +70,7 @@ add_action(
 	OrderStatusApi::get_instance();
 	SettingsApi::get_instance();
 	CheckoutBlocksFields::get_instance();
+	LegacyCheckoutFields::get_instance();
 	BlocksPaymentMethods::get_instance();
 
 	if ( Helpers::is_wcfm_activated() ) {

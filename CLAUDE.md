@@ -189,9 +189,20 @@ The plugin supports multi-vendor marketplaces (Dokan/WCFM) with payment splittin
 2. Configure the identifier in WooCommerce vendor settings
 3. Products from vendors without identifiers won't be available at checkout
 
-## Brazilian Market Dependency
+## Checkout Fields & Third-Party Interop
 
-Requires "Brazilian Market on WooCommerce" plugin for CPF/CNPJ fields and address formatting (neighborhood field required)
+The plugin ships its own Brazil-specific checkout fields — no external plugin is required:
+
+- **Classic checkout**: `LegacyCheckoutFields` registers a person type selector (`billing_persontype`, '1' = CPF / '2' = CNPJ) toggling between `billing_cpf` and `billing_cnpj` (the core `billing_company` is relabeled "Razão Social" and required for legal persons), plus address number, neighborhood and cellphone via `woocommerce_billing_fields`/`woocommerce_shipping_fields`. Because the field keys match the interop contract, WooCommerce persists order/customer meta automatically.
+- **Blocks checkout**: `CheckoutBlocksFields` registers `pagbank/persontype` (select, '1'/'2'), `pagbank/cpf`, `pagbank/cnpj` (conditionally visible via Opis JSON Schema rules referencing `customer.address`), `pagbank/company` (Razão Social — only when the store hides the core company field), `pagbank/address-number`, `pagbank/neighborhood` and `pagbank/cellphone` additional checkout fields. `pagbank/tax-id` is the pre-split legacy field, still read as fallback in `ApiHelpers`.
+
+Interop meta contract (shared with third-party plugins): order meta `_billing_persontype` ('1' = CPF, '2' = CNPJ), `_billing_cpf`, `_billing_cnpj`, `_billing_number`, `_billing_neighborhood`, `_billing_cellphone`; customer meta uses the same keys without the leading underscore.
+
+Third-party deference (per field group, checked in `LegacyCheckoutFields`):
+- **Brazilian Market on WooCommerce** (`woocommerce-extra-checkout-fields-for-brazil`): detected via `class_exists( 'Extra_Checkout_Fields_For_Brazil' )` — never use `Extra_Checkout_Fields_For_Brazil_Front_End` (the LinkNacional plugin ships a stub of it). Settings option: `wcbcf_settings` (`person_type` 0=off/1=both/2=CPF/3=CNPJ, `cell_phone`). Classic checkout only (no Blocks support).
+- **Calculadora de Frete e Campos Checkout para o Brasil** (LinkNacional, `woo-better-shipping-calculator-for-brazil`): detected via `defined( 'WC_BETTER_SHIPPING_CALCULATOR_FOR_BRAZIL_VERSION' )`. Option: `woo_better_calc_person_type_select` (`none|physical|legal|both`). Supports Blocks — when active with person type enabled, the `pagbank/*` Blocks fields are not registered.
+
+When either plugin provides a field group, the native fields for that group are not inserted. `ApiHelpers` reads the Blocks additional fields first and falls back to the legacy `_billing_*` meta, so every combination resolves.
 
 ## Development Environment Details
 

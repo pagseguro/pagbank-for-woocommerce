@@ -34,28 +34,99 @@ use Automattic\WooCommerce\Blocks\Domain\Services\CheckoutFields;
 class ApiHelpers {
 
 	/**
+	 * Read a Blocks additional checkout field from an order, if available.
+	 *
+	 * Returns an empty string when the Blocks runtime is unavailable or the
+	 * field is not registered/filled (e.g. classic checkout, or a third-party
+	 * plugin providing its own Blocks fields).
+	 *
+	 * @param WC_Order $order The order.
+	 * @param string   $key   The additional checkout field key (e.g. pagbank/tax-id).
+	 * @param string   $group The field group (billing or shipping).
+	 */
+	private static function get_order_additional_field( WC_Order $order, string $key, string $group ): string {
+		if ( ! class_exists( Package::class ) ) {
+			return '';
+		}
+
+		try {
+			$checkout_fields = Package::container()->get( CheckoutFields::class );
+
+			return (string) $checkout_fields->get_field_from_object( $key, $order, $group );
+		} catch ( \Throwable $e ) {
+			return '';
+		}
+	}
+
+	/**
+	 * Get the first non-empty value from a list.
+	 *
+	 * @param array $values The values.
+	 */
+	private static function first_not_empty( array $values ): string {
+		foreach ( $values as $value ) {
+			if ( ! empty( $value ) ) {
+				return (string) $value;
+			}
+		}
+
+		return '';
+	}
+
+	/**
 	 * Get order person type.
+	 *
+	 * Reads the Blocks additional checkout field first, then falls back to
+	 * the legacy meta contract shared with the external checkout fields
+	 * plugins, so every checkout combination (Blocks or classic, native or
+	 * third-party fields) and non-checkout contexts (subscription renewals,
+	 * admin-created orders) resolve the same way.
 	 *
 	 * @param WC_Order $order The order.
 	 * @return array{type: string, tax_id: string}  The data.
 	 */
 	private static function get_order_person_type( WC_Order $order ): array {
-		$is_api = wc()->is_store_api_request();
+		// Prefer the Blocks additional checkout fields (Store API checkouts).
+		$blocks_persontype = self::get_not_empty(
+			self::get_order_additional_field( $order, 'pagbank/persontype', 'billing' ),
+			self::get_order_additional_field( $order, 'pagbank/persontype', 'shipping' )
+		);
+		$blocks_cpf        = self::get_not_empty(
+			self::get_order_additional_field( $order, 'pagbank/cpf', 'billing' ),
+			self::get_order_additional_field( $order, 'pagbank/cpf', 'shipping' )
+		);
+		$blocks_cnpj       = self::get_not_empty(
+			self::get_order_additional_field( $order, 'pagbank/cnpj', 'billing' ),
+			self::get_order_additional_field( $order, 'pagbank/cnpj', 'shipping' )
+		);
 
-		if ( $is_api ) {
-			$checkout_fields = Package::container()->get( CheckoutFields::class );
-			$tax_id          = $checkout_fields->get_field_from_object( 'pagbank/tax-id', $order, 'billing' ) ?? $checkout_fields->get_field_from_object( 'pagbank/tax-id', $order, 'shipping' );
-			$parsed_tax_id   = Helpers::parse_cpf_or_cnpj( $tax_id );
+		$tax_id = '2' === $blocks_persontype ? $blocks_cnpj : self::get_not_empty( $blocks_cpf, $blocks_cnpj );
 
-			return array(
-				'type'   => $parsed_tax_id['type'],
-				'tax_id' => $parsed_tax_id['value'],
+		if ( ! $tax_id ) {
+			// Orders placed before the person type split used a unified field.
+			$tax_id = self::get_not_empty(
+				self::get_order_additional_field( $order, 'pagbank/tax-id', 'billing' ),
+				self::get_order_additional_field( $order, 'pagbank/tax-id', 'shipping' )
 			);
 		}
 
-		$person_type = $order->get_meta( '_billing_person_type' );
-		$cpf         = Helpers::filter_only_numbers( $order->get_meta( '_billing_cpf' ) );
-		$cnpj        = Helpers::sanitize_cnpj( $order->get_meta( '_billing_cnpj' ) );
+		if ( $tax_id ) {
+			$parsed_tax_id = Helpers::parse_cpf_or_cnpj( $tax_id );
+
+			if ( $parsed_tax_id['is_valid'] ) {
+				return array(
+					'type'   => $parsed_tax_id['type'],
+					'tax_id' => $parsed_tax_id['value'],
+				);
+			}
+		}
+
+		// `_billing_persontype` is the key written by this plugin and the
+		// external plugins; `_billing_person_type` is kept as a secondary
+		// read for orders created before this convention was aligned.
+		$person_type = self::get_not_empty( (string) $order->get_meta( '_billing_persontype' ), (string) $order->get_meta( '_billing_person_type' ) );
+		$cpf         = Helpers::filter_only_numbers( (string) $order->get_meta( '_billing_cpf' ) );
+		$cnpj        = Helpers::sanitize_cnpj( (string) $order->get_meta( '_billing_cnpj' ) );
 
 		switch ( $person_type ) {
 			case '2':
@@ -213,35 +284,33 @@ class ApiHelpers {
 	 * @param array    $address Address.
 	 */
 	private static function get_order_shipping_address_api_data( WC_Order $order, array $address = array() ): array {
-		$is_api = wc()->is_store_api_request();
+		$number = self::first_not_empty(
+			array(
+				self::get_order_additional_field( $order, 'pagbank/address-number', 'shipping' ),
+				$order->get_meta( '_shipping_number' ),
+				self::get_order_additional_field( $order, 'pagbank/address-number', 'billing' ),
+				$order->get_meta( '_billing_number' ),
+			)
+		);
 
-		$defaults = array();
+		$locality = self::first_not_empty(
+			array(
+				self::get_order_additional_field( $order, 'pagbank/neighborhood', 'shipping' ),
+				$order->get_meta( '_shipping_neighborhood' ),
+				self::get_order_additional_field( $order, 'pagbank/neighborhood', 'billing' ),
+				$order->get_meta( '_billing_neighborhood' ),
+			)
+		);
 
-		if ( $is_api ) {
-			$checkout_fields = Package::container()->get( CheckoutFields::class );
-
-			// phpcs:disable Generic.Files.LineLength -- Complex nested function calls cannot be split.
-			$defaults = array(
-				'street'      => substr( self::get_not_empty( $order->get_shipping_address_1(), $order->get_billing_address_1() ), 0, 160 ),
-				'number'      => substr( self::get_not_empty( $checkout_fields->get_field_from_object( 'pagbank/address-number', $order, 'shipping' ), $checkout_fields->get_field_from_object( 'pagbank/address-number', $order, 'billing' ) ), 0, 20 ),
-				'locality'    => substr( self::get_not_empty( $checkout_fields->get_field_from_object( 'pagbank/neighborhood', $order, 'shipping' ), $checkout_fields->get_field_from_object( 'pagbank/neighborhood', $order, 'billing' ) ), 0, 60 ),
-				// phpcs:enable Generic.Files.LineLength
-				'city'        => substr( self::get_not_empty( $order->get_shipping_city(), $order->get_billing_city() ), 0, 90 ),
-				'region_code' => substr( self::get_not_empty( $order->get_shipping_state(), $order->get_billing_state() ), 0, 2 ),
-				'country'     => 'BRA',
-				'postal_code' => preg_replace( '/[^0-9]/', '', self::get_not_empty( $order->get_shipping_postcode(), $order->get_billing_postcode() ) ),
-			);
-		} else {
-			$defaults = array(
-				'street'      => substr( self::get_not_empty( $order->get_shipping_address_1(), $order->get_billing_address_1() ), 0, 160 ),
-				'number'      => substr( self::get_not_empty( $order->get_meta( '_shipping_number' ), $order->get_meta( '_billing_number' ) ), 0, 20 ),
-				'locality'    => substr( self::get_not_empty( $order->get_meta( '_shipping_neighborhood' ), $order->get_meta( '_billing_neighborhood' ) ), 0, 60 ),
-				'city'        => substr( self::get_not_empty( $order->get_shipping_city(), $order->get_billing_city() ), 0, 90 ),
-				'region_code' => substr( self::get_not_empty( $order->get_shipping_state(), $order->get_billing_state() ), 0, 2 ),
-				'country'     => 'BRA',
-				'postal_code' => preg_replace( '/[^0-9]/', '', self::get_not_empty( $order->get_shipping_postcode(), $order->get_billing_postcode() ) ),
-			);
-		}
+		$defaults = array(
+			'street'      => substr( self::get_not_empty( $order->get_shipping_address_1(), $order->get_billing_address_1() ), 0, 160 ),
+			'number'      => substr( $number, 0, 20 ),
+			'locality'    => substr( $locality, 0, 60 ),
+			'city'        => substr( self::get_not_empty( $order->get_shipping_city(), $order->get_billing_city() ), 0, 90 ),
+			'region_code' => substr( self::get_not_empty( $order->get_shipping_state(), $order->get_billing_state() ), 0, 2 ),
+			'country'     => 'BRA',
+			'postal_code' => preg_replace( '/[^0-9]/', '', self::get_not_empty( $order->get_shipping_postcode(), $order->get_billing_postcode() ) ),
+		);
 
 		if ( $order->get_shipping_address_2() ) {
 			$defaults['complement'] = substr( self::get_not_empty( $order->get_shipping_address_2(), $order->get_billing_address_2() ), 0, 40 );
@@ -263,13 +332,24 @@ class ApiHelpers {
 	 * @param array    $address Address.
 	 */
 	private static function get_order_billing_address_api_data( WC_Order $order, array $address = array() ): array {
-		$is_api          = wc()->is_store_api_request();
-		$checkout_fields = Package::container()->get( CheckoutFields::class );
+		$number = self::first_not_empty(
+			array(
+				self::get_order_additional_field( $order, 'pagbank/address-number', 'billing' ),
+				$order->get_meta( '_billing_number' ),
+			)
+		);
+
+		$locality = self::first_not_empty(
+			array(
+				self::get_order_additional_field( $order, 'pagbank/neighborhood', 'billing' ),
+				$order->get_meta( '_billing_neighborhood' ),
+			)
+		);
 
 		$defaults = array(
 			'street'      => substr( $order->get_billing_address_1(), 0, 160 ),
-			'number'      => substr( $is_api ? $checkout_fields->get_field_from_object( 'pagbank/address-number', $order, 'billing' ) : $order->get_meta( '_billing_number' ), 0, 20 ),
-			'locality'    => substr( $is_api ? $checkout_fields->get_field_from_object( 'pagbank/neighborhood', $order, 'billing' ) : $order->get_meta( '_billing_neighborhood' ), 0, 60 ),
+			'number'      => substr( $number, 0, 20 ),
+			'locality'    => substr( $locality, 0, 60 ),
 			'city'        => substr( $order->get_billing_city(), 0, 90 ),
 			'region'      => substr( $order->get_billing_state(), 0, 2 ),
 			'region_code' => substr( $order->get_billing_state(), 0, 2 ),

@@ -121,7 +121,10 @@ declare module "@woocommerce/types" {
 			last_name: string;
 			"pagbank/address-number": string;
 			"pagbank/neighborhood": string;
-			"pagbank/tax-id": string;
+			"pagbank/persontype": string;
+			"pagbank/cpf": string;
+			"pagbank/cnpj": string;
+			"pagbank/company"?: string;
 			"pagbank/cellphone": string;
 			phone: string;
 			postcode: string;

@@ -77,10 +77,6 @@ class Hooks {
 		add_filter( 'woocommerce_email_attachments', array( $this, 'attach_boleto_pdf_to_email' ), 10, 3 );
 		add_action( 'woocommerce_email_sent', array( $this, 'cleanup_boleto_pdfs_after_email' ), 10, 3 );
 		add_filter( 'woocommerce_format_log_entry', array( $this, 'format_log_entry' ), 10, 2 );
-
-		if ( is_admin() ) {
-			add_action( 'admin_notices', array( $this, 'check_for_plugin_dependencies' ) );
-		}
 	}
 
 	/**
@@ -239,15 +235,6 @@ class Hooks {
 		}
 
 		return $load_gateways;
-	}
-
-	/**
-	 * Check for plugin dependencies.
-	 */
-	public function check_for_plugin_dependencies(): void {
-		if ( ! class_exists( 'Extra_Checkout_Fields_For_Brazil' ) ) {
-			include dirname( PAGBANK_WOOCOMMERCE_FILE_PATH ) . '/src/templates/admin/notices/html-notice-missing-brazilian-market-on-woocommerce.php';
-		}
 	}
 
 	/**
