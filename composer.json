@@ -1,6 +1,6 @@
 {
     "name": "pagbank/pagbank-for-woocommerce",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "autoload": {
         "psr-4": {
             "PagBank_WooCommerce\\": "src/core/"
