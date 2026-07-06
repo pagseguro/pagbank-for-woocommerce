@@ -890,7 +890,7 @@ class ApiHelpers {
 				'installments'      => $i,
 				'installment_value' => $i_value,
 				'interest_free'     => true,
-				// translators: 1: installments, 2: installment value.
+				// translators: %1$d: number of installments, %2$s: installment value.
 				'title'             => sprintf( __( '%1$dx de %2$s sem juros', 'pagbank-for-woocommerce' ), $i, Helpers::format_money( $i_value / 100 ) ),
 				'amount'            => $value,
 			);

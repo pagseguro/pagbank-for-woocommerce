@@ -85,7 +85,17 @@ export function getEntryBuildConfig(name: string, entry: string, options: BuildC
 			emptyOutDir: false,
 			// Use 'hidden' sourcemaps in dev to avoid warnings from node_modules without sourcemaps
 			sourcemap: isDev ? "hidden" : false,
-			minify: !isDev,
+			// Use terser (instead of the default esbuild) so we can preserve
+			// "translators:" comments, which WP-CLI i18n make-pot reads from the
+			// built JS to add context for placeholders in the .pot file.
+			minify: isDev ? false : ("terser" as const),
+			// Cast needed: Vite doesn't publish its internal TerserOptions type,
+			// so `format` isn't visible to TS even though terser accepts it.
+			terserOptions: {
+				format: {
+					comments: /translators:/i,
+				},
+			} as BuildOptions["terserOptions"],
 			watch: isDev ? {} : null,
 			lib: {
 				entry: resolve(rootDir, entry),

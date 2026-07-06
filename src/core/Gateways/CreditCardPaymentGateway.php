@@ -496,7 +496,7 @@ class CreditCardPaymentGateway extends WC_Payment_Gateway_CC {
 					'interest_free'     => $plan['interest_free'],
 					// phpcs:disable Generic.Files.LineLength -- Translation strings with sprintf cannot be split.
 					'title'             => $plan['interest_free']
-												// translators: 1: installments, 2: installment value.
+												// translators: %1$d: number of installments, %2$s: installment value.
 												? sprintf( __( '%1$dx de %2$s sem juros', 'pagbank-for-woocommerce' ), $plan['installments'], Helpers::format_money( $plan['installment_value'] / 100 ) )
 												// translators: 1: installments, 2: installment value, 3: installment total.
 												: sprintf( __( '%1$dx de %2$s com juros (%3$s)', 'pagbank-for-woocommerce' ), $plan['installments'], Helpers::format_money( $plan['installment_value'] / 100 ), Helpers::format_money( $plan['amount']['value'] / 100 ) ),
