@@ -270,7 +270,7 @@ class LegacyCheckoutFields {
 				'type'     => 'select',
 				'class'    => array( 'form-row-wide', 'person-type-field' ),
 				'required' => $required,
-				'priority' => 22,
+				'priority' => 41,
 				'default'  => '1',
 				'options'  => array(
 					'1' => __( 'Pessoa física', 'pagbank-for-woocommerce' ),
@@ -286,7 +286,7 @@ class LegacyCheckoutFields {
 				'type'         => 'tel',
 				'class'        => array( 'form-row-wide', 'person-type-field' ),
 				'required'     => false,
-				'priority'     => 23,
+				'priority'     => 42,
 				'maxlength'    => 14,
 				'autocomplete' => 'off',
 			);
@@ -297,7 +297,7 @@ class LegacyCheckoutFields {
 				'type'         => 'text',
 				'class'        => array( 'form-row-wide', 'person-type-field' ),
 				'required'     => false,
-				'priority'     => 26,
+				'priority'     => 43,
 				'maxlength'    => 18,
 				'autocomplete' => 'off',
 			);
@@ -327,7 +327,7 @@ class LegacyCheckoutFields {
 				'type'     => 'tel',
 				'class'    => array( 'form-row-wide' ),
 				'required' => $required,
-				'priority' => 105,
+				'priority' => 99,
 			);
 		}
 
@@ -350,7 +350,7 @@ class LegacyCheckoutFields {
 			if ( isset( $fields['billing_company'] ) ) {
 				$fields['billing_company']['label']    = __( 'Razão Social', 'pagbank-for-woocommerce' );
 				$fields['billing_company']['class']    = array( 'form-row-wide', 'person-type-field' );
-				$fields['billing_company']['priority'] = 25;
+				$fields['billing_company']['priority'] = 44;
 				$fields['billing_company']['required'] = false;
 			} else {
 				$fields['billing_company'] = array(
@@ -358,7 +358,7 @@ class LegacyCheckoutFields {
 					'type'         => 'text',
 					'class'        => array( 'form-row-wide', 'person-type-field' ),
 					'required'     => false,
-					'priority'     => 25,
+					'priority'     => 44,
 					'autocomplete' => 'organization',
 				);
 			}

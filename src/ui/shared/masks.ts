@@ -88,6 +88,31 @@ const significantPattern = (alphanumeric: boolean): RegExp =>
 	alphanumeric ? /[0-9A-Za-z]/ : /[0-9]/;
 
 /**
+ * Obfuscate a formatted document (CPF/CNPJ) for display, keeping only the
+ * first and last `visible` significant characters (mask punctuation is
+ * preserved): "062.556.385-96" -> "062.***.**5-96".
+ */
+export const maskDocumentForDisplay = (formatted: string, visible = 3): string => {
+	const significant = /[0-9A-Za-z]/;
+	const total = formatted.split("").filter((char) => significant.test(char)).length;
+
+	let seen = 0;
+
+	return formatted
+		.split("")
+		.map((char) => {
+			if (!significant.test(char)) {
+				return char;
+			}
+
+			seen++;
+
+			return seen <= visible || seen > total - visible ? char : "*";
+		})
+		.join("");
+};
+
+/**
  * Count the significant (non-mask) characters before the caret so the caret
  * can be restored to the equivalent position after reformatting.
  */

@@ -22,6 +22,43 @@
 			.wc-block-components-text-input.wc-block-components-address-form__pagbank-company {
 				flex: 0 0 100%;
 			}
+
+			// Place the address number beside the street field (70/30 row).
+			// WooCommerce makes address_1 full-width by default; the number
+			// field (rendered right after it) then started a detached new
+			// row.
+			.wc-block-components-text-input.wc-block-components-address-form__address_1 {
+				flex: 1 1 calc(70% - 12px);
+			}
+
+			.wc-block-components-text-input.wc-block-components-address-form__pagbank-address-number {
+				flex: 1 0 calc(30% - 12px);
+			}
+
+			// The combined address component always renders the address_2
+			// toggle ("+ Add apartment…") right after address_1 in the DOM,
+			// which would wedge it between the street and the number. Flex
+			// `order` moves it (and the expanded address_2 input) below the
+			// street/number row: fields up to address_1 keep order 0, the
+			// number gets 1, address_2 gets 2 and everything after gets 3.
+			.wc-block-components-text-input.wc-block-components-address-form__pagbank-address-number {
+				order: 1;
+			}
+
+			.wc-block-components-address-form__address_2-toggle,
+			.wc-block-components-address-form__address_2-hidden-input,
+			.wc-block-components-text-input.wc-block-components-address-form__address_2 {
+				order: 2;
+			}
+
+			.wc-block-components-text-input.wc-block-components-address-form__pagbank-neighborhood,
+			.wc-block-components-address-form__postcode,
+			.wc-block-components-address-form__city,
+			.wc-block-components-address-form__state,
+			.wc-block-components-address-form__phone,
+			.wc-block-components-text-input.wc-block-components-address-form__pagbank-cellphone {
+				order: 3;
+			}
 		}
 	}
 }

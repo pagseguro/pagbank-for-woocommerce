@@ -83,12 +83,12 @@ class LegacyCheckoutFieldsTest extends TestCase {
 		$this->assertArrayHasKey( 'billing_neighborhood', $fields );
 		$this->assertArrayHasKey( 'billing_cellphone', $fields );
 
-		$this->assertSame( 22, $fields['billing_persontype']['priority'] );
-		$this->assertSame( 23, $fields['billing_cpf']['priority'] );
-		$this->assertSame( 26, $fields['billing_cnpj']['priority'] );
+		$this->assertSame( 41, $fields['billing_persontype']['priority'] );
+		$this->assertSame( 42, $fields['billing_cpf']['priority'] );
+		$this->assertSame( 43, $fields['billing_cnpj']['priority'] );
 		$this->assertSame( 55, $fields['billing_number']['priority'] );
 		$this->assertSame( 56, $fields['billing_neighborhood']['priority'] );
-		$this->assertSame( 105, $fields['billing_cellphone']['priority'] );
+		$this->assertSame( 99, $fields['billing_cellphone']['priority'] );
 
 		// The selector follows the interop convention: '1' = CPF, '2' = CNPJ.
 		// (PHP casts numeric string array keys to int.)
@@ -131,7 +131,7 @@ class LegacyCheckoutFieldsTest extends TestCase {
 		$fields = LegacyCheckoutFields::insert_billing_fields( $existing, $provides, true );
 
 		$this->assertSame( 'Razão Social', $fields['billing_company']['label'] );
-		$this->assertSame( 25, $fields['billing_company']['priority'] );
+		$this->assertSame( 44, $fields['billing_company']['priority'] );
 		$this->assertContains( 'person-type-field', $fields['billing_company']['class'] );
 		$this->assertFalse( $fields['billing_company']['required'] );
 	}
@@ -152,7 +152,7 @@ class LegacyCheckoutFieldsTest extends TestCase {
 
 		$this->assertArrayHasKey( 'billing_company', $fields );
 		$this->assertSame( 'Razão Social', $fields['billing_company']['label'] );
-		$this->assertSame( 25, $fields['billing_company']['priority'] );
+		$this->assertSame( 44, $fields['billing_company']['priority'] );
 		$this->assertContains( 'person-type-field', $fields['billing_company']['class'] );
 		$this->assertFalse( $fields['billing_company']['required'] );
 	}

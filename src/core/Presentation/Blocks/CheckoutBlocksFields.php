@@ -119,10 +119,12 @@ class CheckoutBlocksFields {
 			return;
 		}
 
-		// Field indexes are relative to the country locale priorities that the
-		// address form applies over the Blocks defaults (first_name 10,
-		// last_name 20, country 40, address_1 50, address_2 60, ..., phone
-		// 100), not the raw defaultFields indexes.
+		// Field indexes are relative to the Blocks defaultFields scale
+		// (email 0, country 1, first_name 10, last_name 20, company 30,
+		// address_1 40, address_2 50, city 70, state 80, postcode 90,
+		// phone 100). Country locale overrides may move single fields (e.g.
+		// the Brazilian Market plugin moves the BR postcode to 45), so our
+		// indexes sit in gaps that hold in both scenarios.
 		// Person type selector - shown only for Brazil. Mirrors the classic
 		// checkout experience: Pessoa física shows the CPF field; Pessoa
 		// jurídica shows the CNPJ and Razão Social fields. Rendered right
@@ -130,7 +132,7 @@ class CheckoutBlocksFields {
 		woocommerce_register_additional_checkout_field(
 			array(
 				'id'                         => 'pagbank/persontype',
-				'index'                      => 41,
+				'index'                      => 2,
 				'label'                      => __( 'Tipo de pessoa', 'pagbank-for-woocommerce' ),
 				// The field is only visible when it is effectively required
 				// (Brazil), so never show the "(optional)" suffix.
@@ -160,7 +162,7 @@ class CheckoutBlocksFields {
 		woocommerce_register_additional_checkout_field(
 			array(
 				'id'                         => 'pagbank/cpf',
-				'index'                      => 42,
+				'index'                      => 3,
 				'label'                      => __( 'CPF', 'pagbank-for-woocommerce' ),
 				'optionalLabel'              => __( 'CPF', 'pagbank-for-woocommerce' ),
 				'location'                   => 'address',
@@ -193,7 +195,7 @@ class CheckoutBlocksFields {
 		woocommerce_register_additional_checkout_field(
 			array(
 				'id'                         => 'pagbank/cnpj',
-				'index'                      => 43,
+				'index'                      => 4,
 				'label'                      => __( 'CNPJ', 'pagbank-for-woocommerce' ),
 				'optionalLabel'              => __( 'CNPJ', 'pagbank-for-woocommerce' ),
 				'location'                   => 'address',
@@ -228,7 +230,7 @@ class CheckoutBlocksFields {
 			woocommerce_register_additional_checkout_field(
 				array(
 					'id'                         => 'pagbank/company',
-					'index'                      => 44,
+					'index'                      => 5,
 					'label'                      => __( 'Razão Social', 'pagbank-for-woocommerce' ),
 					'optionalLabel'              => __( 'Razão Social', 'pagbank-for-woocommerce' ),
 					'location'                   => 'address',
@@ -245,11 +247,12 @@ class CheckoutBlocksFields {
 			);
 		}
 
-		// Billing number - between address_1 (50) and address_2 (60).
+		// Billing number - right after address_1 (40), before the BM postcode
+		// override (45) and address_2 (50).
 		woocommerce_register_additional_checkout_field(
 			array(
 				'id'                         => 'pagbank/address-number',
-				'index'                      => 51,
+				'index'                      => 41,
 				'label'                      => __( 'Número', 'pagbank-for-woocommerce' ),
 				'location'                   => 'address',
 				'type'                       => 'text',
@@ -262,7 +265,7 @@ class CheckoutBlocksFields {
 		woocommerce_register_additional_checkout_field(
 			array(
 				'id'                         => 'pagbank/neighborhood',
-				'index'                      => 52,
+				'index'                      => 42,
 				'label'                      => __( 'Bairro', 'pagbank-for-woocommerce' ),
 				'location'                   => 'address',
 				'type'                       => 'text',
@@ -271,11 +274,11 @@ class CheckoutBlocksFields {
 			)
 		);
 
-		// Cellphone.
+		// Cellphone - required, so it comes before the optional core phone (100).
 		woocommerce_register_additional_checkout_field(
 			array(
 				'id'                         => 'pagbank/cellphone',
-				'index'                      => 101,
+				'index'                      => 99,
 				'label'                      => __( 'Celular', 'pagbank-for-woocommerce' ),
 				'location'                   => 'address',
 				'type'                       => 'text',
