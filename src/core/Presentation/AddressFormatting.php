@@ -2,9 +2,9 @@
 /**
  * Brazilian address formatting for order summaries.
  *
- * Folds the address number and neighborhood into the WooCommerce formatted
- * address (BR locale) so order summaries read naturally ("Rua X, 163" /
- * "Centro") instead of listing them as separate labeled rows. On the order
+ * Folds the address number, neighborhood and cellphone into the WooCommerce
+ * formatted address (BR locale) so order summaries read naturally ("Rua X,
+ * 163" / "Centro") instead of listing them as separate labeled rows. On the order
  * confirmation and view-order pages the raw additional-field rows (person
  * type, CPF, CNPJ, número, bairro, celular) are removed and replaced by a
  * compact document summary below the billing address: the CPF for
@@ -109,7 +109,7 @@ class AddressFormatting {
 			return $formats;
 		}
 
-		$formats['BR'] = "{name}\n{address_1}, {number}\n{address_2}\n{neighborhood}\n{city}\n{state}\n{postcode}\n{country}";
+		$formats['BR'] = "{name}\n{address_1}, {number}\n{address_2}\n{neighborhood}\n{city}\n{state}\n{postcode}\n{country}\n{cellphone}";
 
 		return $formats;
 	}
@@ -124,6 +124,7 @@ class AddressFormatting {
 	public static function strip_custom_address_placeholders( string $format ): string {
 		$format = str_replace( array( ', {number}', ' {number}', '{number}' ), '', $format );
 		$format = str_replace( array( "{neighborhood}\n", ' {neighborhood}', '{neighborhood}' ), '', $format );
+		$format = str_replace( array( "\n{cellphone}", ' {cellphone}', '{cellphone}' ), '', $format );
 
 		return $format;
 	}
@@ -154,11 +155,13 @@ class AddressFormatting {
 			array(
 				'number'       => '',
 				'neighborhood' => '',
+				'cellphone'    => '',
 			)
 		);
 
 		$replacements['{number}']       = (string) $args['number'];
 		$replacements['{neighborhood}'] = (string) $args['neighborhood'];
+		$replacements['{cellphone}']    = (string) $args['cellphone'];
 
 		return $replacements;
 	}
@@ -178,6 +181,7 @@ class AddressFormatting {
 
 		$address['number']       = (string) $order->get_meta( '_billing_number' );
 		$address['neighborhood'] = (string) $order->get_meta( '_billing_neighborhood' );
+		$address['cellphone']    = (string) $order->get_meta( '_billing_cellphone' );
 
 		return $address;
 	}
@@ -197,6 +201,7 @@ class AddressFormatting {
 
 		$address['number']       = (string) $order->get_meta( '_shipping_number' );
 		$address['neighborhood'] = (string) $order->get_meta( '_shipping_neighborhood' );
+		$address['cellphone']    = (string) $order->get_meta( '_shipping_cellphone' );
 
 		return $address;
 	}
@@ -217,6 +222,7 @@ class AddressFormatting {
 
 		$address['number']       = (string) get_user_meta( $customer_id, $address_type . '_number', true );
 		$address['neighborhood'] = (string) get_user_meta( $customer_id, $address_type . '_neighborhood', true );
+		$address['cellphone']    = 'billing' === $address_type ? (string) get_user_meta( $customer_id, 'billing_cellphone', true ) : '';
 
 		return $address;
 	}
@@ -255,8 +261,8 @@ class AddressFormatting {
 	 * Build the document summary lines for an order.
 	 *
 	 * Individuals: the CPF. Legal persons: the Razão Social with the CNPJ
-	 * underneath, mirroring the address summary style. The cellphone is
-	 * appended when present since its labeled row is no longer rendered.
+	 * underneath, mirroring the address summary style. The cellphone is not
+	 * included: it is rendered inline at the end of the formatted address.
 	 *
 	 * @param WC_Order $order The order object.
 	 *
@@ -282,13 +288,6 @@ class AddressFormatting {
 		} elseif ( '' !== $cpf ) {
 			/* translators: %s: CPF number. */
 			$lines[] = sprintf( __( 'CPF: %s', 'pagbank-for-woocommerce' ), $cpf );
-		}
-
-		$cellphone = (string) $order->get_meta( '_billing_cellphone' );
-
-		if ( '' !== $cellphone ) {
-			/* translators: %s: cellphone number. */
-			$lines[] = sprintf( __( 'Celular: %s', 'pagbank-for-woocommerce' ), $cellphone );
 		}
 
 		return $lines;

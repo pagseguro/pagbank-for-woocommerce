@@ -23,7 +23,7 @@ class AddressFormattingTest extends TestCase {
 		$this->assertSame(
 			"{name}\n{address_1}\n{address_2}\n{city}\n{state}\n{postcode}\n{country}",
 			AddressFormatting::strip_custom_address_placeholders(
-				"{name}\n{address_1}, {number}\n{address_2}\n{neighborhood}\n{city}\n{state}\n{postcode}\n{country}"
+				"{name}\n{address_1}, {number}\n{address_2}\n{neighborhood}\n{city}\n{state}\n{postcode}\n{country}\n{cellphone}"
 			)
 		);
 	}
