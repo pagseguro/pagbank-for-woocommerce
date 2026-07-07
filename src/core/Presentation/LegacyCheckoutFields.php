@@ -79,6 +79,7 @@ class LegacyCheckoutFields {
 		add_filter( 'woocommerce_process_checkout_field_billing_cpf', array( $this, 'normalize_cpf_value' ) );
 		add_filter( 'woocommerce_process_checkout_field_billing_cnpj', array( $this, 'normalize_cnpj_value' ) );
 		add_filter( 'woocommerce_process_checkout_field_billing_cellphone', array( $this, 'normalize_cellphone_value' ) );
+		add_filter( 'woocommerce_checkout_posted_data', array( $this, 'clear_unselected_document_fields' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_action( 'admin_notices', array( $this, 'maybe_render_brazilian_market_deprecation_notice' ) );
 		add_action( 'wp_ajax_' . self::BRAZILIAN_MARKET_NOTICE_DISMISS_ACTION, array( $this, 'dismiss_brazilian_market_deprecation_notice' ) );
@@ -463,6 +464,54 @@ class LegacyCheckoutFields {
 		if ( $this->registered_cellphone ) {
 			$this->validate_cellphone_field( $data, $errors );
 		}
+	}
+
+	/**
+	 * Drop the document values that do not belong to the selected person
+	 * type before WooCommerce persists them.
+	 *
+	 * The checkout posts every field, including the ones hidden by the
+	 * person type toggle — so a partially typed CNPJ would be saved on an
+	 * individual order (and vice versa). Individuals keep only the CPF;
+	 * legal persons keep the CNPJ and Razão Social, never the CPF.
+	 *
+	 * @param array $data The posted checkout data.
+	 *
+	 * @return array|mixed
+	 */
+	public function clear_unselected_document_fields( $data ) {
+		if ( ! is_array( $data ) || ! $this->registered_document || ! isset( $data['billing_persontype'] ) ) {
+			return $data;
+		}
+
+		return self::clear_document_posted_data( $data );
+	}
+
+	/**
+	 * Clear the document fields of the unselected person type.
+	 *
+	 * Pure transform (no WordPress state) so it can be unit tested.
+	 *
+	 * @param array $data The posted checkout data.
+	 */
+	public static function clear_document_posted_data( array $data ): array {
+		// '1' or anything else defaults to individual (the selector defaults
+		// to '1'), mirroring the validation.
+		if ( '2' === (string) ( $data['billing_persontype'] ?? '' ) ) {
+			$data['billing_cpf'] = '';
+
+			return $data;
+		}
+
+		$data['billing_cnpj'] = '';
+
+		// The company field is the Razão Social of legal persons when the
+		// document group is ours.
+		if ( isset( $data['billing_company'] ) ) {
+			$data['billing_company'] = '';
+		}
+
+		return $data;
 	}
 
 	/**

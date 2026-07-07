@@ -293,4 +293,56 @@ class LegacyCheckoutFieldsTest extends TestCase {
 		$result   = LegacyCheckoutFields::insert_shipping_fields( $existing, false, true );
 		$this->assertSame( $existing['shipping_number'], $result['shipping_number'] );
 	}
+
+	/**
+	 * Individuals keep only the CPF: a partially typed CNPJ (and the Razão
+	 * Social) left behind by the person type toggle is dropped.
+	 */
+	public function test_clear_document_posted_data_individual(): void {
+		$data = LegacyCheckoutFields::clear_document_posted_data(
+			array(
+				'billing_persontype' => '1',
+				'billing_cpf'        => '062.556.385-96',
+				'billing_cnpj'       => '06.2',
+				'billing_company'    => 'Cycle Labs',
+			)
+		);
+
+		$this->assertSame( '062.556.385-96', $data['billing_cpf'] );
+		$this->assertSame( '', $data['billing_cnpj'] );
+		$this->assertSame( '', $data['billing_company'] );
+	}
+
+	/**
+	 * Legal persons keep the CNPJ and Razão Social, never the CPF.
+	 */
+	public function test_clear_document_posted_data_legal_person(): void {
+		$data = LegacyCheckoutFields::clear_document_posted_data(
+			array(
+				'billing_persontype' => '2',
+				'billing_cpf'        => '062.5',
+				'billing_cnpj'       => '12.345.678/0001-95',
+				'billing_company'    => 'Cycle Labs',
+			)
+		);
+
+		$this->assertSame( '', $data['billing_cpf'] );
+		$this->assertSame( '12.345.678/0001-95', $data['billing_cnpj'] );
+		$this->assertSame( 'Cycle Labs', $data['billing_company'] );
+	}
+
+	/**
+	 * A missing person type defaults to individual, like the validation.
+	 */
+	public function test_clear_document_posted_data_defaults_to_individual(): void {
+		$data = LegacyCheckoutFields::clear_document_posted_data(
+			array(
+				'billing_cpf'  => '062.556.385-96',
+				'billing_cnpj' => '06.2',
+			)
+		);
+
+		$this->assertSame( '062.556.385-96', $data['billing_cpf'] );
+		$this->assertSame( '', $data['billing_cnpj'] );
+	}
 }
