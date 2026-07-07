@@ -81,18 +81,21 @@ const toggleFieldVisibility = (wrapperId: string, visible: boolean, required: bo
 		return;
 	}
 
-	const marker = label.querySelector("abbr.required, span.optional");
+	// Modern WooCommerce renders the marker as span.required; older versions
+	// and some themes use abbr.required. Optional fields get span.optional.
+	const marker = label.querySelector("abbr.required, span.required, span.optional");
+	const isRequiredMarker = marker?.classList.contains("required") ?? false;
 
 	if (required && visible) {
-		if (!marker || marker.tagName !== "ABBR") {
+		if (!isRequiredMarker) {
 			marker?.remove();
 			label.insertAdjacentHTML(
 				"beforeend",
-				' <abbr class="required" title="obrigatório">*</abbr>',
+				' <span class="required" aria-hidden="true">*</span>',
 			);
 		}
-	} else if (marker && marker.tagName === "ABBR") {
-		marker.remove();
+	} else if (isRequiredMarker) {
+		marker?.remove();
 	}
 };
 
