@@ -45,6 +45,7 @@ export const externals: Record<string, string> = {
 
 export const entries: Record<string, string> = {
 	"admin/gateway-settings": "src/ui/entries/admin/gateway-settings/index.tsx",
+	"admin/order-fields": "src/ui/entries/admin/order-fields.ts",
 	"public/order-received/payment-instructions":
 		"src/ui/entries/public/order-received/payment-instructions/index.tsx",
 	"public/legacy/checkout-credit-card": "src/ui/entries/public/legacy/checkout-credit-card.ts",

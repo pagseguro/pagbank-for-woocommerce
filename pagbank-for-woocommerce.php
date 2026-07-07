@@ -23,6 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use PagBank_WooCommerce\Marketplace\WcfmIntegration;
 use PagBank_WooCommerce\Presentation\AddressFormatting;
+use PagBank_WooCommerce\Presentation\AdminOrderFields;
 use PagBank_WooCommerce\Presentation\Blocks\BlocksPaymentMethods;
 use PagBank_WooCommerce\Presentation\Blocks\CheckoutBlocksFields;
 use PagBank_WooCommerce\Presentation\ConnectAjaxApi;
@@ -73,6 +74,7 @@ add_action(
 	CheckoutBlocksFields::get_instance();
 	LegacyCheckoutFields::get_instance();
 	AddressFormatting::get_instance();
+	AdminOrderFields::get_instance();
 	BlocksPaymentMethods::get_instance();
 
 	if ( Helpers::is_wcfm_activated() ) {
