@@ -38,6 +38,9 @@ class CheckoutBlocksFields {
 	 */
 	public function __construct() {
 		add_action( 'woocommerce_init', array( $this, 'register_additional_checkout_fields' ) );
+		// Priority 1000: after any plugin that rewrites the BR locale (the
+		// Brazilian Market plugin replaces it with a postcode-only entry).
+		add_filter( 'woocommerce_get_country_locale', array( $this, 'pin_brazil_locale_priorities' ), 1000 );
 		add_action( 'wp', array( $this, 'maybe_set_default_persontype' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_action( 'woocommerce_set_additional_field_value', array( $this, 'save_field_to_legacy_meta' ), 10, 4 );
@@ -104,6 +107,49 @@ class CheckoutBlocksFields {
 	}
 
 	/**
+	 * Pin the BR locale priorities of the core address fields.
+	 *
+	 * The Blocks address form sorts fields by the defaultFields indexes
+	 * (country 1, first_name 10, ..., address_1 40) overridden by the
+	 * country locale (country 40, address_1 50, ...). Plugins can rewrite
+	 * the BR locale — the Brazilian Market plugin replaces it with a
+	 * postcode-only entry, which silently switches the whole scale and
+	 * scrambles our field indexes. Filling the missing anchors keeps the
+	 * scale stable in every scenario; existing overrides (e.g. the BM
+	 * postcode at 45) are preserved.
+	 *
+	 * @param array|mixed $locale Country locales.
+	 *
+	 * @return array|mixed
+	 */
+	public function pin_brazil_locale_priorities( $locale ) {
+		if ( ! is_array( $locale ) ) {
+			return $locale;
+		}
+
+		$anchors = array(
+			'first_name' => 10,
+			'last_name'  => 20,
+			'company'    => 30,
+			'country'    => 40,
+			'address_1'  => 50,
+			'address_2'  => 60,
+			'city'       => 70,
+			'state'      => 80,
+			'postcode'   => 90,
+			'phone'      => 100,
+		);
+
+		foreach ( $anchors as $key => $priority ) {
+			if ( ! isset( $locale['BR'][ $key ]['priority'] ) ) {
+				$locale['BR'][ $key ]['priority'] = $priority;
+			}
+		}
+
+		return $locale;
+	}
+
+	/**
 	 * Register additional checkout fields for Blocks.
 	 */
 	public function register_additional_checkout_fields(): void {
@@ -119,12 +165,11 @@ class CheckoutBlocksFields {
 			return;
 		}
 
-		// Field indexes are relative to the Blocks defaultFields scale
-		// (email 0, country 1, first_name 10, last_name 20, company 30,
-		// address_1 40, address_2 50, city 70, state 80, postcode 90,
-		// phone 100). Country locale overrides may move single fields (e.g.
-		// the Brazilian Market plugin moves the BR postcode to 45), so our
-		// indexes sit in gaps that hold in both scenarios.
+		// Field indexes are relative to the BR locale scale pinned by
+		// pin_brazil_locale_priorities() (first_name 10, last_name 20,
+		// company 30, country 40, address_1 50, address_2 60, city 70,
+		// state 80, postcode 90, phone 100), which overrides the raw
+		// defaultFields indexes and is stable regardless of other plugins.
 		// Person type selector - shown only for Brazil. Mirrors the classic
 		// checkout experience: Pessoa física shows the CPF field; Pessoa
 		// jurídica shows the CNPJ and Razão Social fields. Rendered right
@@ -132,7 +177,7 @@ class CheckoutBlocksFields {
 		woocommerce_register_additional_checkout_field(
 			array(
 				'id'                         => 'pagbank/persontype',
-				'index'                      => 2,
+				'index'                      => 41,
 				'label'                      => __( 'Tipo de pessoa', 'pagbank-for-woocommerce' ),
 				// The field is only visible when it is effectively required
 				// (Brazil), so never show the "(optional)" suffix.
@@ -162,7 +207,7 @@ class CheckoutBlocksFields {
 		woocommerce_register_additional_checkout_field(
 			array(
 				'id'                         => 'pagbank/cpf',
-				'index'                      => 3,
+				'index'                      => 42,
 				'label'                      => __( 'CPF', 'pagbank-for-woocommerce' ),
 				'optionalLabel'              => __( 'CPF', 'pagbank-for-woocommerce' ),
 				'location'                   => 'address',
@@ -195,7 +240,7 @@ class CheckoutBlocksFields {
 		woocommerce_register_additional_checkout_field(
 			array(
 				'id'                         => 'pagbank/cnpj',
-				'index'                      => 4,
+				'index'                      => 43,
 				'label'                      => __( 'CNPJ', 'pagbank-for-woocommerce' ),
 				'optionalLabel'              => __( 'CNPJ', 'pagbank-for-woocommerce' ),
 				'location'                   => 'address',
@@ -230,7 +275,7 @@ class CheckoutBlocksFields {
 			woocommerce_register_additional_checkout_field(
 				array(
 					'id'                         => 'pagbank/company',
-					'index'                      => 5,
+					'index'                      => 44,
 					'label'                      => __( 'Razão Social', 'pagbank-for-woocommerce' ),
 					'optionalLabel'              => __( 'Razão Social', 'pagbank-for-woocommerce' ),
 					'location'                   => 'address',
@@ -247,12 +292,11 @@ class CheckoutBlocksFields {
 			);
 		}
 
-		// Billing number - right after address_1 (40), before the BM postcode
-		// override (45) and address_2 (50).
+		// Billing number - between address_1 (50) and address_2 (60).
 		woocommerce_register_additional_checkout_field(
 			array(
 				'id'                         => 'pagbank/address-number',
-				'index'                      => 41,
+				'index'                      => 51,
 				'label'                      => __( 'Número', 'pagbank-for-woocommerce' ),
 				'location'                   => 'address',
 				'type'                       => 'text',
@@ -265,7 +309,7 @@ class CheckoutBlocksFields {
 		woocommerce_register_additional_checkout_field(
 			array(
 				'id'                         => 'pagbank/neighborhood',
-				'index'                      => 42,
+				'index'                      => 52,
 				'label'                      => __( 'Bairro', 'pagbank-for-woocommerce' ),
 				'location'                   => 'address',
 				'type'                       => 'text',
