@@ -290,7 +290,13 @@ Caso o lojista não possua o identificador da conta preenchido, os produtos cada
 
 ### 2.0.2 - 2026-07-06 ###
 * Adicionado suporte ao novo formato alfanumérico de CNPJ no checkout.
-* Adicionado campos nativos de CPF/CNPJ, número, bairro e celular no checkout clássico — o plugin Brazilian Market on WooCommerce não é mais obrigatório.
+* Adicionado campos nativos de tipo de pessoa, CPF/CNPJ, razão social, número, bairro e celular nos checkouts clássico e em blocos — o plugin Brazilian Market on WooCommerce não é mais obrigatório.
 * Adicionado compatibilidade com os campos do Brazilian Market on WooCommerce e da Calculadora de Frete e Campos Checkout para o Brasil (quando ativos, os campos deles são utilizados automaticamente, sem duplicação).
+* Adicionado edição dos campos brasileiros na tela do pedido no admin, com máscaras de CPF/CNPJ — inclusive para pedidos do checkout clássico e criados manualmente.
+* Adicionado aviso recomendando a desativação do Brazilian Market on WooCommerce, que não possui suporte ao CNPJ alfanumérico.
+* Melhorado a ordem dos campos no checkout: documentos logo após o país, número ao lado do endereço e celular antes do telefone.
+* Melhorado o resumo do endereço no checkout em blocos e na confirmação do pedido: número, bairro e celular exibidos dentro do endereço e CPF/CNPJ de forma resumida.
+* Corrigido salvamento de CNPJ parcialmente digitado em pedidos de pessoa física no checkout clássico — somente o documento do tipo de pessoa selecionado é salvo.
+* Corrigido indicador de campo obrigatório duplicado no checkout clássico.
 * Corrigido cálculo do total no Checkout PagBank, incluindo o frete corretamente.
 * Melhorado registro de logs da API, mantendo o reference_id para facilitar o rastreamento.
