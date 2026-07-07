@@ -38,6 +38,18 @@ use WP_Error;
 class LegacyCheckoutFields {
 
 	/**
+	 * User meta key storing the timestamp of the last Brazilian Market
+	 * deprecation notice dismissal. The notice is snoozed for 24 hours and
+	 * then shown again while the plugin remains active.
+	 */
+	private const BRAZILIAN_MARKET_NOTICE_DISMISSED_META = 'pagbank_brazilian_market_notice_dismissed';
+
+	/**
+	 * AJAX action (and nonce action) used to persist the notice dismissal.
+	 */
+	private const BRAZILIAN_MARKET_NOTICE_DISMISS_ACTION = 'pagbank_dismiss_brazilian_market_notice';
+
+	/**
 	 * Instance.
 	 */
 	private static ?LegacyCheckoutFields $instance = null;
@@ -68,6 +80,8 @@ class LegacyCheckoutFields {
 		add_filter( 'woocommerce_process_checkout_field_billing_cnpj', array( $this, 'normalize_cnpj_value' ) );
 		add_filter( 'woocommerce_process_checkout_field_billing_cellphone', array( $this, 'normalize_cellphone_value' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+		add_action( 'admin_notices', array( $this, 'maybe_render_brazilian_market_deprecation_notice' ) );
+		add_action( 'wp_ajax_' . self::BRAZILIAN_MARKET_NOTICE_DISMISS_ACTION, array( $this, 'dismiss_brazilian_market_deprecation_notice' ) );
 	}
 
 	/**
@@ -177,6 +191,62 @@ class LegacyCheckoutFields {
 	 */
 	public static function external_provides_cellphone_field(): bool {
 		return self::is_brazilian_market_active() && self::brazilian_market_provides_cellphone_field( get_option( 'wcbcf_settings' ) );
+	}
+
+	/**
+	 * Warn administrators that the Brazilian Market on WooCommerce plugin
+	 * should be deactivated.
+	 *
+	 * The plugin is no longer maintained and compatibility with it will be
+	 * dropped: this plugin already provides every Brazilian checkout field
+	 * (CPF/CNPJ — including the new alphanumeric CNPJ format —, address
+	 * number, neighborhood and cellphone).
+	 */
+	public function maybe_render_brazilian_market_deprecation_notice(): void {
+		if ( ! self::is_brazilian_market_active() || ! current_user_can( 'activate_plugins' ) ) {
+			return;
+		}
+
+		$dismissed_at = (int) get_user_meta( get_current_user_id(), self::BRAZILIAN_MARKET_NOTICE_DISMISSED_META, true );
+
+		if ( $dismissed_at && time() - $dismissed_at < DAY_IN_SECONDS ) {
+			return;
+		}
+
+		printf(
+			'<div class="notice notice-warning is-dismissible pagbank-brazilian-market-notice"><p><strong>%1$s</strong> %2$s %3$s <a href="%4$s">%5$s</a></p></div>',
+			esc_html__( 'PagBank para WooCommerce:', 'pagbank-for-woocommerce' ),
+			esc_html__( 'o plugin "Brazilian Market on WooCommerce" está ativo, mas não é mais necessário e a compatibilidade com ele será descontinuada.', 'pagbank-for-woocommerce' ),
+			esc_html__( 'O PagBank já fornece os campos de CPF/CNPJ (incluindo o novo CNPJ alfanumérico), número, bairro e celular no checkout. Recomendamos desativá-lo.', 'pagbank-for-woocommerce' ),
+			esc_url( admin_url( 'plugins.php' ) ),
+			esc_html__( 'Gerenciar plugins', 'pagbank-for-woocommerce' )
+		);
+
+		// WordPress core adds the dismiss button to `.is-dismissible` notices;
+		// record the dismissal timestamp per user to snooze the notice for 24h.
+		printf(
+			'<script>jQuery( function ( $ ) { $( document ).on( "click", ".pagbank-brazilian-market-notice .notice-dismiss", function () {'
+			. ' $.post( window.ajaxurl, { action: "%1$s", _ajax_nonce: "%2$s" } );'
+			. ' } ); } );</script>',
+			esc_js( self::BRAZILIAN_MARKET_NOTICE_DISMISS_ACTION ),
+			esc_js( wp_create_nonce( self::BRAZILIAN_MARKET_NOTICE_DISMISS_ACTION ) )
+		);
+	}
+
+	/**
+	 * Record the Brazilian Market deprecation notice dismissal for the current
+	 * user. The stored timestamp snoozes the notice for 24 hours.
+	 */
+	public function dismiss_brazilian_market_deprecation_notice(): void {
+		check_ajax_referer( self::BRAZILIAN_MARKET_NOTICE_DISMISS_ACTION );
+
+		if ( ! current_user_can( 'activate_plugins' ) ) {
+			wp_send_json_error( null, 403 );
+		}
+
+		update_user_meta( get_current_user_id(), self::BRAZILIAN_MARKET_NOTICE_DISMISSED_META, (string) time() );
+
+		wp_send_json_success();
 	}
 
 	/**
