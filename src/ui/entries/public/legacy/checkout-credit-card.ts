@@ -107,9 +107,19 @@ const clearCheckoutErrors = (): void => {
 	$container.empty();
 };
 
+// PagBank sessions last 30 minutes. Treat one as expired a bit early so a
+// session that is valid now but dies mid-flow is never used: the 3DS flow
+// (fingerprint, Songbird load, bank challenge) can take tens of seconds.
+const SESSION_EXPIRY_MARGIN_MS = 60 * 1000;
+
 const fetch3DSSession = async (gateway: GatewayConfig): Promise<ThreeDSSession> => {
 	const cached = sessionCache.get(gateway.gateway_id);
-	if (cached && cached.expires_at > Date.now() / 1000) {
+	// `expires_at` is a Unix timestamp in MILLISECONDS (PagBank's
+	// checkout-sdk/sessions response), so it compares against Date.now()
+	// directly. Dividing by 1000 here made every cached session look valid
+	// forever, so a page left open past the 30-minute window would keep
+	// reusing a dead session and fail authentication.
+	if (cached && cached.expires_at - SESSION_EXPIRY_MARGIN_MS > Date.now()) {
 		return cached;
 	}
 
