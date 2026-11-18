@@ -217,6 +217,39 @@ class WebhookHandler {
 	}
 
 	/**
+	 * Save a quoted seller fee in order metadata, not an actual settlement deduction.
+	 *
+	 * @param Api       $api    API client.
+	 * @param \WC_Order $order  Paid order.
+	 * @param array     $charge Verified charge.
+	 */
+	private static function save_seller_fee_quote( Api $api, \WC_Order $order, array $charge ): void {
+		$previous = $order->get_meta( '_pagbank_seller_fee_quote' );
+		if ( is_array( $previous ) &&
+			( $previous['charge_id'] ?? null ) === ( $charge['id'] ?? '' ) &&
+			( $previous['amount'] ?? null ) === ( $charge['amount']['value'] ?? null ) ) {
+			return;
+		}
+
+		$order->delete_meta_data( '_pagbank_seller_fee_quote' );
+		$quote = $api->get_seller_fee_quote( $charge );
+		if ( is_wp_error( $quote ) ) {
+			wc_get_logger()->warning(
+				'Seller fee quote unavailable; payment processing is unchanged.',
+				array(
+					'source'     => 'pagbank_seller_fee_quote',
+					'order_id'   => $order->get_id(),
+					'error_code' => $quote->get_error_code(),
+				)
+			);
+		} else {
+			$order->update_meta_data( '_pagbank_seller_fee_quote', $quote );
+		}
+		$order->set_date_modified( time() );
+		$order->save();
+	}
+
+	/**
 	 * Handle webhook.
 	 */
 	public function handle(): void {
@@ -397,6 +430,7 @@ class WebhookHandler {
 					$order->update_meta_data( '_pagbank_charge_id', $canonical_charge_id );
 					$order->save_meta_data();
 
+					self::save_seller_fee_quote( $api, $order, $charge );
 					do_action( 'pagbank_order_completed', $order );
 					break;
 				case 'cancelled':

@@ -496,19 +496,127 @@ class Api {
 	 * @return array|WP_Error The fees data.
 	 */
 	public function charge_fees( float $amount, int $max_installments, int $max_installments_no_interest, string $credit_card_bin ) {
-		$url = add_query_arg(
+		return $this->calculate_charge_fees(
 			array(
 				'payment_methods'              => 'CREDIT_CARD',
 				'value'                        => $amount,
 				'max_installments'             => $max_installments,
 				'max_installments_no_interest' => $max_installments_no_interest,
 				'credit_card_bin'              => $credit_card_bin,
-			),
-			$this->get_api_url( 'charges/fees/calculate' )
+			)
 		);
+	}
 
+	/**
+	 * Quote the seller fee for the charge's amount and selected payment plan.
+	 *
+	 * @param array $charge Charge returned by PagBank.
+	 * @return array|WP_Error Quote in cents, not an actual settlement deduction.
+	 */
+	public function get_seller_fee_quote( array $charge ) {
+		$method   = $charge['payment_method']['type'] ?? '';
+		$value    = $charge['amount']['value'] ?? null;
+		$currency = $charge['amount']['currency'] ?? '';
+
+		if ( ! is_string( $method ) || '' === $method ||
+			! is_int( $value ) || $value <= 0 || 'BRL' !== $currency || empty( $charge['id'] ) ) {
+			return new WP_Error(
+				'pagbank_invalid_fee_quote_charge',
+				'Unsupported or incomplete charge for seller fee quotation.'
+			);
+		}
+
+		$query = array(
+			'payment_methods'  => $method,
+			'value'            => $value,
+			'show_seller_fees' => 'true',
+		);
+		$bin   = $charge['payment_method']['card']['first_digits'] ?? '';
+		if ( is_string( $bin ) && preg_match( '/^(?:\d{6}|\d{8})$/D', $bin ) ) {
+			$query['credit_card_bin'] = substr( $bin, 0, 6 );
+		}
+
+		if ( 'CREDIT_CARD' === $method ) {
+			$installments   = $charge['payment_method']['installments'] ?? null;
+			$brand          = $charge['payment_method']['card']['brand'] ?? '';
+			$buyer_interest = $charge['amount']['fees']['buyer']['interest'] ?? array(
+				'total'        => 0,
+				'installments' => 0,
+			);
+			if ( ! is_int( $installments ) || $installments < 1 ||
+				! isset( $query['credit_card_bin'] ) ||
+				! is_string( $brand ) || '' === $brand ||
+				! isset( $buyer_interest['total'], $buyer_interest['installments'] ) ||
+				! is_int( $buyer_interest['total'] ) || $buyer_interest['total'] < 0 ||
+				$buyer_interest['total'] >= $value ||
+				! is_int( $buyer_interest['installments'] ) || $buyer_interest['installments'] < 0 ||
+				$buyer_interest['installments'] > $installments ) {
+				return new WP_Error(
+					'pagbank_invalid_fee_quote_plan',
+					'Incomplete card plan for seller fee quotation.'
+				);
+			}
+
+			// The simulator takes the amount before buyer installment interest.
+			$query['value']                       -= $buyer_interest['total'];
+			$query['max_installments']             = $installments;
+			$interest_free_installments            = $installments - $buyer_interest['installments'];
+			$query['max_installments_no_interest'] = 1 === $interest_free_installments ?
+				0 : $interest_free_installments;
+		}
+
+		$response = $this->calculate_charge_fees( $query );
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		$amount = $response['payment_methods'][ strtolower( $method ) ]['amount'] ?? array();
+		if ( 'CREDIT_CARD' === $method ) {
+			$brand  = strtolower( $brand );
+			$plans  = $response['payment_methods']['credit_card'][ $brand ]['installment_plans'] ?? array();
+			$amount = array();
+			if ( ! is_array( $plans ) ) {
+				return new WP_Error(
+					'pagbank_invalid_fee_quote_plan',
+					'Invalid card plans in fee calculation response.'
+				);
+			}
+			foreach ( $plans as $plan ) {
+				if ( ( $plan['installments'] ?? null ) === $installments ) {
+					$amount = $plan['amount'] ?? array();
+					break;
+				}
+			}
+		}
+
+		$fee = $amount['fees']['seller']['total'] ?? null;
+		if ( ! is_int( $fee ) || $fee < 0 ||
+			( $amount['value'] ?? null ) !== $value || ( $amount['currency'] ?? '' ) !== $currency ) {
+			return new WP_Error( 'pagbank_missing_seller_fee_quote', 'No matching seller fee quote was returned.' );
+		}
+
+		return array(
+			'fee'            => $fee,
+			'currency'       => $currency,
+			'amount'         => $value,
+			'charge_id'      => $charge['id'],
+			'payment_method' => $method,
+			'installments'   => 'CREDIT_CARD' === $method ? $installments : 1,
+			'quoted_at'      => gmdate( 'c' ),
+		);
+	}
+
+	/**
+	 * Calculate fees, preserving the existing installment-plan cache.
+	 *
+	 * @param array $query Fee calculation parameters.
+	 * @return array|WP_Error Fee calculation response.
+	 */
+	private function calculate_charge_fees( array $query ) {
+		$url             = add_query_arg( $query, $this->get_api_url( 'charges/fees/calculate' ) );
 		$url_hash        = hash( 'sha256', $url );
-		$cached_response = get_transient( 'pagbank_cached_request_' . $url_hash );
+		$cached_response = empty( $query['show_seller_fees'] ) ?
+			get_transient( 'pagbank_cached_request_' . $url_hash ) : false;
 
 		if ( $cached_response ) {
 			return json_decode( $cached_response, true );
@@ -525,6 +633,9 @@ class Api {
 			'method'  => 'GET',
 			'headers' => $headers,
 		);
+		if ( ! empty( $query['show_seller_fees'] ) ) {
+			$args['timeout'] = 5;
+		}
 
 		$response = $this->request(
 			$url,
@@ -544,10 +655,27 @@ class Api {
 		$this->log_api_response( $response_code, $response_body );
 
 		if ( 200 !== $response_code ) {
-			return new WP_Error( 'pagbank_charge_calculate_fees_failed', 'PagBank calculate fees failed', $decoded_response_body );
+			return new WP_Error(
+				'pagbank_charge_calculate_fees_failed',
+				'PagBank calculate fees failed',
+				$decoded_response_body
+			);
 		}
 
-		set_transient( 'pagbank_cached_request_' . $url_hash, wp_json_encode( $decoded_response_body ), 15 * MINUTE_IN_SECONDS );
+		if ( ! is_array( $decoded_response_body ) ) {
+			return new WP_Error(
+				'pagbank_invalid_fee_response',
+				'PagBank returned an invalid fee calculation response.'
+			);
+		}
+
+		if ( empty( $query['show_seller_fees'] ) ) {
+			set_transient(
+				'pagbank_cached_request_' . $url_hash,
+				wp_json_encode( $decoded_response_body ),
+				15 * MINUTE_IN_SECONDS
+			);
+		}
 
 		return $decoded_response_body;
 	}
